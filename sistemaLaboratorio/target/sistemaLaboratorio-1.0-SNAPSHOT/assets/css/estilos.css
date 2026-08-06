@@ -1,0 +1,85 @@
+@media print {
+    .no-print {
+        display: none !important;
+    }
+    .d-none-print {
+        display: none !important;
+    }
+}
+
+#pedidoContainer {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 auto !important;
+    background-color: #ffffff !important;
+}
+
+/* En pantalla, evita que los divs vacíos fuercen espacio vertical */
+.tab-content > .tab-pane {
+    height: 0;
+    overflow: hidden;
+}
+
+.tab-content > .tab-pane.active {
+    height: auto;
+    overflow: visible;
+}
+
+.firma-img {
+    max-height: 120px; 
+    width: auto;
+    max-width: 100%;
+    transition: opacity 0.2s ease-in-out;
+}
+
+/* Reglas vitales para la exportación a PDF */
+.print-only { display: none; }
+.pdf-mode .no-print { display: none !important; }
+.pdf-mode .print-only { display: block !important; }
+
+/* REGLA NUEVA: Fuerza a que TODAS las pestañas sean visibles al exportar el PDF */
+.pdf-mode .tab-pane {
+    display: block !important;
+    height: auto !important;
+    opacity: 1 !important;
+    overflow: visible !important;
+    visibility: visible !important;
+    margin-bottom: 20px; /* Separación entre exámenes si hay varios llenos */
+}
+
+/* Oculta los botones de navegación de las pestañas en el PDF */
+.pdf-mode .nav-tabs {
+    display: none !important;
+}
+
+.input-group.input-group-sm {
+    flex-wrap: nowrap !important;
+}
+
+.input-group-sm .input-group-text {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.4rem;
+    background-color: #f8f9fa;
+    white-space: nowrap;
+}
+
+.input-group-sm .form-control, 
+.input-group-sm .form-select {
+    font-size: 0.78rem;
+    padding: 0.25rem 0.3rem;
+    min-width: 0;
+}
+
+#pedidoContainer .card .row > div {
+    margin-bottom: 4px;
+}
+
+/* Oculta los inputs de método por defecto */
+.input-metodo-oculto {
+    display: none !important;
+}
+
+/* Se muestran automáticamente cuando tienen la clase para mostrarse o si contienen texto */
+.input-metodo-visible {
+    display: block !important;
+}
