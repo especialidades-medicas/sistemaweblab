@@ -2141,61 +2141,38 @@
     <script src="../controllers/funciones_barrabotoneslab.js"></script>
     
     <script>
-        // Sincronización en tiempo real de los datos del paciente hacia el bloque de impresión
-document.addEventListener("input", function (e) {
-    if (e.target && e.target.id) {
-        const mapeo = {
-            'idOrden': 'txtIdOrdenVisual',
-            'codDoc': 'txtCodDocVisual',
-            'nombrePaciente': 'txtNombreVisual',
-            'fechaNacimiento': 'txtFechaNacVisual',
-            'edadPaciente': 'txtEdadVisual',
-            'fechaActual': 'txtFechaActualVisual',
-            'sexoPaciente': 'txtSexoVisual',
-            'telefonoPaciente': 'txtTelVisual'
-        };
-        if (mapeo[e.target.id]) {
-            const destino = document.getElementById(mapeo[e.target.id]);
-            if (destino) destino.innerText = e.target.value;
+        // Sincronización robusta en tiempo real y por autocompletado hacia el bloque de impresión
+function sincronizarDatosImpresion() {
+    const mapeo = {
+        'idOrden': 'txtIdOrdenVisual',
+        'codDoc': 'txtCodDocVisual',
+        'nombrePaciente': 'txtNombreVisual',
+        'fechaNacimiento': 'txtFechaNacVisual',
+        'edadPaciente': 'txtEdadVisual',
+        'fechaActual': 'txtFechaActualVisual',
+        'sexoPaciente': 'txtSexoVisual',
+        'telefonoPaciente': 'txtTelVisual'
+    };
+
+    for (let idInput in mapeo) {
+        const inputElem = document.getElementById(idInput);
+        const destinoElem = document.getElementById(mapeo[idInput]);
+        
+        if (inputElem && destinoElem) {
+            // Si es un selector (como el sexo), obtenemos el texto de la opción seleccionada
+            if (inputElem.tagName.toLowerCase() === 'select') {
+                const textoOpt = inputElem.selectedIndex >= 0 ? inputElem.options[inputElem.selectedIndex].text : '';
+                destinoElem.innerText = (textoOpt.includes('-') && textoOpt.trim().length === 1) ? '' : textoOpt;
+            } else {
+                destinoElem.innerText = inputElem.value;
+            }
         }
     }
-});
-    
-    
-    function procesarSelectsParaImpresion(contenedor, ocultar) {
-    const selects = contenedor.querySelectorAll('select');
-    selects.forEach(select => {
-        let textoSeleccionado = "";
-        
-        // Obtener de forma estricta únicamente el texto de la opción seleccionada
-        if (select.selectedIndex >= 0 && select.options[select.selectedIndex]) {
-            textoSeleccionado = select.options[select.selectedIndex].text;
-        }
-
-        // Si la opción seleccionada es por defecto o un indicador de método, se omite o limpia según prefieras
-        if (textoSeleccionado.includes("Seleccione") || textoSeleccionado === "Seleccione Método...") {
-            textoSeleccionado = "";
-        }
-
-        const span = document.createElement('span');
-        span.className = 'select-reemplazo-print fw-bold';
-        span.style.fontSize = select.style.fontSize || 'inherit';
-        span.innerText = textoSeleccionado;
-
-        if (ocultar) {
-            select.style.display = 'none';
-            // Evitar duplicar spans de reemplazo si ya existen en el clon
-            const existente = select.parentNode.querySelector('.select-reemplazo-print');
-            if (!existente) {
-                select.parentNode.insertBefore(span, select);
-            }
-        } else {
-            select.style.display = '';
-            const reemplazo = select.parentNode.querySelector('.select-reemplazo-print');
-            if (reemplazo) reemplazo.remove();
-        }
-    });
 }
+
+// Escuchar cambios manuales por teclado o selección
+document.addEventListener("input", sincronizarDatosImpresion);
+document.addEventListener("change", sincronizarDatosImpresion);
 
 function actualizarTablaDinamica() {
     const tbody = document.getElementById("tablaResultadosUnificada");
@@ -2420,13 +2397,88 @@ window.addEventListener('DOMContentLoaded', () => {
 
     actualizarTablaDinamica();
 });
-// Función de Impresión Directa
+
+
+
+// 1. Función para buscar y autocompletar paciente según la cédula (Cod/Doc)
+function buscarPaciente() {
+    const cedulaInput = document.getElementById('codDoc');
+    if (!cedulaInput) return;
+    
+    const cedula = cedulaInput.value.trim();
+    if (!cedula) return;
+
+    // Lee la base de datos interna del navegador
+    const pacientesGuardados = JSON.parse(localStorage.getItem('bd_pacientes_biosalud')) || {};
+
+    if (pacientesGuardados[cedula]) {
+        const p = pacientesGuardados[cedula];
+        document.getElementById('idOrden').value = p.orden || '';
+        document.getElementById('nombrePaciente').value = p.nombre || '';
+        document.getElementById('fechaNacimiento').value = p.fechaNacimiento || '';
+        document.getElementById('edadPaciente').value = p.edad || '';
+        document.getElementById('fechaActual').value = p.fecha || '';
+        document.getElementById('sexoPaciente').value = p.sexo || ' - ';
+        document.getElementById('telefonoPaciente').value = p.telefono || '';
+        
+        cedulaInput.style.borderColor = "green"; // Visual de encontrado
+    } else {
+        cedulaInput.style.borderColor = "#ced4da"; // No registrado previamente
+    }
+}
+
+// Activar la búsqueda automática al salir del campo (blur) o presionar Enter
+document.addEventListener("DOMContentLoaded", () => {
+    const inputCedula = document.getElementById('codDoc');
+    if (inputCedula) {
+        inputCedula.addEventListener('blur', buscarPaciente);
+        inputCedula.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                buscarPaciente();
+            }
+        });
+    }
+});
+
+// 2. Almacenar o actualizar internamente al paciente
+function guardarPacienteInterno(paciente) {
+    if (!paciente.cedula) return;
+    
+    // Obtiene la lista actual de la memoria interna
+    let pacientesGuardados = JSON.parse(localStorage.getItem('bd_pacientes_biosalud')) || {};
+    
+    // Guarda o actualiza los datos asociados a esa cédula
+    pacientesGuardados[paciente.cedula] = paciente;
+    
+    // Vuelve a guardarlo en el almacenamiento interno
+    localStorage.setItem('bd_pacientes_biosalud', JSON.stringify(pacientesGuardados));
+}
+
+// 3. Función de impresión (Guarda internamente sin descargar nada automáticamente)
 function imprimirResultados() {
+    // Capturar los datos actuales del formulario
+    const paciente = {
+        orden: document.getElementById('idOrden') ? document.getElementById('idOrden').value : '',
+        cedula: document.getElementById('codDoc') ? document.getElementById('codDoc').value.trim() : '',
+        nombre: document.getElementById('nombrePaciente') ? document.getElementById('nombrePaciente').value.trim() : '',
+        fechaNacimiento: document.getElementById('fechaNacimiento') ? document.getElementById('fechaNacimiento').value : '',
+        edad: document.getElementById('edadPaciente') ? document.getElementById('edadPaciente').value : '',
+        fecha: document.getElementById('fechaActual') ? document.getElementById('fechaActual').value : '',
+        sexo: document.getElementById('sexoPaciente') ? document.getElementById('sexoPaciente').value : '',
+        telefono: document.getElementById('telefonoPaciente') ? document.getElementById('telefonoPaciente').value : ''
+    };
+
+    // ALMACENAMIENTO INTERNO AUTOMÁTICO AL IMPRIMIR
+    if (paciente.cedula) {
+        guardarPacienteInterno(paciente);
+    }
+
+    // Preparar interfaz y lanzar la ventana de impresión (Tu diseño original)
     actualizarTablaDinamica();
     const bloqueImpresion = document.getElementById("bloquePacienteImpresion");
     const tarjetaEditable = document.querySelector(".card.p-2.mb-2.bg-light.border.no-print");
     
-    // Hace visible el bloque de datos estáticos para la impresora
     if (bloqueImpresion) bloqueImpresion.classList.remove("d-none");
     if (tarjetaEditable) tarjetaEditable.style.display = "none";
 
@@ -2435,13 +2487,56 @@ function imprimirResultados() {
     
     window.print();
     
-    // Restaura la vista normal de la pantalla tras la impresión
     setTimeout(() => {
         procesarSelectsParaImpresion(contenedor, false);
         if (bloqueImpresion) bloqueImpresion.classList.add("d-none");
         if (tarjetaEditable) tarjetaEditable.style.display = "";
     }, 1000);
 }
+
+// 4. (Opcional) Si en algún momento quieres descargar el Excel con todos los acumulados
+function exportarExcelInternoGeneral() {
+    let pacientesGuardados = JSON.parse(localStorage.getItem('bd_pacientes_biosalud')) || {};
+    
+    let datosExcel = [
+        ["ORDEN", "CÉDULA/DOC", "NOMBRES COMPLETOS", "F. NACIMIENTO", "EDAD", "FECHA", "SEXO", "TELÉFONO"]
+    ];
+
+    for (let cedula in pacientesGuardados) {
+        let p = pacientesGuardados[cedula];
+        datosExcel.push([p.orden, p.cedula, p.nombre, p.fechaNacimiento, p.edad, p.fecha, p.sexo, p.telefono]);
+    }
+
+    if (datosExcel.length === 1) {
+        alert("No hay registros internos de pacientes todavía.");
+        return;
+    }
+
+    const ws = XLSX.utils.aoa_to_sheet(datosExcel);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Pacientes_Registrados");
+    XLSX.writeFile(wb, "Base_Datos_Pacientes_Biosalud.xlsx");
+}
+
+// 4. Lógica para generar el Excel usando la librería SheetJS (XLSX)
+    function generarExcel(paciente) {
+        // Estructurar los datos en formato de tabla (Array de Arrays)
+        const datosExcel = [
+            ["ORDEN", "CÉDULA/DOC", "NOMBRES COMPLETOS", "F. NACIMIENTO", "EDAD", "FECHA", "SEXO", "TELÉFONO"],
+            [paciente.orden, paciente.cedula, paciente.nombre, paciente.fechaNacimiento, paciente.edad, paciente.fecha, paciente.sexo, paciente.telefono]
+        ];
+
+        // Crear la hoja y el libro de trabajo
+        const hoja = XLSX.utils.aoa_to_sheet(datosExcel);
+        const libro = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(libro, hoja, "Datos_Paciente");
+
+        // Nombre dinámico del archivo (ej: Paciente_1712345678.xlsx)
+        const nombreArchivo = `Paciente_${paciente.cedula || paciente.orden}.xlsx`;
+        
+        // Ejecutar la descarga
+        XLSX.writeFile(libro, nombreArchivo);
+    }
 
 // Función de Descarga en PDF directa a Descargas con apertura automática para revisión
 // Función de Descarga en PDF organizada automáticamente en la carpeta "Reportes" / "Fecha"
