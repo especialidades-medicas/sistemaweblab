@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Resultado de Exámenes - Laboratorio Clínico Biosalud</title>
     
+    <!-- Aquí agregas el ícono -->
+    <link rel="icon" type="../logo_laboratorio.png" href="icono.png">
      <!--<meta http-equiv="refresh" content="0; url=./sistemaLaboratorio/src/main/webapp/index.html"><-->
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
@@ -20,7 +22,6 @@
     </style>
 </head>
 <body>  
-    <p>Redirigindo al sistema... Si no redirige automáticamente, <a href="./sistemaLaboratorio/src/main/webapp/index.html">haz clic aquí</a>.</p>
     
     <div class="container-fluid p-2">
         <!-- Contenedor principal que se imprimirá y exportará a PDF -->
@@ -138,17 +139,17 @@
                     <div class="border p-2 rounded bg-white">
                         
                         <!-- Sub-pestañas internas para Hematología -->
-                        <ul class="nav nav-pills mb-3 justify-content-center no-print" id="hematologiaSubTabs" role="tablist">
-                            <li class="nav-item" role="presentation">
-                                <button class="nav-link active btn-sm fw-bold py-1 px-2" id="auto-tab" data-bs-toggle="pill" data-bs-target="#autoContent" type="button" role="tab">Automatizada (Dirui)</button>
-                            </li>
-                            <li class="nav-item" role="presentation">
-                                <button class="nav-link btn-sm fw-bold py-1 px-2 ms-2" id="manual-tab" data-bs-toggle="pill" data-bs-target="#manualContent" type="button" role="tab">Manual</button>
-                            </li>
-                            <li class="nav-item" role="presentation">
-                                <button class="nav-link btn-sm fw-bold py-1 px-2 ms-2" id="ves-tab" data-bs-toggle="pill" data-bs-target="#vesContent" type="button" role="tab">VES</button>
-                            </li>
-                        </ul>
+                        <ul class="nav lab-sub-tabs justify-content-center no-print" id="hematologiaSubTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active btn-sm fw-bold py-1 px-3" id="auto-tab" data-bs-toggle="pill" data-bs-target="#autoContent" type="button" role="tab">Automatizada (Dirui)</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link btn-sm fw-bold py-1 px-3" id="manual-tab" data-bs-toggle="pill" data-bs-target="#manualContent" type="button" role="tab">Manual</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link btn-sm fw-bold py-1 px-3" id="ves-tab" data-bs-toggle="pill" data-bs-target="#vesContent" type="button" role="tab">VES</button>
+                    </li>
+                </ul>
 
                         <div class="tab-content" id="hematologiaSubContent">
                             
@@ -1541,31 +1542,423 @@
     </div>
 </div>
 
-                <!-- 14. Cultivos -->
-                <div class="tab-pane fade" id="cultivosContent" role="tabpanel">
-                    <div class="border p-2 rounded bg-white">
-                        <div class="section-title text-primary fw-bold border-bottom pb-1 mb-2 small" data-section-name="CULTIVOS MICROBIOLÓGICOS">CULTIVOS MICROBIOLÓGICOS</div>
-                        <table class="table table-sm table-bordered align-middle mb-0 small">
-                            <thead class="table-light text-muted"><tr><th>EXAMEN</th><th>RESULTADO</th><th>UNIDAD</th><th>V. REFERENCIA</th></tr></thead>
-                            <tbody>
-                                <tr><td class="fw-bold">UROCULTIVO</td><td><input type="text" class="form-control form-control-sm form-control-editable"></td><td>UFC/mL</td><td class="text-muted">Sin desarrollo</td></tr>
-                            </tbody>
-                        </table>
+                <!-- 14. Cultivos (Urocultivo, Coprocultivo y Secreción Vaginal) -->
+<div class="tab-pane fade" id="cultivosContent" role="tabpanel">
+    <div class="border p-2 rounded bg-white">
+        
+        <!-- Sub-pestañas internas para Cultivos -->
+        <ul class="nav nav-pills mb-3 justify-content-center no-print" id="cultivosSubTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active btn-sm fw-bold py-1 px-2" id="urocultivo-subtab" data-bs-toggle="pill" data-bs-target="#urocultivoSubContent" type="button" role="tab">Urocultivo</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link btn-sm fw-bold py-1 px-2 ms-2" id="coprocultivo-subtab" data-bs-toggle="pill" data-bs-target="#coprocultivoSubContent" type="button" role="tab">Coprocultivo</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link btn-sm fw-bold py-1 px-2 ms-2" id="secrecion-subtab" data-bs-toggle="pill" data-bs-target="#secrecionSubContent" type="button" role="tab">Secreción Vaginal</button>
+            </li>
+        </ul>
+
+        <div class="tab-content" id="cultivosSubContentContainer">
+            
+            <!-- Sub-panel Urocultivo -->
+            <div class="tab-pane fade show active" id="urocultivoSubContent" role="tabpanel">
+                <div class="section-title text-center text-primary fw-bold border-bottom pb-2 mb-3" style="font-size: 13px; cursor: default;" data-section-name="INFORME DE MICROBIOLOGÍA - UROCULTIVO">
+                    INFORME DE MICROBIOLOGÍA - UROCULTIVO
+                </div>
+                
+                <div class="text-secondary fw-bold small mb-2 border-bottom pb-1">DATOS BACTERIOLÓGICOS</div>
+                <div class="row g-2 mb-3" style="font-size: 11px;">
+                    <div class="col-12 mb-2">
+                        <div class="fw-bold text-dark mb-1">MUESTRA</div>
+                        <select class="form-select form-select-sm form-control-editable">
+                            <option value="" selected>-</option>
+                            <option value="Orina de chorro medio">Orina de chorro medio</option>
+                            <option value="Orina por cateterismo">Orina por cateterismo</option>
+                        </select>
+                    </div>
+                    <div class="col-12 mb-2">
+                        <div class="fw-bold text-dark mb-1">CULTIVO CUANTITATIVO / RECUENTO</div>
+                        <select class="form-select form-select-sm form-control-editable">
+                            <option value="" selected>-</option>
+                            <option value="< 10,000 UFC/mL">&lt; 10,000 UFC/mL (Negativo)</option>
+                            <option value="> 100,000 UFC/mL (> 10^5 UFC/mL)">&gt; 100,000 UFC/mL (Positivo)</option>
+                        </select>
+                    </div>
+                    <div class="col-12 mb-2">
+                        <div class="fw-bold text-dark mb-1">GERMEN IDENTIFICADO / MICROORGANISMO AISLADO</div>
+                        <select class="form-select form-select-sm form-control-editable">
+                            <option value="" selected>-</option>
+                            <option value="SIN DESARROLLO BACTERIANO">SIN DESARROLLO BACTERIANO</option>
+                            <option value="Escherichia coli">Escherichia coli</option>
+                        </select>
+                    </div>
+                    <div class="col-12 mb-2">
+                        <div class="fw-bold text-dark mb-1">OBSERVACIONES / COMENTARIOS CLÍNICOS</div>
+                        <select class="form-select form-select-sm form-control-editable">
+                            <option value="" selected>-</option>
+                            <option value="Resultado sin desarrollo bacteriano cultivo negativo, sugiere que no hay una carga bacteriana superior a los umbrales de diagnóstico para ITU.">Resultado sin desarrollo bacteriano cultivo negativo, sugiere que no hay una carga bacteriana superior a los umbrales de diagnóstico para ITU.</option>
+                        </select>
                     </div>
                 </div>
 
-                <!-- 15. Secreciones -->
-                <div class="tab-pane fade" id="secrecionesContent" role="tabpanel">
-                    <div class="border p-2 rounded bg-white">
-                        <div class="section-title text-primary fw-bold border-bottom pb-1 mb-2 small" data-section-name="ANÁLISIS DE SECRECIONES">ANÁLISIS DE SECRECIONES</div>
-                        <table class="table table-sm table-bordered align-middle mb-0 small">
-                            <thead class="table-light text-muted"><tr><th>EXAMEN</th><th>RESULTADO</th><th>UNIDAD</th><th>V. REFERENCIA</th></tr></thead>
-                            <tbody>
-                                <tr><td class="fw-bold">FROTIS / SECRECIÓN VAGINAL</td><td><input type="text" class="form-control form-control-sm form-control-editable"></td><td>-</td><td class="text-muted">Flora normal</td></tr>
-                            </tbody>
-                        </table>
+                <div class="text-secondary fw-bold small mt-3 mb-2 border-bottom pb-1">PRUEBA DE SENSIBILIDAD ANTIMICROBIANA (ANTIBIOGRAMA)</div>
+                <table class="table table-sm table-bordered align-middle mb-0 small bg-white">
+                    <thead class="table-light text-muted">
+                        <tr><th>ANTIBIÓTICO</th><th style="width: 40%;">INTERPRETACIÓN</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="fw-bold">Ampicilina</td>
+                            <td>
+                                <select class="form-select form-select-sm form-control-editable">
+                                    <option value="" selected>-</option>
+                                    <option value="Sensible (S)">Sensible (S)</option>
+                                    <option value="Resistente (R)">Resistente (R)</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="fw-bold">Ciprofloxacino</td>
+                            <td>
+                                <select class="form-select form-select-sm form-control-editable">
+                                    <option value="" selected>-</option>
+                                    <option value="Sensible (S)">Sensible (S)</option>
+                                    <option value="Resistente (R)">Resistente (R)</option>
+                                </select>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Sub-panel Coprocultivo -->
+            <div class="tab-pane fade" id="coprocultivoSubContent" role="tabpanel">
+                <div class="section-title text-center text-primary fw-bold border-bottom pb-2 mb-3" style="font-size: 13px; cursor: default;" data-section-name="INFORME DE MICROBIOLOGÍA - COPROCULTIVO">
+                    INFORME DE MICROBIOLOGÍA - COPROCULTIVO
+                </div>
+                
+                <div class="text-secondary fw-bold small mb-2 border-bottom pb-1">DATOS BACTERIOLÓGICOS</div>
+                <div class="row g-2 mb-3" style="font-size: 11px;">
+                    <div class="col-12 mb-2">
+                        <div class="fw-bold text-dark mb-1">MUESTRA</div>
+                        <select class="form-select form-select-sm form-control-editable">
+                            <option value="" selected>-</option>
+                            <option value="Heces fecales">Heces fecales</option>
+                            <option value="Coprocultivo seriado">Coprocultivo seriado</option>
+                        </select>
+                    </div>
+                    <div class="col-12 mb-2">
+                        <div class="fw-bold text-dark mb-1">GERMEN IDENTIFICADO / PATÓGENO AISLADO</div>
+                        <select class="form-select form-select-sm form-control-editable">
+                            <option value="" selected>-</option>
+                            <option value="SIN DESARROLLO DE PATÓGENOS ENTÉRICOS">SIN DESARROLLO DE PATÓGENOS ENTÉRICOS</option>
+                            <option value="Salmonella sp.">Salmonella sp.</option>
+                            <option value="Shigella sp.">Shigella sp.</option>
+                        </select>
                     </div>
                 </div>
+
+                <div class="text-secondary fw-bold small mt-3 mb-2 border-bottom pb-1">PRUEBA DE SENSIBILIDAD ANTIMICROBIANA (ANTIBIOGRAMA)</div>
+                <table class="table table-sm table-bordered align-middle mb-0 small bg-white">
+                    <thead class="table-light text-muted">
+                        <tr><th>ANTIBIÓTICO</th><th style="width: 40%;">INTERPRETACIÓN</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="fw-bold">Ciprofloxacino</td>
+                            <td>
+                                <select class="form-select form-select-sm form-control-editable">
+                                    <option value="" selected>-</option>
+                                    <option value="Sensible (S)">Sensible (S)</option>
+                                    <option value="Resistente (R)">Resistente (R)</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="fw-bold">Ceftriaxona</td>
+                            <td>
+                                <select class="form-select form-select-sm form-control-editable">
+                                    <option value="" selected>-</option>
+                                    <option value="Sensible (S)">Sensible (S)</option>
+                                    <option value="Resistente (R)">Resistente (R)</option>
+                                </select>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Sub-panel Secreción Vaginal -->
+            <div class="tab-pane fade" id="secrecionSubContent" role="tabpanel">
+                <div class="section-title text-center text-primary fw-bold border-bottom pb-2 mb-3" style="font-size: 13px; cursor: default;" data-section-name="INFORME DE MICROBIOLOGÍA - SECRECIÓN VAGINAL">
+                    INFORME DE MICROBIOLOGÍA - SECRECIÓN VAGINAL
+                </div>
+                
+                <div class="text-secondary fw-bold small mb-2 border-bottom pb-1">DATOS BACTERIOLÓGICOS Y FROTIS</div>
+                <div class="row g-2 mb-3" style="font-size: 11px;">
+                    <div class="col-12 mb-2">
+                        <div class="fw-bold text-dark mb-1">MUESTRA</div>
+                        <select class="form-select form-select-sm form-control-editable">
+                            <option value="" selected>-</option>
+                            <option value="Secreción vaginal / Fondo de saco">Secreción vaginal / Fondo de saco</option>
+                            <option value="Secreción endocervical">Secreción endocervical</option>
+                        </select>
+                    </div>
+                    <div class="col-12 mb-2">
+                        <div class="fw-bold text-dark mb-1">EXAMEN FRESCO / CÉLULAS CLAVE</div>
+                        <select class="form-select form-select-sm form-control-editable">
+                            <option value="" selected>-</option>
+                            <option value="Células guía (Clue cells) Negativas">Células guía (Clue cells) Negativas</option>
+                            <option value="Células guía (Clue cells) Positivas (Sugiere Vaginosis Bacteriana)">Células guía (Clue cells) Positivas (Sugiere Vaginosis Bacteriana)</option>
+                        </select>
+                    </div>
+                    <div class="col-12 mb-2">
+                        <div class="fw-bold text-dark mb-1">EXAMEN MICROSCOPICO (GRAM)</div>
+                        <select class="form-select form-select-sm form-control-editable">
+                            <option value="" selected>-</option>
+                            <option value="Bacilos Gram positivos (Lactobacilos) abundantes">Bacilos Gram positivos (Lactobacilos) abundantes</option>
+                            <option value="Flora mixta / Alteración de la flora normal">Flora mixta / Alteración de la flora normal</option>
+                            <option value="Presencia de levaduras y seudohifas">Presencia de levaduras y seudohifas</option>
+                            <option value="Diplococos Gram negativos intracelulares y extracelulares">Diplococos Gram negativos intracelulares y extracelulares</option>
+                        </select>
+                    </div>
+                    <div class="col-12 mb-2">
+                        <div class="fw-bold text-dark mb-1">GERMEN AISLADO / HALLAZGO</div>
+                        <select class="form-select form-select-sm form-control-editable">
+                            <option value="" selected>-</option>
+                            <option value="FLORA NORMAL (Predominio de Bacilos de Döderlein)">FLORA NORMAL (Predominio de Bacilos de Döderlein)</option>
+                            <option value="Candida albicans">Candida albicans</option>
+                            <option value="Gardnerella vaginalis">Gardnerella vaginalis</option>
+                            <option value="Trichomonas vaginalis">Trichomonas vaginalis</option>
+                            <option value="Streptococcus agalactiae (Grupo B)">Streptococcus agalactiae (Grupo B)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="text-secondary fw-bold small mt-3 mb-2 border-bottom pb-1">PRUEBA DE SENSIBILIDAD ANTIMICROBIANA (ANTIBIOGRAMA / ANTIMICÓTICOS)</div>
+                <table class="table table-sm table-bordered align-middle mb-0 small bg-white">
+                    <thead class="table-light text-muted">
+                        <tr><th>ANTIMICROBIANO / ANTIMICÓTICO</th><th style="width: 40%;">INTERPRETACIÓN</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="fw-bold">Fluconazol</td>
+                            <td>
+                                <select class="form-select form-select-sm form-control-editable">
+                                    <option value="" selected>-</option>
+                                    <option value="Sensible (S)">Sensible (S)</option>
+                                    <option value="Resistente (R)">Resistente (R)</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="fw-bold">Clindamicina</td>
+                            <td>
+                                <select class="form-select form-select-sm form-control-editable">
+                                    <option value="" selected>-</option>
+                                    <option value="Sensible (S)">Sensible (S)</option>
+                                    <option value="Resistente (R)">Resistente (R)</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="fw-bold">Metronidazol</td>
+                            <td>
+                                <select class="form-select form-select-sm form-control-editable">
+                                    <option value="" selected>-</option>
+                                    <option value="Sensible (S)">Sensible (S)</option>
+                                    <option value="Resistente (R)">Resistente (R)</option>
+                                </select>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+                <!-- 16. SECRECIONES (Vaginal, Papa Test, Esputo BAAR) -->
+<div class="tab-pane fade" id="secrecionesContent" role="tabpanel">
+    <div class="border p-2 rounded bg-white">
+        
+        <!-- Sub-pestañas internas para Secreciones -->
+        <ul class="nav nav-pills mb-3 justify-content-center no-print" id="secrecionesSubTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active btn-sm fw-bold py-1 px-2" id="vaginal-subtab" data-bs-toggle="pill" data-bs-target="#vaginalSubContent" type="button" role="tab">Secreción Vaginal</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link btn-sm fw-bold py-1 px-2 ms-2" id="papatest-subtab" data-bs-toggle="pill" data-bs-target="#papatestSubContent" type="button" role="tab">Papa Test</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link btn-sm fw-bold py-1 px-2 ms-2" id="esputo-subtab" data-bs-toggle="pill" data-bs-target="#esputoSubContent" type="button" role="tab">Esputo BAAR</button>
+            </li>
+        </ul>
+
+        <div class="tab-content" id="secrecionesSubContentContainer">
+            
+            <!-- Sub-panel Secreción Vaginal -->
+            <div class="tab-pane fade show active" id="vaginalSubContent" role="tabpanel">
+                <div class="section-title text-center text-primary fw-bold border-bottom pb-2 mb-3" style="font-size: 13px; cursor: default;" data-section-name="INFORME DE MICROBIOLOGÍA - SECRECIÓN VAGINAL">
+                    INFORME DE MICROBIOLOGÍA - SECRECIÓN VAGINAL
+                </div>
+                
+                <div class="text-secondary fw-bold small mb-2 border-bottom pb-1">EXAMEN EN FRESCO Y GRAM</div>
+                <div class="row g-2 mb-3" style="font-size: 11px;">
+                    <div class="col-12 mb-2">
+                        <div class="fw-bold text-dark mb-1">MUESTRA</div>
+                        <select class="form-select form-select-sm form-control-editable">
+                            <option value="" selected>-</option>
+                            <option value="Secreción Vaginal">Secreción Vaginal</option>
+                            <option value="Exudado Endocervical">Exudado Endocervical</option>
+                            <option value="Fondo de Saco">Fondo de Saco</option>
+                        </select>
+                    </div>
+                    <div class="col-12 mb-2">
+                        <div class="fw-bold text-dark mb-1">LEUCOCITOS (PMN)</div>
+                        <select class="form-select form-select-sm form-control-editable">
+                            <option value="" selected>-</option>
+                            <option value="Escasos">Escasos</option>
+                            <option value="Moderados">Moderados</option>
+                            <option value="Abundantes (Sugiere proceso inflamatorio/infeccioso)">Abundantes (Sugiere proceso inflamatorio/infeccioso)</option>
+                        </select>
+                    </div>
+                    <div class="col-12 mb-2">
+                        <div class="fw-bold text-dark mb-1">CÉLULAS CLAVE (CLUE CELLS)</div>
+                        <select class="form-select form-select-sm form-control-editable">
+                            <option value="" selected>-</option>
+                            <option value="Ausentes">Ausentes</option>
+                            <option value="Presentes (Sugestivo de Vaginosis Bacteriana)">Presentes (Sugestivo de Vaginosis Bacteriana)</option>
+                        </select>
+                    </div>
+                    <div class="col-12 mb-2">
+                        <div class="fw-bold text-dark mb-1">FLORA BACTERIANA (GRAM)</div>
+                        <select class="form-select form-select-sm form-control-editable">
+                            <option value="" selected>-</option>
+                            <option value="Bacilos de Döderlein predominantes (Flora Normal)">Bacilos de Döderlein predominantes (Flora Normal)</option>
+                            <option value="Flora Mixta">Flora Mixta</option>
+                            <option value="Ausencia de Bacilos de Döderlein">Ausencia de Bacilos de Döderlein</option>
+                            <option value="Abundantes cocobacilos Gram variables">Abundantes cocobacilos Gram variables</option>
+                        </select>
+                    </div>
+                    <div class="col-12 mb-2">
+                        <div class="fw-bold text-dark mb-1">PARÁSITOS Y HONGOS</div>
+                        <select class="form-select form-select-sm form-control-editable">
+                            <option value="" selected>-</option>
+                            <option value="No se observan formas parasitarias ni micóticas">No se observan formas parasitarias ni micóticas</option>
+                            <option value="Presencia de Trichomonas vaginalis">Presencia de Trichomonas vaginalis</option>
+                            <option value="Presencia de levaduras y pseudohifas (Sugestivo de Candidiasis)">Presencia de levaduras y pseudohifas (Sugestivo de Candidiasis)</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sub-panel Papa Test (Papanicolaou) -->
+            <div class="tab-pane fade" id="papatestSubContent" role="tabpanel">
+                <div class="section-title text-center text-primary fw-bold border-bottom pb-2 mb-3" style="font-size: 13px; cursor: default;" data-section-name="CITOLOGÍA EXFOLIATIVA - PAPA TEST">
+                    CITOLOGÍA EXFOLIATIVA - PAPA TEST (SISTEMA BETHESDA)
+                </div>
+                
+                <div class="text-secondary fw-bold small mb-2 border-bottom pb-1">DATOS CITOLÓGICOS</div>
+                <div class="row g-2 mb-3" style="font-size: 11px;">
+                    <div class="col-12 mb-2">
+                        <div class="fw-bold text-dark mb-1">MUESTRA</div>
+                        <select class="form-select form-select-sm form-control-editable">
+                            <option value="" selected>-</option>
+                            <option value="Frotis cérvico-vaginal (Convencional)">Frotis cérvico-vaginal (Convencional)</option>
+                            <option value="Citología en base líquida">Citología en base líquida</option>
+                        </select>
+                    </div>
+                    <div class="col-12 mb-2">
+                        <div class="fw-bold text-dark mb-1">CALIDAD DE LA MUESTRA</div>
+                        <select class="form-select form-select-sm form-control-editable">
+                            <option value="" selected>-</option>
+                            <option value="Adecuada para evaluación (Presencia de células endocervicales/zona de transformación)">Adecuada para evaluación (Presencia de células endocervicales/zona de transformación)</option>
+                            <option value="Adecuada para evaluación (Ausencia de células endocervicales)">Adecuada para evaluación (Ausencia de células endocervicales)</option>
+                            <option value="Inadecuada para evaluación">Inadecuada para evaluación</option>
+                        </select>
+                    </div>
+                    <div class="col-12 mb-2">
+                        <div class="fw-bold text-dark mb-1">MICROORGANISMOS / FLORA</div>
+                        <select class="form-select form-select-sm form-control-editable">
+                            <option value="" selected>-</option>
+                            <option value="Flora bacilar normal (Lactobacillus)">Flora bacilar normal (Lactobacillus)</option>
+                            <option value="Cambios en la flora sugestivos de vaginosis bacteriana">Cambios en la flora sugestivos de vaginosis bacteriana</option>
+                            <option value="Microorganismos micóticos morfológicamente consistentes con Candida spp.">Microorganismos micóticos morfológicamente consistentes con Candida spp.</option>
+                            <option value="Trichomonas vaginalis">Trichomonas vaginalis</option>
+                        </select>
+                    </div>
+                    <div class="col-12 mb-2">
+                        <div class="fw-bold text-dark mb-1">INTERPRETACIÓN / RESULTADO (ANORMALIDADES EPITELIALES)</div>
+                        <select class="form-select form-select-sm form-control-editable">
+                            <option value="" selected>-</option>
+                            <option value="NEGATIVO PARA LESIÓN INTRAEPITELIAL O MALIGNIDAD">NEGATIVO PARA LESIÓN INTRAEPITELIAL O MALIGNIDAD</option>
+                            <option value="ASC-US: Células escamosas atípicas de significado indeterminado">ASC-US: Células escamosas atípicas de significado indeterminado</option>
+                            <option value="LSIL: Lesión intraepitelial escamosa de bajo grado (Incluye VPH/Displasia leve/CIN 1)">LSIL: Lesión intraepitelial escamosa de bajo grado (Incluye VPH/Displasia leve/CIN 1)</option>
+                            <option value="HSIL: Lesión intraepitelial escamosa de alto grado (Displasia mod/sev, CIN 2/3, CIS)">HSIL: Lesión intraepitelial escamosa de alto grado (Displasia mod/sev, CIN 2/3, CIS)</option>
+                            <option value="ASC-H: Células escamosas atípicas, no puede excluirse HSIL">ASC-H: Células escamosas atípicas, no puede excluirse HSIL</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sub-panel Esputo BAAR -->
+            <div class="tab-pane fade" id="esputoSubContent" role="tabpanel">
+                <div class="section-title text-center text-primary fw-bold border-bottom pb-2 mb-3" style="font-size: 13px; cursor: default;" data-section-name="INVESTIGACIÓN DE BAAR - BACILOSCOPIA">
+                    INVESTIGACIÓN DE BAAR - BACILOSCOPIA (ESPUTO)
+                </div>
+                
+                <div class="text-secondary fw-bold small mb-2 border-bottom pb-1">DATOS DE LA MUESTRA Y RESULTADOS</div>
+                <div class="row g-2 mb-3" style="font-size: 11px;">
+                    <div class="col-12 mb-2">
+                        <div class="fw-bold text-dark mb-1">TIPO DE MUESTRA</div>
+                        <select class="form-select form-select-sm form-control-editable">
+                            <option value="" selected>-</option>
+                            <option value="Esputo (Expectoración espontánea)">Esputo (Expectoración espontánea)</option>
+                            <option value="Esputo Inducido">Esputo Inducido</option>
+                            <option value="Aspirado Bronquial">Aspirado Bronquial</option>
+                        </select>
+                    </div>
+                    <div class="col-12 mb-2">
+                        <div class="fw-bold text-dark mb-1">ASPECTO MACROSCÓPICO</div>
+                        <select class="form-select form-select-sm form-control-editable">
+                            <option value="" selected>-</option>
+                            <option value="Mucopurulento (Muestra adecuada)">Mucopurulento (Muestra adecuada)</option>
+                            <option value="Mucoso">Mucoso</option>
+                            <option value="Saliva (Muestra de mala calidad)">Saliva (Muestra de mala calidad)</option>
+                            <option value="Hemoptoico / Sanguinolento">Hemoptoico / Sanguinolento</option>
+                        </select>
+                    </div>
+                    <div class="col-12 mb-2">
+                        <div class="fw-bold text-dark mb-1">RESULTADO (MUESTRA 1) - TINCIÓN ZIEHL-NEELSEN</div>
+                        <select class="form-select form-select-sm form-control-editable">
+                            <option value="" selected>-</option>
+                            <option value="NEGATIVO (No se observan BAAR en 100 campos observados)">NEGATIVO (No se observan BAAR en 100 campos observados)</option>
+                            <option value="POSITIVO (+) (Se observan de 10 a 99 BAAR en 100 campos)">POSITIVO (+) (Se observan de 10 a 99 BAAR en 100 campos)</option>
+                            <option value="POSITIVO (++) (Se observan de 1 a 10 BAAR por campo en 50 campos)">POSITIVO (++) (Se observan de 1 a 10 BAAR por campo en 50 campos)</option>
+                            <option value="POSITIVO (+++) (Se observan más de 10 BAAR por campo en 20 campos)">POSITIVO (+++) (Se observan más de 10 BAAR por campo en 20 campos)</option>
+                            <option value="POSITIVO (Número exacto) (Se observan de 1 a 9 BAAR en 100 campos)">POSITIVO (Número exacto) (Se observan de 1 a 9 BAAR en 100 campos)</option>
+                        </select>
+                    </div>
+                    <div class="col-12 mb-2">
+                        <div class="fw-bold text-dark mb-1">RESULTADO (MUESTRA 2) - TINCIÓN ZIEHL-NEELSEN</div>
+                        <select class="form-select form-select-sm form-control-editable">
+                            <option value="" selected>-</option>
+                            <option value="Muestra no entregada / No procesada">Muestra no entregada / No procesada</option>
+                            <option value="NEGATIVO (No se observan BAAR en 100 campos observados)">NEGATIVO (No se observan BAAR en 100 campos observados)</option>
+                            <option value="POSITIVO (+) (Se observan de 10 a 99 BAAR en 100 campos)">POSITIVO (+) (Se observan de 10 a 99 BAAR en 100 campos)</option>
+                            <option value="POSITIVO (++) (Se observan de 1 a 10 BAAR por campo en 50 campos)">POSITIVO (++) (Se observan de 1 a 10 BAAR por campo en 50 campos)</option>
+                            <option value="POSITIVO (+++) (Se observan más de 10 BAAR por campo en 20 campos)">POSITIVO (+++) (Se observan más de 10 BAAR por campo en 20 campos)</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
 
                 <!-- 16. Covid -->
                 <div class="tab-pane fade" id="covidContent" role="tabpanel">
@@ -1804,8 +2197,6 @@ document.addEventListener("input", function (e) {
     });
 }
 
-// Función para agrupar y renderizar exámenes por categoría
-// Función para agrupar y renderizar exámenes por categoría con subtítulos de orina y heces
 function actualizarTablaDinamica() {
     const tbody = document.getElementById("tablaResultadosUnificada");
     if (!tbody) return;
@@ -1821,7 +2212,6 @@ function actualizarTablaDinamica() {
         titulosSeccion.forEach(tituloElem => {
             const tituloSeccion = tituloElem.getAttribute('data-section-name');
             
-            let esPanelTorch = tituloSeccion.includes("TORCH");
             let textoMetodoSeccion = "";
             let siguiente = tituloElem.nextElementSibling;
             let contenedorSeccion = [];
@@ -1831,20 +2221,35 @@ function actualizarTablaDinamica() {
                 siguiente = siguiente.nextElementSibling;
             }
 
-            if (esPanelTorch) {
-                for (let el of contenedorSeccion) {
-                    let inputMetodo = el.querySelector('input[id*="metodo"]') || 
-                                      (el.tagName && el.tagName.toLowerCase() === 'input' && el.id && el.id.toLowerCase().includes('metodo') ? el : el.querySelector('input[id*="metodo"]'));
-                    
-                    if (inputMetodo && inputMetodo.value.trim() !== "") {
-                        textoMetodoSeccion = inputMetodo.value.trim();
-                        break;
+            // NUEVA LÓGICA: Buscar el Método sin importar si es TORCH o Especiales
+            for (let el of contenedorSeccion) {
+                // 1. Detectar si el método está en un <select> (busca la palabra "Método" en la primera opción)
+                let selects = el.querySelectorAll ? el.querySelectorAll('select') : [];
+                if (el.tagName && el.tagName.toLowerCase() === 'select') selects = [el];
+                
+                for (let s of selects) {
+                    if (s.options.length > 0 && s.options[0].text.toLowerCase().includes("método")) {
+                        if (s.selectedIndex > 0) {
+                            textoMetodoSeccion = s.options[s.selectedIndex].text.trim();
+                        }
                     }
                 }
+
+                // 2. Mantener la lectura original por <input> por si tienes métodos escritos a mano
+                let inputMetodo = el.querySelector ? el.querySelector('input[id*="metodo"]') : null;
+                if (!inputMetodo && el.tagName && el.tagName.toLowerCase() === 'input' && el.id && el.id.toLowerCase().includes('metodo')) {
+                    inputMetodo = el;
+                }
+                
+                if (inputMetodo && inputMetodo.value.trim() !== "") {
+                    textoMetodoSeccion = inputMetodo.value.trim();
+                }
+
+                if (textoMetodoSeccion !== "") break; 
             }
 
             let filasValidasDeSeccion = [];
-            let subgruposSeccion = {}; // Para manejar subtítulos internos (Físico/Químico, Sedimento, Macroscópico, etc.)
+            let subgruposSeccion = {}; 
 
             contenedorSeccion.forEach(el => {
                 let elementosEditables = el.querySelectorAll('.form-control-editable');
@@ -1853,21 +2258,24 @@ function actualizarTablaDinamica() {
                     let valor = "";
                     if (elemento.tagName.toLowerCase() === 'select') {
                         valor = elemento.selectedIndex >= 0 ? elemento.options[elemento.selectedIndex].text.trim() : "";
-                        if (valor.includes("Seleccione") || valor === "") {
+                        if (valor.includes("Seleccione") || valor === "" || valor === "-") {
                             valor = "";
                         }
                     } else {
                         valor = elemento.value ? elemento.value.trim() : "";
                     }
                     
-                    if (valor !== "" && valor !== "Seleccione...") {
+                    if (valor !== "") {
+                        let nombreExamen = "";
+                        let unidad = "-";
+                        let referencia = "Ver referencia estándar";
+                        let subtituloAsociado = "GENERAL";
+
                         let filaOriginal = elemento.closest("tr");
-                        if (filaOriginal) {
-                            // Detectar si hay un subtítulo previo dentro de la misma tabla
-                            let subtituloAsociado = "GENERAL";
+                        if (filaOriginal && filaOriginal.closest("table")) {
                             let prevRow = filaOriginal.previousElementSibling;
                             while (prevRow) {
-                                if (prevRow.querySelector('td[colspan="4"]')) {
+                                if (prevRow.querySelector('td[colspan]')) {
                                     subtituloAsociado = prevRow.innerText.trim();
                                     break;
                                 }
@@ -1877,42 +2285,68 @@ function actualizarTablaDinamica() {
                             let celdas = filaOriginal.querySelectorAll("td");
                             if (celdas.length >= 2) {
                                 let inputNombreCustom = celdas[0].querySelector('input[id^="nombreExamen"]');
-                                let nombreExamen = "";
-
                                 if (inputNombreCustom) {
                                     let nombreVal = inputNombreCustom.value.trim();
                                     nombreExamen = (nombreVal !== "" ? nombreVal : "Examen Personalizado");
                                 } else {
                                     let clonCelda = celdas[0].cloneNode(true);
-                                    let inputsInternos = clonCelda.querySelectorAll('input, select');
-                                    inputsInternos.forEach(inp => inp.remove());
+                                    clonCelda.querySelectorAll('input, select').forEach(inp => inp.remove());
                                     nombreExamen = clonCelda.innerText.trim();
                                 }
 
-                                let examenTexto = nombreExamen;
-                                let unidad = celdas[2] ? (celdas[2].querySelector("input")?.value.trim() || celdas[2].innerText.trim()) : "";
-                                let referencia = celdas[3] ? (celdas[3].querySelector("input")?.value.trim() || celdas[3].innerText.trim()) : "";
+                                unidad = celdas[2] ? (celdas[2].querySelector("input")?.value.trim() || celdas[2].innerText.trim()) : "-";
+                                referencia = celdas[3] ? (celdas[3].querySelector("input")?.value.trim() || celdas[3].innerText.trim()) : "";
+                            }
+                        } 
+                        else {
+                            let contenedorCol = elemento.closest(".col-12") || elemento.closest(".mb-2");
+                            if (contenedorCol) {
+                                let labelDiv = contenedorCol.querySelector(".fw-bold");
+                                if (labelDiv) nombreExamen = labelDiv.innerText.trim();
+                            }
 
-                                if (nombreExamen !== "") {
-                                    let claveUnica = tituloSeccion + "_" + subtituloAsociado + "_" + nombreExamen;
-                                    
-                                    if (!clavesGlobalesUnicas.has(claveUnica)) {
-                                        clavesGlobalesUnicas.add(claveUnica);
-                                        
-                                        if (!subgruposSeccion[subtituloAsociado]) {
-                                            subgruposSeccion[subtituloAsociado] = [];
-                                        }
-                                        
-                                        subgruposSeccion[subtituloAsociado].push({
-                                            examen: examenTexto,
-                                            resultado: valor,
-                                            unidad: unidad,
-                                            referencia: referencia
-                                        });
-
-                                        filasValidasDeSeccion.push(true);
-                                    }
+                            let hermano = elemento.parentElement;
+                            while (hermano) {
+                                if (hermano.classList && hermano.classList.contains('text-secondary') && hermano.classList.contains('fw-bold')) {
+                                    subtituloAsociado = hermano.innerText.trim();
+                                    break;
                                 }
+                                hermano = hermano.previousElementSibling || hermano.parentElement;
+                            }
+
+                            if (pane.id === "cultivosContent" || pane.id === "coprocultivoContent" || pane.id === "secrecionesContent") {
+                                if (elemento.closest("table")) {
+                                    subtituloAsociado = "PRUEBA DE SENSIBILIDAD ANTIMICROBIANA (ANTIBIOGRAMA)";
+                                    let filaAnti = elemento.closest("tr");
+                                    if (filaAnti) {
+                                        let celdaAnti = filaAnti.querySelector("td");
+                                        if (celdaAnti) nombreExamen = `» Antibiótico: ${celdaAnti.innerText.trim()}`;
+                                    }
+                                } else if (!subtituloAsociado || subtituloAsociado === "GENERAL") {
+                                    subtituloAsociado = "DATOS BACTERIOLÓGICOS";
+                                }
+                                referencia = "Negativo / Sin desarrollo";
+                            }
+                        }
+
+                        if (nombreExamen !== "") {
+                            let claveUnica = tituloSeccion + "_" + subtituloAsociado + "_" + nombreExamen;
+                            
+                            if (!clavesGlobalesUnicas.has(claveUnica)) {
+                                clavesGlobalesUnicas.add(claveUnica);
+                                
+                                if (!subgruposSeccion[subtituloAsociado]) {
+                                    subgruposSeccion[subtituloAsociado] = [];
+                                }
+                                
+                                subgruposSeccion[subtituloAsociado].push({
+                                    examen: nombreExamen,
+                                    resultado: valor,
+                                    unidad: unidad,
+                                    referencia: referencia
+                                });
+
+                                filasValidasDeSeccion.push(true);
                             }
                         }
                     }
@@ -1922,29 +2356,32 @@ function actualizarTablaDinamica() {
             if (filasValidasDeSeccion.length > 0) {
                 totalValidados += filasValidasDeSeccion.length;
 
-                // Fila de Título Principal de la Sección con su respectivo <td>
                 let filaTitulo = document.createElement("tr");
-                filaTitulo.innerHTML = `<td colspan="4" class="fw-bold bg-light text-primary">${tituloSeccion}</td>`;
+                // Corrección HTML: Envoltura <td> agregada
+                filaTitulo.innerHTML = `<td colspan="4" class="text-primary fw-bold bg-light" style="font-size: 13px;">${tituloSeccion}</td>`;
                 tbody.appendChild(filaTitulo);
 
-                if (esPanelTorch && textoMetodoSeccion !== "") {
+                // Imprime el método detectado para cualquier sección
+                if (textoMetodoSeccion !== "") {
                     let filaMetodo = document.createElement("tr");
-                    filaMetodo.innerHTML = `<td colspan="4" class="text-secondary fst-italic small bg-white">Método: ${textoMetodoSeccion}</td>`;
+                    // Corrección HTML: Envoltura <td> agregada
+                    filaMetodo.innerHTML = `<td colspan="4" class="text-secondary fw-bold fst-italic" style="font-size: 11px;">Método: ${textoMetodoSeccion}</td>`;
                     tbody.appendChild(filaMetodo);
                 }
 
-                // Renderizar por subgrupos (permite subtítulos internos en Orina y Heces)
                 for (let subcat in subgruposSeccion) {
                     if (subcat !== "GENERAL") {
                         let filaSub = document.createElement("tr");
-                        filaSub.innerHTML = `<td colspan="4" class="table-active fw-bold text-secondary" style="font-size: 9.5px;">${subcat}</td>`;
+                        // Corrección HTML: Envoltura <td> agregada
+                        filaSub.innerHTML = `<td colspan="4" class="fw-bold" style="font-size: 11px;">${subcat}</td>`;
                         tbody.appendChild(filaSub);
                     }
 
                     subgruposSeccion[subcat].forEach(item => {
                         let nuevaFila = document.createElement("tr");
+                        // Corrección HTML: Cada ítem ahora tiene su propia celda <td>
                         nuevaFila.innerHTML = `
-                            <td class="ps-3">${item.examen}</td>
+                            <td>${item.examen}</td>
                             <td>${item.resultado}</td>
                             <td>${item.unidad}</td>
                             <td>${item.referencia}</td>
@@ -2068,7 +2505,7 @@ async function descargarPDFResultados() {
                     types: [{
                         description: 'Documento PDF',
                         accept: { 'application/pdf': ['.pdf'] }
-                    }],
+                    }]
                 };
 
                 let archivoHandle;
