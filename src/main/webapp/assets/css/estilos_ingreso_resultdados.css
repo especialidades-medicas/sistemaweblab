@@ -47,6 +47,19 @@
     transition: opacity 0.2s ease-in-out;
 }
 
+/* Reglas complementarias para html2pdf (cuando usa .pdf-mode) */
+.pdf-mode tr, 
+.pdf-mode .card, 
+.pdf-mode .border, 
+.pdf-mode table {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+}
+
+.pdf-mode .section-title {
+    page-break-after: avoid !important;
+    break-after: avoid !important;
+}
 /* Reglas vitales para la exportación a PDF */
 .print-only { display: none; }
 .pdf-mode .no-print { display: none !important; }
