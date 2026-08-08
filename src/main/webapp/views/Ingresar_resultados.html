@@ -1115,17 +1115,16 @@
     <div class="border p-3 rounded bg-white shadow-sm">
         
         <!-- TÍTULO PRINCIPAL ÚNICO PARA QUE EL SCRIPT DETECTE TODA LA SECCIÓN -->
-        <div class="section-title text-primary fw-bold border-bottom pb-1 mb-2 small" data-section-name="EXAMEN COMPLETO DE ORINA">EXAMEN COMPLETO DE ORINA</div>
+        <div class="section-title text-primary fw-bold border-bottom pb-1 mb-2 small" data-section-name="ELEMENTAL Y MICROSCOPICO">ELEMENTAL Y MICROSCOPICO</div>
         
         <table class="table table-sm table-bordered align-middle mb-0 small bg-white">
             <thead class="table-light text-muted">
                 <tr><th>EXÁMEN / ELEMENTO</th><th style="width: 25%;">RESULTADO</th><th style="width: 15%;">UNIDAD</th><th>V. REFERENCIA</th></tr>
             </thead>
             <tbody>
-                <!-- EXÁMEN FÍSICO  -->
+                <!-- EXÁMEN FÍSICO -->
 <tr><td colspan="4" class="table-active fw-bold text-secondary" style="font-size: 9.5px;">EXÁMEN FÍSICO</td></tr>
 <tr>
-    
     <td class="fw-bold ps-3">COLOR</td>
     <td>
         <select class="form-select form-select-sm form-control-editable" id="orinaColor">
@@ -1148,7 +1147,7 @@
     <td>
         <select class="form-select form-select-sm form-control-editable" id="orinaAspecto">
             <option value="" selected disabled>Seleccione...</option>
-            <option value="Transparente">Transparente</option>
+            <option value="Límpido">Transparente</option>
             <option value="Ligeramente Turbio">Ligeramente Turbio</option>
             <option value="Turbio">Turbio</option>
             <option value="Lechoso">Lechoso</option>
@@ -1158,20 +1157,42 @@
     <td><input type="text" class="form-control form-control-sm text-muted" value="Límpido / Lig. Turbio"></td>
 </tr>
 <tr>
-    <td class="fw-bold ps-3">DENSIDAD</td>
-    <td><input type="text" class="form-control form-control-sm form-control-editable" id="orinaDensidad"></td>
+    <td class="fw-bold ps-3">DENSIDAD</td>    
+    
+    <td>
+        <select class="form-select form-select-sm form-control-editable" id="orinaDensidad">
+            <option value="" selected disabled>Seleccione...</option>
+            <option value=" ">Negativo</option>
+            <option value="1005">1005</option>
+            <option value="1010">1010</option>
+            <option value="1015">1015</option>
+            <option value="1020">1020</option>
+            <option value="1025">1015</option>
+            <option value="1030">1020</option>
+        </select>
+    </td>
+    <td c
     <td class="text-muted">-</td>
     <td><input type="text" class="form-control form-control-sm text-muted" value="1.005 - 1.030"></td>
 </tr>
 <tr>
-    <td class="fw-bold ps-3">PH</td>
-    <td><input type="text" class="form-control form-control-sm form-control-editable" id="orinaPh"></td>
+    <td class="fw-bold ps-3">PH</td>    
+    <td>
+        <select class="form-select form-select-sm form-control-editable" id="orinaPh">
+            <option value="" selected disabled>Seleccione...</option>
+            <option value="Negativo">Negativo</option>
+            <option value="5">5</option>
+            <option value="6">6</option>
+            <option value="6">7</option>
+            <option value="6">8</option>
+        </select>
+    </td>
     <td class="text-muted">-</td>
     <td><input type="text" class="form-control form-control-sm text-muted" value="4.5 - 8.0"></td>
 </tr>
-                <!-- EXAMEN QUÍMICO -->
- <tr><td colspan="4" class="table-active fw-bold text-secondary" style="font-size: 9.5px;">EXAMEN QUÍMICO</td></tr>
-<tr>
+
+<!-- EXÁMEN  QUÍMICO -->
+<tr><td colspan="4" class="table-active fw-bold text-secondary" style="font-size: 9.5px;">EXÁMEN QUÍMICO</td></tr>
 <tr>
     <td class="fw-bold ps-3">PROTEÍNAS</td>
     <td>
@@ -1299,22 +1320,73 @@
                     <td><input type="text" class="form-control form-control-sm text-muted" value="0 - 2"></td>
                 </tr>
                 <tr>
-                    <td class="fw-bold ps-3">BACTERIAS</td>
-                    <td><input type="text" class="form-control form-control-sm form-control-editable" id="orinaBacterias"></td>
+                    <td class="fw-bold ps-3">BACTERIAS</td>                    
+                    <td>
+                    <select class="form-select form-select-sm form-control-editable" id="orinaBacterias">
+                        <option value="" selected disabled>Seleccione...</option>
+                        <option value=" ">Negativo</option>
+                        <option value="+">+</option>
+                        <option value="++">++</option>
+                        <option value="+++">+++</option>
+
+                    </select>
+                    </td>
                     <td class="text-muted">-</td>
                     <td><input type="text" class="form-control form-control-sm text-muted" value="Ausentes / Escasas"></td>
                 </tr>
                 <tr>
-                    <td class="fw-bold ps-3">CRISTALES</td>
-                    <td><input type="text" class="form-control form-control-sm form-control-editable" id="orinaCristales"></td>
-                    <td class="text-muted">x c.</td>
-                    <td><input type="text" class="form-control form-control-sm text-muted" value="0 - 2"></td>
+                    <td class="fw-bold ps-3">CRISTALES</td>                    
+                    <td>
+                    <select class="form-select form-select-sm form-control-editable" id="orinaCristales">
+                        <option value="" selected disabled>Seleccione...</option>
+                        <option value=" ">Negativo</option>
+                        <option value="Oxalato de calcio">Oxalato de calcio</option>
+                        <option value="Ácido úrico">Ácido úrico</option>
+                        <option value="Uratos amorfos">Uratos amorfos</option>
+                        <option value="Cistina">Cistina</option>
+                        <option value="Tirosina y Leucina">Tirosina y Leucina</option>
+                        <option value="Fosfato triple">Fosfato triple</option>
+                        <option value="Fosfato de calcio">Fosfato de calcio</option>
+                        <option value="Fosfato triple">Fosfato triple</option>
+                        <option value="Fosfatos amorfos">Carbonato de calcio</option>
+
+                    </select>
+                    </td>
+                    <td class="text-muted">-</td>
+                    <td><input type="text" class="form-control form-control-sm text-muted" value="Ausentes / Escasas"></td>
                 </tr>
                 <tr>
-                    <td class="fw-bold ps-3">Cilindros</td>
-                    <td><input type="text" class="form-control form-control-sm form-control-editable" id="orinaCilindros"></td>
+                    <td class="fw-bold ps-3">CILINDROS</td>                    
+                    <td>
+                    <select class="form-select form-select-sm form-control-editable" id="orinaCilindros">
+                        <option value="" selected disabled>Seleccione...</option>
+                        <option value=" ">Negativo</option>
+                        <option value="Hialinos">Hialinos</option>
+                        <option value="Granulosos">Granulosos</option>
+                        <option value="Eritrocitarios ">Eritrocitarios </option>
+                        <option value="Leucocitarios">Leucocitarios</option>
+                        <option value="Células epiteliales">Células epiteliales</option>
+                        <option value="Céreos">Céreos</option>
+                        <option value="Grasos">Grasos</option>
+                    </select>
+                    </td>
                     <td class="text-muted">-</td>
-                    <td><input type="text" class="form-control form-control-sm text-muted" value="Ausentes / +"></td>
+                    <td><input type="text" class="form-control form-control-sm text-muted" value="Ausentes / Escasas"></td>
+                </tr>
+                <tr>
+                    <td class="fw-bold ps-3">MOCO</td>                    
+                    <td>
+                    <select class="form-select form-select-sm form-control-editable" id="orinaMoco">
+                        <option value="" selected disabled>Seleccione...</option>
+                        <option value=" ">Negativo</option>
+                        <option value="+">+</option>
+                        <option value="++">++</option>
+                        <option value="+++">+++</option>
+
+                    </select>
+                    </td>
+                    <td class="text-muted">-</td>
+                    <td><input type="text" class="form-control form-control-sm text-muted" value="Negativo / Positivo (+)"></td>
                 </tr>
 
                 <!-- EXÁMENES ESPECIALES DE ORINA -->
@@ -1329,7 +1401,7 @@
                     <td class="fw-bold ps-3">MICROALBUMINURIA</td>
                     <td><input type="text" class="form-control form-control-sm form-control-editable" id="resMicroalbuminuria"></td>
                     <td class="text-muted">mg/24h</td>
-                    <td><input type="text" class="form-control form-control-sm text-muted" value="Menor a 30"></td>
+                    <td><input type="text" class="form-control form-control-sm text-muted" value="Menor a 20"></td>
                 </tr>
                 <tr>
                     <td class="fw-bold ps-3">PROTEINURIA (24 HORAS)</td>
@@ -1356,7 +1428,6 @@
                 <tr><th>EXÁMEN / ELEMENTO</th><th style="width: 25%;">RESULTADO</th><th style="width: 15%;">UNIDAD</th><th>V. REFERENCIA</th></tr>
             </thead>
             <tbody>
-                <!-- EXAMEN MACROSCÓPICO -->
                 <!-- EXAMEN MACROSCÓPICO -->
                 <tr><td colspan="4" class="table-active fw-bold text-secondary" style="font-size: 9.5px;">EXAMEN MACROSCÓPICO</td></tr>
                 <tr>
@@ -1552,6 +1623,52 @@
                     </td>
                     <td class="text-muted">-</td>
                     <td><input type="text" class="form-control form-control-sm text-muted" value="Negativo"></td>
+                </tr>
+                <!-- EXÁMENES ESPECIALES DE HECES -->
+                <tr><td colspan="4" class="table-active fw-bold text-secondary" style="font-size: 9.5px;">EXÁMENES ESPECIALES DE HECES</td></tr>
+                <tr>
+                    <td class="fw-bold ps-3">POLIMORFONUCLEARES </td>
+                    <td><input type="text" class="form-control form-control-sm form-control-editable" id="hecespolimorfonucleares"></td>
+                    <td class="text-muted">%</td>
+                    <td><input type="text" class="form-control form-control-sm text-muted" value="Negativo / #"></td>
+                </tr>
+                <tr>
+                    <td class="fw-bold ps-3">INV.ROTAVIRUS</td>
+                    <td><input type="text" class="form-control form-control-sm form-control-editable" id="hecesRotavirus"></td>
+                    
+                    <td>
+                        <select class="form-select form-select-sm form-control-editable" id="hecesRotavirus">
+                            <option value="" selected disabled>Seleccione...</option>
+                            <option value="Negativo">Negativo</option>
+                            <option value="Positivo">Positivo</option>                            
+                        </select>
+                    </td>
+                    <td class="text-muted">-</td>
+                    <td><input type="text" class="form-control form-control-sm text-muted" value="Cualitativa"></td>
+                </tr>
+                <tr>
+                    <td class="fw-bold ps-3">HELICOBACTER PYLORI</td>                    
+                    <td>
+                        <select class="form-select form-select-sm form-control-editable" id="hecesHpylori">
+                            <option value="" selected disabled>Seleccione...</option>
+                            <option value="Negativo">Negativo</option>
+                            <option value="Positivo">Positivo</option>                            
+                        </select>
+                    </td>
+                    <td class="text-muted">-</td>
+                    <td><input type="text" class="form-control form-control-sm text-muted" value="Cualitativa"></td>
+                </tr>
+                <tr>
+                    <td class="fw-bold ps-3">SANGRE OCULTA</td>                    
+                    <td>
+                        <select class="form-select form-select-sm form-control-editable" id="hecesSOculta">
+                            <option value="" selected disabled>Seleccione...</option>
+                            <option value="Negativo">Negativo</option>
+                            <option value="Positivo">Positivo</option>                            
+                        </select>
+                    </td>
+                    <td class="text-muted">-</td>
+                    <td><input type="text" class="form-control form-control-sm text-muted" value="Cualitativa"></td>
                 </tr>
             </tbody>
         </table>
