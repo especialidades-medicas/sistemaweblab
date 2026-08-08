@@ -2599,7 +2599,8 @@ async function descargarPDFResultados() {
         filename:     nombreArchivoFinal,
         image:        { type: 'jpeg', quality: 0.98 },
         html2canvas:  { scale: 2, useCORS: true, scrollY: 0 },
-        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
+        pagebreak:    { mode: ['css', 'legacy'], avoid: ['tr', '.section-title'] }
     };
 
     if (typeof html2pdf === "undefined") {
