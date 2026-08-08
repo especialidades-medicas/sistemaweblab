@@ -501,10 +501,11 @@
                                 <tr>
                                     <td class="fw-bold">
                                         FSH (H. Foliculoestimulante)
-                                        <select class="form-select form-select-sm mt-1" style="font-size: 10px;">
+                                        <select class="form-select form-select-sm mt-1" id="metodoFSH" style="font-size: 10px;">
                                             <option value="" selected disabled>Método Analítico...</option>
                                             <option value="Electroquimioluminiscencia">Electroquimioluminiscencia</option>
                                             <option value="Inmunofluorescencia">Inmunofluorescencia</option>
+                                            <option value="Quimioluminiscencia">Quimioluminiscencia</option>
                                         </select>
                                     </td>
                                     <td><input type="text" class="form-control form-control-sm form-control-editable" id="resFSH"></td>
@@ -535,18 +536,29 @@
                                     </td>
                                 </tr>
                                         <tr>
+                                            
                                             <td class="fw-bold">
-                                                17 Beta Estradiol
-                                                <input type="text" class="form-control form-control-sm mt-1 text-secondary" id="metodoEstradiol" value="Método: Quimioluminiscencia" style="font-size: 10px;">
-                                            </td>
+                                        17 Beta Estradiol
+                                        <select class="form-select form-select-sm mt-1" id="metodoEstradiol" style="font-size: 10px;">
+                                            <option class="form-control form-control-sm mt-1 text-secondary" value="" selected disabled >Método Analítico...</option>
+                                            <option value="Electroquimioluminiscencia">Electroquimioluminiscencia</option>
+                                            <option value="Inmunofluorescencia">Inmunofluorescencia</option>
+                                            <option value="Quimioluminiscencia">Quimioluminiscencia</option>
+                                        </select>
+                                    </td>                                            
                                             <td><input type="text" class="form-control form-control-sm form-control-editable" id="resEstradiol"></td>
                                             <td><input type="text" class="form-control form-control-sm text-muted" value="pg/mL"></td>
                                             <td><input type="text" class="form-control form-control-sm text-muted" value="F. Folicular: 30–120 | P. Ovulatorio: 130–370 | Lútea: 70–250"></td>
-                                        </tr>
+                                        </tr> 
                                         <tr>
                                             <td class="fw-bold">
-                                                LH (Hormona Luteinizante)
-                                                <input type="text" class="form-control form-control-sm mt-1 text-secondary" id="metodoLH" value="Método: Quimioluminiscencia" style="font-size: 10px;">
+                                                LH (Hormona Luteinizante)                                                
+                                            <select class="form-select form-select-sm mt-1" id="metodoLH" style="font-size: 10px;">
+                                            <option class="form-control form-control-sm mt-1 text-secondary" value="" selected disabled >Método Analítico...</option>
+                                            <option value="Electroquimioluminiscencia">Electroquimioluminiscencia</option>
+                                            <option value="Inmunofluorescencia">Inmunofluorescencia</option>
+                                            <option value="Quimioluminiscencia">Quimioluminiscencia</option>
+                                        </select>
                                             </td>
                                             <td><input type="text" class="form-control form-control-sm form-control-editable" id="resLH"></td>
                                             <td><input type="text" class="form-control form-control-sm text-muted" value="mUI/mL"></td>
