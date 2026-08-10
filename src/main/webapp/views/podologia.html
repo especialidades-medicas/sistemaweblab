@@ -836,7 +836,17 @@
     
 
     <script>
-
+    // Control del campo "Otros" en antecedentes
+        function toggleOtroInput() {
+            const checkbox = document.getElementById('checkOtros');
+            const input = document.getElementById('inputOtroAntecedente');
+            input.disabled = !checkbox.checked;
+            if (checkbox.checked) {
+                input.focus();
+            } else {
+                input.value = '';
+            }
+        }
         //PDF
         function generarPDFHistoria(event) {
             event.preventDefault();
