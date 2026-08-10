@@ -21,6 +21,9 @@
         display: none !important;
     }
 }
+.pdf-mode .no-print { 
+    display: none !important; 
+}
 
 #pedidoContainer {
     width: 100% !important;

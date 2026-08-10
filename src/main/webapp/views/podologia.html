@@ -6,6 +6,11 @@
     <title>Medipie.st - Panel de Podología</title>
     <!-- Google Fonts para mejor estética -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Librería SheetJS (XLSX) para la exportación e importación de archivos Excel -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <!-- Librería jsPDF para la exportación de la historia clínica en PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
     <style>
         * {
             margin: 0;
@@ -473,6 +478,7 @@
             <nav>
                 <a href="#" class="nav-item active" onclick="switchTab(event, 'dashboard-view'); toggleSidebarMobile();">📊 Panel Principal</a>
                 <a href="#" class="nav-item" onclick="switchTab(event, 'pacientes-view'); toggleSidebarMobile();">👣 Pacientes</a>
+                <a href="#" class="nav-item" onclick="switchTab(event, 'historia-clinica-view'); toggleSidebarMobile();">📋 Historia Clínica</a>
                 <a href="#" class="nav-item" onclick="switchTab(event, 'citas-view'); toggleSidebarMobile();">📅 Citas Podológicas</a>
                 <a href="#" class="nav-item" onclick="switchTab(event, 'recetas-view'); toggleSidebarMobile();">🧴 Tratamientos</a>
                 <a href="#" class="nav-item" onclick="switchTab(event, 'certificados-view'); toggleSidebarMobile();">📄 Certificados</a>
@@ -590,7 +596,7 @@
                     </table>
                 </div>
             </div>
-
+                
             <!-- VISTA 2: CERTIFICADOS -->
             <div id="certificados-view" class="section-view">
                 <div class="content-card">
@@ -625,7 +631,7 @@
                         <button type="submit" class="btn-action" style="padding: 0.7rem 1.5rem; font-size: 0.95rem;">Generar e Imprimir Certificado</button>
                     </form>
                 </div>
-
+                
                 <div class="content-card">
                     <h2>Certificados Podológicos Emitidos</h2>
                     <table>
@@ -666,6 +672,138 @@
                 <div class="content-card">
                     <h2>Gestión de Pacientes (Podología)</h2>
                     <p style="color: var(--gray);">Use la barra de búsqueda superior para localizar historias clínicas de los pies, mapas plantares y datos de pacientes por cédula o apellidos.</p>
+                    <h2 id="patientFormTitle">Nuevo Registro de Paciente</h2>
+                    <form onsubmit="savePatient(event)">
+                        <input type="hidden" id="editPatientIndex" value="-1">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>Cédula / Pasaporte</label>
+                                <input type="text" id="patCedula" placeholder="Ej. 1723456789" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Apellidos y Nombres</label>
+                                <input type="text" id="patNombre" placeholder="Ej. Pérez Gómez Juan" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Fecha de Nacimiento</label>
+                                <input type="date" id="patNacimiento" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Género</label>
+                                <select id="patGenero">
+                                    <option>Masculino</option>
+                                    <option>Femenino</option>
+                                    <option>Otro</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Teléfono de Contacto</label>
+                                <input type="tel" id="patTelefono" placeholder="Ej. 0991234567">
+                            </div>
+                            <div class="form-group">
+                                <label>Correo Electrónico</label>
+                                <input type="email" id="patCorreo" placeholder="correo@ejemplo.com">
+                            </div>
+                            <div class="form-group full-width">
+                                <label>Dirección Domiciliaria</label>
+                                <input type="text" id="patDireccion" placeholder="Calle principal y secundaria, sector">
+                            </div>
+                        </div>
+                        <div style="display: flex; gap: 10px; margin-top: 15px;">
+                            <button type="submit" id="btnSavePatient" class="btn-action" style="padding: 0.7rem 1.5rem; font-size: 0.95rem;">Guardar y Actualizar Excel</button>
+                            <button type="button" id="btnCancelPatient" onclick="resetPatientForm()" class="btn-delete" style="display: none; padding: 0.7rem 1.5rem; font-size: 0.95rem;">Cancelar</button>
+                        </div>
+                    </form>
+                </div>               
+                
+                <!-- Tabla para visualizar y gestionar los pacientes registrados -->
+                <div class="content-card">
+                    <h2>Listado de Pacientes Registrados</h2>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Cédula</th>
+                                <th>Apellidos y Nombres</th>
+                                <th>Teléfono</th>
+                                <th>Correo</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="patientTableBody">
+                            <!-- Los pacientes se cargan dinámicamente aquí -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- VISTA: HISTORIA CLÍNICA PODOLÓGICA -->
+            <div id="historia-clinica-view" class="section-view">
+                <div class="content-card">
+                    <h2>Historia Clínica Podológica - Medipie.st</h2>
+                    <form id="formHistoriaClinica" onsubmit="generarPDFHistoria(event)">
+                        <!-- Datos Administrativos (Únicos Obligatorios) -->
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>Cédula del Paciente (N° Historia): *</label>
+                                <input type="text" id="hcCedula" placeholder="Ej. 1712345678" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Fecha de Evaluación: *</label>
+                                <input type="date" id="hcFecha" required>
+                            </div>
+                            <div class="form-group full-width">
+                                <label>Nombres y Apellidos del Paciente: *</label>
+                                <input type="text" id="hcNombre" placeholder="Apellidos y Nombres completos" required>
+                            </div>
+                        </div>
+
+                        <!-- Antecedentes Personales (Opcionales) -->
+                        <h3 style="margin: 1.5rem 0 1rem; color: var(--primary-dark);">Antecedentes Personales</h3>
+                        <div class="form-grid" style="grid-template-columns: repeat(3, 1fr);">
+                            <div class="form-group"><label><input type="checkbox" class="hc-ant" value="Diabetes"> Diabetes</label></div>
+                            <div class="form-group"><label><input type="checkbox" class="hc-ant" value="Hipertensión"> Hipertensión</label></div>
+                            <div class="form-group"><label><input type="checkbox" class="hc-ant" value="Problemas Circulatorios"> Problemas Circulatorios</label></div>
+                            <div class="form-group"><label><input type="checkbox" class="hc-ant" value="Alteración Sensibilidad"> Alteración Sensibilidad</label></div>
+                            <div class="form-group"><label><input type="checkbox" class="hc-ant" value="Implantes Metálicos"> Implantes Metálicos</label></div>
+                            <div class="form-group"><label><input type="checkbox" class="hc-ant" value="Micosis/Hongos"> Micosis/Hongos</label></div>
+                            <div class="form-group"><label><input type="checkbox" class="hc-ant" value="Embarazo"> Embarazo</label></div>
+                        </div>
+                        
+                        <!-- Campo Otros para Antecedentes (Opcional) -->
+                        <div class="form-grid" style="margin-top: 1rem;">
+                            <div class="form-group full-width" style="display: flex; flex-direction: row; align-items: center; gap: 10px;">
+                                <label style="display: flex; align-items: center; gap: 5px; cursor: pointer;">
+                                    <input type="checkbox" id="checkOtros" onclick="toggleOtroInput()"> Otros:
+                                </label>
+                                <input type="text" id="inputOtroAntecedente" placeholder="Especifique otro antecedente..." style="flex: 1;" disabled>
+                            </div>
+                        </div>
+
+                        <!-- Body Test / Zona de Dolor (Opcional) -->
+                        <div style="margin: 2rem 0; background: #f8f9fa; padding: 1.2rem; border-radius: 10px;">
+                            <h3 style="margin-bottom: 0.8rem; font-size: 1rem; color: var(--dark);">7.- SEÑALE EL PUNTO DEL DOLOR EN EL BODY TEST:</h3>
+                            <div class="form-group full-width">
+                                <input type="text" id="hcPuntoDolor" placeholder="Ej. Hallux izquierdo, zona plantar metatarsiana, talón...">
+                            </div>
+                        </div>
+
+                        <!-- Motivo y Evaluaciones (Opcionales) -->
+                        <div class="form-grid">
+                            <div class="form-group full-width">
+                                <label>Motivo de Consulta:</label>
+                                <textarea id="hcMotivo" rows="2" placeholder="Describa malestar, tratamiento,..."></textarea>
+                            </div>
+                            <div class="form-group full-width">
+                                <label>Evaluación Fisioterapéutica / Podológica:</label>
+                                <textarea id="hcEvaluacion" rows="3" placeholder="Describa inspección, durezas, onicocriptosis..."></textarea>
+                            </div>
+                            <div class="form-group full-width">
+                                <label>Diagnóstico y Plan de Tratamiento:</label>
+                                <textarea id="hcDiagnostico" rows="3" placeholder="Detalle quiropodia, ortesis o recomendaciones..."></textarea>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn-action" style="padding: 0.7rem 1.5rem; font-size: 0.95rem;">Guardar Historia Clínica (Generar PDF)</button>
+                    </form>
                 </div>
             </div>
 
@@ -692,21 +830,22 @@
 
         </div>
     </div>
+    
+    <script src="../controllers/ingresoPacientes.js"></script>
+    <script src="../controllers/historiaClinicaPodologia.js"></script>
+    
 
     <script>
+        // Funciones de control de pestañas y menú móvil
         function switchTab(event, viewId) {
             event.preventDefault();
-            document.querySelectorAll('.nav-item').forEach(item => {
-                item.classList.remove('active');
-            });
-            event.currentTarget.classList.add('active');
-            document.querySelectorAll('.section-view').forEach(view => {
-                view.classList.remove('active');
-            });
+            document.querySelectorAll('.section-view').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            
             document.getElementById(viewId).classList.add('active');
+            event.currentTarget.classList.add('active');
         }
 
-        // Función para alternar la visibilidad de la barra lateral en móviles
         function toggleSidebar() {
             const sidebar = document.getElementById('sidebar');
             const overlay = document.getElementById('sidebarOverlay');
@@ -714,21 +853,13 @@
             overlay.classList.toggle('active');
         }
 
-        // Cierra automáticamente el menú en móviles cuando el usuario pulsa una sección
         function toggleSidebarMobile() {
             if (window.innerWidth <= 992) {
                 toggleSidebar();
             }
         }
-
-        function buscarPaciente() {
-            const query = document.getElementById('searchInput').value.trim();
-            if(query) {
-                alert("Buscando paciente en Medipie.st por cédula o apellidos: " + query);
-            } else {
-                alert("Por favor ingrese un número de cédula o apellido para buscar.");
-            }
-        }
+        
+        
     </script>
 </body>
 </html>

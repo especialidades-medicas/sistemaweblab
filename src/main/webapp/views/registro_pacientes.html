@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LabControl.st - Panel de Laboratorio Clínico</title>
+    <title>LabControl - Panel de Laboratorio Clínico</title>
     <!-- Google Fonts para mejor estética -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <!-- Librería SheetJS (XLSX) para la exportación e importación de archivos Excel -->
@@ -622,27 +622,28 @@
                 </div>
             </div>
 
-            <!-- VISTA 2: REGISTRO DE PACIENTES -->
+            <!-- VISTA 2: REGISTRO Y GESTIÓN DE PACIENTES -->
             <div id="registro-view" class="section-view">
                 <div class="content-card">
-                    <h2>Nuevo Registro de Paciente</h2>
-                    <form onsubmit="event.preventDefault(); alert('Paciente registrado exitosamente');">
+                    <h2 id="patientFormTitle">Nuevo Registro de Paciente</h2>
+                    <form onsubmit="savePatient(event)">
+                        <input type="hidden" id="editPatientIndex" value="-1">
                         <div class="form-grid">
                             <div class="form-group">
                                 <label>Cédula / Pasaporte</label>
-                                <input type="text" placeholder="Ej. 1723456789" required>
+                                <input type="text" id="patCedula" placeholder="Ej. 1723456789" required>
                             </div>
                             <div class="form-group">
                                 <label>Apellidos y Nombres</label>
-                                <input type="text" placeholder="Ej. Pérez Gómez Juan" required>
+                                <input type="text" id="patNombre" placeholder="Ej. Pérez Gómez Juan" required>
                             </div>
                             <div class="form-group">
                                 <label>Fecha de Nacimiento</label>
-                                <input type="date" required>
+                                <input type="date" id="patNacimiento" required>
                             </div>
                             <div class="form-group">
                                 <label>Género</label>
-                                <select>
+                                <select id="patGenero">
                                     <option>Masculino</option>
                                     <option>Femenino</option>
                                     <option>Otro</option>
@@ -650,19 +651,41 @@
                             </div>
                             <div class="form-group">
                                 <label>Teléfono de Contacto</label>
-                                <input type="tel" placeholder="Ej. 0991234567">
+                                <input type="tel" id="patTelefono" placeholder="Ej. 0991234567">
                             </div>
                             <div class="form-group">
                                 <label>Correo Electrónico</label>
-                                <input type="email" placeholder="correo@ejemplo.com">
+                                <input type="email" id="patCorreo" placeholder="correo@ejemplo.com">
                             </div>
                             <div class="form-group full-width">
                                 <label>Dirección Domiciliaria</label>
-                                <input type="text" placeholder="Calle principal y secundaria, sector">
+                                <input type="text" id="patDireccion" placeholder="Calle principal y secundaria, sector">
                             </div>
                         </div>
-                        <button type="submit" class="btn-action" style="padding: 0.7rem 1.5rem; font-size: 0.95rem;">Guardar Paciente</button>
+                        <div style="display: flex; gap: 10px; margin-top: 15px;">
+                            <button type="submit" id="btnSavePatient" class="btn-action" style="padding: 0.7rem 1.5rem; font-size: 0.95rem;">Guardar y Actualizar Excel</button>
+                            <button type="button" id="btnCancelPatient" onclick="resetPatientForm()" class="btn-delete" style="display: none; padding: 0.7rem 1.5rem; font-size: 0.95rem;">Cancelar</button>
+                        </div>
                     </form>
+                </div>
+
+                <!-- Tabla para visualizar y gestionar los pacientes registrados -->
+                <div class="content-card">
+                    <h2>Listado de Pacientes Registrados</h2>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Cédula</th>
+                                <th>Apellidos y Nombres</th>
+                                <th>Teléfono</th>
+                                <th>Correo</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="patientTableBody">
+                            <!-- Los pacientes se cargan dinámicamente aquí -->
+                        </tbody>
+                    </table>
                 </div>
             </div>
 
@@ -1035,6 +1058,179 @@
             };
             reader.readAsArrayBuffer(file);
         }
+        
+ // REGISTRO DE PACIENTES    
+ // 1. Inicialización de datos
+let patients = JSON.parse(localStorage.getItem("lab_pacientes")) || [];
+
+window.onload = function() {
+    renderTable();       // Carga tu cotizador existente si lo tienes
+    renderPatients();    // Carga la tabla de pacientes al iniciar
+};
+
+function savePatient(event) {
+    event.preventDefault();
+
+    const cedula = document.getElementById("patCedula").value.trim();
+    const nombre = document.getElementById("patNombre").value.trim();
+    const nacimiento = document.getElementById("patNacimiento").value || "";
+    const genero = document.getElementById("patGenero").value || "";
+    const telefono = document.getElementById("patTelefono").value.trim() || "";
+    const correo = document.getElementById("patCorreo").value.trim() || "";
+    const direccion = document.getElementById("patDireccion").value.trim() || "";
+    const editIndex = parseInt(document.getElementById("editPatientIndex").value);
+
+    // ÚNICAMENTE LA CÉDULA Y EL NOMBRE SON OBLIGATORIOS
+    if (!cedula || !nombre) {
+        alert("Por favor complete los campos obligatorios: Cédula y Apellidos/Nombres.");
+        return;
+    }
+
+    const nuevoPaciente = { cedula, nombre, nacimiento, genero, telefono, correo, direccion };
+
+    if (editIndex !== -1) {
+        patients[editIndex] = nuevoPaciente;
+        alert("Paciente actualizado exitosamente.");
+    } else {
+        const exists = patients.some(p => p.cedula === cedula);
+        if (exists) {
+            alert("Ya existe un paciente registrado con este número de cédula.");
+            return;
+        }
+        patients.push(nuevoPaciente);
+        alert("Paciente registrado exitosamente.");
+    }
+
+    persistPatients();
+    renderPatients();
+    autoExportToExcel();
+    resetPatientForm();
+}
+
+function renderPatients() {
+    const tbody = document.getElementById("patientTableBody");
+    tbody.innerHTML = "";
+
+    if (patients.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--gray);">No hay pacientes registrados.</td></tr>`;
+        return;
+    }
+
+    patients.forEach((patient, index) => {
+        const row = tbody.insertRow();
+        row.innerHTML = `
+            <td><span class="badge-id">${patient.cedula}</span></td>
+            <td>${patient.nombre}</td>
+            <td>${patient.telefono || 'N/A'}</td>
+            <td>${patient.correo || 'N/A'}</td>
+            <td>
+                <button class="btn-edit" onclick="editPatient(${index})">Editar</button>
+                <button class="btn-delete" onclick="deletePatient(${index})">Eliminar</button>
+            </td>
+        `;
+    });
+}
+
+function editPatient(index) {
+    const p = patients[index];
+    document.getElementById("patCedula").value = p.cedula;
+    document.getElementById("patNombre").value = p.nombre;
+    document.getElementById("patNacimiento").value = p.nacimiento;
+    document.getElementById("patGenero").value = p.genero;
+    document.getElementById("patTelefono").value = p.telefono;
+    document.getElementById("patCorreo").value = p.correo;
+    document.getElementById("patDireccion").value = p.direccion;
+
+    document.getElementById("editPatientIndex").value = index;
+    document.getElementById("patientFormTitle").innerText = "Actualizar Datos del Paciente";
+    document.getElementById("btnSavePatient").innerText = "Actualizar y Guardar Excel";
+    document.getElementById("btnCancelPatient").style.display = "inline-block";
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function deletePatient(index) {
+    if (confirm("¿Está seguro de eliminar este paciente del registro?")) {
+        patients.splice(index, 1);
+        persistPatients();
+        renderPatients();
+        autoExportToExcel(); // Actualiza el Excel tras eliminar
+        resetPatientForm();
+    }
+}
+
+function resetPatientForm() {
+    document.getElementById("patCedula").value = "";
+    document.getElementById("patNombre").value = "";
+    document.getElementById("patNacimiento").value = "";
+    document.getElementById("patTelefono").value = "";
+    document.getElementById("patCorreo").value = "";
+    document.getElementById("patDireccion").value = "";
+    document.getElementById("editPatientIndex").value = "-1";
+    document.getElementById("patientFormTitle").innerText = "Nuevo Registro de Paciente";
+    document.getElementById("btnSavePatient").innerText = "Guardar y Actualizar Excel";
+    document.getElementById("btnCancelPatient").style.display = "none";
+}
+
+function persistPatients() {
+    localStorage.setItem("lab_pacientes", JSON.stringify(patients));
+}
+
+async function autoExportToExcel() {
+    if (patients.length === 0) return;
+
+    const dataToExport = patients.map(p => ({
+        "Cédula": p.cedula,
+        "Apellidos y Nombres": p.nombre,
+        "Fecha de Nacimiento": p.nacimiento,
+        "Género": p.genero,
+        "Teléfono": p.telefono,
+        "Correo": p.correo,
+        "Dirección": p.direccion
+    }));
+
+    const worksheet = XLSX.utils.json_to_sheet(dataToExport);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Pacientes");
+    
+    // Generar el archivo en formato binario (ArrayBuffer)
+    const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+    const blob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+
+    // Verificar si el navegador soporta la API moderna para sobrescribir archivos directamente
+    if ('showSaveFilePicker' in window) {
+        try {
+            const options = {
+                suggestedName: 'pacientes_lab.xlsx',
+                types: [{
+                    description: 'Archivos Excel',
+                    accept: { 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': ['.xlsx'] }
+                }]
+            };
+            
+            // Si ya guardaste la referencia del archivo antes, la usamos; si no, la pedimos una vez
+            if (!window.fileHandle) {
+                window.fileHandle = await window.showSaveFilePicker(options);
+            }
+            
+            // Escribir directamente sobre el archivo seleccionado sin crear duplicados
+            const writableStream = await window.fileHandle.createWritable();
+            await writableStream.write(blob);
+            await writableStream.close();
+            console.log("Archivo actualizado exitosamente en la misma ruta.");
+            return;
+        } catch (err) {
+            console.log("El usuario canceló el selector o el navegador restringió la acción. Usando método tradicional...", err);
+        }
+    }
+
+    // Método alternativo (si el navegador no soporta la API o se cancela el selector)
+    XLSX.writeFile(workbook, "pacientes_lab.xlsx");
+}
+
+ // XXXXXXX  
+        
+        
     </script>
 </body>
 </html>
