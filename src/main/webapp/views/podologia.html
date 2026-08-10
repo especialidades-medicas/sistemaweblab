@@ -836,27 +836,97 @@
     
 
     <script>
-        // Funciones de control de pestañas y menú móvil
-        function switchTab(event, viewId) {
+
+        //PDF
+        function generarPDFHistoria(event) {
             event.preventDefault();
-            document.querySelectorAll('.section-view').forEach(el => el.classList.remove('active'));
-            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
             
-            document.getElementById(viewId).classList.add('active');
-            event.currentTarget.classList.add('active');
-        }
+            // Obtener valores del formulario
+            const cedula = document.getElementById('hcCedula').value.trim();
+            const fecha = document.getElementById('hcFecha').value.trim();
+            const nombresInput = document.getElementById('hcNombre').value.trim();
+            const nombres = nombresInput.replace(/\s+/g, '_');
+            const puntoDolor = document.getElementById('hcPuntoDolor').value;
+            const motivo = document.getElementById('hcMotivo').value;
+            const evaluacion = document.getElementById('hcEvaluacion').value;
+            const diagnostico = document.getElementById('hcDiagnostico').value;
 
-        function toggleSidebar() {
-            const sidebar = document.getElementById('sidebar');
-            const overlay = document.getElementById('sidebarOverlay');
-            sidebar.classList.toggle('open');
-            overlay.classList.toggle('active');
-        }
-
-        function toggleSidebarMobile() {
-            if (window.innerWidth <= 992) {
-                toggleSidebar();
+            // Recopilar antecedentes seleccionados
+            let antecedentes = [];
+            document.querySelectorAll('.hc-ant:checked').forEach(cb => antecedentes.push(cb.value));
+            
+            const checkOtros = document.getElementById('checkOtros');
+            const inputOtro = document.getElementById('inputOtroAntecedente');
+            if (checkOtros.checked && inputOtro.value.trim() !== '') {
+                antecedentes.push("Otros: " + inputOtro.value.trim());
             }
+
+            // Validar que jsPDF esté cargado
+            if (!window.jspdf) {
+                alert("Error: La librería jsPDF no se ha cargado correctamente.");
+                return;
+            }
+
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            // Diseño del contenido del PDF (Título ajustado a tamaño 13 para que no se salga del margen)
+            doc.setFont("helvetica", "bold");
+            doc.setFontSize(13);
+            doc.setTextColor(14, 165, 233); 
+            doc.text("MEDIPIE.ST - HISTORIA CLÍNICA PODOLÓGICA", 20, 20);
+
+            doc.setFontSize(10);
+            doc.setTextColor(100);
+            doc.text(`Fecha de emisión: ${fecha}`, 20, 28);
+
+            doc.setLineWidth(0.5);
+            doc.setDrawColor(200);
+            doc.line(20, 32, 190, 32);
+
+            // Datos del paciente
+            doc.setFont("helvetica", "bold");
+            doc.setTextColor(33);
+            doc.text("DATOS DEL PACIENTE", 20, 42);
+            doc.setFont("helvetica", "normal");
+            doc.text(`Cédula / N° Historia: ${cedula}`, 20, 50);
+            doc.text(`Nombres y Apellidos: ${nombresInput}`, 20, 58);
+
+            // Antecedentes
+            doc.setFont("helvetica", "bold");
+            doc.text("ANTECEDENTES PERSONALES", 20, 70);
+            doc.setFont("helvetica", "normal");
+            doc.text(antecedentes.length > 0 ? antecedentes.join(", ") : "Ninguno registrado", 20, 78, { maxWidth: 170 });
+
+            // Punto de Dolor
+            doc.setFont("helvetica", "bold");
+            doc.text("PUNTO DE DOLOR (BODY TEST)", 20, 92);
+            doc.setFont("helvetica", "normal");
+            doc.text(puntoDolor || "No especificado", 20, 100, { maxWidth: 170 });
+
+            // Motivo y Evaluaciones
+            doc.setFont("helvetica", "bold");
+            doc.text("MOTIVO DE CONSULTA", 20, 114);
+            doc.setFont("helvetica", "normal");
+            doc.text(motivo || "Sin observaciones", 20, 122, { maxWidth: 170 });
+
+            doc.setFont("helvetica", "bold");
+            doc.text("EVALUACIÓN FISIOTERAPÉUTICA / PODOLÓGICA", 20, 138);
+            doc.setFont("helvetica", "normal");
+            doc.text(evaluacion || "Sin observaciones", 20, 146, { maxWidth: 170 });
+
+            doc.setFont("helvetica", "bold");
+            doc.text("DIAGNÓSTICO Y PLAN DE TRATAMIENTO", 20, 168);
+            doc.setFont("helvetica", "normal");
+            doc.text(diagnostico || "Sin observaciones", 20, 176, { maxWidth: 170 });
+
+            // Construir nombre del archivo con la estructura: cedula_nombres_fecha.pdf
+            const nombreArchivo = `${cedula}_${nombres}_${fecha}.pdf`;
+
+            // Descargar el archivo PDF automáticamente
+            doc.save(nombreArchivo);
+            
+            alert("¡Historia clínica guardada y PDF generado con éxito!");
         }
         
         
