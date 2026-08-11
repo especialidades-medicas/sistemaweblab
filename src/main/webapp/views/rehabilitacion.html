@@ -46,7 +46,6 @@
             position: relative;
         }
 
-        /* Sidebar con estilo moderno y colorido */
         .sidebar {
             background: linear-gradient(180deg, #4361ee 0%, #3a0ca3 100%);
             padding: 1.5rem 1rem;
@@ -69,7 +68,6 @@
             align-items: center;
         }
 
-        /* Botón para cerrar el menú en móviles */
         .close-sidebar-btn {
             display: none;
             background: none;
@@ -106,7 +104,6 @@
             box-shadow: 0 4px 12px rgba(0,0,0,0.15);
         }
 
-        /* Botón de Menú Hamburguesa para Móviles */
         .menu-toggle {
             display: none;
             background: var(--primary);
@@ -122,7 +119,6 @@
             box-shadow: 0 2px 6px rgba(0,0,0,0.1);
         }
 
-        /* Overlay oscuro cuando el menú está abierto en móviles */
         .sidebar-overlay {
             display: none;
             position: fixed;
@@ -134,11 +130,8 @@
             z-index: 99;
         }
 
-        .sidebar-overlay.active {
-            display: block;
-        }
+        .sidebar-overlay.active { display: block; }
 
-        /* Main Content Styles */
         .main-content {
             padding: 2.5rem;
             overflow-y: auto;
@@ -163,13 +156,8 @@
             gap: 1rem;
         }
 
-        .header h1 {
-            font-size: 1.5rem;
-            color: var(--dark);
-            font-weight: 600;
-        }
+        .header h1 { font-size: 1.5rem; color: var(--dark); font-weight: 600; }
 
-        /* Botón de regresar pequeño en la esquina superior derecha */
         .btn-back-icon {
             display: flex;
             align-items: center;
@@ -187,15 +175,8 @@
             border: 1px solid #dee2e6;
             flex-shrink: 0;
         }
+        .btn-back-icon:hover { background: var(--primary); color: white; border-color: var(--primary); transform: scale(1.05); }
 
-        .btn-back-icon:hover {
-            background: var(--primary);
-            color: white;
-            border-color: var(--primary);
-            transform: scale(1.05);
-        }
-
-        /* Barra de búsqueda superior */
         .search-container {
             display: flex;
             align-items: center;
@@ -206,31 +187,9 @@
             border: 1px solid #dee2e6;
         }
 
-        .search-container input {
-            border: none;
-            background: transparent;
-            outline: none;
-            width: 100%;
-            font-size: 0.9rem;
-            color: var(--dark);
-        }
+        .search-container input { border: none; background: transparent; outline: none; width: 100%; font-size: 0.9rem; color: var(--dark); }
+        .search-container button { background: var(--primary); border: none; color: white; padding: 0.5rem 1.2rem; border-radius: 50px; cursor: pointer; font-weight: 500; }
 
-        .search-container button {
-            background: var(--primary);
-            border: none;
-            color: white;
-            padding: 0.5rem 1.2rem;
-            border-radius: 50px;
-            cursor: pointer;
-            font-weight: 500;
-            transition: 0.2s;
-        }
-
-        .search-container button:hover {
-            background: var(--primary-dark);
-        }
-
-        /* Stats Grid con colores llamativos */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
@@ -246,17 +205,8 @@
             display: flex;
             align-items: center;
             gap: 20px;
-            transition: transform 0.3s ease;
             border-left: 5px solid var(--primary);
         }
-
-        .stat-card:hover {
-            transform: translateY(-5px);
-        }
-
-        .stat-card:nth-child(2) { border-left-color: #f72585; }
-        .stat-card:nth-child(3) { border-left-color: #4cc9f0; }
-        .stat-card:nth-child(4) { border-left-color: #7209b7; }
 
         .stat-icon {
             width: 60px;
@@ -269,33 +219,12 @@
             font-size: 28px;
         }
 
-        .stat-card:nth-child(2) .stat-icon { background: rgba(247, 37, 133, 0.1); }
-        .stat-card:nth-child(3) .stat-icon { background: rgba(76, 201, 240, 0.1); }
-        .stat-card:nth-child(4) .stat-icon { background: rgba(114, 9, 183, 0.1); }
+        .stat-info h3 { color: var(--gray); font-size: 0.85rem; font-weight: 500; margin-bottom: 0.2rem; }
+        .stat-info .number { font-size: 1.75rem; font-weight: 700; color: var(--dark); }
 
-        .stat-info h3 {
-            color: var(--gray);
-            font-size: 0.85rem;
-            font-weight: 500;
-            margin-bottom: 0.2rem;
-        }
+        .section-view { display: none; }
+        .section-view.active { display: block; }
 
-        .stat-info .number {
-            font-size: 1.75rem;
-            font-weight: 700;
-            color: var(--dark);
-        }
-
-        /* Estilos para las vistas o secciones */
-        .section-view {
-            display: none;
-        }
-
-        .section-view.active {
-            display: block;
-        }
-
-        /* Secciones Generales / Tablas */
         .content-card {
             background: white;
             padding: 2rem;
@@ -304,84 +233,22 @@
             margin-bottom: 2rem;
         }
 
-        .content-card h2 {
-            font-size: 1.25rem;
-            color: var(--dark);
-            margin-bottom: 1.2rem;
-            font-weight: 600;
-        }
+        .content-card h2 { font-size: 1.25rem; color: var(--dark); margin-bottom: 1.2rem; font-weight: 600; }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
+        table { width: 100%; border-collapse: collapse; }
+        th { text-align: left; padding: 1rem; background: #f8f9fa; color: var(--gray); font-size: 0.85rem; font-weight: 600; border-bottom: 2px solid #dee2e6; }
+        td { padding: 1rem; border-bottom: 1px solid #f1f3f5; font-size: 0.9rem; color: var(--dark); }
 
-        th {
-            text-align: left;
-            padding: 1rem;
-            background: #f8f9fa;
-            color: var(--gray);
-            font-size: 0.85rem;
-            font-weight: 600;
-            border-bottom: 2px solid #dee2e6;
-        }
+        .status { padding: 0.35rem 0.85rem; border-radius: 50px; font-size: 0.75rem; font-weight: 600; display: inline-block; }
+        .status.confirmed { background: #e8f5e9; color: #2e7d32; }
+        .status.pending { background: #fff8e1; color: #f57f17; }
 
-        td {
-            padding: 1rem;
-            border-bottom: 1px solid #f1f3f5;
-            font-size: 0.9rem;
-            color: var(--dark);
-        }
+        .btn-action { background: var(--primary); color: white; border: none; padding: 0.4rem 1rem; border-radius: 6px; cursor: pointer; font-size: 0.85rem; transition: 0.2s; text-decoration: none; display: inline-block; }
+        .btn-action:hover { background: var(--primary-dark); }
 
-        .status {
-            padding: 0.35rem 0.85rem;
-            border-radius: 50px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            display: inline-block;
-        }
+        .btn-delete { background: var(--danger); color: white; border: none; border-radius: 6px; cursor: pointer; transition: 0.2s; }
+        .btn-delete:hover { background: #d90429; }
 
-        .status.confirmed {
-            background: #e8f5e9;
-            color: #2e7d32;
-        }
-
-        .status.pending {
-            background: #fff8e1;
-            color: #f57f17;
-        }
-
-        .btn-action {
-            background: var(--primary);
-            color: white;
-            border: none;
-            padding: 0.4rem 1rem;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 0.85rem;
-            transition: 0.2s;
-            text-decoration: none;
-            display: inline-block;
-        }
-
-        .btn-action:hover {
-            background: var(--primary-dark);
-        }
-
-        /* Botón de eliminar o cancelar corregido */
-        .btn-delete {
-            background: var(--danger);
-            color: white;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-        .btn-delete:hover {
-            background: #d90429;
-        }
-
-        /* Formulario para emitir certificados */
         .form-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -389,18 +256,8 @@
             margin-bottom: 1.5rem;
         }
 
-        .form-group {
-            display: flex;
-            flex-direction: column;
-            gap: 0.4rem;
-        }
-
-        .form-group label {
-            font-size: 0.85rem;
-            font-weight: 600;
-            color: var(--gray);
-        }
-
+        .form-group { display: flex; flex-direction: column; gap: 0.4rem; }
+        .form-group label { font-size: 0.85rem; font-weight: 600; color: var(--gray); }
         .form-group input, .form-group select, .form-group textarea {
             padding: 0.7rem 1rem;
             border: 1px solid #dee2e6;
@@ -409,153 +266,35 @@
             outline: none;
             transition: border-color 0.2s;
         }
+        .form-group.full-width { grid-column: 1 / -1; }
 
-        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
-            border-color: var(--primary);
-        }
+        .iess-only { display: none; }
+        .iess-active .iess-only { display: flex; }
 
-        .form-group.full-width {
-            grid-column: 1 / -1;
-        }
-
-        /* --- DISEÑO RESPONSIVO CON MENÚ DESPLEGABLE (OFF-CANVAS) --- */
-        @media (max-width: 992px) {
-            .dashboard {
-                grid-template-columns: 1fr;
-            }
-
-            .sidebar {
-                position: fixed;
-                top: 0;
-                left: -280px;
-                width: 260px;
-                height: 100vh;
-                transition: transform 0.3s ease-in-out;
-                z-index: 101;
-            }
-
-            .sidebar.open {
-                transform: translateX(280px);
-            }
-
-            .close-sidebar-btn {
-                display: block;
-            }
-
-            .menu-toggle {
-                display: flex;
-            }
-
-            .main-content {
-                padding: 1.5rem 1rem;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .header {
-                flex-direction: column;
-                align-items: stretch;
-                gap: 1rem;
-                padding: 1rem;
-            }
-
-            .header-left {
-                justify-content: space-between;
-            }
-
-            .search-container {
-                width: 100%;
-            }
-
-            .stats-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .content-card {
-                padding: 1rem;
-                overflow-x: auto;
-            }
-
-            table {
-                min-width: 600px;
-            }
-        }
-        
-        /* Estilos específicos para la Historia Clínica */
-        .hc-header {
-            text-align: center;
-            border-bottom: 2px solid var(--primary);
-            padding-bottom: 1rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .hc-header h2 {
-            color: var(--primary-dark);
-            font-size: 1.3rem;
-        }
-
-        h3 {
-            font-size: 1.05rem;
-            color: var(--primary-dark);
-            margin: 1.5rem 0 0.8rem 0;
-            padding-bottom: 0.3rem;
-            border-bottom: 1px dashed #dee2e6;
-        }
-
-        .antecedentes-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 0.6rem 1rem;
-            background: var(--light-bg);
-            padding: 1rem;
-            border-radius: 8px;
-            border: 1px solid #dee2e6;
-        }
-
-        .checkbox-label {
+        .tabs-container {
             display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 0.82rem;
-            color: var(--dark);
+            gap: 15px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #eef2f5;
+        }
+
+        .tab-btn {
+            background: transparent;
+            border: none;
+            padding: 10px 20px;
+            font-size: 1rem;
+            font-weight: 600;
+            color: #6c757d;
             cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+            margin-bottom: -2px;
         }
+        .tab-btn:hover { color: #3a0ca3; }
+        .tab-btn.active { color: #3a0ca3; border-bottom: 3px solid #3a0ca3; }
 
-        .checkbox-label input {
-            cursor: pointer;
-            width: 15px;
-            height: 15px;
-        }
-
-        .recomendaciones-box {
-            background: #eef2ff;
-            border-left: 4px solid var(--primary);
-            padding: 1rem;
-            border-radius: 0 8px 8px 0;
-            font-size: 0.8rem;
-            color: #334155;
-            margin: 1.5rem 0;
-            line-height: 1.4;
-        }
-
-        .body-test-container {
-            background: var(--light-bg);
-            border: 1px solid #dee2e6;
-            border-radius: 8px;
-            padding: 1.2rem;
-            text-align: center;
-            margin: 1.5rem 0;
-        }
-
-        .body-test-container img {
-            max-width: 100%;
-            height: auto;
-            max-height: 220px;
-            margin: 10px 0;
-            border-radius: 6px;
-            border: 1px solid #dee2e6;
-            background: white;
-        }
+        .checkbox-label { display: flex; align-items: center; gap: 8px; font-size: 0.82rem; color: var(--dark); cursor: pointer; }
+        .checkbox-label input { cursor: pointer; width: 15px; height: 15px; }
 
         .tratamiento-grid {
             display: grid;
@@ -567,70 +306,18 @@
             border: 1px solid #f0abfc;
         }
 
+        .hc-header { text-align: center; border-bottom: 2px solid var(--primary); padding-bottom: 1rem; margin-bottom: 1.5rem; }
+        .hc-header h2 { color: var(--primary-dark); font-size: 1.3rem; }
+
+        h3 { font-size: 1.05rem; color: var(--primary-dark); margin: 1.5rem 0 0.8rem 0; padding-bottom: 0.3rem; border-bottom: 1px dashed #dee2e6; }
+
         @media (max-width: 992px) {
-            .dashboard {
-                grid-template-columns: 1fr;
-            }
-
-            .sidebar {
-                position: fixed;
-                top: 0;
-                left: -280px;
-                width: 260px;
-                height: 100vh;
-                transition: transform 0.3s ease-in-out;
-                z-index: 101;
-            }
-
-            .sidebar.open {
-                transform: translateX(280px);
-            }
-
-            .close-sidebar-btn {
-                display: block;
-            }
-
-            .menu-toggle {
-                display: flex;
-            }
-
-            .main-content {
-                padding: 1.5rem 1rem;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .header {
-                flex-direction: column;
-                align-items: stretch;
-                gap: 1rem;
-                padding: 1rem;
-            }
-
-            .header-left {
-                justify-content: space-between;
-            }
-
-            .search-container {
-                width: 100%;
-            }
-
-            .stats-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .content-card {
-                padding: 1rem;
-                overflow-x: auto;
-            }
-
-            table {
-                min-width: 600px;
-            }
-
-            .antecedentes-grid, .tratamiento-grid {
-                grid-template-columns: 1fr;
-            }
+            .dashboard { grid-template-columns: 1fr; }
+            .sidebar { position: fixed; top: 0; left: -280px; width: 260px; height: 100vh; transition: transform 0.3s ease-in-out; z-index: 101; }
+            .sidebar.open { transform: translateX(280px); }
+            .close-sidebar-btn { display: block; }
+            .menu-toggle { display: flex; }
+            .main-content { padding: 1.5rem 1rem; }
         }
     </style>
 </head>
@@ -675,10 +362,11 @@
             </div>
                 
             <!-- VISTA 1: PANEL PRINCIPAL (DASHBOARD) -->
+            <!-- VISTA 1: PANEL PRINCIPAL -->
             <div id="dashboard-view" class="section-view active">
                 <div class="stats-grid">
                     <div class="stat-card">
-                        <div class="stat-icon">👣</div>
+                        <div class="stat-icon">👥</div>
                         <div class="stat-info">
                             <h3>Total Pacientes</h3>
                             <div class="number">128</div>
@@ -1090,40 +778,177 @@
             </div>
             
             <!-- VISTA: CERTIFICADOS -->
+<!-- VISTA: CERTIFICADOS -->
             <div id="certificados-view" class="section-view">
-                <div class="content-card">
-                    <h2>Emitir Nuevo Certificado de Rehabilitación / Fisioterapia</h2>
-                    <form onsubmit="event.preventDefault(); alert('Certificado generado correctamente');">
+                <div class="content-card" id="cardCertificadoContainer">
+                    <h2>Emisión y Registro de Certificados Clínicos</h2>
+                    <p style="color: var(--gray); margin-bottom: 1.5rem;">Gestione los certificados y mantenga actualizado el archivo maestro en Excel.</p>
+                    
+                    <div class="tabs-container">
+                        <button type="button" class="tab-btn active" id="tab-normal" onclick="cambiarPestañaFormato('normal')">Certificado Fisioterapéutico</button>
+                        <button type="button" class="tab-btn" id="tab-iess" onclick="cambiarPestañaFormato('iess')">Certificado Formato IESS / MSP</button>
+                    </div>
+
+                    <form id="formCertificado" onsubmit="guardarYEmitirCertificado(event)">
+                        <input type="hidden" id="certFormato" value="normal">
+
                         <div class="form-grid">
                             <div class="form-group">
-                                <label>Cédula del Paciente</label>
-                                <input type="text" placeholder="Ej. 1723456789" required>
+                                <label>Fecha de Emisión:</label>
+                                <input type="date" id="certFecha" required>
                             </div>
                             <div class="form-group">
-                                <label>Apellidos y Nombres</label>
-                                <input type="text" placeholder="Ej. Alami Sofia" required>
+                                <label>Cédula / Pasaporte:</label>
+                                <input type="text" id="certCedula" placeholder="Ej. 1713031167" required>
                             </div>
+                            <div class="form-group full-width">
+                                <label>Apellidos y Nombres Completos:</label>
+                                <input type="text" id="certNombres" placeholder="Ej. TOAPANTA BOLAÑOS JORDAN DANY" required>
+                            </div>
+
+                            <!-- CAMPOS EXCLUSIVOS PARA FORMATO IESS / MSP -->
+                            <div class="form-group iess-only">
+                                <label>Dirección Domiciliaria:</label>
+                                <input type="text" id="certDireccionDom" placeholder="Ej. Solanda Sector 2">
+                            </div>
+                            <div class="form-group iess-only">
+                                <label>Teléfono Paciente:</label>
+                                <input type="tel" id="certTelPaciente" placeholder="Ej. 0995675273">
+                            </div>
+                            <div class="form-group iess-only">
+                                <label>Correo Emisor Certificado (Médico):</label>
+                                <input type="email" id="certEmailEmisor" placeholder="Ej. v.estrella@fisiolab.st" value="especialidades.prolab@gmail.com">
+                            </div>
+                            <div class="form-group iess-only">
+                                <label>Teléfono Emisor Certificado:</label>
+                                <input type="tel" id="certTelEmisor" placeholder="Ej. 0995675273" value="099825746">
+                            </div>
+                            <div class="form-group iess-only">
+                                <label>Institución / Empresa:</label>
+                                <input type="text" id="certInstitucion" placeholder="Ej. Ministerio de Educación">
+                            </div>
+                            <div class="form-group iess-only">
+                                <label>Puesto de Trabajo del Paciente:</label>
+                                <input type="text" id="certPuesto" placeholder="Ej. Asistente Administrativo">
+                            </div>
+                            <div class="form-group iess-only">
+                                <label>Dirección Empresa (Calles y Número):</label>
+                                <input type="text" id="certDirEmpresa" placeholder="Ej. Av. Amazonas N34-451 y República">
+                            </div>
+                            <div class="form-group iess-only">
+                                <label>Teléfono Empresa:</label>
+                                <input type="tel" id="certTelEmpresa" placeholder="Ej. 022456789">
+                            </div>
+                            <div class="form-group iess-only">
+                                <label>Correo Empresa (Opcional):</label>
+                                <input type="email" id="certCorreoEmpresa" placeholder="Ej. contacto@empresa.gob.ec">
+                            </div>
+                            <div class="form-group iess-only">
+                                <label>Dirección Establecimiento de Salud:</label>
+                                <input type="text" id="certDirEstablecimiento" placeholder="Ej. Solanda, Gaspar Esparza y B. Rincón" value="Magdalena, Duchicela y Caranqui Oe5-85">
+                            </div>
+
                             <div class="form-group">
-                                <label>Tipo de Certificado</label>
-                                <select>
-                                    <option>Certificado de Asistencia a Terapia</option>
-                                    <option>Aptitud Física para Deporte</option>
-                                    <option>Reposo Médico / Fisiátrico</option>
+                                <label>Tipo de Certificado:</label>
+                                <select id="certTipo">
+                                    <option>Certificado Fisioterapéutico</option>
+                                    <option>Aptitud Física</option>
+                                    <option>Reposo Médico</option>
                                 </select>
                             </div>
                             <div class="form-group">
-                                <label>Días de Reposo / Sesiones</label>
-                                <input type="number" placeholder="Ej. 10 sesiones">
+                                <label>Días de Reposo / Sesiones (Número):</label>
+                                <input type="number" id="certDias" value="2" min="1" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Código CIE-10:</label>
+                                <input type="text" id="certCie" placeholder="Ej. M54.5" required>
                             </div>
                             <div class="form-group full-width">
-                                <label>Diagnóstico / Observaciones Clínicas</label>
-                                <textarea rows="3" placeholder="Detalle la condición o motivo del certificado..."></textarea>
+                                <label>Diagnóstico:</label>
+                                <input type="text" id="certDiagnostico" placeholder="Ej. LUMBAGO NO ESPECIFICADO..." required>
+                            </div>
+                            <div class="form-group">
+                                <label>Fecha de Inicio de Síntomas (FIS) / Desde:</label>
+                                <input type="date" id="certFechaInicio" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Horario de Atención:</label>
+                                <input type="text" id="certHorario" placeholder="Ej. 10h30" required>
+                            </div>
+
+                            <!-- SÍNTOMAS EXCLUSIVOS IESS / MSP -->
+                            <div class="form-group full-width iess-only">
+                                <label>Presenta Síntomas / Cuadro Clínico / Descripción Enfermedad:</label>
+                                <input type="text" id="certSintomas" placeholder="Ej. -Dolor Lumbar - Rigidez muscular">
                             </div>
                         </div>
-                        <button type="submit" class="btn-action" style="padding: 0.7rem 1.5rem; font-size: 0.95rem;">Generar e Imprimir Certificado</button>
+
+                        <!-- MODALIDADES Y TÉCNICAS APLICADAS -->
+                        <div class="form-group full-width" style="margin-top: 1rem;">
+                            <label style="font-weight:600; color:var(--dark);">Modalidades y Técnicas Aplicadas (Seleccione una o varias):</label>
+                            <div class="tratamiento-grid" style="margin-top: 0.5rem;">
+                                <label class="checkbox-label"><input type="checkbox" class="cert-medios" value="TENS"> TENS</label>
+                                <label class="checkbox-label"><input type="checkbox" class="cert-medios" value="crioterapia"> Crioterapia</label>
+                                <label class="checkbox-label"><input type="checkbox" class="cert-medios" value="termoterapia"> Termoterapia</label>
+                                <label class="checkbox-label"><input type="checkbox" class="cert-medios" value="US"> US (Ultrasonido)</label>
+                                <label class="checkbox-label"><input type="checkbox" class="cert-medios" value="masaje"> Masaje</label>
+                                <label class="checkbox-label"><input type="checkbox" class="cert-medios" value="ejercicios terapéuticos"> Ejercicios terapéuticos</label>
+                                <label class="checkbox-label"><input type="checkbox" class="cert-medios" value="Electroestimulación"> Electroestimulación</label>
+                                <label class="checkbox-label"><input type="checkbox" class="cert-medios" value="Magnetoterapia"> Magnetoterapia</label>
+                                <label class="checkbox-label"><input type="checkbox" class="cert-medios" value="Láser"> Láser</label>
+                                <label class="checkbox-label"><input type="checkbox" class="cert-medios" value="Terapia Manual"> Terapia Manual</label>
+                                <label class="checkbox-label"><input type="checkbox" class="cert-medios" value="Propiocepción"> Propiocepción</label>
+                                <label class="checkbox-label"><input type="checkbox" class="cert-medios" value="Movilidad articular"> Movilidad articular</label>
+                            </div>
+                        </div>
+
+                        <!-- CAMPO ADICIONAL ANTES DE OBSERVACIÓN -->
+                        <div class="form-grid" style="margin-top: 1.2rem;">
+                            <div class="form-group">
+                                <label>Subtítulo opcional (Ej. Justificación / Indicación):</label>
+                                <input type="text" id="certSubtitulo" placeholder="Ej. Observación Especial">
+                            </div>
+                            <div class="form-group">
+                                <label>Texto de justificación:</label>
+                                <input type="text" id="certTextoAdicional" placeholder="Texto descriptivo si fuera necesario...">
+                            </div>
+                        </div>
+
+                        <div class="form-group full-width" style="margin-top: 1rem;">
+                            <label>Observaciones:</label>
+                            <textarea id="certObservaciones" rows="3" placeholder="Ej. Mantener reposo relativo..."></textarea>
+                        </div>
+
+                        <div style="display: flex; gap: 10px; margin-top: 15px; flex-wrap: wrap;">
+                            <button type="submit" class="btn-action" style="padding: 0.7rem 1.5rem; font-size: 0.95rem;">Guardar e Imprimir Certificado (PDF)</button>
+                            <button type="button" onclick="exportCertificadosToExcel()" class="btn-action" style="background: #2b9348; padding: 0.7rem 1.5rem; font-size: 0.95rem;">📊 Descargar / Actualizar Excel Único</button>
+                        </div>
                     </form>
                 </div>
+
+                <div class="content-card">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.2rem; flex-wrap: wrap; gap: 1rem;">
+                        <h2 style="margin-bottom: 0;">Historial de Certificados Emitidos</h2>
+                        <div class="search-container" style="width: 320px;">
+                            <input type="text" id="searchCertInput" placeholder="Buscar por cédula o nombre..." onkeyup="filtrarCertificados()">
+                            <button onclick="filtrarCertificados()">🔍</button>
+                        </div>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr><th>Fecha</th><th>Cédula</th><th>Paciente</th><th>Tipo</th><th>Reposo (Días)</th><th>Acciones</th></tr>
+                        </thead>
+                        <tbody id="tablaCertificadosBody"></tbody>
+                    </table>
+                </div>
             </div>
+
+            <div id="citas-view" class="section-view"><div class="content-card"><h2>Calendario y Citas Médicas</h2></div></div>
+            <div id="recetas-view" class="section-view"><div class="content-card"><h2>Recetas e Indicaciones Médicas</h2></div></div>
+            <div id="informes-view" class="section-view"><div class="content-card"><h2>Informes Estadísticos y Clínicos</h2></div></div>
+        </div>
+    </div>
 
             <!-- OTRAS VISTAS DE NAVEGACIÓN -->
             <div id="citas-view" class="section-view">
@@ -1395,7 +1220,521 @@
             alert("¡Historia Clínica profesional generada con éxito!");
         }
     }
-        
+    
+    // --- certificados ---
+    // --- INICIALIZACIÓN GLOBAL SEGURA ---
+        let certificados = JSON.parse(localStorage.getItem("lab_certificados")) || [];
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const hoy = new Date().toISOString().split('T')[0];
+            if(document.getElementById('certFecha')) document.getElementById('certFecha').value = hoy;
+            if(document.getElementById('certFechaInicio')) document.getElementById('certFechaInicio').value = hoy;
+            renderCertificados();
+        });
+
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('open');
+            document.getElementById('sidebarOverlay').classList.toggle('active');
+        }
+
+        function toggleSidebarMobile() {
+            if (window.innerWidth <= 992) toggleSidebar();
+        }
+
+        function switchTab(event, viewId) {
+            event.preventDefault();
+            document.querySelectorAll('.section-view').forEach(view => view.classList.remove('active'));
+            document.getElementById(viewId).classList.add('active');
+            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+        }
+
+        function buscarPaciente() {
+            const query = document.getElementById('searchInput').value.trim();
+            if(query) alert("Buscando paciente: " + query);
+        }
+
+        function cambiarPestañaFormato(formato) {
+            document.getElementById('certFormato').value = formato;
+            document.getElementById('tab-normal').classList.remove('active');
+            document.getElementById('tab-iess').classList.remove('active');
+            
+            const contenedorCard = document.getElementById('cardCertificadoContainer');
+
+            if(formato === 'normal') {
+                document.getElementById('tab-normal').classList.add('active');
+                contenedorCard.classList.remove('iess-active');
+            } else {
+                document.getElementById('tab-iess').classList.add('active');
+                contenedorCard.classList.add('iess-active');
+            }
+        }
+
+        function numeroALetras(num) {
+            const unidades = ['', 'UN', 'DOS', 'TRES', 'CUATRO', 'CINCO', 'SEIS', 'SIETE', 'OCHO', 'NUEVE', 'DIEZ', 'ONCE', 'DOCE', 'TRECE', 'CATORCE', 'QUINCE', 'DIECISÉIS', 'DIECISIETE', 'DIECIOCHO', 'DIECINUEVE', 'VEINTE'];
+            const decenas = ['', '', 'VEINTI', 'TREINTA', 'CUARENTA', 'CINCUENTA', 'SESENTA', 'SETENTA', 'OCHENTA', 'NOVENTA'];
+            const centenas = ['', 'CIENTO', 'DOSCIENTOS', 'TRESCIENTOS', 'CUATROCIENTOS', 'QUINIENTOS', 'SEISCIENTOS', 'SETECIENTOS', 'OCHOCIENTOS', 'NOVECIENTOS'];
+
+            if (num === 0) return 'CERO';
+            if (num <= 20) return unidades[num];
+            if (num < 30) return 'VEINTI' + unidades[num - 20];
+            if (num < 100) {
+                let d = Math.floor(num / 10);
+                let u = num % 10;
+                return decenas[d] + (u > 0 ? ' Y ' + unidades[u] : '');
+            }
+            if (num < 1000) {
+                let c = Math.floor(num / 100);
+                let resto = num % 100;
+                if (num === 100) return 'CIEN';
+                return centenas[c] + (resto > 0 ? ' ' + numeroALetras(resto) : '');
+            }
+            if (num < 2000) return 'MIL ' + numeroALetras(num - 1000);
+            if (num < 1000000) {
+                let m = Math.floor(num / 1000);
+                let resto = num % 1000;
+                return (m === 1 ? 'UN MIL' : numeroALetras(m) + ' MIL') + (resto > 0 ? ' ' + numeroALetras(resto) : '');
+            }
+            return num.toString();
+        }
+
+        function convertirFechaALetras(fechaStr) {
+            if(!fechaStr) return "";
+            const partes = fechaStr.split("-");
+            const anio = parseInt(partes[0], 10);
+            const mesIndex = parseInt(partes[1], 10) - 1;
+            const dia = parseInt(partes[2], 10);
+            const meses = ["ENERO", "FEBRERO", "MARZO", "ABRIL", "MAYO", "JUNIO", "JULIO", "AGOSTO", "SEPTIEMBRE", "OCTUBRE", "NOVIEMBRE", "DICIEMBRE"];
+            
+            let diaLetras = numeroALetras(dia);
+            let anioLetras = numeroALetras(anio);
+            return `${diaLetras} DE ${meses[mesIndex]} DEL ${anioLetras}`;
+        }
+
+        function guardarYEmitirCertificado(event) {
+            event.preventDefault();
+
+            const cedula = document.getElementById("certCedula").value.trim();
+            const fecha = document.getElementById("certFecha").value;
+            const tipo = document.getElementById("certTipo").value;
+            const nombres = document.getElementById("certNombres").value.trim();
+            const dias = document.getElementById("certDias").value.trim() || "1";
+            const cie = document.getElementById("certCie").value.trim();
+            const diagnostico = document.getElementById("certDiagnostico").value.trim();
+            const fechaInicio = document.getElementById("certFechaInicio").value;
+            const horario = document.getElementById("certHorario").value.trim();
+            const observaciones = document.getElementById("certObservaciones").value.trim();
+            
+            const institucion = document.getElementById("certInstitucion").value.trim();
+            const puesto = document.getElementById("certPuesto").value.trim();
+            const direccionDom = document.getElementById("certDireccionDom").value.trim();
+            const telPaciente = document.getElementById("certTelPaciente").value.trim();
+            const emailEmisor = document.getElementById("certEmailEmisor").value.trim();
+            const telEmisor = document.getElementById("certTelEmisor").value.trim();
+            const dirEstablecimiento = document.getElementById("certDirEstablecimiento").value.trim();
+            const dirEmpresa = document.getElementById("certDirEmpresa").value.trim();
+            const telEmpresa = document.getElementById("certTelEmpresa").value.trim();
+            const correoEmpresa = document.getElementById("certCorreoEmpresa").value.trim();
+            const sintomas = document.getElementById("certSintomas").value.trim();
+            
+            const subtitulo = document.getElementById("certSubtitulo").value.trim();
+            const textoAdicional = document.getElementById("certTextoAdicional").value.trim();
+            const formato = document.getElementById("certFormato").value.toUpperCase();
+
+            let diasNum = parseInt(dias) || 1;
+            let partesF = fechaInicio.split("-");
+            let fInicioObj = new Date(partesF[0], partesF[1] - 1, partesF[2]);
+            let fFinObj = new Date(fInicioObj);
+            fFinObj.setDate(fFinObj.getDate() + diasNum - 1);
+
+            let anioFin = fFinObj.getFullYear();
+            let mesFin = String(fFinObj.getMonth() + 1).padStart(2, '0');
+            let diaFin = String(fFinObj.getDate()).padStart(2, '0');
+            let fechaFinStr = `${anioFin}-${mesFin}-${diaFin}`;
+
+            const diasLetras = `${dias} (${numeroALetras(diasNum)})`;
+            const desdeLetras = `(${fechaInicio}) ${convertirFechaALetras(fechaInicio)}`;
+            const hastaLetras = `(${fechaFinStr}) ${convertirFechaALetras(fechaFinStr)}`;
+
+            const mediosSeleccionados = Array.from(document.querySelectorAll('.cert-medios:checked')).map(el => el.value);
+            const mediosTexto = mediosSeleccionados.length > 0 ? mediosSeleccionados.join(', ') : 'ejercicios terapéuticos';
+
+            const indexExistente = certificados.findIndex(c => c.cedula === cedula && c.fecha === fecha && c.tipo === tipo);
+            if (indexExistente !== -1) {
+                if (!confirm("Ya existe un certificado con esta fecha. ¿Desea reemplazarlo?")) return;
+                certificados.splice(indexExistente, 1);
+            }
+
+            const nuevoCertificado = { 
+                formato, fecha, cedula, nombres, tipo, dias, diasLetras, cie, diagnostico, 
+                fechaInicio, fechaFin: fechaFinStr, desdeLetras, hastaLetras, horario, observaciones, 
+                institucion, puesto, direccionDom, telPaciente, emailEmisor, telEmisor, 
+                dirEstablecimiento, dirEmpresa, telEmpresa, correoEmpresa, sintomas, subtitulo, textoAdicional, medios: mediosTexto 
+            };
+
+            certificados.push(nuevoCertificado);
+            persistCertificados();
+            renderCertificados();
+            generarPDFCertificado(nuevoCertificado);
+            
+            document.getElementById("formCertificado").reset();
+            document.getElementById('certFecha').value = new Date().toISOString().split('T')[0];
+            document.getElementById('certFechaInicio').value = new Date().toISOString().split('T')[0];
+            alert("¡Certificado guardado e impreso con éxito!");
+        }
+
+        function renderCertificados(listaAFiltrar = null) {
+            const tbody = document.getElementById("tablaCertificadosBody");
+            if (!tbody) return;
+            tbody.innerHTML = "";
+            const datosAMostrar = listaAFiltrar || certificados;
+            if (datosAMostrar.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--gray);">No hay certificados registrados.</td></tr>`;
+                return;
+            }
+            datosAMostrar.forEach((cert) => {
+                const realIndex = certificados.indexOf(cert);
+                const row = tbody.insertRow();
+                row.innerHTML = `
+                    <td>${cert.fecha}</td>
+                    <td>${cert.cedula}</td>
+                    <td>${cert.nombres}</td>
+                    <td>${cert.tipo}</td>
+                    <td><span class="status confirmed">${cert.dias}</span></td>
+                    <td>
+                        <button class="btn-action" style="padding: 0.3rem 0.6rem; font-size: 0.8rem;" onclick="reimprimirCertificado(${realIndex})">Imprimir</button>
+                        <button class="btn-delete" style="padding: 0.3rem 0.6rem; font-size: 0.8rem;" onclick="deleteCertificado(${realIndex})">Eliminar</button>
+                    </td>
+                `;
+            });
+        }
+
+        function filtrarCertificados() {
+            const query = document.getElementById("searchCertInput").value.trim().toLowerCase();
+            if (!query) return renderCertificados(certificados);
+            renderCertificados(certificados.filter(cert => cert.cedula.toLowerCase().includes(query) || cert.nombres.toLowerCase().includes(query)));
+        }
+
+        function deleteCertificado(index) {
+            if (confirm("¿Está seguro de eliminar este registro?")) {
+                certificados.splice(index, 1);
+                persistCertificados();
+                renderCertificados();
+            }
+        }
+
+        function persistCertificados() { localStorage.setItem("lab_certificados", JSON.stringify(certificados)); }
+
+        function exportCertificadosToExcel() {
+            if (certificados.length === 0) { alert("No hay certificados para exportar."); return; }
+            const worksheet = XLSX.utils.json_to_sheet(certificados.map(c => ({
+                "Cédula": c.cedula, "Nombres": c.nombres, "Fecha": c.fecha, "Tipo": c.tipo, "Días": c.dias, "CIE-10": c.cie, "Diagnóstico": c.diagnostico
+            })));
+            const workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, worksheet, "Registro");
+            XLSX.writeFile(workbook, "certiticadofisiolab.xlsx");
+        }
+
+        function reimprimirCertificado(index) { generarPDFCertificado(certificados[index]); }
+
+        function generarPDFCertificado(cert) {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            function formatearFechaTexto(fechaStr) {
+                if(!fechaStr) return "";
+                const partes = fechaStr.split("-");
+                const anio = parseInt(partes[0], 10);
+                const mesIndex = parseInt(partes[1], 10) - 1;
+                const dia = parseInt(partes[2], 10);
+                const meses = ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"];
+                return `${dia} de ${meses[mesIndex]} del ${anio}`;
+            }
+
+            const fechaEmisionTexto = formatearFechaTexto(cert.fecha);
+            const nombresCapitalizados = cert.nombres.replace(/\b\w/g, l => l.toUpperCase());
+            const mediosAplicados = cert.medios || "TENS, crioterapia, termoterapia, US, masaje y ejercicios terapéuticos";
+
+            const imgLogo = new Image();
+            imgLogo.crossOrigin = "Anonymous";
+            imgLogo.src = '../img/logFisior.png';
+
+            imgLogo.onload = function() {
+                try { doc.addImage(imgLogo, 'PNG', 14, 10, 24, 24); } catch(e){}
+                crearEstructuraPDF();
+            };
+            imgLogo.onerror = function() { crearEstructuraPDF(); };
+            if (imgLogo.complete) {
+                try { doc.addImage(imgLogo, 'PNG', 14, 10, 24, 24); } catch(e){}
+                crearEstructuraPDF();
+            }
+
+            function crearEstructuraPDF() {
+                // Encabezado institucional estilo oficial MSP
+                doc.setFont("helvetica", "bold");
+                doc.setFontSize(10);
+                doc.setTextColor(200, 0, 0);
+                doc.text("DIRECCIÓN DISTRITAL 13D05 SALUD", 105, 14, { align: "center" });
+                doc.text("NOMBRE DE UNIDAD DE SALUD", 105, 19, { align: "center" });
+                
+                doc.setFont("helvetica", "bold");
+                doc.setFontSize(11);
+                doc.setTextColor(58, 12, 163);
+                doc.text("CERTIFICADO MÉDICO", 105, 27, { align: "center" });
+
+                doc.setLineWidth(0.4);
+                doc.setDrawColor(200, 200, 200);
+                doc.line(14, 31, 196, 31);
+
+                if (cert.formato === 'IESS') {
+                    let y = 37;
+                    const margenRespuesta = 96; // Margen izquierdo unificado para todas las respuestas
+
+                    // A) DATOS DEL ESTABLECIMIENTO DE SALUD
+                    doc.setFillColor(241, 243, 245);
+                    doc.rect(14, y, 182, 5.5, 'F');
+                    doc.setFont("helvetica", "bold");
+                    doc.setFontSize(8.5);
+                    doc.setTextColor(58, 12, 163);
+                    doc.text("A) DATOS DEL ESTABLECIMIENTO DE SALUD", 16, y + 4);
+
+                    y += 9;
+                    doc.setFontSize(8.5);
+                    doc.setTextColor(40, 40, 40);
+
+                    doc.setFont("helvetica", "bold");
+                    doc.text("Nombre del establecimiento:", 14, y);
+                    doc.setFont("helvetica", "normal");
+                    doc.text("Centro de Rehabilitación Física Fisiolab.st", margenRespuesta, y);
+
+                    y += 6;
+                    doc.setFont("helvetica", "bold");
+                    doc.text("Correo electrónico del médico emisor:", 14, y);
+                    doc.setFont("helvetica", "normal");
+                    doc.text(`${cert.emailEmisor || 'especialidades.prolab@gmail.com'}`, margenRespuesta, y);
+
+                    y += 6;
+                    doc.setFont("helvetica", "bold");
+                    doc.text("Teléfono del emisor del certificado:", 14, y);
+                    doc.setFont("helvetica", "normal");
+                    doc.text(`${cert.telEmisor || '099825746'}`, margenRespuesta, y);
+
+                    y += 6;
+                    doc.setFont("helvetica", "bold");
+                    doc.text("Dirección del establecimiento de salud:", 14, y);
+                    doc.setFont("helvetica", "normal");
+                    doc.text(`${cert.dirEstablecimiento || 'Magdalena, Duchicela y Caranqui'}`, margenRespuesta, y);
+
+                    y += 6;
+                    doc.setFont("helvetica", "bold");
+                    doc.text("Lugar y fecha de emisión:", 14, y);
+                    doc.setFont("helvetica", "normal");
+                    doc.text(`Quito, ${fechaEmisionTexto}`, margenRespuesta, y);
+
+                    // B) DATOS DEL PACIENTE
+                    y += 9;
+                    doc.setFillColor(241, 243, 245);
+                    doc.rect(14, y, 182, 5.5, 'F');
+                    doc.setFont("helvetica", "bold");
+                    doc.setFontSize(8.5);
+                    doc.setTextColor(58, 12, 163);
+                    doc.text("B) DATOS DEL PACIENTE", 16, y + 4);
+
+                    y += 9;
+                    doc.setTextColor(40, 40, 40);
+
+                    doc.setFont("helvetica", "bold");
+                    doc.text("Apellidos y nombres completos:", 14, y);
+                    doc.setFont("helvetica", "normal");
+                    doc.text(`${nombresCapitalizados}`, margenRespuesta, y);
+
+                    y += 6;
+                    doc.setFont("helvetica", "bold");
+                    doc.text("Dirección Domiciliaria:", 14, y);
+                    doc.setFont("helvetica", "normal");
+                    doc.text(`${cert.direccionDom || 'N/D'}`, margenRespuesta, y);
+
+                    y += 6;
+                    doc.setFont("helvetica", "bold");
+                    doc.text("Número de teléfono:", 14, y);
+                    doc.setFont("helvetica", "normal");
+                    doc.text(`${cert.telPaciente || 'N/D'}`, margenRespuesta, y);
+
+                    y += 6;
+                    doc.setFont("helvetica", "bold");
+                    doc.text("Institución o empresa:", 14, y);
+                    doc.setFont("helvetica", "normal");
+                    doc.text(`${cert.institucion || 'N/D'}`, margenRespuesta, y);
+
+                    y += 6;
+                    doc.setFont("helvetica", "bold");
+                    doc.text("Puesto de trabajo del paciente:", 14, y);
+                    doc.setFont("helvetica", "normal");
+                    doc.text(`${cert.puesto || 'N/D'}`, margenRespuesta, y);
+
+                    y += 6;
+                    doc.setFont("helvetica", "bold");
+                    doc.text("Dirección de la empresa:", 14, y);
+                    doc.setFont("helvetica", "normal");
+                    doc.text(`${cert.dirEmpresa || 'N/D'}`, margenRespuesta, y, { maxWidth: 100 });
+
+                    y += 6;
+                    doc.setFont("helvetica", "bold");
+                    doc.text("Teléfono empresa:", 14, y);
+                    doc.setFont("helvetica", "normal");
+                    doc.text(`${cert.telEmpresa || 'N/D'}`, margenRespuesta, y);
+
+                    if (cert.correoEmpresa) {
+                        y += 6;
+                        doc.setFont("helvetica", "bold");
+                        doc.text("Correo electrónico empresa:", 14, y);
+                        doc.setFont("helvetica", "normal");
+                        doc.text(`${cert.correoEmpresa}`, margenRespuesta, y);
+                    }
+
+                    y += 6;
+                    doc.setFont("helvetica", "bold");
+                    doc.text("Número de Cédula:", 14, y);
+                    doc.setFont("helvetica", "normal");
+                    doc.text(`${cert.cedula}`, margenRespuesta, y);
+
+                    y += 6;
+                    doc.setFont("helvetica", "bold");
+                    doc.text("Número de Historia Clínica:", 14, y);
+                    doc.setFont("helvetica", "normal");
+                    doc.text(`${cert.cedula}`, margenRespuesta, y);
+
+                    // C) MOTIVO DE AISLAMIENTO / ENFERMEDAD
+                    y += 9;
+                    doc.setFillColor(241, 243, 245);
+                    doc.rect(14, y, 182, 5.5, 'F');
+                    doc.setFont("helvetica", "bold");
+                    doc.setFontSize(8.5);
+                    doc.setTextColor(58, 12, 163);
+                    doc.text("C) MOTIVO DE AISLAMIENTO / ENFERMEDAD", 16, y + 4);
+
+                    y += 9;
+                    doc.setTextColor(40, 40, 40);
+
+                    doc.setFont("helvetica", "bold");
+                    doc.text("Diagnóstico:", 14, y);
+                    doc.setFont("helvetica", "normal");
+                    doc.text(`${cert.diagnostico}`, margenRespuesta, y);
+
+                    y += 6;
+                    doc.setFont("helvetica", "bold");
+                    doc.text("Código CIE10:", 14, y);
+                    doc.setFont("helvetica", "normal");
+                    doc.text(`${cert.cie}`, margenRespuesta, y);
+
+                    y += 6;
+                    doc.setFont("helvetica", "bold");
+                    doc.text("Presenta Síntomas:", 14, y);
+                    doc.setFont("helvetica", "normal");
+                    doc.text("SI [ X ]   NO [   ]", margenRespuesta, y);
+
+                    y += 6;
+                    doc.setFont("helvetica", "bold");
+                    doc.text("Enfermedad:", 14, y);
+                    doc.setFont("helvetica", "normal");
+                    doc.text("[ X ]      Aislamiento/teletrabajo: [   ]", margenRespuesta, y);
+
+                    y += 6;
+                    doc.setFont("helvetica", "bold");
+                    doc.text("Tipo de Contingencia:", 14, y);
+                    doc.setFont("helvetica", "normal");
+                    doc.text("ENFERMEDAD GENERAL", margenRespuesta, y);
+
+                    y += 6;
+                    doc.setFont("helvetica", "bold");
+                    doc.text("Descripción enfermedad / síntomas:", 14, y);
+                    y += 5;
+                    doc.setFont("helvetica", "normal");
+                    doc.text(`${cert.sintomas || '-Dolor localizado -Limitación funcional'}`, 14, y, { maxWidth: 180 });
+
+                    y += 8;
+                    doc.setFont("helvetica", "bold");
+                    doc.text("Total de días concedidos:", 14, y);
+                    doc.setFont("helvetica", "normal");
+                    doc.text(`${cert.diasLetras}`, margenRespuesta, y);
+
+                    y += 6;
+                    doc.setFont("helvetica", "bold");
+                    doc.text("Desde:", 14, y);
+                    doc.setFont("helvetica", "normal");
+                    doc.text(`${cert.desdeLetras}`, margenRespuesta, y);
+
+                    y += 6;
+                    doc.setFont("helvetica", "bold");
+                    doc.text("Hasta:", 14, y);
+                    doc.setFont("helvetica", "normal");
+                    doc.text(`${cert.hastaLetras}`, margenRespuesta, y);
+
+                    y += 6;
+                    doc.setFont("helvetica", "bold");
+                    doc.text("Tratamiento aplicado:", 14, y);
+                    doc.setFont("helvetica", "normal");
+                    doc.text(`${mediosAplicados}`, margenRespuesta, y, { maxWidth: 95 });
+
+                    if (cert.observaciones) {
+                        y += 7;
+                        doc.setFont("helvetica", "bold");
+                        doc.text("OBSERVACIÓN:", 14, y);
+                        y += 5;
+                        doc.setFont("helvetica", "normal");
+                        doc.text(cert.observaciones, 14, y, { maxWidth: 180 });
+                    }
+
+                    // Bloque de Firma Profesional
+                    doc.line(60, 240, 150, 240);
+                    doc.setFont("helvetica", "bold");
+                    doc.text("Lda. Veronica Estrella", 105, 245, { align: "center" });
+                    doc.setFont("helvetica", "normal");
+                    doc.text("C.I.: 172006269-2  |  Reg. Prof. 172006269-2", 105, 250, { align: "center" });
+                    doc.text("Fisioterapeuta - Fisiolab.st", 105, 255, { align: "center" });
+
+                    // Advertencia legal exacta solicitada (cursiva tamaño 10)
+                    doc.setFont("helvetica", "italic");
+                    doc.setFontSize(10);
+                    doc.setTextColor(80, 80, 80);
+                    doc.text("El presente documento debe ser admitido acorde a los requisitos y análisis médico solicitado. En caso de información falsa o alteración se procederá de acuerdo con el Código Orgánico Integral Penal (Art. 328).", 105, 268, { maxWidth: 180, align: "center" });
+
+                } else {
+                    // Formato Normal Fisioterapéutico Profesional
+                    doc.setFont("helvetica", "bold");
+                    doc.setFontSize(14);
+                    doc.setTextColor(58, 12, 163);
+                    doc.text("Certificado Fisioterapéutico", 105, 42, { align: "center" });
+
+                    doc.setFont("helvetica", "normal");
+                    doc.setFontSize(11);
+                    doc.setTextColor(40, 40, 40);
+
+                    let textoCertificado = `Certifico que el/la paciente ${nombresCapitalizados}, portador(a) de la cédula de ciudadanía N° ${cert.cedula}, se encuentra recibiendo tratamiento fisioterapéutico en nuestra institución bajo el diagnóstico CIE-10 (${cert.cie || 'N/D'}): ${cert.diagnostico}.\n\n` +
+                        `Durante las sesiones se están aplicando medios electrofísicos y técnicas especializadas tales como: ${mediosAplicados}, con el objetivo de disminuir el dolor y lograr una correcta reintegración del paciente en sus actividades de la vida diaria.\n\n` +
+                        (cert.subtitulo ? `${cert.subtitulo}: ${cert.textoAdicional}\n\n` : '') +
+                        (cert.observaciones && cert.observaciones.toLowerCase() !== "asd" ? `Recomendaciones / Observaciones:\n${cert.observaciones}\n\n` : '') +
+                        `El tratamiento dio inicio el ${formatearFechaTexto(cert.fechaInicio)}, en el horario de ${cert.horario || '10h30'}.\n\n` +
+                        `Es todo cuanto puedo certificar para los fines consiguientes.`;
+
+                    doc.text(textoCertificado, 20, 52, { maxWidth: 170, lineFactor: 1.5 });
+
+                    doc.line(70, 215, 140, 215);
+                    doc.setFont("helvetica", "bold");
+                    doc.text("FISIOTERAPEUTA", 105, 221, { align: "center" });
+                    doc.text("Veronica Estrella", 105, 227, { align: "center" });
+                    doc.setFont("helvetica", "normal");
+                    doc.text("Reg. Prof. 172006269-2", 105, 233, { align: "center" });
+
+                    doc.setFont("helvetica", "italic");
+                    doc.setFontSize(10);
+                    doc.setTextColor(80, 80, 80);
+                    doc.text("El presente documento debe ser admitido acorde a los requisitos y análisis médico solicitado. En caso de información falsa o alteración se procederá de acuerdo con el Código Orgánico Integral Penal (Art. 328).", 105, 252, { maxWidth: 180, align: "center" });
+                }
+
+                doc.save(`Certificado_${cert.cedula}.pdf`);
+            }
+        }
     </script>
 </body>
 </html>
