@@ -138,6 +138,7 @@
             width: 100%;
         }
 
+        /* --- AJUSTES DEL HEADER Y BUSCADOR --- */
         .header {
             display: flex;
             justify-content: space-between;
@@ -148,6 +149,7 @@
             border-radius: 1rem;
             box-shadow: 0 4px 15px rgba(0,0,0,0.05);
             gap: 1rem;
+            flex-wrap: wrap; /* Permite que los elementos bajen ordenadamente si no caben */
         }
 
         .header-left {
@@ -158,38 +160,21 @@
 
         .header h1 { font-size: 1.5rem; color: var(--dark); font-weight: 600; }
 
-        .btn-back-icon {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 38px;
-            height: 38px;
-            background: #f1f3f5;
-            color: var(--dark);
-            border-radius: 50%;
-            text-decoration: none;
-            font-size: 1.1rem;
-            font-weight: bold;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.06);
-            transition: all 0.2s ease;
-            border: 1px solid #dee2e6;
-            flex-shrink: 0;
-        }
-        .btn-back-icon:hover { background: var(--primary); color: white; border-color: var(--primary); transform: scale(1.05); }
-
         .search-container {
             display: flex;
             align-items: center;
             background: #f1f3f5;
             border-radius: 50px;
             padding: 0.3rem 0.3rem 0.3rem 1.2rem;
-            width: 300px;
+            width: 100%; /* Por defecto fluido para móviles */
+            max-width: 300px; /* Límite en pantallas grandes */
             border: 1px solid #dee2e6;
+            box-sizing: border-box;
         }
 
         .search-container input { border: none; background: transparent; outline: none; width: 100%; font-size: 0.9rem; color: var(--dark); }
-        .search-container button { background: var(--primary); border: none; color: white; padding: 0.5rem 1.2rem; border-radius: 50px; cursor: pointer; font-weight: 500; }
-
+        .search-container button { background: var(--primary); border: none; color: white; padding: 0.5rem 1.2rem; border-radius: 50px; cursor: pointer; font-weight: 500; flex-shrink: 0; }
+        
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
@@ -231,14 +216,19 @@
             border-radius: 1rem;
             box-shadow: 0 6px 20px rgba(0,0,0,0.06);
             margin-bottom: 2rem;
+            overflow-x: auto; /* Evita que la tabla rompa la tarjeta en móviles */
         }
 
         .content-card h2 { font-size: 1.25rem; color: var(--dark); margin-bottom: 1.2rem; font-weight: 600; }
 
-        table { width: 100%; border-collapse: collapse; }
+        table { 
+            width: 100%; 
+            border-collapse: collapse; 
+            min-width: 600px; /* Asegura que la tabla no se comprima feo */
+        }
         th { text-align: left; padding: 1rem; background: #f8f9fa; color: var(--gray); font-size: 0.85rem; font-weight: 600; border-bottom: 2px solid #dee2e6; }
         td { padding: 1rem; border-bottom: 1px solid #f1f3f5; font-size: 0.9rem; color: var(--dark); }
-
+        
         .status { padding: 0.35rem 0.85rem; border-radius: 50px; font-size: 0.75rem; font-weight: 600; display: inline-block; }
         .status.confirmed { background: #e8f5e9; color: #2e7d32; }
         .status.pending { background: #fff8e1; color: #f57f17; }
@@ -311,6 +301,7 @@
 
         h3 { font-size: 1.05rem; color: var(--primary-dark); margin: 1.5rem 0 0.8rem 0; padding-bottom: 0.3rem; border-bottom: 1px dashed #dee2e6; }
 
+        /* --- MEDIA QUERIES PARA MOVILES (< 992px) --- */
         @media (max-width: 992px) {
             .dashboard { grid-template-columns: 1fr; }
             .sidebar { position: fixed; top: 0; left: -280px; width: 260px; height: 100vh; transition: transform 0.3s ease-in-out; z-index: 101; }
@@ -318,6 +309,23 @@
             .close-sidebar-btn { display: block; }
             .menu-toggle { display: flex; }
             .main-content { padding: 1.5rem 1rem; }
+
+            /* El header se apila verticalmente para que el buscador no se salga */
+            .header {
+                flex-direction: column;
+                align-items: stretch;
+                padding: 1rem;
+            }
+
+            .header-left {
+                justify-content: space-between;
+                width: 100%;
+            }
+
+            .search-container {
+                max-width: 100%; /* Ocupa todo el ancho disponible de forma limpia */
+                margin-top: 0.5rem;
+            }
         }
     </style>
 </head>
@@ -364,6 +372,7 @@
             <!-- VISTA 1: PANEL PRINCIPAL (DASHBOARD) -->
             <!-- VISTA 1: PANEL PRINCIPAL -->
             <div id="dashboard-view" class="section-view active">
+                <!-- Stats Grid -->
                 <div class="stats-grid">
                     <div class="stat-card">
                         <div class="stat-icon">👥</div>
@@ -395,6 +404,7 @@
                     </div>
                 </div>
 
+                <!-- Appointments Table -->
                 <div class="content-card">
                     <h2>Próximas Citas y Procedimientos Podológicos</h2>
                     <table>
@@ -426,6 +436,24 @@
                                 <td>10:30</td>
                                 <td>Tratamiento de Uña Incarnada</td>
                                 <td><span class="status pending">En espera</span></td>
+                                <td><button class="btn-action">Ver</button></td>
+                            </tr>
+                            <tr>
+                                <td>Rosa Paredes</td>
+                                <td>1103456782</td>
+                                <td>4 Ago 2026</td>
+                                <td>11:45</td>
+                                <td>Estudio Biomecánico de la Pisada</td>
+                                <td><span class="status confirmed">Confirmado</span></td>
+                                <td><button class="btn-action">Ver</button></td>
+                            </tr>
+                            <tr>
+                                <td>Jorge Andrade</td>
+                                <td>1754321098</td>
+                                <td>4 Ago 2026</td>
+                                <td>14:00</td>
+                                <td>Pie Diabético / Cura</td>
+                                <td><span class="status confirmed">Confirmado</span></td>
                                 <td><button class="btn-action">Ver</button></td>
                             </tr>
                         </tbody>
@@ -974,43 +1002,53 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     
     <script>
-        function toggleSidebar() {
-            document.getElementById('sidebar').classList.toggle('open');
-            document.getElementById('sidebarOverlay').classList.toggle('active');
+        // --- 1. CONTROL DE NAVEGACIÓN Y MENÚS ---
+    function toggleSidebar() {
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('sidebarOverlay');
+        if (sidebar && overlay) {
+            sidebar.classList.toggle('open');
+            overlay.classList.toggle('active');
         }
+    }
 
-        function toggleSidebarMobile() {
-            if (window.innerWidth <= 992) {
-                toggleSidebar();
-            }
+    function toggleSidebarMobile() {
+        if (window.innerWidth <= 992) {
+            toggleSidebar();
         }
+    }
 
-        function switchTab(event, viewId) {
-            event.preventDefault();
-            
-            // Ocultar todas las vistas
-            document.querySelectorAll('.section-view').forEach(view => {
-                view.classList.remove('active');
-            });
-            
-            // Mostrar la vista seleccionada
-            document.getElementById(viewId).classList.add('active');
-            
-            // Actualizar clase activa en el menú
-            document.querySelectorAll('.nav-item').forEach(item => {
-                item.classList.remove('active');
-            });
+    function switchTab(event, viewId) {
+        if (event) event.preventDefault();
+        
+        // Ocultar todas las vistas
+        document.querySelectorAll('.section-view').forEach(view => {
+            view.classList.remove('active');
+        });
+        
+        // Mostrar la vista seleccionada
+        const targetView = document.getElementById(viewId);
+        if (targetView) {
+            targetView.classList.add('active');
+        }
+        
+        // Actualizar clase activa en el menú
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.classList.remove('active');
+        });
+        if (event && event.currentTarget) {
             event.currentTarget.classList.add('active');
         }
+    }
 
-        function buscarPaciente() {
-            const query = document.getElementById('searchInput').value.trim();
-            if(query) {
-                alert("Buscando paciente por cédula o apellidos: " + query);
-            } else {
-                alert("Por favor ingrese un número de cédula o apellido para buscar.");
-            }
+    function buscarPaciente() {
+        const query = document.getElementById('searchInput').value.trim();
+        if(query) {
+            alert("Buscando paciente: " + query);
+        } else {
+            alert("Por favor ingrese un número de cédula o apellido para buscar.");
         }
+    }
         
         
         //boton descargar pdf y captura de imagen
