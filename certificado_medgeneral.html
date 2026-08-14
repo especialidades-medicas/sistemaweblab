@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="es">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Certificado de Aptitud Médica Ocupacional</title>
+        
+        <!-- Bootstrap CSS -->
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">    
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+        <!-- Librería JsBarcode -->
+        <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
+        
+        <style>
+            @media print {
+                body { 
+                    background: white; 
+                    padding: 0; 
+                }
+                .no-print, .alert { 
+                    display: none !important; 
+                }
+                .certificado-box { 
+                    border: none !important; 
+                    box-shadow: none !important; 
+                    margin: 0 !important; 
+                    max-width: 100% !important;
+                    width: 100% !important;
+                    padding: 15px !important;
+                }
+                .form-control-editable, .form-select-editable {
+                    border: none !important;
+                    background-color: transparent !important;
+                    box-shadow: none !important;
+                    padding-left: 0 !important;
+                    appearance: none;
+                    -webkit-appearance: none;
+                    -moz-appearance: none;
+                }
+            }
+            
+            .no-print { 
+                display: block; 
+            }
+            
+            body.pdf-exporting .no-print,
+            body.pdf-exporting .alert {
+                display: none !important;
+            }
+
+            body.pdf-exporting .form-control-editable,
+            body.pdf-exporting .form-select-editable {
+                border: none !important;
+                background-color: transparent !important;
+                box-shadow: none !important;
+                padding-left: 0 !important;
+                appearance: none;
+                -webkit-appearance: none;
+                -moz-appearance: none;
+            }
+
+            body {
+                background-color: #f4f6f9;
+                font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+                color: #2c3e50;
+            }
+
+            .certificado-box {
+                background: #ffffff;
+                border: 1px solid #dcdde1;
+                border-radius: 8px;
+                padding: 40px;
+                max-width: 850px;
+                margin: 30px auto;
+                box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            }
+
+            .form-control-editable, .form-select-editable {
+                background-color: #f8f9fa;
+                border: 1px solid #ced4da;
+                transition: all 0.2s;
+            }
+
+            .form-control-editable:focus, .form-select-editable:focus {
+                background-color: #fff;
+                border-color: #3498db;
+                box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25);
+            }
+
+            .badge-aptitud {
+                font-size: 1.1rem;
+                letter-spacing: 1px;
+                padding: 10px 25px;
+            }
+
+            .firma-img {
+                max-height: 80px;
+                width: auto;
+                transition: opacity 0.3s ease;
+            }
+
+            /* =========================================
+               ESTILOS EXCLUSIVOS DE LA BARRA LIQUID GLASS
+               ========================================= */
+            :root {
+                --glass-bg: rgba(255, 255, 255, 0.15);
+                --glass-border: rgba(255, 255, 255, 0.4);
+                --glass-shadow: rgba(0, 0, 0, 0.1);
+                --glass-highlight: rgba(255, 255, 255, 0.8);
+                --glass-caustic: rgba(255, 255, 255, 0.4);
+                --reflection-start: rgba(255, 255, 255, 0.6);
+                --reflection-end: rgba(255, 255, 255, 0.0);
+                --glare-color: rgba(255, 255, 255, 0.5);
+                --pill-bg: rgba(255, 255, 255, 0.7);
+                --pill-shadow: 0 4px 12px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.05), inset 0 1px 1px rgba(255,255,255,0.8);
+                --icon-color: rgba(0, 0, 0, 0.6);
+                --icon-active: rgba(0, 0, 0, 0.95);
+                --divider: rgba(0, 0, 0, 0.15);
+            }
+
+            [data-theme="dark"] {
+                --glass-bg: rgba(30, 30, 35, 0.45);
+                --glass-border: rgba(255, 255, 255, 0.15);
+                --glass-shadow: rgba(0, 0, 0, 0.8);
+                --glass-highlight: rgba(255, 255, 255, 0.25);
+                --glass-caustic: rgba(255, 255, 255, 0.05);
+                --reflection-start: rgba(255, 255, 255, 0.15);
+                --reflection-end: rgba(255, 255, 255, 0.0);
+                --glare-color: rgba(255, 255, 255, 0.15);
+                --pill-bg: rgba(60, 60, 65, 0.8);
+                --pill-shadow: 0 4px 12px rgba(0,0,0,0.4), 0 1px 2px rgba(0,0,0,0.2), inset 0 1px 1px rgba(255,255,255,0.2);
+                --icon-color: rgba(255, 255, 255, 0.6);
+                --icon-active: #ffffff;
+                --divider: rgba(255, 255, 255, 0.15);
+            }
+
+            .liquid-nav {
+                position: relative;
+                display: flex;
+                justify-content: center;
+                margin: 20px auto;
+                align-items: center;
+                flex-wrap: wrap;
+                gap: 6px;
+                padding: 10px 14px;
+                border-radius: 24px;
+                background: var(--glass-bg);
+                backdrop-filter: blur(50px) saturate(200%);
+                -webkit-backdrop-filter: blur(50px) saturate(200%);
+                box-shadow: 
+                    0 40px 80px -20px var(--glass-shadow),
+                    0 10px 30px -10px var(--glass-shadow),
+                    inset 0 2px 3px -1px var(--glass-highlight),
+                    inset 0 -2px 4px -1px var(--glass-caustic),
+                    inset 0 0 0 1px var(--glass-border);
+                transition: all 0.5s ease;
+                z-index: 10;
+                max-width: 520px;
+            }
+
+            .liquid-nav::before {
+                content: '';
+                position: absolute;
+                top: 1px; left: 1px; right: 1px; height: 40%;
+                border-radius: 24px 24px 12px 12px;
+                background: linear-gradient(180deg, var(--reflection-start) 0%, var(--reflection-end) 100%);
+                pointer-events: none;
+                z-index: 6; 
+            }
+
+            .liquid-glare-container {
+                position: absolute;
+                inset: 0;
+                border-radius: 24px;
+                overflow: hidden;
+                pointer-events: none;
+                z-index: 5;
+            }
+
+            .liquid-glare {
+                position: absolute;
+                inset: 0;
+                opacity: 0;
+                transition: opacity 0.3s ease;
+                background: radial-gradient(circle 120px at var(--x, 50%) var(--y, 50%), var(--glare-color) 0%, transparent 100%);
+                mix-blend-mode: overlay;
+            }
+
+            .liquid-nav:hover .liquid-glare {
+                opacity: 1;
+            }
+
+            .nav-items {
+                position: relative;
+                display: flex;
+                align-items: center;
+                gap: 6px;
+                flex-wrap: wrap;
+                z-index: 3;
+            }
+
+            .action-btn {
+                position: relative;
+                background: rgba(255, 255, 255, 0.1);
+                border: 1px solid var(--glass-border);
+                width: 40px;
+                height: 40px;
+                border-radius: 50%;
+                font-size: 16px;
+                color: var(--icon-active);
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                transition: all 0.2s ease;
+                outline: none;
+                z-index: 3;
+                text-decoration: none;
+            }
+
+            .action-btn:hover {
+                background: var(--pill-bg);
+                box-shadow: var(--pill-shadow);
+                transform: translateY(-1px);
+            }
+
+            .divider {
+                width: 1px;
+                height: 24px;
+                background: var(--divider);
+                margin: 0 4px;
+                z-index: 3;
+            }
+
+            .theme-btn {
+                position: relative;
+                background: transparent;
+                border: none;
+                width: 40px;
+                height: 40px;
+                border-radius: 50%;
+                color: var(--icon-color);
+                cursor: pointer;
+                z-index: 3;
+                outline: none;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                transition: color 0.3s ease;
+            }
+
+            .theme-btn:hover {
+                color: var(--icon-active);
+                background: var(--pill-bg);
+            }
+
+            .theme-icon-wrapper {
+                position: relative;
+                width: 18px;
+                height: 18px;
+            }
+
+            .theme-icon-wrapper svg {
+                position: absolute;
+                top: 0; left: 0;
+                transition: transform 0.5s cubic-bezier(0.34, 1.2, 0.64, 1), opacity 0.4s ease;
+            }
+
+            .sun { opacity: 1; transform: rotate(0deg) scale(1); }
+            .moon { opacity: 0; transform: rotate(-90deg) scale(0); }
+
+            [data-theme="dark"] .sun { opacity: 0; transform: rotate(90deg) scale(0); }
+            [data-theme="dark"] .moon { opacity: 1; transform: rotate(0deg) scale(1); }
+        </style>
+    </head>
+    <body>        
+
+        <!-- Formulario del Certificado -->
+        <div class="container-fluid px-2 px-md-4 my-3">
+            <div class="certificado-box shadow-sm">
+                
+                <!-- Encabezado con Membrete -->
+                <div class="row align-items-center pb-3 mb-4 border-bottom">
+                    <div class="col-12 col-md-7 text-center text-md-start mb-2 mb-md-0">
+                        <h5 class="fw-bold text-uppercase text-primary mb-1">Centro Médico Ocupacional Integral</h5>
+                        <p class="text-muted small mb-1">Av. Amazonas N34-45 y Av. Atahualpa, Quito</p>
+                        <p class="text-muted small mb-0">Teléfono: (02) 245-8910 | info@saludocupacional.ec</p>
+                    </div>
+                    <div class="col-12 col-md-5 text-center text-md-end">
+                        <div class="small text-muted"><strong>RUC:</strong> 1792837461001</div>
+                        <div class="small text-muted"><strong>Fecha emisión:</strong> <input type="text" id="fechaEmision" class="form-control form-control-editable d-inline-block text-end p-0 border-0 bg-transparent fw-bold" style="width: 100px; display: inline-block;"></div>
+                    </div>
+                </div>
+
+                <!-- Título del Documento -->
+                <div class="text-center bg-light py-2 rounded mb-4">
+                    <h4 class="fw-bold text-dark text-uppercase m-0" style="letter-spacing: 1px; font-size: 1.25rem;">Certificado de Aptitud Médica Ocupacional</h4>
+                </div>
+
+                <!-- 1. Datos del Profesional -->
+                <h6 class="fw-bold text-primary text-uppercase border-bottom pb-1 mb-3" style="font-size: 0.95rem;"><i class="bi bi-person-badge me-1"></i> 1. Datos del Profesional Responsable</h6>
+                <div class="row mb-3">
+                    <div class="col-12 col-md-7 mb-2 mb-md-0">
+                        <label class="form-label fw-bold small text-muted mb-1">Médico Examinador:</label>
+                        <input type="text" class="form-control form-control-editable" value="Dr. Carlos Mendoza Silva">
+                    </div>
+                    <div class="col-12 col-md-5">
+                        <label class="form-label fw-bold small text-muted mb-1">Registro Profesional MSP:</label>
+                        <input type="text" class="form-control form-control-editable" value="17-2021-0458921">
+                    </div>
+                </div>
+
+                <!-- 2. Datos del Trabajador / Postulante -->
+                <h6 class="fw-bold text-primary text-uppercase border-bottom pb-1 mb-3 mt-4" style="font-size: 0.95rem;"><i class="bi bi-person-lines-fill me-1"></i> 2. Datos del Trabajador / Postulante</h6>
+                <div class="row g-2 mb-3">
+                    <div class="col-12 col-md-6 mb-2">
+                        <label class="form-label fw-bold small text-muted mb-1">Apellidos y Nombres:</label>
+                        <input type="text" id="nombrePaciente" class="form-control form-control-editable" value="Cristian Daniel Molina Trujillo">
+                    </div>
+                    <div class="col-12 col-md-3 mb-2">
+                        <label class="form-label fw-bold small text-muted mb-1">Cédula de Identidad:</label>
+                        <input type="text" class="form-control form-control-editable" value="1718293847">
+                    </div>
+                    <div class="col-12 col-md-3 mb-2">
+                        <label class="form-label fw-bold small text-muted mb-1">Edad:</label>
+                        <input type="text" class="form-control form-control-editable" value="35 años">
+                    </div>
+                    <div class="col-12 col-md-6 mb-2">
+                        <label class="form-label fw-bold small text-muted mb-1">Cargo / Puesto Evaluado:</label>
+                        <input type="text" class="form-control form-control-editable" value="Especialista en Laboratorio Clínico">
+                    </div>
+                    <div class="col-12 col-md-6 mb-2">
+                        <label class="form-label fw-bold small text-muted mb-1">Empresa / Institución:</label>
+                        <input type="text" class="form-control form-control-editable" value="Laboratorio Clínico y Biológico S.A.">
+                    </div>
+                </div>
+
+                <!-- 3. Concepto Médico -->
+                <h6 class="fw-bold text-primary text-uppercase border-bottom pb-1 mb-3 mt-4" style="font-size: 0.95rem;"><i class="bi bi-file-text me-1"></i> 3. Concepto de Aptitud Médico-Ocupacional</h6>
+                <p class="text-secondary text-justify mb-3" style="line-height: 1.6; font-size: 0.95rem;">
+                    El suscrito médico general certifica que el/la ciudadano(a) detallado(a) ha sido sometido(a) a una evaluación médica ocupacional integral que incluyó anamnesis, examen físico completo y revisión de exámenes paraclínicos. Tras la valoración clínica, se determina la aptitud para el desempeño de sus funciones laborales.
+                </p>
+
+                <!-- Selección de Aptitud -->
+                <div class="row align-items-center mb-4 bg-light p-3 rounded border">
+                    <div class="col-12 col-md-4 fw-bold">Dictamen de Aptitud:</div>
+                    <div class="col-12 col-md-8">
+                        <select class="form-select form-select-editable fw-bold text-success" id="selectAptitud">
+                            <option value="APTO PARA TRABAJAR" selected>APTO PARA TRABAJAR</option>
+                            <option value="APTO CON RESTRICCIONES">APTO CON RESTRICCIONES</option>
+                            <option value="NO APTO">NO APTO</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Observaciones -->
+                <div class="mb-4">
+                    <label class="form-label fw-bold small text-muted mb-1">Observaciones / Restricciones o Vigencia:</label>
+                    <input type="text" class="form-control form-control-editable" value="Sin restricciones médicas. Validez del certificado: 1 año.">
+                </div>
+
+                <!-- Sección de Firmas -->
+                <div class="row mt-4 align-items-end g-3 pt-3 border-top">
+                    <div class="col-6 text-center">
+                        <div style="min-height: 90px; display: flex; align-items: flex-end; justify-content: center;">
+                            <img src="../img/firma_activa2.png" alt="Firma Médico" class="firma-img mb-1" id="imgFirma1" onerror="this.style.display='none'">
+                        </div>
+                        <div class="border-top pt-2 mx-auto" style="width: 85%; max-width: 200px;">
+                            <strong class="d-block" style="font-size: 0.85rem;">Dr. Carlos Mendoza Silva</strong>
+                            <small class="text-muted" style="font-size: 0.75rem;">Médico Examinador / MSP</small>
+                        </div>
+                    </div>
+                    <div class="col-6 text-center">
+                        <div style="min-height: 90px; display: flex; align-items: flex-end; justify-content: center;">
+                            <img src="../img/firma_activa-.png" alt="Firma Trabajador" class="firma-img mb-1" id="imgFirma2" onerror="this.style.display='none'">
+                        </div>
+                        <div class="border-top pt-2 mx-auto" style="width: 85%; max-width: 200px;">
+                            <strong class="d-block" style="font-size: 0.85rem;" id="labelNombreTrabajador">Cristian D. Molina T.</strong>
+                            <small class="text-muted" style="font-size: 0.75rem;">Firma del Trabajador</small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Contenedor del Código de Barras -->
+                <div class="text-center mt-4 pt-3 border-top" id="contenedorBarcode">
+                    <svg id="codigoBarras"></svg>
+                </div>
+            </div>
+        </div>
+
+        <!-- PANEL DE CONTROL FLOTANTE (Oculto al imprimir) -->
+        <div class="container mt-3 no-print" style="max-width: 850px;">
+            <div class="alert alert-secondary py-2 px-3 shadow-sm d-flex flex-wrap justify-content-between align-items-center">
+                <div class="form-check form-switch mb-0">
+                    <input class="form-check-input" type="checkbox" id="checkFirmas" checked onchange="toggleFirmas()">
+                    <label class="form-check-label fw-bold small" for="checkFirmas">Incluir Firmas Digitales</label>
+                </div>
+                <div class="form-check form-switch mb-0">
+                    <input class="form-check-input" type="checkbox" id="checkBarcode" checked onchange="toggleBarcode()">
+                    <label class="form-check-label fw-bold small" for="checkBarcode">Mostrar Código de Barras</label>
+                </div>
+            </div>
+        </div>
+
+        <!-- BARRA LIQUID GLASS -->
+        <nav class="liquid-nav no-print" id="nav">
+            <div class="liquid-glare-container">
+                <div class="liquid-glare" id="glare"></div>
+            </div>
+            <div class="nav-items">
+                <!-- Regresar -->
+                <button type="button" onclick="history.back()" class="action-btn" title="Regresar">
+                    <i class="bi bi-house-door-fill"></i>
+                </button>  
+                <!-- Imprimir -->
+                <button type="button" onclick="generarPDFYImprimir()" class="btn btn-primary btn-sm px-3 fw-bold text-dark" title="Imprimir">                    
+                    <i class="bi bi-printer"></i> Imprimir
+                </button>
+                <!-- Descargar PDF -->
+                <button type="button" onclick="descargarPDF()" class="btn btn-success btn-sm px-3 fw-bold text-white" title="Descargar PDF">                                       
+                    <i class="bi bi-file-earmark-pdf"></i> Descargar PDF
+                </button>
+            </div>
+            <div class="divider"></div>
+            <!-- Botón de Tema (Dark / Light) -->
+            <button class="theme-btn" id="theme-btn" aria-label="Dark Mode Toggle" title="Cambiar Tema">
+                <span class="theme-icon-wrapper">
+                    <svg class="sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                    <svg class="moon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                </span>
+            </button>
+        </nav>
+
+        <!-- Librerías Externas -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+        
+        <!-- Scripts -->
+        <script>
+            function generarCodigoBarras() {
+                const nombrePaciente = document.getElementById('nombrePaciente').value.trim() || 'Paciente';
+                const textoBarcode = `OCUPACIONAL - ${nombrePaciente}`;
+
+                try {
+                    JsBarcode("#codigoBarras", textoBarcode, {
+                        format: "CODE128",
+                        lineColor: "#000",
+                        width: 1.5,
+                        height: 40,
+                        displayValue: true,
+                        fontSize: 11
+                    });
+                } catch (e) {
+                    console.error("Error al generar código de barras", e);
+                }
+            }
+
+            window.addEventListener('DOMContentLoaded', () => {
+                const hoy = new Date();
+                const dia = String(hoy.getDate()).padStart(2, '0');
+                const mes = String(hoy.getMonth() + 1).padStart(2, '0');
+                const anio = hoy.getFullYear();
+                const fechaActual = `${dia}/${mes}/${anio}`;
+
+                document.getElementById('fechaEmision').value = fechaActual;
+                generarCodigoBarras();
+
+                // Sincronizar nombre en la firma inferior en tiempo real
+                document.getElementById('nombrePaciente').addEventListener('input', (e) => {
+                    document.getElementById('labelNombreTrabajador').innerText = e.target.value || 'Trabajador';
+                    generarCodigoBarras();
+                });
+            });
+
+            function toggleFirmas() {
+                const activo = document.getElementById('checkFirmas').checked;
+                const opacityValue = activo ? '1' : '0';
+                const f1 = document.getElementById('imgFirma1');
+                const f2 = document.getElementById('imgFirma2');
+                if(f1) f1.style.opacity = opacityValue;
+                if(f2) f2.style.opacity = opacityValue;
+            }
+
+            function toggleBarcode() {
+                const activo = document.getElementById('checkBarcode').checked;
+                const contenedor = document.getElementById('contenedorBarcode');
+                if (contenedor) {
+                    contenedor.style.display = activo ? 'block' : 'none';
+                }
+            }
+
+            function generarPDFYImprimir() {
+                generarCodigoBarras();
+                setTimeout(() => {
+                    window.print();
+                }, 300);
+            }
+            
+            function descargarPDF() {
+                generarCodigoBarras();
+                const elemento = document.querySelector('.certificado-box');
+                if (!elemento) return;
+
+                document.body.classList.add('pdf-exporting');
+
+                let nombrePaciente = document.getElementById('nombrePaciente').value.trim() || 'Aptitud_Medica';
+                nombrePaciente = nombrePaciente.replace(/[^a-zA-Z0-9áéíóúÁÉÍÓÚñÑ\s]/g, '_').trim();
+
+                const opciones = {
+                    margin:       [10, 10, 10, 10],
+                    filename:     `Certificado_Ocupacional_${nombrePaciente}.pdf`,
+                    image:        { type: 'jpeg', quality: 0.98 },
+                    html2canvas:  { 
+                        scale: 2, 
+                        useCORS: true, 
+                        letterRendering: true, 
+                        scrollY: 0,
+                        windowWidth: document.documentElement.offsetWidth 
+                    },
+                    jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+                };
+
+                html2pdf().from(elemento).set(opciones).save().then(() => {
+                    document.body.classList.remove('pdf-exporting');
+                }).catch(() => {
+                    document.body.classList.remove('pdf-exporting');
+                });
+            }
+
+            // Dark/Light theme toggle script
+            const themeBtn = document.getElementById('theme-btn');
+            themeBtn.addEventListener('click', () => {
+                const currentTheme = document.documentElement.getAttribute('data-theme');
+                const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+                document.documentElement.setAttribute('data-theme', newTheme);
+            });
+
+            // Glare effect movement
+            const nav = document.getElementById('nav');
+            const glare = document.getElementById('glare');
+            nav.addEventListener('mousemove', (e) => {
+                const rect = nav.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                glare.style.setProperty('--x', `${x}px`);
+                glare.style.setProperty('--y', `${y}px`);
+            });
+        </script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    </body>
+</html>
