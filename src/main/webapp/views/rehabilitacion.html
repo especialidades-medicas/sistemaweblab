@@ -1,0 +1,1771 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fisiolab.st - Panel de Control</title>
+    <!-- Google Fonts para mejor estética -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Librería SheetJS (XLSX) para la exportación e importación de archivos Excel -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <!-- Librería jsPDF para la exportación de la historia clínica en PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <link rel="stylesheet" href="../assets/css/bodyselector.css">
+    
+    
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        :root {
+            --primary: #4361ee;
+            --primary-dark: #3a0ca3;
+            --secondary: #7209b7;
+            --success: #4cc9f0;
+            --light-bg: #f8f9fa;
+            --dark: #212529;
+            --gray: #6c757d;
+            --danger: #ef476f;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: 260px 1fr;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        .sidebar {
+            background: linear-gradient(180deg, #4361ee 0%, #3a0ca3 100%);
+            padding: 1.5rem 1rem;
+            color: white;
+            box-shadow: 4px 0 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+            z-index: 100;
+        }
+
+        .logo {
+            padding: 0.5rem 1rem 1.5rem 1rem;
+            font-size: 1.7rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+            margin-bottom: 1.5rem;
+            color: #ffffff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .close-sidebar-btn {
+            display: none;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .nav-item {
+            padding: 0.85rem 1rem;
+            margin: 0.4rem 0;
+            border-radius: 0.75rem;
+            cursor: pointer;
+            color: rgba(255, 255, 255, 0.8);
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+        }
+
+        .nav-item:hover {
+            background: rgba(255, 255, 255, 0.15);
+            color: white;
+            transform: translateX(5px);
+        }
+
+        .nav-item.active {
+            background: #ffffff;
+            color: var(--primary-dark);
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .menu-toggle {
+            display: none;
+            background: var(--primary);
+            color: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        }
+
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 99;
+        }
+
+        .sidebar-overlay.active { display: block; }
+
+        .main-content {
+            padding: 2.5rem;
+            overflow-y: auto;
+            width: 100%;
+        }
+
+        /* --- AJUSTES DEL HEADER Y BUSCADOR --- */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            background: white;
+            padding: 1.2rem 2rem;
+            border-radius: 1rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            gap: 1rem;
+            flex-wrap: wrap; /* Permite que los elementos bajen ordenadamente si no caben */
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .header h1 { font-size: 1.5rem; color: var(--dark); font-weight: 600; }
+
+        .search-container {
+            display: flex;
+            align-items: center;
+            background: #f1f3f5;
+            border-radius: 50px;
+            padding: 0.3rem 0.3rem 0.3rem 1.2rem;
+            width: 100%; /* Por defecto fluido para móviles */
+            max-width: 300px; /* Límite en pantallas grandes */
+            border: 1px solid #dee2e6;
+            box-sizing: border-box;
+        }
+
+        .search-container input { border: none; background: transparent; outline: none; width: 100%; font-size: 0.9rem; color: var(--dark); }
+        .search-container button { background: var(--primary); border: none; color: white; padding: 0.5rem 1.2rem; border-radius: 50px; cursor: pointer; font-weight: 500; flex-shrink: 0; }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 1rem;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.06);
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            border-left: 5px solid var(--primary);
+        }
+
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            background: rgba(67, 97, 238, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+        }
+
+        .stat-info h3 { color: var(--gray); font-size: 0.85rem; font-weight: 500; margin-bottom: 0.2rem; }
+        .stat-info .number { font-size: 1.75rem; font-weight: 700; color: var(--dark); }
+
+        .section-view { display: none; }
+        .section-view.active { display: block; }
+
+        .content-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 1rem;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.06);
+            margin-bottom: 2rem;
+            overflow-x: auto; /* Evita que la tabla rompa la tarjeta en móviles */
+        }
+
+        .content-card h2 { font-size: 1.25rem; color: var(--dark); margin-bottom: 1.2rem; font-weight: 600; }
+
+        table { 
+            width: 100%; 
+            border-collapse: collapse; 
+            min-width: 600px; /* Asegura que la tabla no se comprima feo */
+        }
+        th { text-align: left; padding: 1rem; background: #f8f9fa; color: var(--gray); font-size: 0.85rem; font-weight: 600; border-bottom: 2px solid #dee2e6; }
+        td { padding: 1rem; border-bottom: 1px solid #f1f3f5; font-size: 0.9rem; color: var(--dark); }
+        
+        .status { padding: 0.35rem 0.85rem; border-radius: 50px; font-size: 0.75rem; font-weight: 600; display: inline-block; }
+        .status.confirmed { background: #e8f5e9; color: #2e7d32; }
+        .status.pending { background: #fff8e1; color: #f57f17; }
+
+        .btn-action { background: var(--primary); color: white; border: none; padding: 0.4rem 1rem; border-radius: 6px; cursor: pointer; font-size: 0.85rem; transition: 0.2s; text-decoration: none; display: inline-block; }
+        .btn-action:hover { background: var(--primary-dark); }
+
+        .btn-delete { background: var(--danger); color: white; border: none; border-radius: 6px; cursor: pointer; transition: 0.2s; }
+        .btn-delete:hover { background: #d90429; }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group { display: flex; flex-direction: column; gap: 0.4rem; }
+        .form-group label { font-size: 0.85rem; font-weight: 600; color: var(--gray); }
+        .form-group input, .form-group select, .form-group textarea {
+            padding: 0.7rem 1rem;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        .form-group.full-width { grid-column: 1 / -1; }
+
+        .iess-only { display: none; }
+        .iess-active .iess-only { display: flex; }
+
+        .tabs-container {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #eef2f5;
+        }
+
+        .tab-btn {
+            background: transparent;
+            border: none;
+            padding: 10px 20px;
+            font-size: 1rem;
+            font-weight: 600;
+            color: #6c757d;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+            margin-bottom: -2px;
+        }
+        .tab-btn:hover { color: #3a0ca3; }
+        .tab-btn.active { color: #3a0ca3; border-bottom: 3px solid #3a0ca3; }
+
+        .checkbox-label { display: flex; align-items: center; gap: 8px; font-size: 0.82rem; color: var(--dark); cursor: pointer; }
+        .checkbox-label input { cursor: pointer; width: 15px; height: 15px; }
+
+        .tratamiento-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.8rem;
+            background: #fdf4ff;
+            padding: 1rem;
+            border-radius: 8px;
+            border: 1px solid #f0abfc;
+        }
+
+        .hc-header { text-align: center; border-bottom: 2px solid var(--primary); padding-bottom: 1rem; margin-bottom: 1.5rem; }
+        .hc-header h2 { color: var(--primary-dark); font-size: 1.3rem; }
+
+        h3 { font-size: 1.05rem; color: var(--primary-dark); margin: 1.5rem 0 0.8rem 0; padding-bottom: 0.3rem; border-bottom: 1px dashed #dee2e6; }
+
+        /* --- MEDIA QUERIES PARA MOVILES (< 992px) --- */
+        @media (max-width: 992px) {
+            .dashboard { grid-template-columns: 1fr; }
+            .sidebar { position: fixed; top: 0; left: -280px; width: 260px; height: 100vh; transition: transform 0.3s ease-in-out; z-index: 101; }
+            .sidebar.open { transform: translateX(280px); }
+            .close-sidebar-btn { display: block; }
+            .menu-toggle { display: flex; }
+            .main-content { padding: 1.5rem 1rem; }
+
+            /* El header se apila verticalmente para que el buscador no se salga */
+            .header {
+                flex-direction: column;
+                align-items: stretch;
+                padding: 1rem;
+            }
+
+            .header-left {
+                justify-content: space-between;
+                width: 100%;
+            }
+
+            .search-container {
+                max-width: 100%; /* Ocupa todo el ancho disponible de forma limpia */
+                margin-top: 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Capa oscura de fondo cuando el menú está abierto en móviles -->
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+    <div class="dashboard">
+        <!-- Sidebar Colapsable (Menú Lateral) -->
+        <div class="sidebar" id="sidebar">
+            <div class="logo">
+                Fisiolab.st
+                <button class="close-sidebar-btn" onclick="toggleSidebar()">✕</button>
+            </div>
+            <nav>
+                <a href="#" class="nav-item active" onclick="switchTab(event, 'dashboard-view'); toggleSidebarMobile();">📊 Panel Principal</a>
+                <a href="#" class="nav-item" onclick="switchTab(event, 'pacientes-view'); toggleSidebarMobile();">👥 Pacientes</a>
+                <a href="#" class="nav-item" onclick="switchTab(event, 'historia-clinica-view'); toggleSidebarMobile();">📋 Historia Clínica</a>
+                <a href="#" class="nav-item" onclick="switchTab(event, 'citas-view'); toggleSidebarMobile();">📅 Citas Médicas</a>
+                <a href="#" class="nav-item" onclick="switchTab(event, 'recetas-view'); toggleSidebarMobile();">💊 Recetas</a>
+                <a href="#" class="nav-item" onclick="switchTab(event, 'certificados-view'); toggleSidebarMobile();">📄 Certificados</a>
+                <a href="#" class="nav-item" onclick="switchTab(event, 'informes-view'); toggleSidebarMobile();">📈 Informes</a>
+                <a href="../index.html" class="nav-item" style="margin-top: 3rem; color: #ffadad;">🚪 Cerrar Sesión</a>
+            </nav>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Header -->
+            <div class="header">
+                <div class="header-left">
+                    <button class="menu-toggle" onclick="toggleSidebar()" title="Abrir Menú">☰</button>
+                    <h1 id="header-title">Bienvenid@, Sistema Fisiolab</h1>
+                </div>
+                <div style="display: flex; align-items: center; gap: 1rem;">
+                    <div class="search-container">
+                        <input type="text" id="searchInput" placeholder="Cédula o apellidos...">
+                        <button onclick="buscarPaciente()">Buscar</button>
+                    </div>
+                    <a href="dashboard.html" class="btn-back-icon" title="Volver al Menú Principal">↩</a>
+                </div>
+            </div>
+                
+            <!-- VISTA 1: PANEL PRINCIPAL (DASHBOARD) -->
+            <!-- VISTA 1: PANEL PRINCIPAL -->
+            <div id="dashboard-view" class="section-view active">
+                <!-- Stats Grid -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">👥</div>
+                        <div class="stat-info">
+                            <h3>Total Pacientes</h3>
+                            <div class="number">128</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">📅</div>
+                        <div class="stat-info">
+                            <h3>Citas Hoy</h3>
+                            <div class="number">9</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">🩺</div>
+                        <div class="stat-info">
+                            <h3>Quiropodias Activas</h3>
+                            <div class="number">6</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">📄</div>
+                        <div class="stat-info">
+                            <h3>Reportes Pendientes</h3>
+                            <div class="number">2</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Appointments Table -->
+                <div class="content-card">
+                    <h2>Próximas Citas y Procedimientos Podológicos</h2>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Paciente</th>
+                                <th>Cédula</th>
+                                <th>Fecha</th>
+                                <th>Hora</th>
+                                <th>Tipo de Atención</th>
+                                <th>Estado</th>
+                                <th>Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Carmen Silva</td>
+                                <td>1712345678</td>
+                                <td>4 Ago 2026</td>
+                                <td>09:00</td>
+                                <td>Quiropodia General</td>
+                                <td><span class="status confirmed">Confirmado</span></td>
+                                <td><button class="btn-action">Ver</button></td>
+                            </tr>
+                            <tr>
+                                <td>Luis Morales</td>
+                                <td>0923456781</td>
+                                <td>4 Ago 2026</td>
+                                <td>10:30</td>
+                                <td>Tratamiento de Uña Incarnada</td>
+                                <td><span class="status pending">En espera</span></td>
+                                <td><button class="btn-action">Ver</button></td>
+                            </tr>
+                            <tr>
+                                <td>Rosa Paredes</td>
+                                <td>1103456782</td>
+                                <td>4 Ago 2026</td>
+                                <td>11:45</td>
+                                <td>Estudio Biomecánico de la Pisada</td>
+                                <td><span class="status confirmed">Confirmado</span></td>
+                                <td><button class="btn-action">Ver</button></td>
+                            </tr>
+                            <tr>
+                                <td>Jorge Andrade</td>
+                                <td>1754321098</td>
+                                <td>4 Ago 2026</td>
+                                <td>14:00</td>
+                                <td>Pie Diabético / Cura</td>
+                                <td><span class="status confirmed">Confirmado</span></td>
+                                <td><button class="btn-action">Ver</button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- VISTA: GESTIÓN DE PACIENTES -->
+            <div id="pacientes-view" class="section-view">
+                <div class="content-card">
+                    <h2>Gestión de Pacientes (Fisioterapia)</h2>
+                    <p style="color: var(--gray);">Use la barra de búsqueda superior para localizar historias clínicas, mapas plantares y datos de pacientes por cédula o apellidos.</p>
+                    <h2 id="patientFormTitle" style="margin-top: 1.5rem;">Nuevo Registro de Paciente</h2>
+                    <form onsubmit="savePatient(event)">
+                        <input type="hidden" id="editPatientIndex" value="-1">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>Cédula / Pasaporte</label>
+                                <input type="text" id="patCedula" placeholder="Ej. 1723456789" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Apellidos y Nombres</label>
+                                <input type="text" id="patNombre" placeholder="Ej. Pérez Gómez Juan" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Fecha de Nacimiento</label>
+                                <input type="date" id="patNacimiento" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Género</label>
+                                <select id="patGenero">
+                                    <option>Masculino</option>
+                                    <option>Femenino</option>
+                                    <option>Otro</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Teléfono de Contacto</label>
+                                <input type="tel" id="patTelefono" placeholder="Ej. 0991234567">
+                            </div>
+                            <div class="form-group">
+                                <label>Correo Electrónico</label>
+                                <input type="email" id="patCorreo" placeholder="correo@ejemplo.com">
+                            </div>
+                            <div class="form-group full-width">
+                                <label>Dirección Domiciliaria</label>
+                                <input type="text" id="patDireccion" placeholder="Calle principal y secundaria, sector">
+                            </div>
+                        </div>
+                        <div style="display: flex; gap: 10px; margin-top: 15px;">
+                            <button type="submit" id="btnSavePatient" class="btn-action" style="padding: 0.7rem 1.5rem; font-size: 0.95rem;">Guardar y Actualizar Excel</button>
+                            <button type="button" id="btnCancelPatient" onclick="resetPatientForm()" class="btn-delete" style="display: none; padding: 0.7rem 1.5rem; font-size: 0.95rem;">Cancelar</button>
+                        </div>
+                    </form>
+                </div>               
+                
+                <div class="content-card">
+                    <h2>Listado de Pacientes Registrados</h2>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Cédula</th>
+                                <th>Apellidos y Nombres</th>
+                                <th>Teléfono</th>
+                                <th>Correo</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="patientTableBody">
+                            <!-- Los pacientes se cargan dinámicamente aquí -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- VISTA: HISTORIA CLÍNICA -->
+            <div id="historia-clinica-view" class="section-view">
+                <div class="content-card">
+                    <div class="hc-header">
+                        <h2>HISTORIA CLÍNICA - CENTRO DE REHABILITACIÓN FÍSICA</h2>
+                        <p><strong>FISIOLAB.ST</strong></p>
+                    </div>
+
+                    <form id="formHistoriaFisiolab" onsubmit="guardarYGenerarPDF(event)">
+                        
+                        <!-- DATOS ADMINISTRATIVOS -->
+                        <h3>1. Datos Personales</h3>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>N° Historia Clínica:</label>
+                                <input type="text" id="hcNum" placeholder="Ej. HC-2026-001" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Fecha de Evaluación:</label>
+                                <input type="date" id="hcFecha" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Cédula de Identidad:</label>
+                                <input type="text" id="hcCedula" placeholder="Cédula..." required>
+                            </div>
+                            <div class="form-group full-width">
+                                <label>Nombres y Apellidos del Paciente:</label>
+                                <input type="text" id="hcNombres" placeholder="NOMBRES Y APELLIDOS" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Fecha de Nacimiento:</label>
+                                <input type="date" id="hcNacimiento">
+                            </div>
+                            <div class="form-group">
+                                <label>Edad:</label>
+                                <input type="number" id="hcEdad" placeholder="Años">
+                            </div>
+                            <div class="form-group">
+                                <label>Sexo:</label>
+                                <select id="hcSexo">
+                                    <option>Masculino</option>
+                                    <option>Femenino</option>
+                                    <option>Otro</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Celular / Teléfono:</label>
+                                <input type="tel" id="hcCelular" placeholder="099xxxxxxx">
+                            </div>
+                            <div class="form-group full-width">
+                                <label>Correo Electrónico (Email):</label>
+                                <input type="email" id="hcEmail" placeholder="correo@ejemplo.com">
+                            </div>
+                            <div class="form-group full-width">
+                                <label>Dirección Domiciliaria:</label>
+                                <input type="text" id="hcDireccion" placeholder="Calle principal y secundaria, sector">
+                            </div>
+                            <div class="form-group">
+                                <label>En caso de emergencia llamar a:</label>
+                                <input type="text" id="hcEmergenciaContacto" placeholder="Nombre de familiar">
+                            </div>
+                            <div class="form-group">
+                                <label>Teléf. Emergencia:</label>
+                                <input type="tel" id="hcEmergenciaTelefono" placeholder="Teléfono">
+                            </div>
+                        </div>
+
+                        <!-- ANTECEDENTES PERSONALES -->
+                        <h3>2. Antecedentes Personales del Paciente</h3>
+                        <div class="antecedentes-grid">
+                            <label class="checkbox-label"><input type="checkbox" class="ant" value="Cáncer"> Cáncer</label>
+                            <label class="checkbox-label"><input type="checkbox" class="ant" value="Hemopatías"> Hemopatías</label>
+                            <label class="checkbox-label"><input type="checkbox" class="ant" value="Marcapasos"> Marcapasos</label>
+                            
+                            <label class="checkbox-label"><input type="checkbox" class="ant" value="Diabetes"> Diabetes</label>
+                            <label class="checkbox-label"><input type="checkbox" class="ant" value="Tuberculosis"> Tuberculosis</label>
+                            <label class="checkbox-label"><input type="checkbox" class="ant" value="Dispositivos Cardiacos"> Dispositivos Cardiacos</label>
+                            
+                            <label class="checkbox-label"><input type="checkbox" class="ant" value="Insuficiencia Renal"> Insuficiencia Renal</label>
+                            <label class="checkbox-label"><input type="checkbox" class="ant" value="Bronquitis"> Bronquitis</label>
+                            <label class="checkbox-label"><input type="checkbox" class="ant" value="Heridas"> Heridas</label>
+                            
+                            <label class="checkbox-label"><input type="checkbox" class="ant" value="Cardiopatías"> Cardiopatías</label>
+                            <label class="checkbox-label"><input type="checkbox" class="ant" value="Trombosis"> Trombosis</label>
+                            <label class="checkbox-label"><input type="checkbox" class="ant" value="Enfermedad de la Piel"> Enfermedad de la piel</label>
+                            
+                            <label class="checkbox-label"><input type="checkbox" class="ant" value="Endocarditis"> Endocarditis</label>
+                            <label class="checkbox-label"><input type="checkbox" class="ant" value="Hemorragias Activas"> Hemorragias Activas</label>
+                            <label class="checkbox-label"><input type="checkbox" class="ant" value="Epilepsias"> Epilepsias</label>
+                            
+                            <label class="checkbox-label"><input type="checkbox" class="ant" value="Hipertensión"> Hipertensión</label>
+                            <label class="checkbox-label"><input type="checkbox" class="ant" value="Implantes Metálicos"> Implantes Metálicos</label>
+                            <label class="checkbox-label"><input type="checkbox" class="ant" value="Alteración Sensibilidad"> Alteración de la sensibilidad</label>
+                        </div>
+                        <div class="form-group" style="margin-top: 0.8rem;">
+                            <label>Otros antecedentes:</label>
+                            <input type="text" id="hcOtrosAnt" placeholder="Especifique otros antecedentes...">
+                        </div>
+
+                        <!-- RECOMENDACIONES -->
+                        <div class="recomendaciones-box">
+                            <strong>Recomendaciones del Centro:</strong> Únicamente los pacientes menores de 18 años o mayores de 65 podrán ser acompañados durante el servicio fisioterapéutico. Todo niño deberá estar bajo la supervisión de un adulto.
+                        </div>
+
+                        <div class="form-group">
+                            <label>¿Cómo se enteró de las terapias de Fisiolab.st?</label>
+                            <input type="text" id="hcPublicidad" placeholder="Redes sociales, recomendación, etc.">
+                        </div>
+
+                        <!-- MOTIVO Y FACTORES OCUPACIONALES -->
+                        <h3>3. Motivo de Consulta y Factores Ocupacionales</h3>
+                        <div class="form-grid">
+                            <div class="form-group full-width">
+                                <label>¿Qué le pasó? (Descripción del problema):</label>
+                                <textarea id="hcMotivo" rows="2" placeholder="Describa el inicio de la molestia, dolor o lesión..."></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>Profesión / Ocupación:</label>
+                                <input type="text" id="hcProfesion">
+                            </div>
+                            <div class="form-group">
+                                <label>Tipo de Trabajo:</label>
+                                <input type="text" id="hcTipoTrabajo">
+                            </div>
+                            <div class="form-group">
+                                <label>Sedestación Prolongada:</label>
+                                <select id="hcSedestacion">
+                                    <option value="No">No</option>
+                                    <option value="Sí">Sí</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Esfuerzo Físico:</label>
+                                <select id="hcEsfuerzo">
+                                    <option value="Bajo">Bajo</option>
+                                    <option value="Medio">Medio</option>
+                                    <option value="Alto">Alto</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- INSPECCIÓN Y PALPACIÓN -->
+                        <h3>4. Evaluación Fisioterapéutica (Inspección y Palpación)</h3>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>Asimetría:</label>
+                                <input type="text" id="hcAsimetria" placeholder="Hallazgos...">
+                            </div>
+                            <div class="form-group">
+                                <label>Atrofias Musculares:</label>
+                                <input type="text" id="hcAtrofias">
+                            </div>
+                            <div class="form-group">
+                                <label>Inflamación / Edema / Equimosis:</label>
+                                <input type="text" id="hcInflamacion">
+                            </div>
+                            <div class="form-group">
+                                <label>Contracturas:</label>
+                                <input type="text" id="hcContracturas">
+                            </div>
+                            <div class="form-group">
+                                <label>Irradiación del Dolor:</label>
+                                <select id="hcIrradiacion">
+                                    <option value="No">No</option>
+                                    <option value="Sí">Sí</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Hacia dónde se irradia:</label>
+                                <input type="text" id="hcHaciaDonde" placeholder="Trayecto...">
+                            </div>
+                        </div>
+
+<!-- BODY TEST / SILUETA DEL DOLOR -->
+<!-- BODY TEST / SILUETA DEL DOLOR -->
+<!-- BODY TEST / SILUETA DEL DOLOR -->
+                        <div class="body-test-container">
+                            <h3>7. Mapa de Dolor (Seleccione hasta 10 zonas)</h3>
+                            <div class="body-svg-container" id="bodyContainerToCapture">
+                                <svg id="bodySVG" xmlns="http://www.w3.org/2000/svg" xml:space="preserve" version="1.1" viewBox="0 0 770 1000">
+                                    <rect id="frame" class="fil0" x="50" y="100" width="707" height="1000" fill="#ffffff"/>
+                                    <path id="right_foot" class="fil1" d="M586 824c0 2 0 4 0 6 7 6 15 12 19 19 -7 8 -41 3 -54 3l0 -28 35 0zm-368 0l-37 33 0 0 0c-7 7 -12 13 -16 21 -2 5 -8 4 3 5 6 3 2 3 7 0 1 1 6 2 6 2 0 0 5 -1 5 -2 7 3 2 3 9 0 5 2 2 2 8 2 4 -3 3 -2 4 -5 6 0 1 0 5 -2 1 1 2 1 2 1l0 -22z"/>
+                                    <path id="left_shin" class="fil1" d="M516 800c-4 -26 -13 -40 -17 -70 -2 -14 4 -31 6 -58l43 0 -1 16 2 19 3 15 1 15 -3 15 -6 19 -2 15 2 14 -28 0zm-295 -128l43 0c0 0 0 0 0 0 9 31 3 68 -7 98 -4 13 -7 23 -8 30l-28 0 3 -16 0 -17 -2 -14 -4 -12 0 -18 5 -21 0 -14 -2 -16z"/>
+                                    <path id="left_foot" class="fil1" d="M551 852c-12 0 -45 5 -52 -3 5 -7 16 -11 19 -19 0 -2 0 -4 0 -6l33 0 0 28zm-333 -28l33 0c4 5 10 8 14 21 2 5 8 4 -4 5 -5 3 -1 3 -6 0 -9 3 -3 3 -9 0 -10 2 -3 3 -11 0 -4 2 -3 1 -7 2 -3 -1 -1 0 -5 -3 -1 -1 -3 -2 -5 -3l0 -22z"/>
+                                    <path id="right_shin" class="fil1" d="M169 672l43 0 -3 7 4 31 5 13 0 18 -6 11 -3 17 0 14 4 17 -28 0c-5 -37 -30 -76 -16 -128zm430 0c0 3 1 6 1 9 2 16 8 33 5 49 -6 29 -13 46 -17 71l-18 0 -12 0 0 -16 -7 -38 2 -7 0 -15 -2 -11 4 -13 1 -13 0 -16 43 0z"/>
+                                    <path id="right_ankle" class="fil1" d="M588 800c-1 7 -2 15 -2 24l-35 0 0 -7 6 -8 1 -8 30 -1zm-403 0l28 0 5 9 0 15 -33 0c1 -8 1 -16 0 -24z"/>
+                                    <path id="left_ankle" class="fil1" d="M551 824l-33 0c0 -9 -1 -17 -2 -24l28 0 7 17 0 7zm-300 0l-33 0 0 -17 3 -7 28 0c-3 14 -2 20 2 24z"/>
+                                    <path id="buttocks" class="fil1" d="M621 478c1 10 1 19 1 33l-13 3 -11 8 -16 4 -17 -2 -7 -5 -5 -9 0 0 -3 1 -6 11 -20 7 -12 -1 -10 -6 -8 -8 -12 -3c-1 -13 0 -23 1 -33l38 -3 61 0 39 3z"/>
+                                    <path id="right_thigh" class="fil1" d="M622 511c0 6 -1 12 -1 20 -2 39 -14 61 -20 91l-48 0 0 -112 5 9 7 5 17 2 16 -4 11 -8 13 -3zm-475 -33l38 -3 33 12 0 63 -4 26 1 12 3 7 0 27 -51 0c0 -6 -1 -11 -2 -14 -8 -24 -11 -35 -13 -61 -3 -23 -6 -46 -5 -69z"/>
+                                    <path id="left_thigh" class="fil1" d="M503 622c-4 -20 -16 -47 -20 -91 -1 -7 -1 -14 -1 -20l12 3 8 8 10 6 12 1 20 -7 6 -11 3 -1 0 112 -50 0zm-216 -144l-36 -3 -33 12 0 63 -2 13 4 8 1 12 -3 12 0 27 49 0c0 -18 10 -30 12 -47 3 -25 9 -63 8 -97z"/>
+                                    <path id="right_knee" class="fil1" d="M601 622c-2 14 -3 30 -2 50l-43 0 -3 -10 0 -40 48 0zm-434 0l51 0 0 40 -6 10 -43 0c1 -2 1 -3 2 -5 -3 -12 -2 -31 -4 -45z"/>
+                                    <path id="left_knee" class="fil1" d="M505 672c1 -12 1 -25 -1 -41 0 -3 -1 -6 -1 -9l50 0 0 40 -5 10 -43 0zm-238 -50l-49 0 0 40 3 10 43 0c-1 -6 3 -37 3 -48 0 -1 0 -1 0 -2z"/>
+                                    <path id="torso" class="fil1" d="M147 311l13 12 46 -10 23 0 46 10 9 -9 3 0 1 7 0 34c-4 9 -6 17 -7 25l0 0 0 0c-1 9 -1 17 -1 25l0 8 0 0 -2 12 -61 10 -60 -10 -2 -6c-1 -1 -1 -3 -2 -5 2 -4 2 -9 2 -14l0 0 0 0c0 -6 0 -13 -1 -20l0 0 0 0c-2 -10 -5 -19 -8 -25l1 -44z"/>
+                                    <path id="chest" class="fil1" d="M160 240l0 0 0 0c10 -4 20 -9 30 -15l0 0 29 11 26 -12 0 0c6 5 13 9 21 13l0 0 0 0c3 1 7 3 10 5l8 72 -9 9 -48 -10 -21 0 -46 10 -14 -12 6 -67c3 -1 5 -2 8 -4z"/>
+                                    <path id="upper_back" class="fil1" d="M481 314l16 0 0 -72 0 0c8 -4 18 -9 30 -16l29 3 21 -5c3 3 7 5 11 8l0 0 0 0c9 6 12 7 23 12l0 70 15 0 0 16 -5 30 0 0c-4 5 -9 19 -12 26 2 6 4 12 5 18l-123 0c1 -5 3 -11 4 -18 -3 -7 -9 -24 -14 -28l0 -44z"/>
+                                    <path id="lower_back" class="fil1" d="M491 404l123 0c1 9 2 18 -2 28 1 2 1 4 1 5l-31 38 -61 0 -31 -36 0 0c1 -2 1 -5 2 -7 -4 -12 -3 -19 -1 -28z"/>
+                                    <path id="right_hip" class="fil1" d="M613 437c4 18 6 30 8 41l-39 -3 31 -38zm-460 -3l32 41 -38 3c0 -15 2 -29 6 -44z"/>
+                                    <path id="left_hip" class="fil1" d="M483 478c2 -11 4 -23 7 -39l31 36 -38 3zm-201 -41l-33 38 38 3c0 -15 -1 -30 -5 -41z"/>
+                                    <path id="pelvis" class="fil1" d="M157 425l60 10 61 -10 0 0c0,0 -1,1 -1,1 2,3 3,7 5,10l-33 39 -31 12 -33 -12 -32 -41 0 0 4 -9z"/>
+                                    <path id="left_hand" class="fil1" d="M455 494c4 13 9 30 0 37 -8 -6 -4 -7 -10 -16 -4 7 -3 7 -6 14l7 7c10 0 14 -1 13 9 -1 9 1 3 -4 7 -4 5 -2 6 -9 -2 -6 -1 0 2 -7 -3 -1 -2 -2 -3 -3 -5 -6 -4 -10 -12 -14 -18 2 -11 4 -20 5 -30l28 0zm-141 0l26 0c0,3 0,7 1,11 3,13 -2,34 -13,42 -9,3 -10,4 -14,0 -5 -5 -3 2 -4 -7 4 -1 6 -1 7 -2 2 -6 -1 -4 7 -9l0 -5c-2 -6 -3 -7 0 -12 2 -2 1 -2 2 -5 -4 1 -5 2 -9 8 -4 7 -2 8 -8 13 -6 -2 -2 0 -7 -4 5 -14 9 -23 12 -30z"/>
+                                    <path id="right_hand" class="fil1" d="M677 494c1 9 3 18 5 28 -1 8 -9 17 -16 20 1 6 1 6 -8 8 -5 6 0 4 -7 2 -6 -4 -4 0 -6 -7 -1 -10 3 -9 13 -9l7 -7c-3 -8 0 -6 -6 -14 -6 9 -2 10 -10 16 -8 -7 -1 -17 -4 -26 1 -5 2 -8 4 -11l28 0zm-583 0l27 0c1 3 3 7 4 11 4 10 10 16 2 23 -12 -8 -5 -12 -17 -20 -8 2 -6 2 -6 13 0 7 0 7 2 14 6 -2 6 -3 11 3 -7 -3 -2 0 -6 0l4 4c3 -4 2 -3 5 -4 9 5 4 3 4 5 -2 5 1 2 -4 4 -5 6 -1 3 -10 2l-14 -14c-1 -11 -6 -18 -4 -30 1 -5 1 -8 2 -11zm16 23c3 7 3 6 3 14l-5 0c0 -7 -1 -7 2 -14z"/>
+                                    <path id="left_wrist" class="fil1" d="M454 464c-2 6 -4 13 -4 20 1 2 3 6 5 10l-28 0c1 -9 2 -18 2 -30l25 0zm-138 0l26 0c0,4 0,8 0,11 -1,9 -2,13 -2,19l-26 0c7 -13 8 -14 2 -30z"/>
+                                    <path id="right_wrist" class="fil1" d="M675 464c0 12 1 21 2 30l-28 0c4 -6 9 -11 1 -30l25 0zm-583 0l27 0c-2 5 -4 10 -6 15 4 7 6 11 8 15l-27 0c0 -6 -1 -8 -2 -19 0 -3 0 -7 0 -11z"/>
+                                    <path id="left_lower_arm" class="fil1" d="M474 397c-1 9 -2 18 -3 24 -3 16 -12 29 -17 43l-25 0c0 -2 0 -3 0 -4 0 -16 0 -47 2 -63l43 0zm-184 0l45 0c1 6 1 12 2 19 0 13 3 32 5 48l-26 0c-3 -9 -10 -23 -19 -46 -4 -9 -6 -15 -7 -21z"/>
+                                    <path id="right_lower_arm" class="fil1" d="M674 397c1 13 1 51 1 63 0 1 0 2 0 4l-25 0c-1 -3 -3 -7 -5 -11 -10 -21 -14 -40 -15 -56l44 0zm-574 0l43 0c-1 6 -2 13 -5 21 -7 15 -13 30 -19 46l-27 0c1 -16 5 -35 6 -48 0 -6 1 -13 2 -19z"/>
+                                    <path id="left_elbow" class="fil1" d="M481 358c-4 7 -6 24 -7 39l-43 0 0 0c1 -14 10 -17 10 -33 0 -2 0 -4 0 -6l40 0zm-191 0l36 0c3 13 7 25 9 39l-45 0c-4 -23 9 -23 0 -39z"/>
+                                    <path id="left_shoulder" class="fil1" d="M663 360c0 1 0 2 0 4 0 15 8 18 10 31 0 1 0 1 1 2l-44 0c-2 -16 -2 -29 -6 -37l39 0zm-42 0l0 0 0 0 0 0zm-477 0l-37 0c-2 -12 -5 25 -7 37l43 0c1 -15 -4 -25 1 -37l0 0z"/>
+                                    <path id="left_upper_arm" class="fil1" d="M441 358c0 -8 0 -19 0 -26 1 -7 1 -13 2 -18l38 0 0 44 -40 0zm-151 -44l35 0c-3 17 -1 31 1 44l-36 0 0 -44z"/>
+                                    <path id="right_upper_arm" class="fil1" d="M662 314c1 17 1 35 1 46l-39 0c-1 -1 -1 -1 -1 -2 0 0 0 0 -1 1l4 -31 0 -14 36 0zm-553 0l37 0 0 41c-1 2 -2 3 -2 5l-37 0c3 -16 5 -31 2 -46z"/>
+                                    <path id="right_shoulder" class="fil1" d="M611 244c12 6 32 16 41 24 6 6 8 25 10 46l-51 0 0 -70zm-458 0l-7 70 -37 0c-1 -6 -2 -11 -5 -17 5 -12 8 -23 13 -35 11 -6 23 -12 36 -18z"/>
+                                    <path id="left_shoulder_0" class="fil1" d="M443 314c5 -57 2 -45 54 -72l0 72 -54 0zm-118 0l-41 0 -8 -72c15 7 31 14 41 20 6 11 9 24 13 35 -2 6 -4 12 -5 17z"/>
+                                    <path id="neck" class="fil1" d="M577 195l0 29 -21 5 -29 -3 0 -32c-1 -1 -2 -2 -2 -3l30 18 22 -14zm-387 30c0,0 1 -1 2 -1 2 -8 1 -12 1 -21 0 0 0 -1 0 -1l25 14 21 -12 0 0 0 0c3 4 2 10 2 16 1 2 2 3 4 4l-26 12 -29 -11z"/>
+                                    <path id="head" class="fil1" d="M518 158c0 -60 68 -59 68 -2 1 1 3 6 4 7 4 16 -11 27 -13 31l0 1 -22 14 -30 -18c-7 -10 -10 -12 -10 -26 0 -2 2 -6 3 -7zm-325 44c-2 -3 -4 -9 -3 -14 -2 -2 -5 -2 -7 -4 -3 -4 -5 -10 -5 -23 1 0 5 -5 5 -5 0 -13 -2 -22 7 -32 12 -12 70 -18 61 30 2 3 3 5 5 7 1 11 -1 12 -5 23 -3 2 -4 3 -7 5 -1 7 -2 8 -5 14 0 0 0 0 0 1l-21 12 -25 -14z"/>
+                                </svg>
+                            </div>
+                        </div>
+
+    <!-- EL TEXTO EDITABLE DE ZONAS DE DOLOR -->
+    <div class="form-group" style="text-align: left; margin-top: 15px;">
+        <label for="hcPuntoDolor">Zonas de Dolor Seleccionadas (Editable):</label>
+        <input type="text" id="hcPuntoDolor" placeholder="Haga clic en el maniquí o escriba aquí...">
+    </div>
+
+    <!-- CAPTURA DEL MANIQUÍ UBICADA DEBAJO DEL TEXTO -->
+    <div style="margin-top: 15px; text-align: center;">
+        <button type="button" id="btnCapturarMapa" class="btn-action" style="background: #2b9348; margin-bottom: 10px;">📸 Capturar Imagen del Mapa de Dolor</button>
+        <div id="previewCapturaContainer" style="margin-top: 10px;">
+            <!-- Aquí aparecerá la captura generada -->
+        </div>
+    </div>
+
+    <button type="button" id="resetBtn" class="btn-delete" style="margin-top:10px; padding: 8px 15px;">Reiniciar Selección</button>
+
+                        <!-- PLANIFICACIÓN Y SEGUIMIENTO -->
+                        <h3>5. Planificación y Seguimiento del Tratamiento</h3>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>Intensidad del Dolor (Escala EVA 1-10):</label>
+                                <input type="number" id="hcEva" min="1" max="10" placeholder="Ej. 7/10">
+                            </div>
+                            <div class="form-group">
+                                <label>N° de Sesión:</label>
+                                <input type="number" id="hcSesion" value="1">
+                            </div>
+                            <div class="form-group">
+                                <label>Terapeuta a Cargo:</label>
+                                <input type="text" id="hcTerapeuta" placeholder="Nombre del Licenciado(a)">
+                            </div>
+                        </div>
+
+                        <!-- MODALIDADES FISIOTERAPÉUTICAS -->
+                        <label style="display:block; margin: 10px 0 5px; font-weight:600; color:var(--gray);">Modalidades y Técnicas Aplicadas:</label>
+                        <div class="tratamiento-grid">
+                            <label class="checkbox-label"><input type="checkbox" class="trat" value="Electroestimulación"> Electroestimulación</label>
+                            <label class="checkbox-label"><input type="checkbox" class="trat" value="Ultrasonido"> Ultrasonido</label>
+                            <label class="checkbox-label"><input type="checkbox" class="trat" value="Magnetoterapia"> Magnetoterapia</label>
+                            <label class="checkbox-label"><input type="checkbox" class="trat" value="Láser"> Láser</label>
+                            <label class="checkbox-label"><input type="checkbox" class="trat" value="Terapia Manual"> Terapia Manual</label>
+                            <label class="checkbox-label"><input type="checkbox" class="trat" value="Propiocepción"> Propiocepción</label>
+                            <label class="checkbox-label"><input type="checkbox" class="trat" value="Fortalecimiento Muscular"> Fortalecimiento Muscular</label>
+                            <label class="checkbox-label"><input type="checkbox" class="trat" value="Movilidad"> Movilidad articular</label>
+                        </div>
+
+                        <div class="form-grid" style="margin-top: 1.2rem;">
+                            <div class="form-group full-width">
+                                <label>Diagnóstico Fisioterapéutico:</label>
+                                <textarea id="hcDiagnostico" rows="2" placeholder="Conclusión clínica y objetivos de rehabilitación..."></textarea>
+                            </div>
+                        </div>      
+                        <!-- BOTÓN PARA GUARDAR E IMPRIMIR PDF -->
+                        <div style="margin-top: 2rem; display: flex; justify-content: flex-end;">
+                            <button type="submit" class="btn-action" style="padding: 0.8rem 2rem; font-size: 1rem;">Guardar e Imprimir Historia Clínica (PDF)</button>
+                        </div>
+                    </form>
+                    </div>
+                </div>
+            
+            <!-- VISTA: CERTIFICADOS -->
+<!-- VISTA: CERTIFICADOS -->
+            <div id="certificados-view" class="section-view">
+                <div class="content-card" id="cardCertificadoContainer">
+                    <h2>Emisión y Registro de Certificados Clínicos</h2>
+                    <p style="color: var(--gray); margin-bottom: 1.5rem;">Gestione los certificados y mantenga actualizado el archivo maestro en Excel.</p>
+                    
+                    <div class="tabs-container">
+                        <button type="button" class="tab-btn active" id="tab-normal" onclick="cambiarPestañaFormato('normal')">Certificado Fisioterapéutico</button>
+                        <button type="button" class="tab-btn" id="tab-iess" onclick="cambiarPestañaFormato('iess')">Certificado Formato IESS / MSP</button>
+                    </div>
+
+                    <form id="formCertificado" onsubmit="guardarYEmitirCertificado(event)">
+                        <input type="hidden" id="certFormato" value="normal">
+
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>Fecha de Emisión:</label>
+                                <input type="date" id="certFecha" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Cédula / Pasaporte:</label>
+                                <input type="text" id="certCedula" placeholder="Ej. 1713031167" required>
+                            </div>
+                            <div class="form-group full-width">
+                                <label>Apellidos y Nombres Completos:</label>
+                                <input type="text" id="certNombres" placeholder="Ej. TOAPANTA BOLAÑOS JORDAN DANY" required>
+                            </div>
+
+                            <!-- CAMPOS EXCLUSIVOS PARA FORMATO IESS / MSP -->
+                            <div class="form-group iess-only">
+                                <label>Dirección Domiciliaria:</label>
+                                <input type="text" id="certDireccionDom" placeholder="Ej. Solanda Sector 2">
+                            </div>
+                            <div class="form-group iess-only">
+                                <label>Teléfono Paciente:</label>
+                                <input type="tel" id="certTelPaciente" placeholder="Ej. 0995675273">
+                            </div>
+                            <div class="form-group iess-only">
+                                <label>Correo Emisor Certificado (Médico):</label>
+                                <input type="email" id="certEmailEmisor" placeholder="Ej. v.estrella@fisiolab.st" value="especialidades.prolab@gmail.com">
+                            </div>
+                            <div class="form-group iess-only">
+                                <label>Teléfono Emisor Certificado:</label>
+                                <input type="tel" id="certTelEmisor" placeholder="Ej. 0995675273" value="099825746">
+                            </div>
+                            <div class="form-group iess-only">
+                                <label>Institución / Empresa:</label>
+                                <input type="text" id="certInstitucion" placeholder="Ej. Ministerio de Educación">
+                            </div>
+                            <div class="form-group iess-only">
+                                <label>Puesto de Trabajo del Paciente:</label>
+                                <input type="text" id="certPuesto" placeholder="Ej. Asistente Administrativo">
+                            </div>
+                            <div class="form-group iess-only">
+                                <label>Dirección Empresa (Calles y Número):</label>
+                                <input type="text" id="certDirEmpresa" placeholder="Ej. Av. Amazonas N34-451 y República">
+                            </div>
+                            <div class="form-group iess-only">
+                                <label>Teléfono Empresa:</label>
+                                <input type="tel" id="certTelEmpresa" placeholder="Ej. 022456789">
+                            </div>
+                            <div class="form-group iess-only">
+                                <label>Correo Empresa (Opcional):</label>
+                                <input type="email" id="certCorreoEmpresa" placeholder="Ej. contacto@empresa.gob.ec">
+                            </div>
+                            <div class="form-group iess-only">
+                                <label>Dirección Establecimiento de Salud:</label>
+                                <input type="text" id="certDirEstablecimiento" placeholder="Ej. Solanda, Gaspar Esparza y B. Rincón" value="Magdalena, Duchicela y Caranqui Oe5-85">
+                            </div>
+
+                            <div class="form-group">
+                                <label>Tipo de Certificado:</label>
+                                <select id="certTipo">
+                                    <option>Certificado Fisioterapéutico</option>
+                                    <option>Aptitud Física</option>
+                                    <option>Reposo Médico</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Días de Reposo / Sesiones (Número):</label>
+                                <input type="number" id="certDias" value="2" min="1" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Código CIE-10:</label>
+                                <input type="text" id="certCie" placeholder="Ej. M54.5" required>
+                            </div>
+                            <div class="form-group full-width">
+                                <label>Diagnóstico:</label>
+                                <input type="text" id="certDiagnostico" placeholder="Ej. LUMBAGO NO ESPECIFICADO..." required>
+                            </div>
+                            <div class="form-group">
+                                <label>Fecha de Inicio de Síntomas (FIS) / Desde:</label>
+                                <input type="date" id="certFechaInicio" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Horario de Atención:</label>
+                                <input type="text" id="certHorario" placeholder="Ej. 10h30" required>
+                            </div>
+
+                            <!-- SÍNTOMAS EXCLUSIVOS IESS / MSP -->
+                            <div class="form-group full-width iess-only">
+                                <label>Presenta Síntomas / Cuadro Clínico / Descripción Enfermedad:</label>
+                                <input type="text" id="certSintomas" placeholder="Ej. -Dolor Lumbar - Rigidez muscular">
+                            </div>
+                        </div>
+
+                        <!-- MODALIDADES Y TÉCNICAS APLICADAS -->
+                        <!--<div class="form-group full-width" style="margin-top: 1rem;">-->
+                            <label style="font-weight:600; color:var(--dark);">Modalidades y Técnicas Aplicadas (Seleccione una o varias):</label>
+                            <div class="tratamiento-grid" style="margin-top: 0.5rem;">
+                                <label class="checkbox-label"><input type="checkbox" class="cert-medios" value="TENS"> TENS</label>
+                                <label class="checkbox-label"><input type="checkbox" class="cert-medios" value="crioterapia"> Crioterapia</label>
+                                <label class="checkbox-label"><input type="checkbox" class="cert-medios" value="termoterapia"> Termoterapia</label>
+                                <label class="checkbox-label"><input type="checkbox" class="cert-medios" value="US"> US (Ultrasonido)</label>
+                                <label class="checkbox-label"><input type="checkbox" class="cert-medios" value="masaje"> Masaje</label>
+                                <label class="checkbox-label"><input type="checkbox" class="cert-medios" value="ejercicios terapéuticos"> Ejercicios terapéuticos</label>
+                                <label class="checkbox-label"><input type="checkbox" class="cert-medios" value="Electroestimulación"> Electroestimulación</label>
+                                <label class="checkbox-label"><input type="checkbox" class="cert-medios" value="Magnetoterapia"> Magnetoterapia</label>
+                                <label class="checkbox-label"><input type="checkbox" class="cert-medios" value="Láser"> Láser</label>
+                                <label class="checkbox-label"><input type="checkbox" class="cert-medios" value="Terapia Manual"> Terapia Manual</label>
+                                <label class="checkbox-label"><input type="checkbox" class="cert-medios" value="Propiocepción"> Propiocepción</label>
+                                <label class="checkbox-label"><input type="checkbox" class="cert-medios" value="Movilidad articular"> Movilidad articular</label>
+                            </div>                        
+
+                        <!-- CAMPO ADICIONAL ANTES DE OBSERVACIÓN -->
+                        <div class="form-grid" style="margin-top: 1.2rem;">
+                            <div class="form-group">
+                                <label>Subtítulo opcional (Ej. Justificación / Indicación):</label>
+                                <input type="text" id="certSubtitulo" placeholder="Ej. Observación Especial">
+                            </div>
+                            <div class="form-group">
+                                <label>Texto de justificación:</label>
+                                <input type="text" id="certTextoAdicional" placeholder="Texto descriptivo si fuera necesario...">
+                            </div>
+                        </div>
+
+                        <div class="form-group full-width" style="margin-top: 1rem;">
+                            <label>Observaciones:</label>
+                            <textarea id="certObservaciones" rows="3" placeholder="Ej. Mantener reposo relativo..."></textarea>
+                        </div>
+
+                        <div style="display: flex; gap: 10px; margin-top: 15px; flex-wrap: wrap;">
+                            <button type="submit" class="btn-action" style="padding: 0.7rem 1.5rem; font-size: 0.95rem;">Guardar e Imprimir Certificado (PDF)</button>
+                            <button type="button" onclick="exportCertificadosToExcel()" class="btn-action" style="background: #2b9348; padding: 0.7rem 1.5rem; font-size: 0.95rem;">📊 Descargar / Actualizar Excel Único</button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="content-card">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.2rem; flex-wrap: wrap; gap: 1rem;">
+                        <h2 style="margin-bottom: 0;">Historial de Certificados Emitidos</h2>
+                        <div class="search-container" style="width: 320px;">
+                            <input type="text" id="searchCertInput" placeholder="Buscar por cédula o nombre..." onkeyup="filtrarCertificados()">
+                            <button onclick="filtrarCertificados()">🔍</button>
+                        </div>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr><th>Fecha</th><th>Cédula</th><th>Paciente</th><th>Tipo</th><th>Reposo (Días)</th><th>Acciones</th></tr>
+                        </thead>
+                        <tbody id="tablaCertificadosBody"></tbody>
+                    </table>
+                </div>
+            </div>
+<!-- OTRAS VISTAS DE NAVEGACIÓN PRINCIPALES -->
+            <div id="citas-view" class="section-view">
+                <div class="content-card">
+                    <h2>Calendario y Citas Médicas</h2>
+                    <p style="color: var(--gray);">Módulo de programación de terapias físicas y control de horarios.</p>
+                </div>
+            </div>
+
+<div id="recetas-view" class="section-view">
+                <div class="content-card">
+                    <h2>Recetas e Indicaciones Médicas</h2>
+                    <p style="color: var(--gray);">Prescripciones de ejercicios y pautas de rehabilitación domiciliaria.</p>
+                </div>
+            </div>
+
+<div id="informes-view" class="section-view">
+                <div class="content-card">
+                    <h2>Informes Estadísticos y Clínicos</h2>
+                    <p style="color: var(--gray);">Resumen general de evolución de pacientes y reportes de atención del centro.</p>
+                </div>
+            </div>
+    
+        </div> <!-- Cierre de .main-content -->
+    </div> <!-- Cierre de .dashboard -->
+    
+    <script src="../controllers/ingresoPacientes.js"></script>
+    <script src="../controllers/bodyselector.js"></script>
+    <!-- Cargar html2canvas desde CDN si no lo tienes incluido -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    
+    <script>
+        // --- 1. CONTROL DE NAVEGACIÓN Y MENÚS ---
+    function toggleSidebar() {
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('sidebarOverlay');
+        if (sidebar && overlay) {
+            sidebar.classList.toggle('open');
+            overlay.classList.toggle('active');
+        }
+    }
+
+    function toggleSidebarMobile() {
+        if (window.innerWidth <= 992) {
+            toggleSidebar();
+        }
+    }
+
+    function switchTab(event, viewId) {
+        if (event) event.preventDefault();
+        
+        // Ocultar todas las vistas
+        document.querySelectorAll('.section-view').forEach(view => {
+            view.classList.remove('active');
+        });
+        
+        // Mostrar la vista seleccionada
+        const targetView = document.getElementById(viewId);
+        if (targetView) {
+            targetView.classList.add('active');
+        }
+        
+        // Actualizar clase activa en el menú
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.classList.remove('active');
+        });
+        if (event && event.currentTarget) {
+            event.currentTarget.classList.add('active');
+        }
+    }
+
+    function buscarPaciente() {
+        const query = document.getElementById('searchInput').value.trim();
+        if(query) {
+            alert("Buscando paciente: " + query);
+        } else {
+            alert("Por favor ingrese un número de cédula o apellido para buscar.");
+        }
+    }
+        
+        
+        //boton descargar pdf y captura de imagen
+        
+
+
+    // Script para capturar el maniquí en imagen y mostrarlo debajo del texto
+    document.getElementById('btnCapturarMapa').addEventListener('click', () => {
+        const elementoAHTML = document.getElementById('bodyContainerToCapture');
+        html2canvas(elementoAHTML).then(canvas => {
+            const imgData = canvas.toDataURL('image/png');
+            const container = document.getElementById('previewCapturaContainer');
+            container.innerHTML = `
+                <p style="font-size: 0.85rem; color: #2b9348; font-weight: 600; margin-bottom: 5px;">¡Captura generada con éxito!</p>
+                <img src="${imgData}" alt="Captura Mapa de Dolor" style="max-width: 100%; height: auto; max-height: 200px; border-radius: 6px; border: 1px solid #dee2e6; box-shadow: 0 2px 6px rgba(0,0,0,0.1);">
+            `;
+        });
+    });
+
+    // Función completa para incluir todos los campos y la imagen capturada en el PDF
+    function guardarYGenerarPDF(event) {
+        event.preventDefault();
+        
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+
+        // 1. Recopilar datos de todos los campos del formulario
+        const numHC = document.getElementById('hcNum').value;
+        const fecha = document.getElementById('hcFecha').value;
+        const cedula = document.getElementById('hcCedula').value;
+        const nombres = document.getElementById('hcNombres').value;
+        const nacimiento = document.getElementById('hcNacimiento').value;
+        const edad = document.getElementById('hcEdad').value;
+        const sexo = document.getElementById('hcSexo').value;
+        const celular = document.getElementById('hcCelular').value;
+        const email = document.getElementById('hcEmail').value;
+        const direccion = document.getElementById('hcDireccion').value;
+        const emergenciaContacto = document.getElementById('hcEmergenciaContacto').value;
+        const emergenciaTelefono = document.getElementById('hcEmergenciaTelefono').value;
+        
+        const antecedentes = Array.from(document.querySelectorAll('.ant:checked')).map(el => el.value).join(', ');
+        const otrosAnt = document.getElementById('hcOtrosAnt').value;
+        const publicidad = document.getElementById('hcPublicidad').value;
+
+        const motivo = document.getElementById('hcMotivo').value;
+        const profesion = document.getElementById('hcProfesion').value;
+        const tipoTrabajo = document.getElementById('hcTipoTrabajo').value;
+        const sedestacion = document.getElementById('hcSedestacion').value;
+        const esfuerzo = document.getElementById('hcEsfuerzo').value;
+
+        const asimetria = document.getElementById('hcAsimetria').value;
+        const atrofias = document.getElementById('hcAtrofias').value;
+        const inflamacion = document.getElementById('hcInflamacion').value;
+        const contracturas = document.getElementById('hcContracturas').value;
+        const irradiacion = document.getElementById('hcIrradiacion').value;
+        const haciaDonde = document.getElementById('hcHaciaDonde').value;
+        const puntoDolorTexto = document.getElementById('hcPuntoDolor').value;
+
+        const eva = document.getElementById('hcEva').value;
+        const sesion = document.getElementById('hcSesion').value;
+        const terapeuta = document.getElementById('hcTerapeuta').value;
+        const tratamientos = Array.from(document.querySelectorAll('.trat:checked')).map(el => el.value).join(', ');
+        const diagnostico = document.getElementById('hcDiagnostico').value;
+
+        let y = 15;
+
+        function verificarEspacio(espacioNecesario = 10) {
+            if (y > 275 - espacioNecesario) {
+                doc.addPage();
+                y = 15;
+            }
+        }
+
+        // --- CARGAR LOGOTIPO DESDE LA CARPETA /img/ ---
+        const imgLogo = new Image();
+        imgLogo.crossOrigin = "Anonymous";
+        imgLogo.src = '../img/logFisio.png'; 
+        
+        imgLogo.onload = function() {
+            try {
+                doc.addImage(imgLogo, 'PNG', 14, 10, 22, 22);
+            } catch(e) { console.error("No se pudo incrustar el logo", e); }
+            generarContenidoPDF();
+        };
+
+        imgLogo.onerror = function() {
+            generarContenidoPDF();
+        };
+
+        if (imgLogo.complete) {
+            try { doc.addImage(imgLogo, 'PNG', 14, 10, 22, 22); } catch(e){}
+            generarContenidoPDF();
+        }
+
+        function generarContenidoPDF() {
+            doc.setFont("helvetica", "bold");
+            doc.setFontSize(14);
+            doc.setTextColor(40, 40, 40);
+            doc.text("CENTRO DE REHABILITACIÓN FÍSICA - FISIOLAB.ST", 42, 16);
+
+            doc.setFontSize(10.5);
+            doc.setFont("helvetica", "normal");
+            doc.setTextColor(100, 100, 100);
+            doc.text("HISTORIA CLÍNICA FISIOTERAPÉUTICA", 42, 22);
+
+            doc.setLineWidth(0.6);
+            doc.setDrawColor(67, 97, 238);
+            doc.line(14, 33, 196, 33);
+
+            y = 38;
+
+            function agregarSeccionTitulo(titulo) {
+                verificarEspacio(12);
+                doc.setFillColor(241, 243, 245);
+                doc.rect(14, y - 4, 182, 6, 'F');
+                doc.setFont("helvetica", "bold");
+                doc.setFontSize(10);
+                doc.setTextColor(58, 12, 163);
+                doc.text(titulo, 16, y);
+                y += 6;
+                doc.setFont("helvetica", "normal");
+                doc.setTextColor(40, 40, 40);
+                doc.setFontSize(9);
+            }
+
+            agregarSeccionTitulo("1. Datos Personales");
+            doc.text(`N° HC: ${numHC || 'N/D'}`, 14, y);
+            doc.text(`Fecha: ${fecha || 'N/D'}`, 110, y);
+            y += 5;
+            doc.text(`Cédula: ${cedula || 'N/D'}`, 14, y);
+            doc.text(`Edad: ${edad || 'N/D'} años  |  Sexo: ${sexo || 'N/D'}`, 110, y);
+            y += 5;
+            doc.text(`Paciente: ${nombres || 'N/D'}`, 14, y);
+            y += 5;
+            doc.text(`Celular: ${celular || 'N/D'}`, 14, y);
+            doc.text(`Email: ${email || 'N/D'}`, 110, y);
+            y += 5;
+            doc.text(`Dirección: ${direccion || 'N/D'}`, 14, y, { maxWidth: 180 });
+            y += 5;
+            doc.text(`Emergencia: ${emergenciaContacto || 'N/D'} (${emergenciaTelefono || 'N/D'})`, 14, y);
+            y += 8;
+
+            agregarSeccionTitulo("2. Antecedentes Personales del Paciente");
+            doc.text(`Patologías / Condiciones: ${antecedentes || "Ninguna marcada"}`, 14, y, { maxWidth: 180 });
+            y += 5;
+            if (otrosAnt) {
+                doc.text(`Otros antecedentes: ${otrosAnt}`, 14, y, { maxWidth: 180 });
+                y += 5;
+            }
+            doc.text(`Publicidad / Medio: ${publicidad || "No especificado"}`, 14, y);
+            y += 8;
+
+            agregarSeccionTitulo("3. Motivo de Consulta y Factores Ocupacionales");
+            doc.text(`Descripción del problema: ${motivo || "No especificado"}`, 14, y, { maxWidth: 180 });
+            y += 5;
+            doc.text(`Profesión: ${profesion || 'N/D'}`, 14, y);
+            doc.text(`Tipo de Trabajo: ${tipoTrabajo || 'N/D'}`, 110, y);
+            y += 5;
+            doc.text(`Sedestación Prolongada: ${sedestacion}  |  Esfuerzo Físico: ${esfuerzo}`, 14, y);
+            y += 8;
+
+            agregarSeccionTitulo("4. Evaluación Fisioterapéutica (Inspección y Palpación)");
+            doc.text(`Asimetría: ${asimetria || 'N/D'}`, 14, y);
+            doc.text(`Atrofias: ${atrofias || 'N/D'}`, 110, y);
+            y += 5;
+            doc.text(`Inflamación / Edema: ${inflamacion || 'N/D'}`, 14, y);
+            doc.text(`Contracturas: ${contracturas || 'N/D'}`, 110, y);
+            y += 5;
+            doc.text(`Irradiación del Dolor: ${irradiacion} (Hacia: ${haciaDonde || "N/A"})`, 14, y);
+            y += 5;
+            doc.text(`Zonas de Dolor Seleccionadas: ${puntoDolorTexto || "Ninguna zona especificada"}`, 14, y, { maxWidth: 180 });
+            y += 8;
+
+            agregarSeccionTitulo("5. Planificación y Seguimiento del Tratamiento");
+            doc.text(`Escala EVA (Dolor): ${eva ? eva + '/10' : 'N/D'}`, 14, y);
+            doc.text(`N° de Sesión: ${sesion || '1'}`, 110, y);
+            y += 5;
+            doc.text(`Terapeuta a Cargo: ${terapeuta || 'N/D'}`, 14, y);
+            y += 5;
+            doc.text(`Modalidades Aplicadas: ${tratamientos || "Ninguna seleccionada"}`, 14, y, { maxWidth: 180 });
+            y += 5;
+            doc.text(`Diagnóstico Fisioterapéutico: ${diagnostico || "No especificado"}`, 14, y, { maxWidth: 180 });
+            y += 10;
+
+            // --- 6. MAPA DE DOLOR (CAPTURA AMPLIADA) ---
+            const previewImg = document.querySelector('#previewCapturaContainer img');
+            if (previewImg) {
+                verificarEspacio(65);
+                agregarSeccionTitulo("6. Mapa de Dolor Corporal (Captura)");
+                try {
+                    // Se extiende el ancho de 80 a 140 y se ajusta la posición X para centrarlo perfectamente
+                    doc.addImage(previewImg.src, 'PNG', 35, y, 130, 60);
+                    y += 65;
+                } catch (e) {
+                    console.error("Error al incrustar la imagen del mapa corporal", e);
+                }
+            }
+
+            doc.save(`HistoriaClinica_${cedula || 'paciente'}.pdf`);
+            alert("¡Historia Clínica profesional generada con éxito!");
+        }
+    }
+    
+    // --- certificados ---
+    // --- INICIALIZACIÓN GLOBAL SEGURA ---
+        let certificados = JSON.parse(localStorage.getItem("lab_certificados")) || [];
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const hoy = new Date().toISOString().split('T')[0];
+            if(document.getElementById('certFecha')) document.getElementById('certFecha').value = hoy;
+            if(document.getElementById('certFechaInicio')) document.getElementById('certFechaInicio').value = hoy;
+            renderCertificados();
+        });
+
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('open');
+            document.getElementById('sidebarOverlay').classList.toggle('active');
+        }
+
+        function toggleSidebarMobile() {
+            if (window.innerWidth <= 992) toggleSidebar();
+        }
+
+        function switchTab(event, viewId) {
+            event.preventDefault();
+            document.querySelectorAll('.section-view').forEach(view => view.classList.remove('active'));
+            document.getElementById(viewId).classList.add('active');
+            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+        }
+
+        function buscarPaciente() {
+            const query = document.getElementById('searchInput').value.trim();
+            if(query) alert("Buscando paciente: " + query);
+        }
+
+        function cambiarPestañaFormato(formato) {
+            document.getElementById('certFormato').value = formato;
+            document.getElementById('tab-normal').classList.remove('active');
+            document.getElementById('tab-iess').classList.remove('active');
+            
+            const contenedorCard = document.getElementById('cardCertificadoContainer');
+
+            if(formato === 'normal') {
+                document.getElementById('tab-normal').classList.add('active');
+                contenedorCard.classList.remove('iess-active');
+            } else {
+                document.getElementById('tab-iess').classList.add('active');
+                contenedorCard.classList.add('iess-active');
+            }
+        }
+
+        function numeroALetras(num) {
+            const unidades = ['', 'UN', 'DOS', 'TRES', 'CUATRO', 'CINCO', 'SEIS', 'SIETE', 'OCHO', 'NUEVE', 'DIEZ', 'ONCE', 'DOCE', 'TRECE', 'CATORCE', 'QUINCE', 'DIECISÉIS', 'DIECISIETE', 'DIECIOCHO', 'DIECINUEVE', 'VEINTE'];
+            const decenas = ['', '', 'VEINTI', 'TREINTA', 'CUARENTA', 'CINCUENTA', 'SESENTA', 'SETENTA', 'OCHENTA', 'NOVENTA'];
+            const centenas = ['', 'CIENTO', 'DOSCIENTOS', 'TRESCIENTOS', 'CUATROCIENTOS', 'QUINIENTOS', 'SEISCIENTOS', 'SETECIENTOS', 'OCHOCIENTOS', 'NOVECIENTOS'];
+
+            if (num === 0) return 'CERO';
+            if (num <= 20) return unidades[num];
+            if (num < 30) return 'VEINTI' + unidades[num - 20];
+            if (num < 100) {
+                let d = Math.floor(num / 10);
+                let u = num % 10;
+                return decenas[d] + (u > 0 ? ' Y ' + unidades[u] : '');
+            }
+            if (num < 1000) {
+                let c = Math.floor(num / 100);
+                let resto = num % 100;
+                if (num === 100) return 'CIEN';
+                return centenas[c] + (resto > 0 ? ' ' + numeroALetras(resto) : '');
+            }
+            if (num < 2000) return 'MIL ' + numeroALetras(num - 1000);
+            if (num < 1000000) {
+                let m = Math.floor(num / 1000);
+                let resto = num % 1000;
+                return (m === 1 ? 'UN MIL' : numeroALetras(m) + ' MIL') + (resto > 0 ? ' ' + numeroALetras(resto) : '');
+            }
+            return num.toString();
+        }
+
+        function convertirFechaALetras(fechaStr) {
+            if(!fechaStr) return "";
+            const partes = fechaStr.split("-");
+            const anio = parseInt(partes[0], 10);
+            const mesIndex = parseInt(partes[1], 10) - 1;
+            const dia = parseInt(partes[2], 10);
+            const meses = ["ENERO", "FEBRERO", "MARZO", "ABRIL", "MAYO", "JUNIO", "JULIO", "AGOSTO", "SEPTIEMBRE", "OCTUBRE", "NOVIEMBRE", "DICIEMBRE"];
+            
+            let diaLetras = numeroALetras(dia);
+            let anioLetras = numeroALetras(anio);
+            return `${diaLetras} DE ${meses[mesIndex]} DEL ${anioLetras}`;
+        }
+
+        function guardarYEmitirCertificado(event) {
+            event.preventDefault();
+
+            const cedula = document.getElementById("certCedula").value.trim();
+            const fecha = document.getElementById("certFecha").value;
+            const tipo = document.getElementById("certTipo").value;
+            const nombres = document.getElementById("certNombres").value.trim();
+            const dias = document.getElementById("certDias").value.trim() || "1";
+            const cie = document.getElementById("certCie").value.trim();
+            const diagnostico = document.getElementById("certDiagnostico").value.trim();
+            const fechaInicio = document.getElementById("certFechaInicio").value;
+            const horario = document.getElementById("certHorario").value.trim();
+            const observaciones = document.getElementById("certObservaciones").value.trim();
+            
+            const institucion = document.getElementById("certInstitucion").value.trim();
+            const puesto = document.getElementById("certPuesto").value.trim();
+            const direccionDom = document.getElementById("certDireccionDom").value.trim();
+            const telPaciente = document.getElementById("certTelPaciente").value.trim();
+            const emailEmisor = document.getElementById("certEmailEmisor").value.trim();
+            const telEmisor = document.getElementById("certTelEmisor").value.trim();
+            const dirEstablecimiento = document.getElementById("certDirEstablecimiento").value.trim();
+            const dirEmpresa = document.getElementById("certDirEmpresa").value.trim();
+            const telEmpresa = document.getElementById("certTelEmpresa").value.trim();
+            const correoEmpresa = document.getElementById("certCorreoEmpresa").value.trim();
+            const sintomas = document.getElementById("certSintomas").value.trim();
+            
+            const subtitulo = document.getElementById("certSubtitulo").value.trim();
+            const textoAdicional = document.getElementById("certTextoAdicional").value.trim();
+            const formato = document.getElementById("certFormato").value.toUpperCase();
+
+            let diasNum = parseInt(dias) || 1;
+            let partesF = fechaInicio.split("-");
+            let fInicioObj = new Date(partesF[0], partesF[1] - 1, partesF[2]);
+            let fFinObj = new Date(fInicioObj);
+            fFinObj.setDate(fFinObj.getDate() + diasNum - 1);
+
+            let anioFin = fFinObj.getFullYear();
+            let mesFin = String(fFinObj.getMonth() + 1).padStart(2, '0');
+            let diaFin = String(fFinObj.getDate()).padStart(2, '0');
+            let fechaFinStr = `${anioFin}-${mesFin}-${diaFin}`;
+
+            const diasLetras = `${dias} (${numeroALetras(diasNum)})`;
+            const desdeLetras = `(${fechaInicio}) ${convertirFechaALetras(fechaInicio)}`;
+            const hastaLetras = `(${fechaFinStr}) ${convertirFechaALetras(fechaFinStr)}`;
+
+            const mediosSeleccionados = Array.from(document.querySelectorAll('.cert-medios:checked')).map(el => el.value);
+            const mediosTexto = mediosSeleccionados.length > 0 ? mediosSeleccionados.join(', ') : 'ejercicios terapéuticos';
+
+            const indexExistente = certificados.findIndex(c => c.cedula === cedula && c.fecha === fecha && c.tipo === tipo);
+            if (indexExistente !== -1) {
+                if (!confirm("Ya existe un certificado con esta fecha. ¿Desea reemplazarlo?")) return;
+                certificados.splice(indexExistente, 1);
+            }
+
+            const nuevoCertificado = { 
+                formato, fecha, cedula, nombres, tipo, dias, diasLetras, cie, diagnostico, 
+                fechaInicio, fechaFin: fechaFinStr, desdeLetras, hastaLetras, horario, observaciones, 
+                institucion, puesto, direccionDom, telPaciente, emailEmisor, telEmisor, 
+                dirEstablecimiento, dirEmpresa, telEmpresa, correoEmpresa, sintomas, subtitulo, textoAdicional, medios: mediosTexto 
+            };
+
+            certificados.push(nuevoCertificado);
+            persistCertificados();
+            renderCertificados();
+            generarPDFCertificado(nuevoCertificado);
+            
+            document.getElementById("formCertificado").reset();
+            document.getElementById('certFecha').value = new Date().toISOString().split('T')[0];
+            document.getElementById('certFechaInicio').value = new Date().toISOString().split('T')[0];
+            alert("¡Certificado guardado e impreso con éxito!");
+        }
+
+        function renderCertificados(listaAFiltrar = null) {
+            const tbody = document.getElementById("tablaCertificadosBody");
+            if (!tbody) return;
+            tbody.innerHTML = "";
+            const datosAMostrar = listaAFiltrar || certificados;
+            if (datosAMostrar.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--gray);">No hay certificados registrados.</td></tr>`;
+                return;
+            }
+            datosAMostrar.forEach((cert) => {
+                const realIndex = certificados.indexOf(cert);
+                const row = tbody.insertRow();
+                row.innerHTML = `
+                    <td>${cert.fecha}</td>
+                    <td>${cert.cedula}</td>
+                    <td>${cert.nombres}</td>
+                    <td>${cert.tipo}</td>
+                    <td><span class="status confirmed">${cert.dias}</span></td>
+                    <td>
+                        <button class="btn-action" style="padding: 0.3rem 0.6rem; font-size: 0.8rem;" onclick="reimprimirCertificado(${realIndex})">Imprimir</button>
+                        <button class="btn-delete" style="padding: 0.3rem 0.6rem; font-size: 0.8rem;" onclick="deleteCertificado(${realIndex})">Eliminar</button>
+                    </td>
+                `;
+            });
+        }
+
+        function filtrarCertificados() {
+            const query = document.getElementById("searchCertInput").value.trim().toLowerCase();
+            if (!query) return renderCertificados(certificados);
+            renderCertificados(certificados.filter(cert => cert.cedula.toLowerCase().includes(query) || cert.nombres.toLowerCase().includes(query)));
+        }
+
+        function deleteCertificado(index) {
+            if (confirm("¿Está seguro de eliminar este registro?")) {
+                certificados.splice(index, 1);
+                persistCertificados();
+                renderCertificados();
+            }
+        }
+
+        function persistCertificados() { localStorage.setItem("lab_certificados", JSON.stringify(certificados)); }
+
+        function exportCertificadosToExcel() {
+            if (certificados.length === 0) { alert("No hay certificados para exportar."); return; }
+            const worksheet = XLSX.utils.json_to_sheet(certificados.map(c => ({
+                "Cédula": c.cedula, "Nombres": c.nombres, "Fecha": c.fecha, "Tipo": c.tipo, "Días": c.dias, "CIE-10": c.cie, "Diagnóstico": c.diagnostico
+            })));
+            const workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, worksheet, "Registro");
+            XLSX.writeFile(workbook, "certiticadofisiolab.xlsx");
+        }
+
+        function reimprimirCertificado(index) { generarPDFCertificado(certificados[index]); }
+
+        function generarPDFCertificado(cert) {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            function formatearFechaTexto(fechaStr) {
+                if(!fechaStr) return "";
+                const partes = fechaStr.split("-");
+                const anio = parseInt(partes[0], 10);
+                const mesIndex = parseInt(partes[1], 10) - 1;
+                const dia = parseInt(partes[2], 10);
+                const meses = ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"];
+                return `${dia} de ${meses[mesIndex]} del ${anio}`;
+            }
+
+            const fechaEmisionTexto = formatearFechaTexto(cert.fecha);
+            const nombresCapitalizados = cert.nombres.replace(/\b\w/g, l => l.toUpperCase());
+            const mediosAplicados = cert.medios || "TENS, crioterapia, termoterapia, US, masaje y ejercicios terapéuticos";
+
+            const imgLogo = new Image();
+            imgLogo.crossOrigin = "Anonymous";
+            imgLogo.src = '../img/logFisior.png';
+
+            imgLogo.onload = function() {
+                try { doc.addImage(imgLogo, 'PNG', 14, 10, 24, 24); } catch(e){}
+                crearEstructuraPDF();
+            };
+            imgLogo.onerror = function() { crearEstructuraPDF(); };
+            if (imgLogo.complete) {
+                try { doc.addImage(imgLogo, 'PNG', 14, 10, 24, 24); } catch(e){}
+                crearEstructuraPDF();
+            }
+
+            function crearEstructuraPDF() {
+                // Encabezado institucional estilo oficial MSP
+                doc.setFont("helvetica", "bold");
+                doc.setFontSize(10);
+                doc.setTextColor(200, 0, 0);
+                doc.text("DIRECCIÓN DISTRITAL 13D05 SALUD", 105, 14, { align: "center" });
+                doc.text("NOMBRE DE UNIDAD DE SALUD", 105, 19, { align: "center" });
+                
+                doc.setFont("helvetica", "bold");
+                doc.setFontSize(11);
+                doc.setTextColor(58, 12, 163);
+                doc.text("CERTIFICADO MÉDICO", 105, 27, { align: "center" });
+
+                doc.setLineWidth(0.4);
+                doc.setDrawColor(200, 200, 200);
+                doc.line(14, 31, 196, 31);
+
+                if (cert.formato === 'IESS') {
+                    let y = 37;
+                    const margenRespuesta = 96; // Margen izquierdo unificado para todas las respuestas
+
+                    // A) DATOS DEL ESTABLECIMIENTO DE SALUD
+                    doc.setFillColor(241, 243, 245);
+                    doc.rect(14, y, 182, 5.5, 'F');
+                    doc.setFont("helvetica", "bold");
+                    doc.setFontSize(8.5);
+                    doc.setTextColor(58, 12, 163);
+                    doc.text("A) DATOS DEL ESTABLECIMIENTO DE SALUD", 16, y + 4);
+
+                    y += 9;
+                    doc.setFontSize(8.5);
+                    doc.setTextColor(40, 40, 40);
+
+                    doc.setFont("helvetica", "bold");
+                    doc.text("Nombre del establecimiento:", 14, y);
+                    doc.setFont("helvetica", "normal");
+                    doc.text("Centro de Rehabilitación Física Fisiolab.st", margenRespuesta, y);
+
+                    y += 6;
+                    doc.setFont("helvetica", "bold");
+                    doc.text("Correo electrónico del médico emisor:", 14, y);
+                    doc.setFont("helvetica", "normal");
+                    doc.text(`${cert.emailEmisor || 'especialidades.prolab@gmail.com'}`, margenRespuesta, y);
+
+                    y += 6;
+                    doc.setFont("helvetica", "bold");
+                    doc.text("Teléfono del emisor del certificado:", 14, y);
+                    doc.setFont("helvetica", "normal");
+                    doc.text(`${cert.telEmisor || '099825746'}`, margenRespuesta, y);
+
+                    y += 6;
+                    doc.setFont("helvetica", "bold");
+                    doc.text("Dirección del establecimiento de salud:", 14, y);
+                    doc.setFont("helvetica", "normal");
+                    doc.text(`${cert.dirEstablecimiento || 'Magdalena, Duchicela y Caranqui'}`, margenRespuesta, y);
+
+                    y += 6;
+                    doc.setFont("helvetica", "bold");
+                    doc.text("Lugar y fecha de emisión:", 14, y);
+                    doc.setFont("helvetica", "normal");
+                    doc.text(`Quito, ${fechaEmisionTexto}`, margenRespuesta, y);
+
+                    // B) DATOS DEL PACIENTE
+                    y += 9;
+                    doc.setFillColor(241, 243, 245);
+                    doc.rect(14, y, 182, 5.5, 'F');
+                    doc.setFont("helvetica", "bold");
+                    doc.setFontSize(8.5);
+                    doc.setTextColor(58, 12, 163);
+                    doc.text("B) DATOS DEL PACIENTE", 16, y + 4);
+
+                    y += 9;
+                    doc.setTextColor(40, 40, 40);
+
+                    doc.setFont("helvetica", "bold");
+                    doc.text("Apellidos y nombres completos:", 14, y);
+                    doc.setFont("helvetica", "normal");
+                    doc.text(`${nombresCapitalizados}`, margenRespuesta, y);
+
+                    y += 6;
+                    doc.setFont("helvetica", "bold");
+                    doc.text("Dirección Domiciliaria:", 14, y);
+                    doc.setFont("helvetica", "normal");
+                    doc.text(`${cert.direccionDom || 'N/D'}`, margenRespuesta, y);
+
+                    y += 6;
+                    doc.setFont("helvetica", "bold");
+                    doc.text("Número de teléfono:", 14, y);
+                    doc.setFont("helvetica", "normal");
+                    doc.text(`${cert.telPaciente || 'N/D'}`, margenRespuesta, y);
+
+                    y += 6;
+                    doc.setFont("helvetica", "bold");
+                    doc.text("Institución o empresa:", 14, y);
+                    doc.setFont("helvetica", "normal");
+                    doc.text(`${cert.institucion || 'N/D'}`, margenRespuesta, y);
+
+                    y += 6;
+                    doc.setFont("helvetica", "bold");
+                    doc.text("Puesto de trabajo del paciente:", 14, y);
+                    doc.setFont("helvetica", "normal");
+                    doc.text(`${cert.puesto || 'N/D'}`, margenRespuesta, y);
+
+                    y += 6;
+                    doc.setFont("helvetica", "bold");
+                    doc.text("Dirección de la empresa:", 14, y);
+                    doc.setFont("helvetica", "normal");
+                    doc.text(`${cert.dirEmpresa || 'N/D'}`, margenRespuesta, y, { maxWidth: 100 });
+
+                    y += 6;
+                    doc.setFont("helvetica", "bold");
+                    doc.text("Teléfono empresa:", 14, y);
+                    doc.setFont("helvetica", "normal");
+                    doc.text(`${cert.telEmpresa || 'N/D'}`, margenRespuesta, y);
+
+                    if (cert.correoEmpresa) {
+                        y += 6;
+                        doc.setFont("helvetica", "bold");
+                        doc.text("Correo electrónico empresa:", 14, y);
+                        doc.setFont("helvetica", "normal");
+                        doc.text(`${cert.correoEmpresa}`, margenRespuesta, y);
+                    }
+
+                    y += 6;
+                    doc.setFont("helvetica", "bold");
+                    doc.text("Número de Cédula:", 14, y);
+                    doc.setFont("helvetica", "normal");
+                    doc.text(`${cert.cedula}`, margenRespuesta, y);
+
+                    y += 6;
+                    doc.setFont("helvetica", "bold");
+                    doc.text("Número de Historia Clínica:", 14, y);
+                    doc.setFont("helvetica", "normal");
+                    doc.text(`${cert.cedula}`, margenRespuesta, y);
+
+                    // C) MOTIVO DE AISLAMIENTO / ENFERMEDAD
+                    y += 9;
+                    doc.setFillColor(241, 243, 245);
+                    doc.rect(14, y, 182, 5.5, 'F');
+                    doc.setFont("helvetica", "bold");
+                    doc.setFontSize(8.5);
+                    doc.setTextColor(58, 12, 163);
+                    doc.text("C) MOTIVO DE AISLAMIENTO / ENFERMEDAD", 16, y + 4);
+
+                    y += 9;
+                    doc.setTextColor(40, 40, 40);
+
+                    doc.setFont("helvetica", "bold");
+                    doc.text("Diagnóstico:", 14, y);
+                    doc.setFont("helvetica", "normal");
+                    doc.text(`${cert.diagnostico}`, margenRespuesta, y);
+
+                    y += 6;
+                    doc.setFont("helvetica", "bold");
+                    doc.text("Código CIE10:", 14, y);
+                    doc.setFont("helvetica", "normal");
+                    doc.text(`${cert.cie}`, margenRespuesta, y);
+
+                    y += 6;
+                    doc.setFont("helvetica", "bold");
+                    doc.text("Presenta Síntomas:", 14, y);
+                    doc.setFont("helvetica", "normal");
+                    doc.text("SI [ X ]   NO [   ]", margenRespuesta, y);
+
+                    y += 6;
+                    doc.setFont("helvetica", "bold");
+                    doc.text("Enfermedad:", 14, y);
+                    doc.setFont("helvetica", "normal");
+                    doc.text("[ X ]      Aislamiento/teletrabajo: [   ]", margenRespuesta, y);
+
+                    y += 6;
+                    doc.setFont("helvetica", "bold");
+                    doc.text("Tipo de Contingencia:", 14, y);
+                    doc.setFont("helvetica", "normal");
+                    doc.text("ENFERMEDAD GENERAL", margenRespuesta, y);
+
+                    y += 6;
+                    doc.setFont("helvetica", "bold");
+                    doc.text("Descripción enfermedad / síntomas:", 14, y);
+                    y += 5;
+                    doc.setFont("helvetica", "normal");
+                    doc.text(`${cert.sintomas || '-Dolor localizado -Limitación funcional'}`, 14, y, { maxWidth: 180 });
+
+                    y += 8;
+                    doc.setFont("helvetica", "bold");
+                    doc.text("Total de días concedidos:", 14, y);
+                    doc.setFont("helvetica", "normal");
+                    doc.text(`${cert.diasLetras}`, margenRespuesta, y);
+
+                    y += 6;
+                    doc.setFont("helvetica", "bold");
+                    doc.text("Desde:", 14, y);
+                    doc.setFont("helvetica", "normal");
+                    doc.text(`${cert.desdeLetras}`, margenRespuesta, y);
+
+                    y += 6;
+                    doc.setFont("helvetica", "bold");
+                    doc.text("Hasta:", 14, y);
+                    doc.setFont("helvetica", "normal");
+                    doc.text(`${cert.hastaLetras}`, margenRespuesta, y);
+
+                    y += 6;
+                    doc.setFont("helvetica", "bold");
+                    doc.text("Tratamiento aplicado:", 14, y);
+                    doc.setFont("helvetica", "normal");
+                    doc.text(`${mediosAplicados}`, margenRespuesta, y, { maxWidth: 95 });
+
+                    if (cert.observaciones) {
+                        y += 7;
+                        doc.setFont("helvetica", "bold");
+                        doc.text("OBSERVACIÓN:", 14, y);
+                        y += 5;
+                        doc.setFont("helvetica", "normal");
+                        doc.text(cert.observaciones, 14, y, { maxWidth: 180 });
+                    }
+
+                    // Bloque de Firma Profesional
+                    doc.line(60, 240, 150, 240);
+                    doc.setFont("helvetica", "bold");
+                    doc.text("Lda. Veronica Estrella", 105, 245, { align: "center" });
+                    doc.setFont("helvetica", "normal");
+                    doc.text("C.I.: 172006269-2  |  Reg. Prof. 172006269-2", 105, 250, { align: "center" });
+                    doc.text("Fisioterapeuta - Fisiolab.st", 105, 255, { align: "center" });
+
+                    // Advertencia legal exacta solicitada (cursiva tamaño 10)
+                    doc.setFont("helvetica", "italic");
+                    doc.setFontSize(10);
+                    doc.setTextColor(80, 80, 80);
+                    doc.text("El presente documento debe ser admitido acorde a los requisitos y análisis médico solicitado. En caso de información falsa o alteración se procederá de acuerdo con el Código Orgánico Integral Penal (Art. 328).", 105, 268, { maxWidth: 180, align: "center" });
+
+                } else {
+                    // Formato Normal Fisioterapéutico Profesional
+                    doc.setFont("helvetica", "bold");
+                    doc.setFontSize(14);
+                    doc.setTextColor(58, 12, 163);
+                    doc.text("Certificado Fisioterapéutico", 105, 42, { align: "center" });
+
+                    doc.setFont("helvetica", "normal");
+                    doc.setFontSize(11);
+                    doc.setTextColor(40, 40, 40);
+
+                    let textoCertificado = `Certifico que el/la paciente ${nombresCapitalizados}, portador(a) de la cédula de ciudadanía N° ${cert.cedula}, se encuentra recibiendo tratamiento fisioterapéutico en nuestra institución bajo el diagnóstico CIE (${cert.cie || 'N/D'}): ${cert.diagnostico}.\n\n` +
+                        `Durante las sesiones se están aplicando medios electrofísicos y técnicas especializadas tales como: ${mediosAplicados}, con el objetivo de disminuir el dolor y lograr una correcta reintegración del paciente en sus actividades de la vida diaria.\n\n` +
+                        (cert.subtitulo ? `${cert.subtitulo}: ${cert.textoAdicional}\n\n` : '') +
+                        (cert.observaciones && cert.observaciones.toLowerCase() !== "asd" ? `Recomendaciones / Observaciones:\n${cert.observaciones}\n\n` : '') +
+                        `El tratamiento dio inicio el ${formatearFechaTexto(cert.fechaInicio)}, en el horario de ${cert.horario || '10h30'}.\n\n` +
+                        `Es todo cuanto puedo certificar para los fines consiguientes.`;
+
+                    doc.text(textoCertificado, 20, 52, { maxWidth: 170, lineFactor: 1.5 });
+
+                    doc.line(70, 215, 140, 215);
+                    doc.setFont("helvetica", "bold");
+                    doc.text("FISIOTERAPEUTA", 105, 221, { align: "center" });
+                    doc.text("Veronica Estrella", 105, 227, { align: "center" });
+                    doc.setFont("helvetica", "normal");
+                    doc.text("Reg. Prof. 172006269-2", 105, 233, { align: "center" });
+
+                    doc.setFont("helvetica", "italic");
+                    doc.setFontSize(10);
+                    doc.setTextColor(80, 80, 80);
+                    doc.text("El presente documento debe ser admitido acorde a los requisitos y análisis médico solicitado. En caso de información falsa o alteración se procederá de acuerdo con el Código Orgánico Integral Penal (Art. 328).", 105, 252, { maxWidth: 180, align: "center" });
+                }
+
+                doc.save(`Certificado_${cert.cedula}.pdf`);
+            }
+        }
+    </script>
+</body>
+</html>
