@@ -6,10 +6,10 @@ import java.sql.SQLException;
 
 public class conexion {
     
-    // Cambia "nombre_de_tu_base", "root" y tu contraseña según tu entorno local
-    private static final String URL = "jdbc:mysql://localhost:3306/nombre_de_tu_base?useSSL=false&serverTimezone=UTC";
+    // Cambia "nombre_de_tu_base", "root" y tu contraseña según tu entorno local    
+    private static final String URL = "jdbc:mysql://localhost:3306/sistema_laboratorio?useSSL=false&serverTimezone=UTC";
     private static final String USER = "root";
-    private static final String PASSWORD = "";
+    private static final String PASSWORD = "1549";
 
     public static Connection conectar() {
         Connection conn = null;
