@@ -504,8 +504,8 @@
                             </div>
                         </div>
                         <div style="display: flex; gap: 10px; margin-top: 15px;">
-                            <button type="submit" id="btnSavePatient" class="btn-action" style="padding: 0.7rem 1.5rem; font-size: 0.95rem;">Guardar y Actualizar Excel</button>
-                            <button type="button" id="btnCancelPatient" onclick="resetPatientForm()" class="btn-delete" style="display: none; padding: 0.7rem 1.5rem; font-size: 0.95rem;">Cancelar</button>
+                            <button type="submit" id="btnSavePatient" class="btn-action">Guardar y Actualizar Excel</button>
+                            <button type="button" id="btnCancelPatient" onclick="resetPatientForm()" class="btn-delete" style="display: none;">Cancelar</button>
                         </div>
                     </form>
                 </div>               
@@ -515,12 +515,15 @@
                     <table>
                         <thead>
                             <tr>
-                                <th>Cédula</th>
-                                <th>Apellidos y Nombres</th>
-                                <th>Teléfono</th>
-                                <th>Correo</th>
-                                <th>Acciones</th>
-                            </tr>
+                                    <th>Cédula</th>
+                                    <th>Apellidos y Nombres</th>
+                                    <th>Nacimiento</th>
+                                    <th>Género</th>
+                                    <th>Teléfono</th>
+                                    <th>Correo</th>
+                                    <th>Dirección</th>
+                                    <th>Acciones</th>
+                                </tr>
                         </thead>
                         <tbody id="patientTableBody">
                             <!-- Los pacientes se cargan dinámicamente aquí -->
@@ -1469,303 +1472,377 @@
         function reimprimirCertificado(index) { generarPDFCertificado(certificados[index]); }
 
         function generarPDFCertificado(cert) {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
 
-            function formatearFechaTexto(fechaStr) {
-                if(!fechaStr) return "";
-                const partes = fechaStr.split("-");
-                const anio = parseInt(partes[0], 10);
-                const mesIndex = parseInt(partes[1], 10) - 1;
-                const dia = parseInt(partes[2], 10);
-                const meses = ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"];
-                return `${dia} de ${meses[mesIndex]} del ${anio}`;
+    function formatearFechaTexto(fechaStr) {
+        if(!fechaStr) return "";
+        const partes = fechaStr.split("-");
+        const anio = parseInt(partes[0], 10);
+        const mesIndex = parseInt(partes[1], 10) - 1;
+        const dia = parseInt(partes[2], 10);
+        const meses = ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"];
+        return `${dia} de ${meses[mesIndex]} del ${anio}`;
+    }
+
+    const fechaEmisionTexto = formatearFechaTexto(cert.fecha);
+    const nombresCapitalizados = cert.nombres.replace(/\b\w/g, l => l.toUpperCase());
+    const mediosAplicados = cert.medios || "TENS, crioterapia, termoterapia, US, masaje y ejercicios terapéuticos";
+
+    const imgLogo = new Image();
+    imgLogo.crossOrigin = "Anonymous";
+    imgLogo.src = '../img/logFisior.png';
+
+    let pdfGenerado = false;
+    const procesarPDF = () => {
+        if (pdfGenerado) return;
+        pdfGenerado = true;
+
+        try {
+            if (imgLogo.complete && imgLogo.naturalWidth !== 0) {
+                // Ajuste de dimensión del logo rectangular
+                doc.addImage(imgLogo, 'PNG', 12, 5, 46, 20);
             }
-
-            const fechaEmisionTexto = formatearFechaTexto(cert.fecha);
-            const nombresCapitalizados = cert.nombres.replace(/\b\w/g, l => l.toUpperCase());
-            const mediosAplicados = cert.medios || "TENS, crioterapia, termoterapia, US, masaje y ejercicios terapéuticos";
-
-            const imgLogo = new Image();
-            imgLogo.crossOrigin = "Anonymous";
-            imgLogo.src = '../img/logFisior.png';
-
-            imgLogo.onload = function() {
-                try { doc.addImage(imgLogo, 'PNG', 14, 10, 24, 24); } catch(e){}
-                crearEstructuraPDF();
-            };
-            imgLogo.onerror = function() { crearEstructuraPDF(); };
-            if (imgLogo.complete) {
-                try { doc.addImage(imgLogo, 'PNG', 14, 10, 24, 24); } catch(e){}
-                crearEstructuraPDF();
-            }
-
-            function crearEstructuraPDF() {
-                // Encabezado institucional estilo oficial MSP
-                doc.setFont("helvetica", "bold");
-                doc.setFontSize(10);
-                doc.setTextColor(200, 0, 0);
-                doc.text("DIRECCIÓN DISTRITAL 13D05 SALUD", 105, 14, { align: "center" });
-                doc.text("NOMBRE DE UNIDAD DE SALUD", 105, 19, { align: "center" });
-                
-                doc.setFont("helvetica", "bold");
-                doc.setFontSize(11);
-                doc.setTextColor(58, 12, 163);
-                doc.text("CERTIFICADO MÉDICO", 105, 27, { align: "center" });
-
-                doc.setLineWidth(0.4);
-                doc.setDrawColor(200, 200, 200);
-                doc.line(14, 31, 196, 31);
-
-                if (cert.formato === 'IESS') {
-                    let y = 37;
-                    const margenRespuesta = 96; // Margen izquierdo unificado para todas las respuestas
-
-                    // A) DATOS DEL ESTABLECIMIENTO DE SALUD
-                    doc.setFillColor(241, 243, 245);
-                    doc.rect(14, y, 182, 5.5, 'F');
-                    doc.setFont("helvetica", "bold");
-                    doc.setFontSize(8.5);
-                    doc.setTextColor(58, 12, 163);
-                    doc.text("A) DATOS DEL ESTABLECIMIENTO DE SALUD", 16, y + 4);
-
-                    y += 9;
-                    doc.setFontSize(8.5);
-                    doc.setTextColor(40, 40, 40);
-
-                    doc.setFont("helvetica", "bold");
-                    doc.text("Nombre del establecimiento:", 14, y);
-                    doc.setFont("helvetica", "normal");
-                    doc.text("Centro de Rehabilitación Física Fisiolab.st", margenRespuesta, y);
-
-                    y += 6;
-                    doc.setFont("helvetica", "bold");
-                    doc.text("Correo electrónico del médico emisor:", 14, y);
-                    doc.setFont("helvetica", "normal");
-                    doc.text(`${cert.emailEmisor || 'especialidades.prolab@gmail.com'}`, margenRespuesta, y);
-
-                    y += 6;
-                    doc.setFont("helvetica", "bold");
-                    doc.text("Teléfono del emisor del certificado:", 14, y);
-                    doc.setFont("helvetica", "normal");
-                    doc.text(`${cert.telEmisor || '099825746'}`, margenRespuesta, y);
-
-                    y += 6;
-                    doc.setFont("helvetica", "bold");
-                    doc.text("Dirección del establecimiento de salud:", 14, y);
-                    doc.setFont("helvetica", "normal");
-                    doc.text(`${cert.dirEstablecimiento || 'Magdalena, Duchicela y Caranqui'}`, margenRespuesta, y);
-
-                    y += 6;
-                    doc.setFont("helvetica", "bold");
-                    doc.text("Lugar y fecha de emisión:", 14, y);
-                    doc.setFont("helvetica", "normal");
-                    doc.text(`Quito, ${fechaEmisionTexto}`, margenRespuesta, y);
-
-                    // B) DATOS DEL PACIENTE
-                    y += 9;
-                    doc.setFillColor(241, 243, 245);
-                    doc.rect(14, y, 182, 5.5, 'F');
-                    doc.setFont("helvetica", "bold");
-                    doc.setFontSize(8.5);
-                    doc.setTextColor(58, 12, 163);
-                    doc.text("B) DATOS DEL PACIENTE", 16, y + 4);
-
-                    y += 9;
-                    doc.setTextColor(40, 40, 40);
-
-                    doc.setFont("helvetica", "bold");
-                    doc.text("Apellidos y nombres completos:", 14, y);
-                    doc.setFont("helvetica", "normal");
-                    doc.text(`${nombresCapitalizados}`, margenRespuesta, y);
-
-                    y += 6;
-                    doc.setFont("helvetica", "bold");
-                    doc.text("Dirección Domiciliaria:", 14, y);
-                    doc.setFont("helvetica", "normal");
-                    doc.text(`${cert.direccionDom || 'N/D'}`, margenRespuesta, y);
-
-                    y += 6;
-                    doc.setFont("helvetica", "bold");
-                    doc.text("Número de teléfono:", 14, y);
-                    doc.setFont("helvetica", "normal");
-                    doc.text(`${cert.telPaciente || 'N/D'}`, margenRespuesta, y);
-
-                    y += 6;
-                    doc.setFont("helvetica", "bold");
-                    doc.text("Institución o empresa:", 14, y);
-                    doc.setFont("helvetica", "normal");
-                    doc.text(`${cert.institucion || 'N/D'}`, margenRespuesta, y);
-
-                    y += 6;
-                    doc.setFont("helvetica", "bold");
-                    doc.text("Puesto de trabajo del paciente:", 14, y);
-                    doc.setFont("helvetica", "normal");
-                    doc.text(`${cert.puesto || 'N/D'}`, margenRespuesta, y);
-
-                    y += 6;
-                    doc.setFont("helvetica", "bold");
-                    doc.text("Dirección de la empresa:", 14, y);
-                    doc.setFont("helvetica", "normal");
-                    doc.text(`${cert.dirEmpresa || 'N/D'}`, margenRespuesta, y, { maxWidth: 100 });
-
-                    y += 6;
-                    doc.setFont("helvetica", "bold");
-                    doc.text("Teléfono empresa:", 14, y);
-                    doc.setFont("helvetica", "normal");
-                    doc.text(`${cert.telEmpresa || 'N/D'}`, margenRespuesta, y);
-
-                    if (cert.correoEmpresa) {
-                        y += 6;
-                        doc.setFont("helvetica", "bold");
-                        doc.text("Correo electrónico empresa:", 14, y);
-                        doc.setFont("helvetica", "normal");
-                        doc.text(`${cert.correoEmpresa}`, margenRespuesta, y);
-                    }
-
-                    y += 6;
-                    doc.setFont("helvetica", "bold");
-                    doc.text("Número de Cédula:", 14, y);
-                    doc.setFont("helvetica", "normal");
-                    doc.text(`${cert.cedula}`, margenRespuesta, y);
-
-                    y += 6;
-                    doc.setFont("helvetica", "bold");
-                    doc.text("Número de Historia Clínica:", 14, y);
-                    doc.setFont("helvetica", "normal");
-                    doc.text(`${cert.cedula}`, margenRespuesta, y);
-
-                    // C) MOTIVO DE AISLAMIENTO / ENFERMEDAD
-                    y += 9;
-                    doc.setFillColor(241, 243, 245);
-                    doc.rect(14, y, 182, 5.5, 'F');
-                    doc.setFont("helvetica", "bold");
-                    doc.setFontSize(8.5);
-                    doc.setTextColor(58, 12, 163);
-                    doc.text("C) MOTIVO DE AISLAMIENTO / ENFERMEDAD", 16, y + 4);
-
-                    y += 9;
-                    doc.setTextColor(40, 40, 40);
-
-                    doc.setFont("helvetica", "bold");
-                    doc.text("Diagnóstico:", 14, y);
-                    doc.setFont("helvetica", "normal");
-                    doc.text(`${cert.diagnostico}`, margenRespuesta, y);
-
-                    y += 6;
-                    doc.setFont("helvetica", "bold");
-                    doc.text("Código CIE10:", 14, y);
-                    doc.setFont("helvetica", "normal");
-                    doc.text(`${cert.cie}`, margenRespuesta, y);
-
-                    y += 6;
-                    doc.setFont("helvetica", "bold");
-                    doc.text("Presenta Síntomas:", 14, y);
-                    doc.setFont("helvetica", "normal");
-                    doc.text("SI [ X ]   NO [   ]", margenRespuesta, y);
-
-                    y += 6;
-                    doc.setFont("helvetica", "bold");
-                    doc.text("Enfermedad:", 14, y);
-                    doc.setFont("helvetica", "normal");
-                    doc.text("[ X ]      Aislamiento/teletrabajo: [   ]", margenRespuesta, y);
-
-                    y += 6;
-                    doc.setFont("helvetica", "bold");
-                    doc.text("Tipo de Contingencia:", 14, y);
-                    doc.setFont("helvetica", "normal");
-                    doc.text("ENFERMEDAD GENERAL", margenRespuesta, y);
-
-                    y += 6;
-                    doc.setFont("helvetica", "bold");
-                    doc.text("Descripción enfermedad / síntomas:", 14, y);
-                    y += 5;
-                    doc.setFont("helvetica", "normal");
-                    doc.text(`${cert.sintomas || '-Dolor localizado -Limitación funcional'}`, 14, y, { maxWidth: 180 });
-
-                    y += 8;
-                    doc.setFont("helvetica", "bold");
-                    doc.text("Total de días concedidos:", 14, y);
-                    doc.setFont("helvetica", "normal");
-                    doc.text(`${cert.diasLetras}`, margenRespuesta, y);
-
-                    y += 6;
-                    doc.setFont("helvetica", "bold");
-                    doc.text("Desde:", 14, y);
-                    doc.setFont("helvetica", "normal");
-                    doc.text(`${cert.desdeLetras}`, margenRespuesta, y);
-
-                    y += 6;
-                    doc.setFont("helvetica", "bold");
-                    doc.text("Hasta:", 14, y);
-                    doc.setFont("helvetica", "normal");
-                    doc.text(`${cert.hastaLetras}`, margenRespuesta, y);
-
-                    y += 6;
-                    doc.setFont("helvetica", "bold");
-                    doc.text("Tratamiento aplicado:", 14, y);
-                    doc.setFont("helvetica", "normal");
-                    doc.text(`${mediosAplicados}`, margenRespuesta, y, { maxWidth: 95 });
-
-                    if (cert.observaciones) {
-                        y += 7;
-                        doc.setFont("helvetica", "bold");
-                        doc.text("OBSERVACIÓN:", 14, y);
-                        y += 5;
-                        doc.setFont("helvetica", "normal");
-                        doc.text(cert.observaciones, 14, y, { maxWidth: 180 });
-                    }
-
-                    // Bloque de Firma Profesional
-                    doc.line(60, 240, 150, 240);
-                    doc.setFont("helvetica", "bold");
-                    doc.text("Lda. Veronica Estrella", 105, 245, { align: "center" });
-                    doc.setFont("helvetica", "normal");
-                    doc.text("C.I.: 172006269-2  |  Reg. Prof. 172006269-2", 105, 250, { align: "center" });
-                    doc.text("Fisioterapeuta - Fisiolab.st", 105, 255, { align: "center" });
-
-                    // Advertencia legal exacta solicitada (cursiva tamaño 10)
-                    doc.setFont("helvetica", "italic");
-                    doc.setFontSize(10);
-                    doc.setTextColor(80, 80, 80);
-                    doc.text("El presente documento debe ser admitido acorde a los requisitos y análisis médico solicitado. En caso de información falsa o alteración se procederá de acuerdo con el Código Orgánico Integral Penal (Art. 328).", 105, 268, { maxWidth: 180, align: "center" });
-
-                } else {
-                    // Formato Normal Fisioterapéutico Profesional
-                    doc.setFont("helvetica", "bold");
-                    doc.setFontSize(14);
-                    doc.setTextColor(58, 12, 163);
-                    doc.text("Certificado Fisioterapéutico", 105, 42, { align: "center" });
-
-                    doc.setFont("helvetica", "normal");
-                    doc.setFontSize(11);
-                    doc.setTextColor(40, 40, 40);
-
-                    let textoCertificado = `Certifico que el/la paciente ${nombresCapitalizados}, portador(a) de la cédula de ciudadanía N° ${cert.cedula}, se encuentra recibiendo tratamiento fisioterapéutico en nuestra institución bajo el diagnóstico CIE (${cert.cie || 'N/D'}): ${cert.diagnostico}.\n\n` +
-                        `Durante las sesiones se están aplicando medios electrofísicos y técnicas especializadas tales como: ${mediosAplicados}, con el objetivo de disminuir el dolor y lograr una correcta reintegración del paciente en sus actividades de la vida diaria.\n\n` +
-                        (cert.subtitulo ? `${cert.subtitulo}: ${cert.textoAdicional}\n\n` : '') +
-                        (cert.observaciones && cert.observaciones.toLowerCase() !== "asd" ? `Recomendaciones / Observaciones:\n${cert.observaciones}\n\n` : '') +
-                        `El tratamiento dio inicio el ${formatearFechaTexto(cert.fechaInicio)}, en el horario de ${cert.horario || '10h30'}.\n\n` +
-                        `Es todo cuanto puedo certificar para los fines consiguientes.`;
-
-                    doc.text(textoCertificado, 20, 52, { maxWidth: 170, lineFactor: 1.5 });
-
-                    doc.line(70, 215, 140, 215);
-                    doc.setFont("helvetica", "bold");
-                    doc.text("FISIOTERAPEUTA", 105, 221, { align: "center" });
-                    doc.text("Veronica Estrella", 105, 227, { align: "center" });
-                    doc.setFont("helvetica", "normal");
-                    doc.text("Reg. Prof. 172006269-2", 105, 233, { align: "center" });
-
-                    doc.setFont("helvetica", "italic");
-                    doc.setFontSize(10);
-                    doc.setTextColor(80, 80, 80);
-                    doc.text("El presente documento debe ser admitido acorde a los requisitos y análisis médico solicitado. En caso de información falsa o alteración se procederá de acuerdo con el Código Orgánico Integral Penal (Art. 328).", 105, 252, { maxWidth: 180, align: "center" });
-                }
-
-                doc.save(`Certificado_${cert.cedula}.pdf`);
-            }
+        } catch (e) {
+            console.error("Error al incrustar el logo:", e);
         }
+
+        crearEstructuraPDF();
+    };
+
+    imgLogo.onload = procesarPDF;
+    imgLogo.onerror = () => {
+        console.warn("No se pudo cargar '../img/logFisior.png'. Verifique la ruta.");
+        procesarPDF();
+    };
+
+    if (imgLogo.complete && imgLogo.naturalWidth !== 0) {
+        procesarPDF();
+    }
+
+    function crearEstructuraPDF() {
+        // --- CABECERA INSTITUCIONAL ---
+        // Título principal en azul, mayúsculas y alineado a la derecha
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(11);
+        doc.setTextColor(0, 122, 204); // Tono azul institucional similar a la muestra
+        doc.text("CENTRO DE REHABILITACIÓN FÍSICA Y FISIOTERAPIA FISIOLAB.ST", 196, 12, { align: "right" });
+
+        // Línea secundaria de contacto en formato horizontal
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(8.5);
+        doc.setTextColor(100, 100, 100);
+        doc.text("Quito, Ecuador   |   Tlf: 0995675273   |   yadiestrella5@gmail.com", 196, 18, { align: "right" });
+
+        // Línea divisoria superior
+        doc.setLineWidth(0.5);
+        doc.setDrawColor(210, 210, 210);
+        doc.line(14, 24, 196, 24);
+
+        if (cert.formato === 'IESS') {
+            let y = 37;
+            const margenRespuesta = 96;
+
+            // A) DATOS DEL ESTABLECIMIENTO DE SALUD
+            doc.setFillColor(241, 243, 245);
+            doc.rect(14, y, 182, 5.5, 'F');
+            doc.setFont("helvetica", "bold");
+            doc.setFontSize(8.5);
+            doc.setTextColor(58, 12, 163);
+            doc.text("A) DATOS DEL ESTABLECIMIENTO DE SALUD", 16, y + 4);
+
+            y += 9;
+            doc.setFontSize(8.5);
+            doc.setTextColor(40, 40, 40);
+
+            doc.setFont("helvetica", "bold");
+            doc.text("Nombre del establecimiento:", 14, y);
+            doc.setFont("helvetica", "normal");
+            doc.text("Centro de Rehabilitación Física Fisiolab.st", margenRespuesta, y);
+
+            y += 6;
+            doc.setFont("helvetica", "bold");
+            doc.text("Correo electrónico del médico emisor:", 14, y);
+            doc.setFont("helvetica", "normal");
+            doc.text(`${cert.emailEmisor || 'especialidades.prolab@gmail.com'}`, margenRespuesta, y);
+
+            y += 6;
+            doc.setFont("helvetica", "bold");
+            doc.text("Teléfono del emisor del certificado:", 14, y);
+            doc.setFont("helvetica", "normal");
+            doc.text(`${cert.telEmisor || '099825746'}`, margenRespuesta, y);
+
+            y += 6;
+            doc.setFont("helvetica", "bold");
+            doc.text("Dirección del establecimiento de salud:", 14, y);
+            doc.setFont("helvetica", "normal");
+            doc.text(`${cert.dirEstablecimiento || 'Magdalena, Duchicela y Caranqui'}`, margenRespuesta, y);
+
+            y += 6;
+            doc.setFont("helvetica", "bold");
+            doc.text("Lugar y fecha de emisión:", 14, y);
+            doc.setFont("helvetica", "normal");
+            doc.text(`Quito, ${fechaEmisionTexto}`, margenRespuesta, y);
+
+            // B) DATOS DEL PACIENTE
+            y += 9;
+            doc.setFillColor(241, 243, 245);
+            doc.rect(14, y, 182, 5.5, 'F');
+            doc.setFont("helvetica", "bold");
+            doc.setFontSize(8.5);
+            doc.setTextColor(58, 12, 163);
+            doc.text("B) DATOS DEL PACIENTE", 16, y + 4);
+
+            y += 9;
+            doc.setTextColor(40, 40, 40);
+
+            doc.setFont("helvetica", "bold");
+            doc.text("Apellidos y nombres completos:", 14, y);
+            doc.setFont("helvetica", "normal");
+            doc.text(`${nombresCapitalizados}`, margenRespuesta, y);
+
+            y += 6;
+            doc.setFont("helvetica", "bold");
+            doc.text("Dirección Domiciliaria:", 14, y);
+            doc.setFont("helvetica", "normal");
+            doc.text(`${cert.direccionDom || 'N/D'}`, margenRespuesta, y);
+
+            y += 6;
+            doc.setFont("helvetica", "bold");
+            doc.text("Número de teléfono:", 14, y);
+            doc.setFont("helvetica", "normal");
+            doc.text(`${cert.telPaciente || 'N/D'}`, margenRespuesta, y);
+
+            y += 6;
+            doc.setFont("helvetica", "bold");
+            doc.text("Institución o empresa:", 14, y);
+            doc.setFont("helvetica", "normal");
+            doc.text(`${cert.institucion || 'N/D'}`, margenRespuesta, y);
+
+            y += 6;
+            doc.setFont("helvetica", "bold");
+            doc.text("Puesto de trabajo del paciente:", 14, y);
+            doc.setFont("helvetica", "normal");
+            doc.text(`${cert.puesto || 'N/D'}`, margenRespuesta, y);
+
+            y += 6;
+            doc.setFont("helvetica", "bold");
+            doc.text("Dirección de la empresa:", 14, y);
+            doc.setFont("helvetica", "normal");
+            doc.text(`${cert.dirEmpresa || 'N/D'}`, margenRespuesta, y, { maxWidth: 100 });
+
+            y += 6;
+            doc.setFont("helvetica", "bold");
+            doc.text("Teléfono empresa:", 14, y);
+            doc.setFont("helvetica", "normal");
+            doc.text(`${cert.telEmpresa || 'N/D'}`, margenRespuesta, y);
+
+            if (cert.correoEmpresa) {
+                y += 6;
+                doc.setFont("helvetica", "bold");
+                doc.text("Correo electrónico empresa:", 14, y);
+                doc.setFont("helvetica", "normal");
+                doc.text(`${cert.correoEmpresa}`, margenRespuesta, y);
+            }
+
+            y += 6;
+            doc.setFont("helvetica", "bold");
+            doc.text("Número de Cédula:", 14, y);
+            doc.setFont("helvetica", "normal");
+            doc.text(`${cert.cedula}`, margenRespuesta, y);
+
+            y += 6;
+            doc.setFont("helvetica", "bold");
+            doc.text("Número de Historia Clínica:", 14, y);
+            doc.setFont("helvetica", "normal");
+            doc.text(`${cert.cedula}`, margenRespuesta, y);
+
+            // C) MOTIVO DE AISLAMIENTO / ENFERMEDAD
+            y += 9;
+            doc.setFillColor(241, 243, 245);
+            doc.rect(14, y, 182, 5.5, 'F');
+            doc.setFont("helvetica", "bold");
+            doc.setFontSize(8.5);
+            doc.setTextColor(58, 12, 163);
+            doc.text("C) MOTIVO DE AISLAMIENTO / ENFERMEDAD", 16, y + 4);
+
+            y += 9;
+            doc.setTextColor(40, 40, 40);
+
+            doc.setFont("helvetica", "bold");
+            doc.text("Diagnóstico:", 14, y);
+            doc.setFont("helvetica", "normal");
+            doc.text(`${cert.diagnostico}`, margenRespuesta, y);
+
+            y += 6;
+            doc.setFont("helvetica", "bold");
+            doc.text("Código CIE10:", 14, y);
+            doc.setFont("helvetica", "normal");
+            doc.text(`${cert.cie}`, margenRespuesta, y);
+
+            y += 6;
+            doc.setFont("helvetica", "bold");
+            doc.text("Presenta Síntomas:", 14, y);
+            doc.setFont("helvetica", "normal");
+            doc.text("SI [ X ]   NO [   ]", margenRespuesta, y);
+
+            y += 6;
+            doc.setFont("helvetica", "bold");
+            doc.text("Enfermedad:", 14, y);
+            doc.setFont("helvetica", "normal");
+            doc.text("[ X ]      Aislamiento/teletrabajo: [   ]", margenRespuesta, y);
+
+            y += 6;
+            doc.setFont("helvetica", "bold");
+            doc.text("Tipo de Contingencia:", 14, y);
+            doc.setFont("helvetica", "normal");
+            doc.text("ENFERMEDAD GENERAL", margenRespuesta, y);
+
+            y += 6;
+            doc.setFont("helvetica", "bold");
+            doc.text("Descripción enfermedad / síntomas:", 14, y);
+            y += 5;
+            doc.setFont("helvetica", "normal");
+            doc.text(`${cert.sintomas || '-Dolor localizado -Limitación funcional'}`, 14, y, { maxWidth: 180 });
+
+            y += 8;
+            doc.setFont("helvetica", "bold");
+            doc.text("Total de días concedidos:", 14, y);
+            doc.setFont("helvetica", "normal");
+            doc.text(`${cert.diasLetras}`, margenRespuesta, y);
+
+            y += 6;
+            doc.setFont("helvetica", "bold");
+            doc.text("Desde:", 14, y);
+            doc.setFont("helvetica", "normal");
+            doc.text(`${cert.desdeLetras}`, margenRespuesta, y);
+
+            y += 6;
+            doc.setFont("helvetica", "bold");
+            doc.text("Hasta:", 14, y);
+            doc.setFont("helvetica", "normal");
+            doc.text(`${cert.hastaLetras}`, margenRespuesta, y);
+
+            y += 6;
+            doc.setFont("helvetica", "bold");
+            doc.text("Tratamiento aplicado:", 14, y);
+            doc.setFont("helvetica", "normal");
+            doc.text(`${mediosAplicados}`, margenRespuesta, y, { maxWidth: 95 });
+
+            if (cert.observaciones) {
+                y += 7;
+                doc.setFont("helvetica", "bold");
+                doc.text("OBSERVACIÓN:", 14, y);
+                y += 5;
+                doc.setFont("helvetica", "normal");
+                doc.text(cert.observaciones, 14, y, { maxWidth: 180 });
+            }
+
+            // Firma IESS
+            doc.setLineWidth(0.5);
+            doc.setDrawColor(0, 0, 0);
+            doc.line(60, 238, 150, 238);
+            doc.setFont("helvetica", "bold");
+            doc.setFontSize(10);
+            doc.setTextColor(40, 40, 40);
+            doc.text("Lda. Veronica Estrella", 105, 243, { align: "center" });
+            doc.setFont("helvetica", "normal");
+            doc.setFontSize(9);
+            doc.text("C.I.: 172006269-2  |  Reg. Prof. 172006269-2", 105, 248, { align: "center" });
+            doc.text("Fisioterapeuta - Fisiolab.st", 105, 253, { align: "center" });
+            doc.text("El presente documento debe ser admitido acorde a los requisitos y análisis médico solicitado. En caso de información falsa o alteración se procederá de acuerdo con el Código Orgánico Integral Penal (Art. 328).", 105, 268, { maxWidth: 180, align: "center" });
+
+        } else {
+            // --- FORMATO NORMAL FISIOTERAPÉUTICO (REDISEÑADO) ---
+            
+            // Fecha alineada a la derecha
+            doc.setFont("helvetica", "normal");
+            doc.setFontSize(10);
+            doc.setTextColor(40, 40, 40);
+            doc.text(`Quito, D.M., ${fechaEmisionTexto}`, 196, 42, { align: "right" });
+
+            // Título principal
+            doc.setFont("helvetica", "bold");
+            doc.setFontSize(15);
+            doc.setTextColor(58, 12, 163);
+            doc.text("CERTIFICADO FISIOTERAPÉUTICO", 105, 54, { align: "center" });
+
+            let y = 68;
+            doc.setFontSize(10.5);
+            doc.setTextColor(40, 40, 40);
+
+            // Párrafo 1: Presentación del paciente
+            doc.setFont("helvetica", "normal");
+            const p1 = `Certifico que el/la paciente ${nombresCapitalizados}, portador(a) de la cédula de ciudadanía N° ${cert.cedula}, se encuentra asistiendo a tratamiento de rehabilitación física y fisioterapia en esta centro de atención médica.`;
+            const lineasP1 = doc.splitTextToSize(p1, 168);
+            doc.text(lineasP1, 20, y);
+            y += lineasP1.length * 6 + 6;
+
+            // Párrafo 2: Diagnóstico
+            doc.setFont("helvetica", "bold");
+            const p2 = `DIAGNÓSTICO CLÍNICO: ${cert.diagnostico}${cert.cie ? ' (CIE-10: ' + cert.cie + ')' : ''}.`;
+            const lineasP2 = doc.splitTextToSize(p2, 168);
+            doc.text(lineasP2, 20, y);
+            y += lineasP2.length * 6 + 6;
+
+            // Párrafo 3: Medios y técnicas aplicadas
+            doc.setFont("helvetica", "normal");
+            const p3 = `Durante el proceso terapéutico se aplican medios electrofísicos, agentes térmicos y técnicas especializadas tales como: ${mediosAplicados}, orientados a reducir la sintomatología dolorosa, restablecer la funcionalidad y favorecer la reincorporación a sus actividades habituales.`;
+            const lineasP3 = doc.splitTextToSize(p3, 168);
+            doc.text(lineasP3, 20, y);
+            y += lineasP3.length * 6 + 6;
+
+            // Párrafo 4: Subtítulo / Texto Adicional
+            if (cert.subtitulo || cert.textoAdicional) {
+                doc.setFont("helvetica", "bold");
+                const pSub = `${cert.subtitulo || 'INDICACIÓN'}: ${cert.textoAdicional || ''}`;
+                const lineasSub = doc.splitTextToSize(pSub, 168);
+                doc.text(lineasSub, 20, y);
+                y += lineasSub.length * 6 + 6;
+                doc.setFont("helvetica", "normal");
+            }
+
+            // Párrafo 5: Observaciones / Recomendaciones
+            if (cert.observaciones && cert.observaciones.toLowerCase() !== "asd") {
+                const pObs = `OBSERVACIONES / RECOMENDACIONES:\n${cert.observaciones}`;
+                const lineasObs = doc.splitTextToSize(pObs, 168);
+                doc.text(lineasObs, 20, y);
+                y += lineasObs.length * 6 + 6;
+            }
+
+            // Párrafo 6: Inicio de tratamiento y horario
+            const pInicio = `El tratamiento dio inicio el ${formatearFechaTexto(cert.fechaInicio)}${cert.horario ? ' en el horario de ' + cert.horario : ''}.`;
+            const lineasInicio = doc.splitTextToSize(pInicio, 168);
+            doc.text(lineasInicio, 20, y);
+            y += lineasInicio.length * 6 + 10;
+
+            // Cierre formal
+            doc.text("Es todo cuanto puedo certificar en honor a la verdad para los fines que el interesado estime conveniente.", 20, y, { maxWidth: 168 });
+
+            // --- BLOQUE DE FIRMA Y REGISTRO ---
+            const yFirma = 215;
+            doc.setLineWidth(0.5);
+            doc.setDrawColor(0, 0, 0);
+            doc.line(65, yFirma, 145, yFirma);
+
+            doc.setFont("helvetica", "bold");
+            doc.setFontSize(10.5);
+            doc.text("Lda. Veronica Estrella", 105, yFirma + 5, { align: "center" });
+            doc.text("FISIOTERAPEUTA", 105, yFirma + 10, { align: "center" });
+            doc.setFont("helvetica", "normal");
+            doc.setFontSize(9);
+            doc.text("C.I. 172006269-2 | Reg. Prof. 172006269-2", 105, yFirma + 15, { align: "center" });
+
+            // --- ADVERTENCIA LEGAL EN EL PIE DE PÁGINA ---
+            doc.setFont("helvetica", "italic");
+            doc.setFontSize(8.5);
+            doc.setTextColor(90, 90, 90);
+            doc.text("El presente documento debe ser admitido acorde a los requisitos y análisis médico solicitado. En caso de información falsa o alteración se procederá de acuerdo con el Código Orgánico Integral Penal (Art. 328).", 105, 260, { maxWidth: 175, align: "center" });
+        }
+
+        doc.save(`Certificado_${cert.cedula}.pdf`);
+    }
+}
     </script>
 </body>
 </html>

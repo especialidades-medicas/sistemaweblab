@@ -20,17 +20,18 @@
         }
 
         :root {
-            --primary: #0ea5e9;
-            --primary-dark: #0369a1;
-            --secondary: #14b8a6;
-            --success: #38bdf8;
+            --primary: #2a9d8f;
+            --primary-dark: #264653;
+            --secondary: #e76f51;
+            --success: #2a9d8f;
             --light-bg: #f8f9fa;
             --dark: #212529;
             --gray: #6c757d;
+            --danger: #ef476f;
         }
 
         body {
-            background: linear-gradient(135deg, #f0fdf4 0%, #ccfbf1 100%);
+            background: linear-gradient(135deg, #f0f4f8 0%, #d7e3ec 100%);
             min-height: 100vh;
         }
 
@@ -41,9 +42,8 @@
             position: relative;
         }
 
-        /* Sidebar con estilo moderno y colorido para Podología */
         .sidebar {
-            background: linear-gradient(180deg, #0ea5e9 0%, #0369a1 100%);
+            background: linear-gradient(180deg, #2a9d8f 0%, #264653 100%);
             padding: 1.5rem 1rem;
             color: white;
             box-shadow: 4px 0 15px rgba(0,0,0,0.1);
@@ -64,7 +64,6 @@
             align-items: center;
         }
 
-        /* Botón para cerrar el menú en dispositivos móviles */
         .close-sidebar-btn {
             display: none;
             background: none;
@@ -101,7 +100,6 @@
             box-shadow: 0 4px 12px rgba(0,0,0,0.15);
         }
 
-        /* Botón de Menú Hamburguesa para Móviles */
         .menu-toggle {
             display: none;
             background: var(--primary);
@@ -117,7 +115,6 @@
             box-shadow: 0 2px 6px rgba(0,0,0,0.1);
         }
 
-        /* Overlay oscuro de fondo cuando el menú lateral está abierto en móviles */
         .sidebar-overlay {
             display: none;
             position: fixed;
@@ -129,11 +126,8 @@
             z-index: 99;
         }
 
-        .sidebar-overlay.active {
-            display: block;
-        }
+        .sidebar-overlay.active { display: block; }
 
-        /* Main Content Styles */
         .main-content {
             padding: 2.5rem;
             overflow-y: auto;
@@ -150,6 +144,7 @@
             border-radius: 1rem;
             box-shadow: 0 4px 15px rgba(0,0,0,0.05);
             gap: 1rem;
+            flex-wrap: wrap;
         }
 
         .header-left {
@@ -158,74 +153,23 @@
             gap: 1rem;
         }
 
-        .header h1 {
-            font-size: 1.5rem;
-            color: var(--dark);
-            font-weight: 600;
-        }
+        .header h1 { font-size: 1.5rem; color: var(--dark); font-weight: 600; }
 
-        /* Botón de regresar pequeño en la esquina superior derecha */
-        .btn-back-icon {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 38px;
-            height: 38px;
-            background: #f1f3f5;
-            color: var(--dark);
-            border-radius: 50%;
-            text-decoration: none;
-            font-size: 1.1rem;
-            font-weight: bold;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.06);
-            transition: all 0.2s ease;
-            border: 1px solid #dee2e6;
-            flex-shrink: 0;
-        }
-
-        .btn-back-icon:hover {
-            background: var(--primary);
-            color: white;
-            border-color: var(--primary);
-            transform: scale(1.05);
-        }
-
-        /* Barra de búsqueda superior */
         .search-container {
             display: flex;
             align-items: center;
             background: #f1f3f5;
             border-radius: 50px;
             padding: 0.3rem 0.3rem 0.3rem 1.2rem;
-            width: 300px;
-            border: 1px solid #dee2e6;
-        }
-
-        .search-container input {
-            border: none;
-            background: transparent;
-            outline: none;
             width: 100%;
-            font-size: 0.9rem;
-            color: var(--dark);
+            max-width: 300px;
+            border: 1px solid #dee2e6;
+            box-sizing: border-box;
         }
 
-        .search-container button {
-            background: var(--primary);
-            border: none;
-            color: white;
-            padding: 0.5rem 1.2rem;
-            border-radius: 50px;
-            cursor: pointer;
-            font-weight: 500;
-            transition: 0.2s;
-        }
-
-        .search-container button:hover {
-            background: var(--primary-dark);
-        }
-
-        /* Stats Grid con colores llamativos */
+        .search-container input { border: none; background: transparent; outline: none; width: 100%; font-size: 0.9rem; color: var(--dark); }
+        .search-container button { background: var(--primary); border: none; color: white; padding: 0.5rem 1.2rem; border-radius: 50px; cursor: pointer; font-weight: 500; flex-shrink: 0; }
+        
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
@@ -241,129 +185,55 @@
             display: flex;
             align-items: center;
             gap: 20px;
-            transition: transform 0.3s ease;
             border-left: 5px solid var(--primary);
         }
-
-        .stat-card:hover {
-            transform: translateY(-5px);
-        }
-
-        .stat-card:nth-child(2) { border-left-color: #14b8a6; }
-        .stat-card:nth-child(3) { border-left-color: #f59e0b; }
-        .stat-card:nth-child(4) { border-left-color: #8b5cf6; }
 
         .stat-icon {
             width: 60px;
             height: 60px;
             border-radius: 12px;
-            background: rgba(14, 165, 233, 0.1);
+            background: rgba(42, 157, 143, 0.1);
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 28px;
         }
 
-        .stat-card:nth-child(2) .stat-icon { background: rgba(20, 184, 166, 0.1); }
-        .stat-card:nth-child(3) .stat-icon { background: rgba(245, 158, 11, 0.1); }
-        .stat-card:nth-child(4) .stat-icon { background: rgba(139, 92, 246, 0.1); }
+        .stat-info h3 { color: var(--gray); font-size: 0.85rem; font-weight: 500; margin-bottom: 0.2rem; }
+        .stat-info .number { font-size: 1.75rem; font-weight: 700; color: var(--dark); }
 
-        .stat-info h3 {
-            color: var(--gray);
-            font-size: 0.85rem;
-            font-weight: 500;
-            margin-bottom: 0.2rem;
-        }
+        .section-view { display: none; }
+        .section-view.active { display: block; }
 
-        .stat-info .number {
-            font-size: 1.75rem;
-            font-weight: 700;
-            color: var(--dark);
-        }
-
-        /* Estilos para las vistas o secciones */
-        .section-view {
-            display: none;
-        }
-
-        .section-view.active {
-            display: block;
-        }
-
-        /* Secciones Generales / Tablas */
         .content-card {
             background: white;
             padding: 2rem;
             border-radius: 1rem;
             box-shadow: 0 6px 20px rgba(0,0,0,0.06);
             margin-bottom: 2rem;
+            overflow-x: auto;
         }
 
-        .content-card h2 {
-            font-size: 1.25rem;
-            color: var(--dark);
-            margin-bottom: 1.2rem;
-            font-weight: 600;
-        }
+        .content-card h2 { font-size: 1.25rem; color: var(--dark); margin-bottom: 1.2rem; font-weight: 600; }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
+        table { 
+            width: 100%; 
+            border-collapse: collapse; 
+            min-width: 600px;
         }
+        th { text-align: left; padding: 1rem; background: #f8f9fa; color: var(--gray); font-size: 0.85rem; font-weight: 600; border-bottom: 2px solid #dee2e6; }
+        td { padding: 1rem; border-bottom: 1px solid #f1f3f5; font-size: 0.9rem; color: var(--dark); }
+        
+        .status { padding: 0.35rem 0.85rem; border-radius: 50px; font-size: 0.75rem; font-weight: 600; display: inline-block; }
+        .status.confirmed { background: #e8f5e9; color: #2e7d32; }
+        .status.pending { background: #fff8e1; color: #f57f17; }
 
-        th {
-            text-align: left;
-            padding: 1rem;
-            background: #f8f9fa;
-            color: var(--gray);
-            font-size: 0.85rem;
-            font-weight: 600;
-            border-bottom: 2px solid #dee2e6;
-        }
+        .btn-action { background: var(--primary); color: white; border: none; padding: 0.4rem 1rem; border-radius: 6px; cursor: pointer; font-size: 0.85rem; transition: 0.2s; text-decoration: none; display: inline-block; }
+        .btn-action:hover { background: var(--primary-dark); }
 
-        td {
-            padding: 1rem;
-            border-bottom: 1px solid #f1f3f5;
-            font-size: 0.9rem;
-            color: var(--dark);
-        }
+        .btn-delete { background: var(--danger); color: white; border: none; border-radius: 6px; cursor: pointer; transition: 0.2s; }
+        .btn-delete:hover { background: #d90429; }
 
-        .status {
-            padding: 0.35rem 0.85rem;
-            border-radius: 50px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            display: inline-block;
-        }
-
-        .status.confirmed {
-            background: #e0f2fe;
-            color: #0369a1;
-        }
-
-        .status.pending {
-            background: #fef3c7;
-            color: #b45309;
-        }
-
-        .btn-action {
-            background: var(--primary);
-            color: white;
-            border: none;
-            padding: 0.4rem 1rem;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 0.85rem;
-            transition: 0.2s;
-            text-decoration: none;
-            display: inline-block;
-        }
-
-        .btn-action:hover {
-            background: var(--primary-dark);
-        }
-
-        /* Formulario para emitir certificados */
         .form-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -371,18 +241,8 @@
             margin-bottom: 1.5rem;
         }
 
-        .form-group {
-            display: flex;
-            flex-direction: column;
-            gap: 0.4rem;
-        }
-
-        .form-group label {
-            font-size: 0.85rem;
-            font-weight: 600;
-            color: var(--gray);
-        }
-
+        .form-group { display: flex; flex-direction: column; gap: 0.4rem; }
+        .form-group label { font-size: 0.85rem; font-weight: 600; color: var(--gray); }
         .form-group input, .form-group select, .form-group textarea {
             padding: 0.7rem 1rem;
             border: 1px solid #dee2e6;
@@ -391,75 +251,73 @@
             outline: none;
             transition: border-color 0.2s;
         }
+        .form-group.full-width { grid-column: 1 / -1; }
 
-        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
-            border-color: var(--primary);
+        .iess-only { display: none; }
+        .iess-active .iess-only { display: flex; }
+
+        .tabs-container {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #eef2f5;
         }
 
-        .form-group.full-width {
-            grid-column: 1 / -1;
+        .tab-btn {
+            background: transparent;
+            border: none;
+            padding: 10px 20px;
+            font-size: 1rem;
+            font-weight: 600;
+            color: #6c757d;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+            margin-bottom: -2px;
+        }
+        .tab-btn:hover { color: var(--primary-dark); }
+        .tab-btn.active { color: var(--primary-dark); border-bottom: 3px solid var(--primary-dark); }
+
+        .checkbox-label { display: flex; align-items: center; gap: 8px; font-size: 0.82rem; color: var(--dark); cursor: pointer; }
+        .checkbox-label input { cursor: pointer; width: 15px; height: 15px; }
+
+        .tratamiento-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.8rem;
+            background: #eef9f6;
+            padding: 1rem;
+            border-radius: 8px;
+            border: 1px solid #a3e4d7;
         }
 
-        /* --- DISEÑO RESPONSIVO CON MENÚ LATERAL DESPLEGABLE (OFF-CANVAS) --- */
+        .hc-header { text-align: center; border-bottom: 2px solid var(--primary); padding-bottom: 1rem; margin-bottom: 1.5rem; }
+        .hc-header h2 { color: var(--primary-dark); font-size: 1.3rem; }
+
+        h3 { font-size: 1.05rem; color: var(--primary-dark); margin: 1.5rem 0 0.8rem 0; padding-bottom: 0.3rem; border-bottom: 1px dashed #dee2e6; }
+
         @media (max-width: 992px) {
-            .dashboard {
-                grid-template-columns: 1fr;
-            }
+            .dashboard { grid-template-columns: 1fr; }
+            .sidebar { position: fixed; top: 0; left: -280px; width: 260px; height: 100vh; transition: transform 0.3s ease-in-out; z-index: 101; }
+            .sidebar.open { transform: translateX(280px); }
+            .close-sidebar-btn { display: block; }
+            .menu-toggle { display: flex; }
+            .main-content { padding: 1.5rem 1rem; }
 
-            .sidebar {
-                position: fixed;
-                top: 0;
-                left: -280px; /* Oculto fuera de la pantalla de forma predeterminada */
-                width: 260px;
-                height: 100vh;
-                transition: transform 0.3s ease-in-out;
-                z-index: 101;
-            }
-
-            .sidebar.open {
-                transform: translateX(280px); /* Se desliza para mostrarse al activarse */
-            }
-
-            .close-sidebar-btn {
-                display: block; /* Muestra el botón 'X' en dispositivos móviles */
-            }
-
-            .menu-toggle {
-                display: flex; /* Muestra el botón hamburguesa en el encabezado */
-            }
-
-            .main-content {
-                padding: 1.5rem 1rem;
-            }
-        }
-
-        @media (max-width: 768px) {
             .header {
                 flex-direction: column;
                 align-items: stretch;
-                gap: 1rem;
                 padding: 1rem;
             }
 
             .header-left {
                 justify-content: space-between;
-            }
-
-            .search-container {
                 width: 100%;
             }
 
-            .stats-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .content-card {
-                padding: 1rem;
-                overflow-x: auto;
-            }
-
-            table {
-                min-width: 600px;
+            .search-container {
+                max-width: 100%;
+                margin-top: 0.5rem;
             }
         }
     </style>
@@ -598,71 +456,151 @@
             </div>
                 
             <!-- VISTA 2: CERTIFICADOS -->
+            
             <div id="certificados-view" class="section-view">
-                <div class="content-card">
-                    <h2>Emitir Nuevo Certificado Podológico</h2>
-                    <form onsubmit="event.preventDefault(); alert('Certificado podológico generado correctamente');">
+                <div class="content-card" id="cardCertificadoContainer">
+                    <h2>Emisión y Registro de Certificados Podológicos</h2>
+                    <p style="color: var(--gray); margin-bottom: 1.5rem;">Gestione los certificados de reposo y atención podológica.</p>
+                    
+                    <div class="tabs-container">
+                        <button type="button" class="tab-btn active" id="tab-normal" onclick="cambiarPestañaFormato('normal')">Certificado Podológico</button>
+                        <button type="button" class="tab-btn" id="tab-iess" onclick="cambiarPestañaFormato('iess')">Certificado Formato IESS / MSP</button>
+                    </div>
+
+                    <form id="formCertificado" onsubmit="guardarYEmitirCertificado(event)">
+                        <input type="hidden" id="certFormato" value="normal">
+
                         <div class="form-grid">
                             <div class="form-group">
-                                <label>Cédula del Paciente</label>
-                                <input type="text" placeholder="Ej. 1712345678" required>
+                                <label>Fecha de Emisión:</label>
+                                <input type="date" id="certFecha" required>
                             </div>
                             <div class="form-group">
-                                <label>Apellidos y Nombres</label>
-                                <input type="text" placeholder="Ej. Silva Carmen" required>
+                                <label>Cédula / Pasaporte:</label>
+                                <input type="text" id="certCedula" placeholder="Ej. 1713031167" required>
                             </div>
+                            <div class="form-group full-width">
+                                <label>Apellidos y Nombres Completos:</label>
+                                <input type="text" id="certNombres" placeholder="Ej. PÉREZ GÓMEZ JUAN" required>
+                            </div>
+
+                            <div class="form-group iess-only">
+                                <label>Dirección Domiciliaria:</label>
+                                <input type="text" id="certDireccionDom" placeholder="Ej. Solanda Sector 2">
+                            </div>
+                            <div class="form-group iess-only">
+                                <label>Teléfono Paciente:</label>
+                                <input type="tel" id="certTelPaciente" placeholder="Ej. 0995675273">
+                            </div>
+                            <div class="form-group iess-only">
+                                <label>Correo Emisor Certificado:</label>
+                                <input type="email" id="certEmailEmisor" value="podologia.podolab@gmail.com">
+                            </div>
+                            <div class="form-group iess-only">
+                                <label>Teléfono Emisor Certificado:</label>
+                                <input type="tel" id="certTelEmisor" value="099825746">
+                            </div>
+                            <div class="form-group iess-only">
+                                <label>Institución / Empresa:</label>
+                                <input type="text" id="certInstitucion" placeholder="Ej. Empresa Privada">
+                            </div>
+                            <div class="form-group iess-only">
+                                <label>Puesto de Trabajo del Paciente:</label>
+                                <input type="text" id="certPuesto" placeholder="Ej. Operario">
+                            </div>
+                            <div class="form-group iess-only">
+                                <label>Dirección Empresa:</label>
+                                <input type="text" id="certDirEmpresa" placeholder="Dirección...">
+                            </div>
+                            <div class="form-group iess-only">
+                                <label>Teléfono Empresa:</label>
+                                <input type="tel" id="certTelEmpresa" placeholder="Teléfono...">
+                            </div>
+                            <div class="form-group iess-only">
+                                <label>Dirección Establecimiento de Salud:</label>
+                                <input type="text" id="certDirEstablecimiento" value="Quito, Ecuador">
+                            </div>
+
                             <div class="form-group">
-                                <label>Tipo de Certificado</label>
-                                <select>
-                                    <option>Certificado de Atención Podológica</option>
-                                    <option>Aptitud Podológica para Calzado / Laboral</option>
-                                    <option>Reposo por Lesión / Cirugía Podológica</option>
+                                <label>Tipo de Certificado:</label>
+                                <select id="certTipo">
+                                    <option>Atención Podológica</option>
+                                    <option>Reposo Podológico</option>
                                 </select>
                             </div>
                             <div class="form-group">
-                                <label>Días de Reposo / Control</label>
-                                <input type="number" placeholder="Ej. 5 días">
+                                <label>Días de Reposo / Sesiones:</label>
+                                <input type="number" id="certDias" value="2" min="1" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Código CIE-10:</label>
+                                <input type="text" id="certCie" placeholder="Ej. L84 (Callosidades)" required>
                             </div>
                             <div class="form-group full-width">
-                                <label>Diagnóstico / Observaciones Podológicas</label>
-                                <textarea rows="3" placeholder="Detalle la afección (onicocriptosis, hiperqueratosis, etc.)..."></textarea>
+                                <label>Diagnóstico:</label>
+                                <input type="text" id="certDiagnostico" placeholder="Ej. ONICOCRYPTOSIS..." required>
+                            </div>
+                            <div class="form-group">
+                                <label>Fecha de Inicio / Desde:</label>
+                                <input type="date" id="certFechaInicio" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Horario de Atención:</label>
+                                <input type="text" id="certHorario" placeholder="Ej. 10h30" required>
+                            </div>
+
+                            <div class="form-group full-width iess-only">
+                                <label>Presenta Síntomas / Cuadro Clínico:</label>
+                                <input type="text" id="certSintomas" placeholder="Ej. -Dolor en hallux - Inflamación local">
                             </div>
                         </div>
-                        <button type="submit" class="btn-action" style="padding: 0.7rem 1.5rem; font-size: 0.95rem;">Generar e Imprimir Certificado</button>
+
+                        <label style="font-weight:600; color:var(--dark);">Procedimientos Aplicados:</label>
+                        <div class="tratamiento-grid">
+                            <label class="checkbox-label"><input type="checkbox" class="cert-medios" value="Quiropodia profiláctica"> Quiropodia profiláctica</label>
+                            <label class="checkbox-label"><input type="checkbox" class="cert-medios" value="Espiculotomía / Uña encarnada"> Espiculotomía / Uña encarnada</label>
+                            <label class="checkbox-label"><input type="checkbox" class="cert-medios" value="Tratamiento de Onicomicosis"> Tratamiento de Onicomicosis</label>
+                            <label class="checkbox-label"><input type="checkbox" class="cert-medios" value="Desbridamiento de helomas"> Desbridamiento de helomas</label>
+                            <label class="checkbox-label"><input type="checkbox" class="cert-medios" value="Curación de pie diabético"> Curación de pie diabético</label>
+                            <label class="checkbox-label"><input type="checkbox" class="cert-medios" value="Evaluación biomecánica"> Evaluación biomecánica</label>
+                        </div>                      
+
+                        <div class="form-grid" style="margin-top: 1.2rem;">
+                            <div class="form-group">
+                                <label>Subtítulo opcional:</label>
+                                <input type="text" id="certSubtitulo" placeholder="Ej. Indicación post-tratamiento">
+                            </div>
+                            <div class="form-group">
+                                <label>Texto de justificación:</label>
+                                <input type="text" id="certTextoAdicional" placeholder="Texto descriptivo...">
+                            </div>
+                        </div>
+
+                        <div class="form-group full-width" style="margin-top: 1rem;">
+                            <label>Observaciones:</label>
+                            <textarea id="certObservaciones" rows="3" placeholder="Ej. Evitar calzado cerrado por 48 horas..."></textarea>
+                        </div>
+
+                        <div style="display: flex; gap: 10px; margin-top: 15px; flex-wrap: wrap;">
+                            <button type="submit" class="btn-action" style="padding: 0.7rem 1.5rem; font-size: 0.95rem;">Guardar e Imprimir Certificado (PDF)</button>
+                            <button type="button" onclick="exportCertificadosToExcel()" class="btn-action" style="background: #2b9348; padding: 0.7rem 1.5rem; font-size: 0.95rem;">📊 Descargar / Actualizar Excel Único</button>
+                        </div>
                     </form>
                 </div>
-                
+
                 <div class="content-card">
-                    <h2>Certificados Podológicos Emitidos</h2>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.2rem; flex-wrap: wrap; gap: 1rem;">
+                        <h2 style="margin-bottom: 0;">Historial de Certificados Emitidos</h2>
+                        <div class="search-container" style="width: 320px;">
+                            <input type="text" id="searchCertInput" placeholder="Buscar por cédula o nombre..." onkeyup="filtrarCertificados()">
+                            <button onclick="filtrarCertificados()">🔍</button>
+                        </div>
+                    </div>
                     <table>
                         <thead>
-                            <tr>
-                                <th>N° Certificado</th>
-                                <th>Paciente</th>
-                                <th>Cédula</th>
-                                <th>Tipo</th>
-                                <th>Fecha Emisión</th>
-                                <th>Acciones</th>
-                            </tr>
+                            <tr><th>Fecha</th><th>Cédula</th><th>Paciente</th><th>Tipo</th><th>Días</th><th>Acciones</th></tr>
                         </thead>
-                        <tbody>
-                            <tr>
-                                <td>CERT-PIE-2026-045</td>
-                                <td>Carmen Silva</td>
-                                <td>1712345678</td>
-                                <td>Atención Podológica</td>
-                                <td>01 Ago 2026</td>
-                                <td><button class="btn-action">Descargar PDF</button></td>
-                            </tr>
-                            <tr>
-                                <td>CERT-PIE-2026-044</td>
-                                <td>Jorge Andrade</td>
-                                <td>1754321098</td>
-                                <td>Reposo Podológico</td>
-                                <td>28 Jul 2026</td>
-                                <td><button class="btn-action">Descargar PDF</button></td>
-                            </tr>
-                        </tbody>
+                        <tbody id="tablaCertificadosBody"></tbody>
                     </table>
                 </div>
             </div>
@@ -753,8 +691,48 @@
                             </div>
                             <div class="form-group full-width">
                                 <label>Nombres y Apellidos del Paciente: *</label>
-                                <input type="text" id="hcNombre" placeholder="Apellidos y Nombres completos" required>
+                                <input type="text" id="hcNombres" placeholder="Apellidos y Nombres completos" required>
                             </div>
+                            <div class="form-group">
+                            <label>Fecha de Nacimiento:</label>
+                            <input type="date" id="hcNacimiento" onchange="actualizarEdadHC()">
+                        </div>
+                        <div class="form-group">
+                            <label>Edad:</label>
+                            <input type="text" id="hcEdad" placeholder="Años" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label>Sexo:</label>
+                            <select id="hcSexo">
+                                <option value="Masculino">Masculino</option>
+                                <option value="Femenino">Femenino</option>
+                                <option value="Otro">Otro</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Celular / Teléfono:</label>
+                            <input type="tel" id="hcCelular" placeholder="099xxxxxxx">
+                        </div>
+
+                        <div class="form-group full-width">
+                            <label>Correo Electrónico (Email):</label>
+                            <input type="email" id="hcEmail" placeholder="correo@ejemplo.com">
+                        </div>
+
+                        <div class="form-group full-width">
+                            <label>Dirección Domiciliaria:</label>
+                            <input type="text" id="hcDireccion" placeholder="Calle principal y secundaria, sector">
+                        </div>
+
+                        <div class="form-group">
+                            <label>En caso de emergencia llamar a:</label>
+                            <input type="text" id="hcContactoEmergencia" placeholder="Nombre de familiar">
+                        </div>
+                        <div class="form-group">
+                            <label>Teléf. Emergencia:</label>
+                            <input type="tel" id="hcTelefonoEmergencia" placeholder="Teléfono">
+                        </div>
+                            
                         </div>
 
                         <!-- Antecedentes Personales (Opcionales) -->
@@ -832,7 +810,7 @@
     </div>
     
     <script src="../controllers/ingresoPacientes.js"></script>
-    <script src="../controllers/historiaClinicaPodologia.js"></script>
+    
     
 
     <script>
@@ -851,205 +829,656 @@
     
     // Funciones de control de pestañas y menú móvil
         function generarPDFHistoria(event) {
-            event.preventDefault();
-            
-            // Obtener valores del formulario
-            const cedula = document.getElementById('hcCedula').value.trim();
-            const fecha = document.getElementById('hcFecha').value.trim();
-            const nombresInput = document.getElementById('hcNombre').value.trim();
-            const nombres = nombresInput.replace(/\s+/g, '_');
-            const puntoDolor = document.getElementById('hcPuntoDolor').value;
-            const motivo = document.getElementById('hcMotivo').value;
-            const evaluacion = document.getElementById('hcEvaluacion').value;
-            const diagnostico = document.getElementById('hcDiagnostico').value;
+    event.preventDefault();
+    
+    // Obtener valores del formulario
+    const cedula = document.getElementById('hcCedula')?.value.trim() || '';
+    const fecha = document.getElementById('hcFecha')?.value.trim() || '';
+    const nombresInput = document.getElementById('hcNombres')?.value.trim() || '';
+    const nombres = nombresInput.replace(/\s+/g, '_');
 
-            // Recopilar antecedentes seleccionados
-            let antecedentes = [];
-            document.querySelectorAll('.hc-ant:checked').forEach(cb => antecedentes.push(cb.value));
-            
-            const checkOtros = document.getElementById('checkOtros');
-            const inputOtro = document.getElementById('inputOtroAntecedente');
-            if (checkOtros.checked && inputOtro.value.trim() !== '') {
-                antecedentes.push("Otros: " + inputOtro.value.trim());
-            }
+    // --- NUEVOS CAMPOS ---
+    const fechaNac = document.getElementById('hcFechaNac')?.value || '';
+    const edad = document.getElementById('hcEdad')?.value.trim() || '';
+    const sexo = document.getElementById('hcSexo')?.value || '';
+    const telefono = document.getElementById('hcTelefono')?.value.trim() || '';
+    const email = document.getElementById('hcEmail')?.value.trim() || '';
+    const direccion = document.getElementById('hcDireccion')?.value.trim() || '';
+    const contactoEmergencia = document.getElementById('hcContactoEmergencia')?.value.trim() || '';
+    const telefEmergencia = document.getElementById('hcTelefonoEmergencia')?.value.trim() || '';
 
-            // Validar que jsPDF esté cargado
-            if (!window.jspdf) {
-                alert("Error: La librería jsPDF no se ha cargado correctamente.");
-                return;
-            }
+    // Campos clínicos
+    const puntoDolor = document.getElementById('hcPuntoDolor')?.value || '';
+    const motivo = document.getElementById('hcMotivo')?.value || '';
+    const evaluacion = document.getElementById('hcEvaluacion')?.value || '';
+    const diagnostico = document.getElementById('hcDiagnostico')?.value || '';
 
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
+    // Antecedentes
+    let antecedentes = [];
+    document.querySelectorAll('.hc-ant:checked').forEach(cb => antecedentes.push(cb.value));
+    
+    const checkOtros = document.getElementById('checkOtros');
+    const inputOtro = document.getElementById('inputOtroAntecedente');
+    if (checkOtros && checkOtros.checked && inputOtro?.value.trim() !== '') {
+        antecedentes.push("Otros: " + inputOtro.value.trim());
+    }
 
-            // Configuración de colores corporativos
-            const primaryColor = [14, 165, 233];   // #0ea5e9
-            const darkColor = [33, 37, 41];       // #212529
-            const grayBg = [248, 249, 250];       // #f8f9fa
-            const borderColor = [222, 226, 230];  // #dee2e6
+    if (!window.jspdf) {
+        alert("Error: La librería jsPDF no se ha cargado correctamente.");
+        return;
+    }
 
-            // --- CABECERA PROFESIONAL CON LOGO (Sin barra superior) ---
-            const imgPath = '../img/medipielogop.png'; 
-            
-            const img = new Image();
-            img.src = imgPath;
-            img.onload = function() {
-                try {
-                    doc.addImage(img, 'PNG', 15, 12, 20, 20);
-                } catch (e) {
-                    console.log("No se pudo insertar la imagen del logo en el canvas del PDF.");
-                }
-                construirCuerpoPDF();
-            };
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
 
-            img.onerror = function() {
-                construirCuerpoPDF();
-            };
+    // Colores corporativos
+    const primaryColor = [14, 165, 233];   
+    const darkColor = [33, 37, 41];       
+    const grayBg = [248, 249, 250];       
+    const borderColor = [222, 226, 230];  
 
-            if (img.complete) {
-                try { doc.addImage(img, 'PNG', 15, 12, 20, 20); } catch(e){}
-                construirCuerpoPDF();
-            }
+    const imgPath = '../img/medipielogop.png'; 
+    const img = new Image();
+    img.src = imgPath;
 
-            function construirCuerpoPDF() {
-                // Títulos de la empresa / sistema
-                doc.setFont("helvetica", "bold");
-                doc.setFontSize(15);
-                doc.setTextColor(...primaryColor);
-                doc.text("MEDIPIE.ST", 40, 20);
+    let pdfConstruido = false;
 
-                doc.setFontSize(10);
-                doc.setTextColor(...darkColor);
-                doc.text("CENTRO ESPECIALIZADO DE PODOLOGÍA CLÍNICA", 40, 25);
+    function ejecutarConstruccion() {
+        if (!pdfConstruido) {
+            pdfConstruido = true;
+            construirCuerpoPDF();
+        }
+    }
 
-                doc.setFont("helvetica", "normal");
-                doc.setFontSize(9);
-                doc.setTextColor(100);
-                doc.text(`Fecha de Emisión: ${fecha}`, 40, 31);
+    img.onload = function() {
+        try { doc.addImage(img, 'PNG', 15, 10, 20, 20); } catch (e) {}
+        ejecutarConstruccion();
+    };
 
-                // Línea divisoria elegante
-                doc.setLineWidth(0.4);
-                doc.setDrawColor(...borderColor);
-                doc.line(15, 36, 195, 36);
+    img.onerror = function() {
+        ejecutarConstruccion();
+    };
 
-                let y = 44;
+    if (img.complete) {
+        try { doc.addImage(img, 'PNG', 15, 10, 20, 20); } catch(e){}
+        ejecutarConstruccion();
+    }
 
-                // --- SECCIÓN: DATOS DEL PACIENTE ---
-                doc.setFillColor(...grayBg);
-                doc.roundedRect(15, y, 180, 20, 2, 2, 'F');
-                
-                doc.setFont("helvetica", "bold");
-                doc.setFontSize(10);
-                doc.setTextColor(...primaryColor);
-                doc.text("DATOS DEL PACIENTE", 20, y + 6);
+    function construirCuerpoPDF() {
+        // Encabezado
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(14);
+        doc.setTextColor(...primaryColor);
+        doc.text("MEDIPIE.ST", 40, 18);
 
-                doc.setFont("helvetica", "normal");
-                doc.setFontSize(9);
-                doc.setTextColor(...darkColor);
-                doc.text(`Cédula / N° Historia: ${cedula}`, 20, y + 14);
-                doc.text(`Apellidos y Nombres: ${nombresInput}`, 100, y + 14);
+        doc.setFontSize(9);
+        doc.setTextColor(...darkColor);
+        doc.text("CENTRO ESPECIALIZADO DE PODOLOGÍA CLÍNICA", 40, 23);
 
-                y += 26;
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(8);
+        doc.setTextColor(100);
+        doc.text(`Fecha de Emisión: ${fecha}`, 40, 28);
 
-                // --- SECCIÓN: ANTECEDENTES PERSONALES ---
-                doc.setFont("helvetica", "bold");
-                doc.setFontSize(10);
-                doc.setTextColor(...primaryColor);
-                doc.text("ANTECEDENTES PERSONALES", 15, y);
-                y += 5;
+        doc.setLineWidth(0.4);
+        doc.setDrawColor(...borderColor);
+        doc.line(15, 32, 195, 32);
 
-                doc.setFont("helvetica", "normal");
-                doc.setFontSize(9);
-                doc.setTextColor(...darkColor);
-                const textoAntecedentes = antecedentes.length > 0 ? antecedentes.join(", ") : "Ninguno registrado / Sin patologías de relevancia";
-                
-                const splitAntecedentes = doc.splitTextToSize(textoAntecedentes, 180);
-                doc.text(splitAntecedentes, 15, y);
-                y += (splitAntecedentes.length * 5) + 6;
+        let y = 36;
 
-                // --- SECCIÓN: PUNTO DE DOLOR (BODY TEST) ---
-                doc.setFont("helvetica", "bold");
-                doc.setFontSize(10);
-                doc.setTextColor(...primaryColor);
-                doc.text("PUNTO DE DOLOR (BODY TEST)", 15, y);
-                y += 5;
+        // --- SECCIÓN AMPLIADA: DATOS DEL PACIENTE ---
+        doc.setFillColor(...grayBg);
+        doc.roundedRect(15, y, 180, 42, 2, 2, 'F');
+        
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(9);
+        doc.setTextColor(...primaryColor);
+        doc.text("DATOS DEL PACIENTE", 20, y + 6);
 
-                doc.setFont("helvetica", "normal");
-                doc.setFontSize(9);
-                doc.setTextColor(...darkColor);
-                const textoDolor = puntoDolor || "No especificado";
-                const splitDolor = doc.splitTextToSize(textoDolor, 180);
-                doc.text(splitDolor, 15, y);
-                y += (splitDolor.length * 5) + 6;
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(8.5);
+        doc.setTextColor(...darkColor);
 
-                // --- SECCIÓN: MOTIVO DE CONSULTA ---
-                doc.setFont("helvetica", "bold");
-                doc.setFontSize(10);
-                doc.setTextColor(...primaryColor);
-                doc.text("MOTIVO DE CONSULTA", 15, y);
-                y += 5;
+        // Fila 1: Nombres y Cédula
+        doc.text(`Paciente: ${nombresInput}`, 20, y + 13);
+        doc.text(`Cédula/HC: ${cedula}`, 130, y + 13);
 
-                doc.setFont("helvetica", "normal");
-                doc.setFontSize(9);
-                doc.setTextColor(...darkColor);
-                const textoMotivo = motivo || "Sin observaciones registradas";
-                const splitMotivo = doc.splitTextToSize(textoMotivo, 180);
-                doc.text(splitMotivo, 15, y);
-                y += (splitMotivo.length * 5) + 6;
+        // Fila 2: Fecha Nac, Edad, Sexo
+        doc.text(`F. Nacimiento: ${fechaNac}`, 20, y + 20);
+        doc.text(`Edad: ${edad} años`, 85, y + 20);
+        doc.text(`Sexo: ${sexo}`, 130, y + 20);
 
-                // --- SECCIÓN: EVALUACIÓN FISIOTERAPÉUTICA / PODOLÓGICA ---
-                doc.setFont("helvetica", "bold");
-                doc.setFontSize(10);
-                doc.setTextColor(...primaryColor);
-                doc.text("EVALUACIÓN FISIOTERAPÉUTICA / PODOLÓGICA", 15, y);
-                y += 5;
+        // Fila 3: Teléfono y Email
+        doc.text(`Teléfono: ${telefono}`, 20, y + 27);
+        doc.text(`Email: ${email}`, 85, y + 27);
 
-                doc.setFont("helvetica", "normal");
-                doc.setFontSize(9);
-                doc.setTextColor(...darkColor);
-                const textoEvaluacion = evaluacion || "Sin observaciones registradas";
-                const splitEvaluacion = doc.splitTextToSize(textoEvaluacion, 180);
-                doc.text(splitEvaluacion, 15, y);
-                y += (splitEvaluacion.length * 5) + 6;
+        // Fila 4: Dirección
+        doc.text(`Dirección: ${direccion}`, 20, y + 34);
 
-                // --- SECCIÓN: DIAGNÓSTICO Y PLAN DE TRATAMIENTO ---
-                doc.setFont("helvetica", "bold");
-                doc.setFontSize(10);
-                doc.setTextColor(...primaryColor);
-                doc.text("DIAGNÓSTICO Y PLAN DE TRATAMIENTO", 15, y);
-                y += 5;
+        // Fila 5: Contacto de Emergencia
+        if (contactoEmergencia || telefEmergencia) {
+            doc.text(`Emergencia: ${contactoEmergencia} (${telefEmergencia})`, 20, y + 40);
+        }
 
-                doc.setFont("helvetica", "normal");
-                doc.setFontSize(9);
-                doc.setTextColor(...darkColor);
-                const textoDiagnostico = diagnostico || "Sin observaciones registradas";
-                const splitDiagnostico = doc.splitTextToSize(textoDiagnostico, 180);
-                doc.text(splitDiagnostico, 15, y);
+        y += 48; // Espaciado para la siguiente sección
 
-                // --- PIE DE PÁGINA Y LÍNEA DE FIRMA ---
-                let footerY = 265;
-                doc.setLineWidth(0.3);
-                doc.setDrawColor(...borderColor);
-                doc.line(70, footerY, 140, footerY);
+        // Sección: Antecedentes
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(9.5);
+        doc.setTextColor(...primaryColor);
+        doc.text("ANTECEDENTES PERSONALES", 15, y);
+        y += 5;
 
-                doc.setFont("helvetica", "bold");
-                doc.setFontSize(9);
-                doc.setTextColor(...darkColor);
-                doc.text("Firma del Profesional / Especialista", 105, footerY + 5, { align: "center" });
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(8.5);
+        doc.setTextColor(...darkColor);
+        const textoAntecedentes = antecedentes.length > 0 ? antecedentes.join(", ") : "Ninguno registrado / Sin patologías de relevancia";
+        const splitAntecedentes = doc.splitTextToSize(textoAntecedentes, 180);
+        doc.text(splitAntecedentes, 15, y);
+        y += (splitAntecedentes.length * 4.5) + 5;
 
-                doc.setFont("helvetica", "italic");
-                doc.setFontSize(8);
-                doc.setTextColor(150);
-                doc.text("Medipie.st - Sistema de Gestión Podológica", 105, 285, { align: "center" });
+        // Sección: Punto de Dolor
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(9.5);
+        doc.setTextColor(...primaryColor);
+        doc.text("PUNTO DE DOLOR (BODY TEST)", 15, y);
+        y += 5;
 
-                // Guardar archivo con la estructura solicitada: cedula_nombres_fecha.pdf
-                const nombreArchivo = `${cedula}_${nombres}_${fecha}.pdf`;
-                doc.save(nombreArchivo);
-                
-                alert("¡Historia clínica guardada y PDF profesional generado con éxito!");
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(8.5);
+        doc.setTextColor(...darkColor);
+        const splitDolor = doc.splitTextToSize(puntoDolor || "No especificado", 180);
+        doc.text(splitDolor, 15, y);
+        y += (splitDolor.length * 4.5) + 5;
+
+        // Sección: Motivo
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(9.5);
+        doc.setTextColor(...primaryColor);
+        doc.text("MOTIVO DE CONSULTA", 15, y);
+        y += 5;
+
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(8.5);
+        doc.setTextColor(...darkColor);
+        const splitMotivo = doc.splitTextToSize(motivo || "Sin observaciones registradas", 180);
+        doc.text(splitMotivo, 15, y);
+        y += (splitMotivo.length * 4.5) + 5;
+
+        // Sección: Evaluación
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(9.5);
+        doc.setTextColor(...primaryColor);
+        doc.text("EVALUACIÓN FISIOTERAPÉUTICA / PODOLÓGICA", 15, y);
+        y += 5;
+
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(8.5);
+        doc.setTextColor(...darkColor);
+        const splitEvaluacion = doc.splitTextToSize(evaluacion || "Sin observaciones registradas", 180);
+        doc.text(splitEvaluacion, 15, y);
+        y += (splitEvaluacion.length * 4.5) + 5;
+
+        // Sección: Diagnóstico
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(9.5);
+        doc.setTextColor(...primaryColor);
+        doc.text("DIAGNÓSTICO Y PLAN DE TRATAMIENTO", 15, y);
+        y += 5;
+
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(8.5);
+        doc.setTextColor(...darkColor);
+        const splitDiagnostico = doc.splitTextToSize(diagnostico || "Sin observaciones registradas", 180);
+        doc.text(splitDiagnostico, 15, y);
+
+        // Pie de Página
+        let footerY = 270;
+        doc.setLineWidth(0.3);
+        doc.setDrawColor(...borderColor);
+        doc.line(70, footerY, 140, footerY);
+
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(8.5);
+        doc.setTextColor(...darkColor);
+        doc.text("Firma del Profesional / Especialista", 105, footerY + 4, { align: "center" });
+
+        doc.setFont("helvetica", "italic");
+        doc.setFontSize(7.5);
+        doc.setTextColor(150);
+        doc.text("Medipie.st - Sistema de Gestión Podológica", 105, 285, { align: "center" });
+
+        // Guardar archivo PDF
+        const nombreArchivo = `${cedula || 'HC'}_${nombres || 'paciente'}_${fecha || 'fecha'}.pdf`;
+        doc.save(nombreArchivo);
+        
+        alert("¡Historia clínica guardada y PDF generado con éxito!");
+    }
+}
+        
+        
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            if (sidebar && overlay) {
+                sidebar.classList.toggle('open');
+                overlay.classList.toggle('active');
             }
         }
-        
+
+        function toggleSidebarMobile() {
+            if (window.innerWidth <= 992) {
+                toggleSidebar();
+            }
+        }
+
+        function switchTab(event, viewId) {
+            if (event) event.preventDefault();
+            document.querySelectorAll('.section-view').forEach(view => view.classList.remove('active'));
+            const targetView = document.getElementById(viewId);
+            if (targetView) targetView.classList.add('active');
+            
+            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+            if (event && event.currentTarget) event.currentTarget.classList.add('active');
+        }
+
+        function buscarPaciente() {
+            const query = document.getElementById('searchInput').value.trim();
+            if(query) alert("Buscando paciente: " + query);
+            else alert("Por favor ingrese un número de cédula o apellido para buscar.");
+        }
+
+        document.getElementById('btnCapturarMapa')?.addEventListener('click', () => {
+            const elementoAHTML = document.getElementById('bodyContainerToCapture');
+            html2canvas(elementoAHTML).then(canvas => {
+                const imgData = canvas.toDataURL('image/png');
+                const container = document.getElementById('previewCapturaContainer');
+                container.innerHTML = `
+                    <p style="font-size: 0.85rem; color: var(--primary); font-weight: 600; margin-bottom: 5px;">¡Captura generada con éxito!</p>
+                    <img src="${imgData}" alt="Captura Mapa Podológico" style="max-width: 100%; height: auto; max-height: 200px; border-radius: 6px; border: 1px solid #dee2e6; box-shadow: 0 2px 6px rgba(0,0,0,0.1);">
+                `;
+            });
+        });
+
+        // === GESTIÓN Y DESCARGA DE CERTIFICADOS PODOLÓGICOS ===
+// --- FUNCIÓN ADAPTADA A PODOLOGÍA (MEDIPIE.ST) ---
+// 1. Cambio entre formato Estándar e IESS
+function cambiarPestañaFormato(formato) {
+    document.getElementById('certFormato').value = formato;
+    const container = document.getElementById('cardCertificadoContainer');
+    const tabNormal = document.getElementById('tab-normal');
+    const tabIess = document.getElementById('tab-iess');
+
+    if (formato === 'iess') {
+        container.classList.add('iess-active');
+        tabIess.classList.add('active');
+        tabNormal.classList.remove('active');
+    } else {
+        container.classList.remove('iess-active');
+        tabNormal.classList.add('active');
+        tabIess.classList.remove('active');
+    }
+}
+
+// 2. Conversor de días a texto para certificado IESS
+function numeroALetras(num) {
+    const n = parseInt(num, 10);
+    if (isNaN(n)) return "";
+    const unidades = ["CERO", "UN", "DOS", "TRES", "CUATRO", "CINCO", "SEIS", "SIETE", "OCHO", "NUEVE", "DIEZ", "ONCE", "DOCE", "TRECE", "CATORCE", "QUINCE"];
+    const texto = n <= 15 ? unidades[n] : n.toString();
+    return `${n} (${texto}) DÍAS`;
+}
+
+// 3. Captura de datos del formulario e invocación del PDF
+function guardarYEmitirCertificado(event) {
+    event.preventDefault();
+
+    // Recopilar checkbox seleccionados
+    const medios = [];
+    document.querySelectorAll('.cert-medios:checked').forEach(cb => {
+        medios.push(cb.value);
+    });
+
+    const diasVal = document.getElementById('certDias').value || '1';
+
+    const cert = {
+        formato: document.getElementById('certFormato').value || 'normal',
+        fecha: document.getElementById('certFecha').value,
+        cedula: document.getElementById('certCedula').value.trim(),
+        nombres: document.getElementById('certNombres').value.trim(),
+        direccionDom: document.getElementById('certDireccionDom').value.trim(),
+        telPaciente: document.getElementById('certTelPaciente').value.trim(),
+        emailEmisor: document.getElementById('certEmailEmisor').value.trim(),
+        telEmisor: document.getElementById('certTelEmisor').value.trim(),
+        institucion: document.getElementById('certInstitucion').value.trim(),
+        puesto: document.getElementById('certPuesto').value.trim(),
+        dirEmpresa: document.getElementById('certDirEmpresa').value.trim(),
+        telEmpresa: document.getElementById('certTelEmpresa').value.trim(),
+        dirEstablecimiento: document.getElementById('certDirEstablecimiento').value.trim(),
+        tipo: document.getElementById('certTipo').value,
+        dias: diasVal,
+        diasLetras: numeroALetras(diasVal),
+        cie: document.getElementById('certCie').value.trim(),
+        diagnostico: document.getElementById('certDiagnostico').value.trim(),
+        fechaInicio: document.getElementById('certFechaInicio').value,
+        horario: document.getElementById('certHorario').value.trim(),
+        sintomas: document.getElementById('certSintomas').value.trim(),
+        medios: medios.length > 0 ? medios.join(', ') : 'Quiropodia clínica y manejo especializado',
+        subtitulo: document.getElementById('certSubtitulo').value.trim(),
+        textoAdicional: document.getElementById('certTextoAdicional').value.trim(),
+        observaciones: document.getElementById('certObservaciones').value.trim()
+    };
+
+    if (!window.jspdf) {
+        alert("La librería jsPDF no está cargada correctamente.");
+        return;
+    }
+
+    // Generar el documento PDF con la función existente
+    generarPDFCertificado(cert);
+}
+
+// 4. Funciones opcionales para evitar errores en la tabla/filtros
+function exportCertificadosToExcel() {
+    alert("Función de exportación de Excel activada.");
+}
+
+function filtrarCertificados() {
+    const input = document.getElementById('searchCertInput').value.toLowerCase();
+    const rows = document.querySelectorAll('#tablaCertificadosBody tr');
+    rows.forEach(row => {
+        const text = row.innerText.toLowerCase();
+        row.style.display = text.includes(input) ? '' : 'none';
+    });
+}
+
+function generarPDFCertificado(cert) {
+    if (!cert) cert = {};
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+
+    function formatearFechaTexto(fechaStr) {
+        if (!fechaStr) return "";
+        const str = String(fechaStr);
+        const partes = str.split("-");
+        if (partes.length < 3) return str;
+        const anio = parseInt(partes[0], 10);
+        const mesIndex = parseInt(partes[1], 10) - 1;
+        const dia = parseInt(partes[2], 10);
+        const meses = ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"];
+        return `${dia} de ${meses[mesIndex]} del ${anio}`;
+    }
+
+    function calcularFechaFin(fechaInicioStr, dias) {
+        if (!fechaInicioStr) return "";
+        try {
+            const fecha = new Date(String(fechaInicioStr) + "T00:00:00");
+            const d = parseInt(dias, 10) || 1;
+            if (isNaN(fecha.getTime())) return formatearFechaTexto(fechaInicioStr);
+            fecha.setDate(fecha.getDate() + (d - 1));
+            const yyyy = fecha.getFullYear();
+            const mm = String(fecha.getMonth() + 1).padStart(2, '0');
+            const dd = String(fecha.getDate()).padStart(2, '0');
+            return formatearFechaTexto(`${yyyy}-${mm}-${dd}`);
+        } catch (e) {
+            return formatearFechaTexto(fechaInicioStr);
+        }
+    }
+
+    const formatoStr = cert.formato ? String(cert.formato).toUpperCase() : "ESTANDAR";
+    const esIESS = formatoStr.toLowerCase() === 'iess';
+    const fechaEmisionTexto = formatearFechaTexto(cert.fecha);
+    const fechaInicioTexto = formatearFechaTexto(cert.fechaInicio);
+    const fechaFinTexto = calcularFechaFin(cert.fechaInicio, cert.dias);
+    const nombresCapitalizados = cert.nombres ? String(cert.nombres).replace(/\b\w/g, l => l.toUpperCase()) : "N/D";
+    const mediosAplicados = cert.medios || "Quiropodia clínica, espiculotomía y manejo especializado";
+    const cedulaStr = cert.cedula || "DOC";
+
+    function dibujarTituloSeccion(texto, yPos) {
+        doc.setFillColor(240, 244, 248);
+        doc.rect(14, yPos, 182, 5.5, 'F');
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(8.5);
+        doc.setTextColor(0, 119, 182);
+        doc.text(texto, 16, yPos + 4);
+    }
+
+    function generarEstructura() {
+        // Encabezado principal
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(11);
+        doc.setTextColor(0, 119, 182);
+        doc.text("CENTRO PODOLÓGICO ESPECIALIZADO MEDIPIE.ST", 196, 12, { align: "right" });
+
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(8.5);
+        doc.setTextColor(100, 100, 100);
+        doc.text("Quito, Ecuador  |  Tlf: 0995675273  |  podologia.podolab@gmail.com", 196, 17, { align: "right" });
+
+        // Línea divisoria
+        doc.setLineWidth(0.4);
+        doc.setDrawColor(200, 200, 200);
+        doc.line(14, 23, 196, 23);
+
+        // Fecha superior derecha
+        doc.setFontSize(8.5);
+        doc.setTextColor(60, 60, 60);
+        doc.text(`Quito, D.M., ${fechaEmisionTexto}`, 196, 31, { align: "right" });
+
+        if (esIESS) {
+            // ==================== FORMATO IESS / MSP ====================
+            doc.setFont("helvetica", "bold");
+            doc.setTextColor(0, 119, 182);
+            doc.setFontSize(10.5);
+            doc.text("CERTIFICADO MÉDICO / PODOLÓGICO DE REPOSO (FORMATO IESS / MSP)", 105, 40, { align: "center" });
+
+            let y = 48;
+            const margenRespuesta = 92;
+
+            dibujarTituloSeccion("A) DATOS DEL ESTABLECIMIENTO DE SALUD", y);
+            y += 8;
+            doc.setFontSize(8);
+            doc.setTextColor(40, 40, 40);
+            doc.setFont("helvetica", "bold"); doc.text("Establecimiento de Salud:", 14, y);
+            doc.setFont("helvetica", "normal"); doc.text("Centro Podológico Medipie.st", margenRespuesta, y);
+
+            y += 5;
+            doc.setFont("helvetica", "bold"); doc.text("Dirección Establecimiento:", 14, y);
+            doc.setFont("helvetica", "normal"); doc.text(cert.dirEstablecimiento || "Quito, Ecuador", margenRespuesta, y);
+
+            y += 5;
+            doc.setFont("helvetica", "bold"); doc.text("Correo Electrónico Emisor:", 14, y);
+            doc.setFont("helvetica", "normal"); doc.text(cert.emailEmisor || "podologia.podolab@gmail.com", margenRespuesta, y);
+
+            y += 5;
+            doc.setFont("helvetica", "bold"); doc.text("Teléfono Emisor / Emisión:", 14, y);
+            doc.setFont("helvetica", "normal"); doc.text(`${cert.telEmisor || '0995675273'}  |  Quito, ${fechaEmisionTexto}`, margenRespuesta, y);
+
+            y += 8;
+            dibujarTituloSeccion("B) DATOS DEL PACIENTE", y);
+            y += 8;
+            doc.setFontSize(8);
+            doc.setTextColor(40, 40, 40);
+            doc.setFont("helvetica", "bold"); doc.text("Apellidos y Nombres Completos:", 14, y);
+            doc.setFont("helvetica", "normal"); doc.text(nombresCapitalizados, margenRespuesta, y);
+
+            y += 5;
+            doc.setFont("helvetica", "bold"); doc.text("Número de Cédula / Pasaporte:", 14, y);
+            doc.setFont("helvetica", "normal"); doc.text(cedulaStr, margenRespuesta, y);
+
+            y += 5;
+            doc.setFont("helvetica", "bold"); doc.text("Dirección Domiciliaria / Teléfono:", 14, y);
+            doc.setFont("helvetica", "normal"); doc.text(`${cert.direccionDom || 'N/D'}  |  Tlf: ${cert.telPaciente || 'N/D'}`, margenRespuesta, y);
+
+            y += 5;
+            doc.setFont("helvetica", "bold"); doc.text("Empresa / Puesto de Trabajo:", 14, y);
+            doc.setFont("helvetica", "normal"); doc.text(`${cert.institucion || 'N/D'}  |  Puesto: ${cert.puesto || 'N/D'}`, margenRespuesta, y);
+
+            y += 8;
+            dibujarTituloSeccion("C) RESUMEN DEL CUADRO CLÍNICO Y DIAGNÓSTICO", y);
+            y += 8;
+            doc.setFontSize(8);
+            doc.setTextColor(40, 40, 40);
+            doc.setFont("helvetica", "bold"); doc.text("Síntomas / Cuadro Clínico:", 14, y);
+            doc.setFont("helvetica", "normal"); doc.text(cert.sintomas || "Afección podológica dolorosa e inflamación local.", margenRespuesta, y, { maxWidth: 100 });
+
+            y += 6;
+            doc.setFont("helvetica", "bold"); doc.text("Diagnóstico Podológico:", 14, y);
+            doc.setFont("helvetica", "normal"); doc.text(cert.diagnostico || 'N/D', margenRespuesta, y, { maxWidth: 100 });
+
+            y += 6;
+            doc.setFont("helvetica", "bold"); doc.text("Código CIE-10 / Tipo de Atención:", 14, y);
+            doc.setFont("helvetica", "normal"); doc.text(`${cert.cie || 'N/D'}  |  ${cert.tipo || 'Atención Podológica'}`, margenRespuesta, y);
+
+            y += 8;
+            dibujarTituloSeccion("D) TRATAMIENTO Y REPOSO CONCEDIDO", y);
+            y += 8;
+            doc.setFontSize(8);
+            doc.setTextColor(40, 40, 40);
+            doc.setFont("helvetica", "bold"); doc.text("Procedimientos Aplicados:", 14, y);
+            doc.setFont("helvetica", "normal"); doc.text(mediosAplicados, margenRespuesta, y, { maxWidth: 100 });
+
+            y += 8;
+            doc.setFont("helvetica", "bold"); doc.text("Tiempo de Reposo / Cuidados:", 14, y);
+            doc.setFont("helvetica", "normal"); doc.text(cert.diasLetras || `${cert.dias || 1} día(s)`, margenRespuesta, y);
+
+            y += 5;
+            doc.setFont("helvetica", "bold"); doc.text("Periodo Autorizado:", 14, y);
+            doc.setFont("helvetica", "normal"); doc.text(`Desde ${fechaInicioTexto} hasta ${fechaFinTexto}`, margenRespuesta, y);
+
+            y += 5;
+            doc.setFont("helvetica", "bold"); doc.text("Horario de Atención:", 14, y);
+            doc.setFont("helvetica", "normal"); doc.text(cert.horario || '10h30', margenRespuesta, y);
+
+            if (cert.observaciones && String(cert.observaciones).trim() !== "" && String(cert.observaciones).toLowerCase() !== "asd") {
+                y += 7;
+                doc.setFont("helvetica", "bold"); doc.text("Indicaciones y Recomendaciones:", 14, y);
+                y += 4;
+                doc.setFont("helvetica", "normal"); doc.text(String(cert.observaciones), 14, y, { maxWidth: 180 });
+            }
+
+            // Pie y Firma IESS
+            doc.setLineWidth(0.3);
+            doc.setDrawColor(180, 180, 180);
+            doc.line(65, 238, 145, 238);
+            doc.setFont("helvetica", "bold");
+            doc.setFontSize(8.5);
+            doc.text("Especialista Podológico(a)", 105, 243, { align: "center" });
+            doc.setFont("helvetica", "normal");
+            doc.text("Reg. Prof. 172006269-2  |  Medipie.st", 105, 248, { align: "center" });
+
+        } else {
+            // ==================== FORMATO ESTÁNDAR / NORMAL ====================
+            doc.setFont("helvetica", "bold");
+            doc.setTextColor(0, 119, 182);
+            doc.setFontSize(13);
+            doc.text("CERTIFICADO PODOLÓGICO", 105, 42, { align: "center" });
+
+            let currentY = 54;
+
+            // Párrafo de introducción
+            doc.setFontSize(9.5);
+            doc.setFont("helvetica", "normal");
+            doc.setTextColor(40, 40, 40);
+            let p1 = `Por medio del presente se certifica que el/la paciente ${nombresCapitalizados}, con cédula de ciudadanía N° ${cedulaStr}, acudió a consulta podológica especializada el ${fechaInicioTexto} a las ${cert.horario || '10h30'}.`;
+            let lineasP1 = doc.splitTextToSize(p1, 178);
+            doc.text(lineasP1, 14, currentY);
+            currentY += lineasP1.length * 5 + 10;
+
+            // Bloque Diagnóstico
+            doc.setFont("helvetica", "bold");
+            doc.text("DIAGNÓSTICO (CIE-10):", 14, currentY);
+            doc.setFont("helvetica", "normal");
+            let diagTexto = `${cert.cie || ''}${cert.cie && cert.diagnostico ? ' - ' : ''}${cert.diagnostico || 'N/D'}`;
+            let lineasDiag = doc.splitTextToSize(diagTexto, 122);
+            doc.text(lineasDiag, 68, currentY);
+            currentY += Math.max(lineasDiag.length * 5, 6) + 6;
+
+            // Bloque Procedimientos
+            doc.setFont("helvetica", "bold");
+            doc.text("PROCEDIMIENTOS:", 14, currentY);
+            doc.setFont("helvetica", "normal");
+            let lineasProc = doc.splitTextToSize(mediosAplicados, 122);
+            doc.text(lineasProc, 68, currentY);
+            currentY += Math.max(lineasProc.length * 5, 6) + 6;
+
+            // Bloque Subtítulo / Texto Adicional (opcional)
+            const subtituloValido = cert.subtitulo && String(cert.subtitulo).trim() !== "" && String(cert.subtitulo).toLowerCase() !== "asd";
+            const textoValido = cert.textoAdicional && String(cert.textoAdicional).trim() !== "" && String(cert.textoAdicional).toLowerCase() !== "asd";
+            if (subtituloValido || textoValido) {
+                doc.setFont("helvetica", "bold");
+                let labelExtra = subtituloValido ? `${String(cert.subtitulo).toUpperCase()}:` : "DETALLE ADICIONAL:";
+                doc.text(labelExtra, 14, currentY);
+                doc.setFont("helvetica", "normal");
+                let lineasExtra = doc.splitTextToSize(String(cert.textoAdicional || ""), 122);
+                doc.text(lineasExtra, 68, currentY);
+                currentY += Math.max(lineasExtra.length * 5, 6) + 6;
+            }
+
+            // Bloque Indicaciones / Observaciones
+            const obsValida = cert.observaciones && String(cert.observaciones).trim() !== "" && String(cert.observaciones).toLowerCase() !== "asd";
+            if (obsValida) {
+                doc.setFont("helvetica", "bold");
+                doc.text("INDICACIONES:", 14, currentY);
+                doc.setFont("helvetica", "normal");
+                let lineasObs = doc.splitTextToSize(String(cert.observaciones), 122);
+                doc.text(lineasObs, 68, currentY);
+                currentY += Math.max(lineasObs.length * 5, 6) + 6;
+            }
+
+            currentY += 8;
+
+            // Párrafo de cierre
+            doc.setFontSize(9.5);
+            doc.setFont("helvetica", "normal");
+            let pCierre = `Es todo cuanto puedo certificar en honor a la verdad para los fines legales e institucionales que el interesado considere conveniente.`;
+            let lineasCierre = doc.splitTextToSize(pCierre, 178);
+            doc.text(lineasCierre, 14, currentY);
+
+            // Pie y Firma
+            doc.setLineWidth(0.3);
+            doc.setDrawColor(180, 180, 180);
+            doc.line(70, 220, 140, 220);
+            doc.setFont("helvetica", "bold");
+            doc.setFontSize(9);
+            doc.setTextColor(40, 40, 40);
+            doc.text("ESPECIALISTA PODOLÓGICO(A)", 105, 226, { align: "center" });
+            doc.setFont("helvetica", "normal");
+            doc.setFontSize(8.5);
+            doc.text("Reg. Prof. 172006269-2  |  Medipie.st", 105, 231, { align: "center" });
+        }
+
+        doc.save(`Certificado_${formatoStr}_${cedulaStr}.pdf`);
+    }
+
+    // Carga de imagen con contingencia
+    const imgLogo = new Image();
+    imgLogo.crossOrigin = "Anonymous";
+    imgLogo.src = '../img/LogoMedipieStCr.png';
+
+    let ejecutado = false;
+    const ejecutar = () => {
+        if (ejecutado) return;
+        ejecutado = true;
+        try {
+            if (imgLogo.complete && imgLogo.naturalWidth !== 0) {
+                doc.addImage(imgLogo, 'PNG', 14, 6, 42, 17);
+            }
+        } catch (e) {
+            console.warn("No se pudo insertar la imagen del logo:", e);
+        }
+        generarEstructura();
+    };
+
+    imgLogo.onload = ejecutar;
+    imgLogo.onerror = ejecutar;
+
+    if (imgLogo.complete) {
+        ejecutar();
+    } else {
+        setTimeout(ejecutar, 250);
+    }
+}
     </script>
 </body>
 </html>
