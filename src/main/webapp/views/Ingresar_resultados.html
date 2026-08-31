@@ -2459,7 +2459,7 @@
                             <i class="bi bi-envelope-fill"></i>
                         </button>
                     </div>
-                    <button type="button" class="btn btn-danger btn-sm" onclick="descargarPDF()">
+                    <button type="button" class="btn btn-danger btn-sm" onclick="descargarPDF()" id="pedidoContainer">
                         <i class="bi bi-file-earmark-pdf"></i> Descargar PDF
                     </button>
                     <div class="divider"></div>
@@ -3053,19 +3053,32 @@ async function descargarPDFResultados() {
 }
 
 function descargarPDF() {
+    console.log("Iniciando descarga de PDF..."); // Esto debe salir en la consola (F12)
+    
     const elemento = document.getElementById('pedidoContainer');
     
-    // Opciones de configuración para el PDF
+    if (!elemento) {
+        alert("Error: No se encontró el contenedor 'pedidoContainer'. Revisa el ID en tu HTML.");
+        return;
+    }
+
     const opciones = {
-        margin:       [5, 5, 5, 5], // Márgenes en mm
-        filename:     'resultado_examen_' + document.getElementById('idOrden').value + '.pdf',
+        margin:       [10, 10, 10, 10],
+        filename:     'resultado_examen.pdf',
         image:        { type: 'jpeg', quality: 0.98 },
-        html2canvas:  { scale: 2, useCORS: true, logging: true },
+        html2canvas:  { scale: 2, useCORS: true },
         jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
     };
 
-    // Generar y descargar el PDF
-    html2pdf().from(elemento).set(opciones).save();
+    // Ejecutar html2pdf con captura de errores
+    html2pdf().from(elemento).set(opciones).save()
+        .then(() => {
+            console.log("PDF generado con éxito.");
+        })
+        .catch(err => {
+            console.error("Error al generar el PDF:", err);
+            alert("Hubo un error al generar el PDF. Revisa la consola.");
+        });
 }
         
 document.addEventListener("DOMContentLoaded", () => {
