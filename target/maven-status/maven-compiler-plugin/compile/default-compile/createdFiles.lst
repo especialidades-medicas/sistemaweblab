@@ -1,0 +1,10 @@
+com\biosaludz\sistemalaboratorio\resources\JakartaEE11Resource.class
+com\laboratorio\controlador\PacienteDAO.class
+com\laboratorio\controlador\LoginServlet.class
+com\laboratorio\controlador\Conexion.class
+com\laboratorio\controlador\Paciente.class
+com\biosaludz\sistemalaboratorio\JakartaRestConfiguration.class
+com\laboratorio\controlador\EnviarCorreoController.class
+com\laboratorio\controlador\GuardarPdfServlet.class
+com\laboratorio\controlador\PacienteServlet.class
+com\laboratorio\controlador\EnviarCorreoController$1.class

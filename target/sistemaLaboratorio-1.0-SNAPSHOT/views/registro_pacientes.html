@@ -1,0 +1,1236 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LabControl - Panel de Laboratorio Clínico</title>
+    <!-- Google Fonts para mejor estética -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Librería SheetJS (XLSX) para la exportación e importación de archivos Excel -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --secondary: #06b6d4;
+            --success: #10b981;
+            --light-bg: #f8fafc;
+            --dark: #1e293b;
+            --gray: #64748b;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            min-height: 100vh;
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: 260px 1fr;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        /* Sidebar con estilo moderno y clínico */
+        .sidebar {
+            background: linear-gradient(180deg, #2563eb 0%, #1e40af 100%);
+            padding: 1.5rem 1rem;
+            color: white;
+            box-shadow: 4px 0 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+            z-index: 100;
+        }
+
+        .logo {
+            padding: 0.5rem 1rem 1.5rem 1rem;
+            font-size: 1.7rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+            margin-bottom: 1.5rem;
+            color: #ffffff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .close-sidebar-btn {
+            display: none;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .nav-item {
+            padding: 0.85rem 1rem;
+            margin: 0.4rem 0;
+            border-radius: 0.75rem;
+            cursor: pointer;
+            color: rgba(255, 255, 255, 0.8);
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+        }
+
+        .nav-item:hover {
+            background: rgba(255, 255, 255, 0.15);
+            color: white;
+            transform: translateX(5px);
+        }
+
+        .nav-item.active {
+            background: #ffffff;
+            color: var(--primary-dark);
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .menu-toggle {
+            display: none;
+            background: var(--primary);
+            color: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        }
+
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 99;
+        }
+
+        .sidebar-overlay.active {
+            display: block;
+        }
+
+        .main-content {
+            padding: 2.5rem;
+            overflow-y: auto;
+            width: 100%;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            background: white;
+            padding: 1.2rem 2rem;
+            border-radius: 1rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            gap: 1rem;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .header h1 {
+            font-size: 1.5rem;
+            color: var(--dark);
+            font-weight: 600;
+        }
+
+        .btn-back-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 38px;
+            height: 38px;
+            background: #f1f3f5;
+            color: var(--dark);
+            border-radius: 50%;
+            text-decoration: none;
+            font-size: 1.1rem;
+            font-weight: bold;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+            transition: all 0.2s ease;
+            border: 1px solid #dee2e6;
+            flex-shrink: 0;
+        }
+
+        .btn-back-icon:hover {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+            transform: scale(1.05);
+        }
+
+        .search-container {
+            display: flex;
+            align-items: center;
+            background: #f1f3f5;
+            border-radius: 50px;
+            padding: 0.3rem 0.3rem 0.3rem 1.2rem;
+            width: 300px;
+            border: 1px solid #dee2e6;
+        }
+
+        .search-container input {
+            border: none;
+            background: transparent;
+            outline: none;
+            width: 100%;
+            font-size: 0.9rem;
+            color: var(--dark);
+        }
+
+        .search-container button {
+            background: var(--primary);
+            border: none;
+            color: white;
+            padding: 0.5rem 1.2rem;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: 0.2s;
+        }
+
+        .search-container button:hover {
+            background: var(--primary-dark);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 1rem;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.06);
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            transition: transform 0.3s ease;
+            border-left: 5px solid var(--primary);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-card:nth-child(2) { border-left-color: #06b6d4; }
+        .stat-card:nth-child(3) { border-left-color: #10b981; }
+        .stat-card:nth-child(4) { border-left-color: #f59e0b; }
+
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            background: rgba(37, 99, 235, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+        }
+
+        .stat-card:nth-child(2) .stat-icon { background: rgba(6, 182, 212, 0.1); }
+        .stat-card:nth-child(3) .stat-icon { background: rgba(16, 185, 129, 0.1); }
+        .stat-card:nth-child(4) .stat-icon { background: rgba(245, 158, 11, 0.1); }
+
+        .stat-info h3 {
+            color: var(--gray);
+            font-size: 0.85rem;
+            font-weight: 500;
+            margin-bottom: 0.2rem;
+        }
+
+        .stat-info .number {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--dark);
+        }
+
+        .section-view {
+            display: none;
+        }
+
+        .section-view.active {
+            display: block;
+        }
+
+        .content-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 1rem;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.06);
+            margin-bottom: 2rem;
+        }
+
+        .content-card h2 {
+            font-size: 1.25rem;
+            color: var(--dark);
+            margin-bottom: 1.2rem;
+            font-weight: 600;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th {
+            text-align: left;
+            padding: 10px;
+            background: #f8fafc;
+            color: var(--gray);
+            font-size: 0.85rem;
+            font-weight: 600;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        td {
+            padding: 10px;
+            border-bottom: 1px solid #f1f5f9;
+            font-size: 0.9rem;
+            color: var(--dark);
+            text-align: left;
+        }
+
+        .status {
+            padding: 0.35rem 0.85rem;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .status.ready {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .status.process {
+            background: #e0f2fe;
+            color: #0369a1;
+        }
+
+        .btn-action {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.4rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: 0.2s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-action:hover {
+            background: var(--primary-dark);
+        }
+
+        .btn-edit {
+            background: #f59e0b;
+            color: white;
+            border: none;
+            padding: 0.3rem 0.7rem;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+        .btn-edit:hover { background: #d97706; }
+
+        .btn-delete {
+            background: #ef4444;
+            color: white;
+            border: none;
+            padding: 0.3rem 0.7rem;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+        .btn-delete:hover { background: #dc2626; }
+
+        .excel-btn {
+            background: #10b981;
+            color: white;
+            border: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            margin-top: 15px;
+            margin-right: 10px;
+            transition: 0.2s;
+        }
+        .excel-btn:hover { background: #059669; }
+
+        .print-btn {
+            background: #0ea5e9;
+            color: white;
+            border: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            margin-top: 15px;
+            transition: 0.2s;
+        }
+        .print-btn:hover { background: #0284c7; }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+        }
+
+        .form-group label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--gray);
+        }
+
+        .form-group input, .form-group select, .form-group textarea {
+            padding: 0.7rem 1rem;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            border-color: var(--primary);
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .badge-id {
+            background: #e2e8f0;
+            color: #334155;
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            margin-right: 6px;
+        }
+
+        .total {
+            font-weight: bold;
+            color: #e83e8c;
+            text-align: right !important;
+        }
+
+        @media (max-width: 992px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                position: fixed;
+                top: 0;
+                left: -280px;
+                width: 260px;
+                height: 100vh;
+                transition: transform 0.3s ease-in-out;
+                z-index: 101;
+            }
+
+            .sidebar.open {
+                transform: translateX(280px);
+            }
+
+            .close-sidebar-btn {
+                display: block;
+            }
+
+            .menu-toggle {
+                display: flex;
+            }
+
+            .main-content {
+                padding: 1.5rem 1rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 1rem;
+                padding: 1rem;
+            }
+
+            .header-left {
+                justify-content: space-between;
+            }
+
+            .search-container {
+                width: 100%;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .content-card {
+                padding: 1rem;
+                overflow-x: auto;
+            }
+
+            table {
+                min-width: 600px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+    <div class="dashboard">
+        <!-- Sidebar -->
+        <div class="sidebar" id="sidebar">
+            <div class="logo">
+                LabControl.st
+                <button class="close-sidebar-btn" onclick="toggleSidebar()">✕</button>
+            </div>
+            <nav>
+                <a href="#" class="nav-item active" onclick="switchTab(event, 'dashboard-view'); toggleSidebarMobile();">📊 Panel Principal</a>
+                <a href="#" class="nav-item" onclick="switchTab(event, 'registro-view'); toggleSidebarMobile();">👥 Registro Pacientes</a>
+                <a href="#" class="nav-item" onclick="switchTab(event, 'pedidos-view'); toggleSidebarMobile();">📋 Pedidos de Exámenes</a>
+                <a href="#" class="nav-item" onclick="switchTab(event, 'resultados-view'); toggleSidebarMobile();">🔬 Resultados de Exámenes</a>
+                <a href="#" class="nav-item" onclick="switchTab(event, 'certificados-view'); toggleSidebarMobile();">📄 Certificados</a>
+                <a href="#" class="nav-item" onclick="switchTab(event, 'cotizacion-view'); toggleSidebarMobile();">💰 Cotización de Exámenes</a>
+                <a href="../index.html" class="nav-item" style="margin-top: 2rem; color: #ffadad;">🚪 Cerrar Sesión</a>
+            </nav>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="header">
+                <div class="header-left">
+                    <button class="menu-toggle" onclick="toggleSidebar()" title="Abrir Menú">☰</button>
+                    <h1 id="header-title">Panel de Control - Laboratorio Clínico</h1>
+                </div>
+                <div style="display: flex; align-items: center; gap: 1rem;">
+                    <div class="search-container">
+                        <input type="text" id="searchInput" placeholder="Cédula o apellidos...">
+                        <button onclick="buscarPaciente()">Buscar</button>
+                    </div>
+                    <a href="dashboard.html" class="btn-back-icon" title="Volver al Menú Principal">↩</a>
+                </div>
+            </div>
+
+            <!-- VISTA 1: PANEL PRINCIPAL -->
+            <div id="dashboard-view" class="section-view active">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">👥</div>
+                        <div class="stat-info">
+                            <h3>Pacientes Registrados</h3>
+                            <div class="number">340</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">📋</div>
+                        <div class="stat-info">
+                            <h3>Pedidos de Hoy</h3>
+                            <div class="number">28</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">🔬</div>
+                        <div class="stat-info">
+                            <h3>Resultados Listos</h3>
+                            <div class="number">24</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">💰</div>
+                        <div class="stat-info">
+                            <h3>Cotizaciones del Día</h3>
+                            <div class="number">15</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="content-card">
+                    <h2>Últimos Pedidos e Ingresos al Laboratorio</h2>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Paciente</th>
+                                <th>Cédula</th>
+                                <th>Exámenes solicitados</th>
+                                <th>Fecha</th>
+                                <th>Estado</th>
+                                <th>Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Valeria Mendoza</td>
+                                <td>1719876543</td>
+                                <td>Biometría Hemática, Glucosa</td>
+                                <td>02 Ago 2026</td>
+                                <td><span class="status ready">Resultado Listo</span></td>
+                                <td><button class="btn-action">Ver Resultados</button></td>
+                            </tr>
+                            <tr>
+                                <td>Carlos Sánchez</td>
+                                <td>0928374651</td>
+                                <td>Perfil Lipídico, Urea, Creatinina</td>
+                                <td>02 Ago 2026</td>
+                                <td><span class="status process">En Proceso</span></td>
+                                <td><button class="btn-action">Ver Detalles</button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- VISTA 2: REGISTRO Y GESTIÓN DE PACIENTES -->
+            <div id="registro-view" class="section-view">
+                <div class="content-card">
+                    <h2 id="patientFormTitle">Nuevo Registro de Paciente</h2>
+                    <form onsubmit="savePatient(event)">
+                        <input type="hidden" id="editPatientIndex" value="-1">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>Cédula / Pasaporte</label>
+                                <input type="text" id="patCedula" placeholder="Ej. 1723456789" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Apellidos y Nombres</label>
+                                <input type="text" id="patNombre" placeholder="Ej. Pérez Gómez Juan" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Fecha de Nacimiento</label>
+                                <input type="date" id="patNacimiento" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Género</label>
+                                <select id="patGenero">
+                                    <option>Masculino</option>
+                                    <option>Femenino</option>
+                                    <option>Otro</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Teléfono de Contacto</label>
+                                <input type="tel" id="patTelefono" placeholder="Ej. 0991234567">
+                            </div>
+                            <div class="form-group">
+                                <label>Correo Electrónico</label>
+                                <input type="email" id="patCorreo" placeholder="correo@ejemplo.com">
+                            </div>
+                            <div class="form-group full-width">
+                                <label>Dirección Domiciliaria</label>
+                                <input type="text" id="patDireccion" placeholder="Calle principal y secundaria, sector">
+                            </div>
+                        </div>
+                        <div style="display: flex; gap: 10px; margin-top: 15px;">
+                            <button type="submit" id="btnSavePatient" class="btn-action" style="padding: 0.7rem 1.5rem; font-size: 0.95rem;">Guardar y Actualizar Excel</button>
+                            <button type="button" id="btnCancelPatient" onclick="resetPatientForm()" class="btn-delete" style="display: none; padding: 0.7rem 1.5rem; font-size: 0.95rem;">Cancelar</button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Tabla para visualizar y gestionar los pacientes registrados -->
+                <div class="content-card">
+                    <h2>Listado de Pacientes Registrados</h2>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Cédula</th>
+                                <th>Apellidos y Nombres</th>
+                                <th>Teléfono</th>
+                                <th>Correo</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="patientTableBody">
+                            <!-- Los pacientes se cargan dinámicamente aquí -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- VISTA 3: PEDIDOS DE EXÁMENES -->
+            <div id="pedidos-view" class="section-view">
+                <div class="content-card">
+                    <h2>Generar Nuevo Pedido / Orden de Laboratorio</h2>
+                    <form onsubmit="event.preventDefault(); alert('Orden de pedido creada correctamente');">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>Cédula del Paciente</label>
+                                <input type="text" placeholder="Buscar cédula..." required>
+                            </div>
+                            <div class="form-group">
+                                <label>Médico Tratante</label>
+                                <input type="text" placeholder="Dr. / Dra. Apellidos">
+                            </div>
+                            <div class="form-group full-width">
+                                <label>Seleccionar Exámenes / Perfiles</label>
+                                <textarea rows="3" placeholder="Ej. Hemograma completo, Uroanálisis, Perfil tiroideo..."></textarea>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn-action" style="padding: 0.7rem 1.5rem; font-size: 0.95rem;">Generar Orden de Exámenes</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- VISTA 4: RESULTADOS DE EXÁMENES -->
+            <div id="resultados-view" class="section-view">
+                <div class="content-card">
+                    <h2>Carga e Ingreso de Resultados de Exámenes</h2>
+                    <form onsubmit="event.preventDefault(); alert('Resultados guardados y listos');">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>N° de Orden / Cédula Paciente</label>
+                                <input type="text" placeholder="Ej. ORD-2026-001" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Área de Laboratorio</label>
+                                <select>
+                                    <option>Hematología</option>
+                                    <option>Química Sanguínea</option>
+                                    <option>Uroanálisis / Coprología</option>
+                                    <option>Inmunología / Serología</option>
+                                </select>
+                            </div>
+                            <div class="form-group full-width">
+                                <label>Valores y Observaciones del Examen</label>
+                                <textarea rows="4" placeholder="Ingrese los parámetros cuantitativos y cualitativos..."></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>Adjuntar Archivo (PDF)</label>
+                                <input type="file">
+                            </div>
+                        </div>
+                        <button type="submit" class="btn-action" style="padding: 0.7rem 1.5rem; font-size: 0.95rem;">Subir y Publicar Resultados</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- VISTA 5: CERTIFICADOS -->
+            <div id="certificados-view" class="section-view">
+                <div class="content-card">
+                    <h2>Emisión de Certificados de Laboratorio</h2>
+                    <form onsubmit="event.preventDefault(); alert('Certificado emitido con éxito');">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>Cédula del Paciente</label>
+                                <input type="text" placeholder="Cédula..." required>
+                            </div>
+                            <div class="form-group">
+                                <label>Tipo de Certificado</label>
+                                <select>
+                                    <option>Certificado de Buena Salud / Exámenes Libres</option>
+                                    <option>Certificado de Negativo / Inmunidad</option>
+                                    <option>Constancia de Toma de Muestra</option>
+                                </select>
+                            </div>
+                            <div class="form-group full-width">
+                                <label>Observaciones Clínicas / Conclusiones</label>
+                                <textarea rows="3" placeholder="Detalle conclusiones..."></textarea>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn-action" style="padding: 0.7rem 1.5rem; font-size: 0.95rem;">Generar Certificado PDF</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- VISTA 6: COTIZACIÓN DE EXÁMENES (CON ID AUTOMÁTICO POR INICIALES) -->
+            <div id="cotizacion-view" class="section-view">
+                <div class="content-card">
+                    <h2>Cotizador de Exámenes y Perfiles Clínicos</h2>
+                    
+                    <div style="background: #f8fafc; padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #e2e8f0;">
+                        <input type="hidden" id="editIndex" value="-1">
+                        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                            <input type="text" id="item" placeholder="Nombre del Examen" style="flex: 2; min-width: 200px; padding: 10px; border-radius: 8px; border: 1px solid #cbd5e1;">
+                            <input type="number" id="qty" placeholder="Cantidad" value="1" style="flex: 1; min-width: 90px; padding: 10px; border-radius: 8px; border: 1px solid #cbd5e1;">
+                            <input type="number" id="price" placeholder="Precio ($)" step="0.01" style="flex: 1; min-width: 100px; padding: 10px; border-radius: 8px; border: 1px solid #cbd5e1;">
+                            <button type="button" id="saveBtn" onclick="saveEntry()" style="background: var(--primary); color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: 500;">Agregar Examen</button>
+                        </div>
+                    </div>
+
+                    <!-- Botones de Gestión Excel y Reporte -->
+                    <div style="margin-bottom: 15px; display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
+                        <button class="excel-btn" onclick="exportToExcel()">📥 Descargar en Excel</button>
+                        <label class="excel-btn" style="margin: 0; display: inline-block; cursor: pointer; background: #0284c7;">
+                            📤 Cargar desde Excel
+                            <input type="file" id="excelFile" accept=".xlsx, .xls" style="display: none;" onchange="importFromExcel(event)">
+                        </label>
+                    </div>
+
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID / Código</th>
+                                <th>Examen / Perfil</th>
+                                <th>Cant.</th>
+                                <th>Precio Unit.</th>
+                                <th>Total Parcial</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="entryList"></tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="4" class="total" style="text-align: right;">Gran Total:</td>
+                                <td class="total" id="grandTotal" style="color: #e83e8c;">0.00</td>
+                                <td></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+
+                    <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 20px;">
+                        <button class="print-btn" onclick="window.print()">Imprimir Cotización</button>
+                        <button class="print-btn" onclick="clearAllData()" style="background: #ef4444;">Borrar Todo</button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        let entries = JSON.parse(localStorage.getItem("lab_cotizaciones")) || [];
+
+        window.onload = function() {
+            renderTable();
+        };
+
+        function switchTab(event, viewId) {
+            event.preventDefault();
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            event.currentTarget.classList.add('active');
+            document.querySelectorAll('.section-view').forEach(view => {
+                view.classList.remove('active');
+            });
+            document.getElementById(viewId).classList.add('active');
+        }
+
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            sidebar.classList.toggle('open');
+            overlay.classList.toggle('active');
+        }
+
+        function toggleSidebarMobile() {
+            if (window.innerWidth <= 992) {
+                toggleSidebar();
+            }
+        }
+
+        function buscarPaciente() {
+            const query = document.getElementById('searchInput').value.trim();
+            if(query) {
+                alert("Buscando en LabControl.st por cédula o apellidos: " + query);
+            } else {
+                alert("Por favor ingrese un número de cédula o apellido para buscar.");
+            }
+        }
+
+        // Función para generar iniciales automáticas (Ej: "Glucosa en Ayunas" -> "GEA")
+        function generateInitialsId(name) {
+            const cleanName = name.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ ]/g, "").trim();
+            const words = cleanName.split(/\s+/);
+            let initials = words.map(w => w.charAt(0).toUpperCase()).join('');
+            if (!initials) initials = "EX";
+            
+            // Si las iniciales ya existen en otro examen diferente, agregar un sufijo numérico
+            let baseId = initials;
+            let counter = 1;
+            while (entries.some(e => e.id === initials)) {
+                counter++;
+                initials = baseId + counter;
+            }
+            return initials;
+        }
+
+        function saveEntry() {
+            const itemName = document.getElementById("item").value.trim();
+            const qty = parseInt(document.getElementById("qty").value);
+            const price = parseFloat(document.getElementById("price").value);
+            const editIndex = parseInt(document.getElementById("editIndex").value);
+
+            if (!itemName || isNaN(qty) || isNaN(price) || qty <= 0 || price < 0) {
+                alert("Por favor complete todos los campos correctamente.");
+                return;
+            }
+
+            if (editIndex !== -1) {
+                // Al editar, mantenemos su ID original o recalculamos si cambió el nombre drásticamente
+                entries[editIndex].item = itemName;
+                entries[editIndex].qty = qty;
+                entries[editIndex].price = price;
+                entries[editIndex].total = qty * price;
+                document.getElementById("editIndex").value = "-1";
+                document.getElementById("saveBtn").innerText = "Agregar Examen";
+            } else {
+                // Validar duplicado por nombre
+                const existingIndex = entries.findIndex(e => e.item.toLowerCase() === itemName.toLowerCase());
+
+                if (existingIndex !== -1) {
+                    entries[existingIndex].qty += qty;
+                    entries[existingIndex].price = price;
+                    entries[existingIndex].total = entries[existingIndex].qty * price;
+                    alert(`El examen "${itemName}" ya estaba en la lista. Se ha actualizado sumando la cantidad.`);
+                } else {
+                    const generatedId = generateInitialsId(itemName);
+                    entries.push({ id: generatedId, item: itemName, qty, price, total: qty * price });
+                }
+            }
+
+            persistData();
+            renderTable();
+            clearForm();
+        }
+
+        function renderTable() {
+            const tbody = document.getElementById("entryList");
+            tbody.innerHTML = "";
+            let grandTotal = 0;
+
+            entries.forEach((entry, index) => {
+                grandTotal += entry.total;
+                // Si un registro antiguo no tiene ID, lo generamos al vuelo
+                if (!entry.id) {
+                    entry.id = generateInitialsId(entry.item);
+                }
+
+                const row = tbody.insertRow();
+                row.innerHTML = `
+                    <td><span class="badge-id">${entry.id}</span></td>
+                    <td>${entry.item}</td>
+                    <td>${entry.qty}</td>
+                    <td>$${entry.price.toFixed(2)}</td>
+                    <td>$${entry.total.toFixed(2)}</td>
+                    <td>
+                        <button class="btn-edit" onclick="editEntry(${index})">Editar</button>
+                        <button class="btn-delete" onclick="deleteEntry(${index})">Eliminar</button>
+                    </td>
+                `;
+            });
+
+            document.getElementById("grandTotal").innerText = "$" + grandTotal.toFixed(2);
+        }
+
+        function editEntry(index) {
+            const entry = entries[index];
+            document.getElementById("item").value = entry.item;
+            document.getElementById("qty").value = entry.qty;
+            document.getElementById("price").value = entry.price;
+            document.getElementById("editIndex").value = index;
+            document.getElementById("saveBtn").innerText = "Actualizar Examen";
+        }
+
+        function deleteEntry(index) {
+            entries.splice(index, 1);
+            persistData();
+            renderTable();
+        }
+
+        function clearAllData() {
+            if(confirm("¿Está seguro de borrar todas las cotizaciones guardadas?")) {
+                entries = [];
+                localStorage.removeItem("lab_cotizaciones");
+                renderTable();
+            }
+        }
+
+        function persistData() {
+            localStorage.setItem("lab_cotizaciones", JSON.stringify(entries));
+        }
+
+        function clearForm() {
+            document.getElementById("item").value = "";
+            document.getElementById("qty").value = "1";
+            document.getElementById("price").value = "";
+            document.getElementById("editIndex").value = "-1";
+            document.getElementById("saveBtn").innerText = "Agregar Examen";
+        }
+
+        // EXCEL
+        function exportToExcel() {
+            if (entries.length === 0) {
+                alert("No hay exámenes en la cotización para exportar.");
+                return;
+            }
+
+            const dataToExport = entries.map(e => ({
+                "ID": e.id,
+                "Examen / Perfil": e.item,
+                "Cantidad": e.qty,
+                "Precio Unitario ($)": e.price,
+                "Total Parcial ($)": e.total
+            }));
+
+            const worksheet = XLSX.utils.json_to_sheet(dataToExport);
+            const workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, worksheet, "Cotizacion_Laboratorio");
+            XLSX.writeFile(workbook, "Cotizacion_Examenes_LabControl.xlsx");
+        }
+
+        function importFromExcel(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = new Uint8Array(e.target.result);
+                    const workbook = XLSX.read(data, { type: 'array' });
+                    const firstSheetName = workbook.SheetNames[0];
+                    const worksheet = workbook.Sheets[firstSheetName];
+                    const jsonSheet = XLSX.utils.sheet_to_json(worksheet);
+
+                    if (jsonSheet.length === 0) {
+                        alert("El archivo Excel está vacío.");
+                        return;
+                    }
+
+                    jsonSheet.map(row => {
+                        const itemName = String(row["Examen / Perfil"] || row["Item"] || row["item"] || "Examen sin nombre").trim();
+                        const qty = parseInt(row["Cantidad"] || row["Qty"] || row["qty"]) || 1;
+                        const price = parseFloat(row["Precio Unitario ($)"] || row["Price"] || row["price"]) || 0;
+                        const total = qty * price;
+
+                        const existingIndex = entries.findIndex(e => e.item.toLowerCase() === itemName.toLowerCase());
+                        if (existingIndex !== -1) {
+                            entries[existingIndex].qty += qty;
+                            entries[existingIndex].price = price;
+                            entries[existingIndex].total = entries[existingIndex].qty * price;
+                        } else {
+                            const generatedId = generateInitialsId(itemName);
+                            entries.push({ id: generatedId, item: itemName, qty, price, total });
+                        }
+                    });
+
+                    persistData();
+                    renderTable();
+                    alert("¡Exámenes importados con éxito!");
+                } catch (error) {
+                    alert("Error al leer el archivo Excel.");
+                    console.error(error);
+                } finally {
+                    event.target.value = ""; 
+                }
+            };
+            reader.readAsArrayBuffer(file);
+        }
+        
+ // REGISTRO DE PACIENTES    
+ // 1. Inicialización de datos
+let patients = JSON.parse(localStorage.getItem("lab_pacientes")) || [];
+
+window.onload = function() {
+    renderTable();       // Carga tu cotizador existente si lo tienes
+    renderPatients();    // Carga la tabla de pacientes al iniciar
+};
+
+function savePatient(event) {
+    event.preventDefault();
+
+    const cedula = document.getElementById("patCedula").value.trim();
+    const nombre = document.getElementById("patNombre").value.trim();
+    const nacimiento = document.getElementById("patNacimiento").value || "";
+    const genero = document.getElementById("patGenero").value || "";
+    const telefono = document.getElementById("patTelefono").value.trim() || "";
+    const correo = document.getElementById("patCorreo").value.trim() || "";
+    const direccion = document.getElementById("patDireccion").value.trim() || "";
+    const editIndex = parseInt(document.getElementById("editPatientIndex").value);
+
+    // ÚNICAMENTE LA CÉDULA Y EL NOMBRE SON OBLIGATORIOS
+    if (!cedula || !nombre) {
+        alert("Por favor complete los campos obligatorios: Cédula y Apellidos/Nombres.");
+        return;
+    }
+
+    const nuevoPaciente = { cedula, nombre, nacimiento, genero, telefono, correo, direccion };
+
+    if (editIndex !== -1) {
+        patients[editIndex] = nuevoPaciente;
+        alert("Paciente actualizado exitosamente.");
+    } else {
+        const exists = patients.some(p => p.cedula === cedula);
+        if (exists) {
+            alert("Ya existe un paciente registrado con este número de cédula.");
+            return;
+        }
+        patients.push(nuevoPaciente);
+        alert("Paciente registrado exitosamente.");
+    }
+
+    persistPatients();
+    renderPatients();
+    autoExportToExcel();
+    resetPatientForm();
+}
+
+function renderPatients() {
+    const tbody = document.getElementById("patientTableBody");
+    tbody.innerHTML = "";
+
+    if (patients.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--gray);">No hay pacientes registrados.</td></tr>`;
+        return;
+    }
+
+    patients.forEach((patient, index) => {
+        const row = tbody.insertRow();
+        row.innerHTML = `
+            <td><span class="badge-id">${patient.cedula}</span></td>
+            <td>${patient.nombre}</td>
+            <td>${patient.telefono || 'N/A'}</td>
+            <td>${patient.correo || 'N/A'}</td>
+            <td>
+                <button class="btn-edit" onclick="editPatient(${index})">Editar</button>
+                <button class="btn-delete" onclick="deletePatient(${index})">Eliminar</button>
+            </td>
+        `;
+    });
+}
+
+function editPatient(index) {
+    const p = patients[index];
+    document.getElementById("patCedula").value = p.cedula;
+    document.getElementById("patNombre").value = p.nombre;
+    document.getElementById("patNacimiento").value = p.nacimiento;
+    document.getElementById("patGenero").value = p.genero;
+    document.getElementById("patTelefono").value = p.telefono;
+    document.getElementById("patCorreo").value = p.correo;
+    document.getElementById("patDireccion").value = p.direccion;
+
+    document.getElementById("editPatientIndex").value = index;
+    document.getElementById("patientFormTitle").innerText = "Actualizar Datos del Paciente";
+    document.getElementById("btnSavePatient").innerText = "Actualizar y Guardar Excel";
+    document.getElementById("btnCancelPatient").style.display = "inline-block";
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function deletePatient(index) {
+    if (confirm("¿Está seguro de eliminar este paciente del registro?")) {
+        patients.splice(index, 1);
+        persistPatients();
+        renderPatients();
+        autoExportToExcel(); // Actualiza el Excel tras eliminar
+        resetPatientForm();
+    }
+}
+
+function resetPatientForm() {
+    document.getElementById("patCedula").value = "";
+    document.getElementById("patNombre").value = "";
+    document.getElementById("patNacimiento").value = "";
+    document.getElementById("patTelefono").value = "";
+    document.getElementById("patCorreo").value = "";
+    document.getElementById("patDireccion").value = "";
+    document.getElementById("editPatientIndex").value = "-1";
+    document.getElementById("patientFormTitle").innerText = "Nuevo Registro de Paciente";
+    document.getElementById("btnSavePatient").innerText = "Guardar y Actualizar Excel";
+    document.getElementById("btnCancelPatient").style.display = "none";
+}
+
+function persistPatients() {
+    localStorage.setItem("lab_pacientes", JSON.stringify(patients));
+}
+
+async function autoExportToExcel() {
+    if (patients.length === 0) return;
+
+    const dataToExport = patients.map(p => ({
+        "Cédula": p.cedula,
+        "Apellidos y Nombres": p.nombre,
+        "Fecha de Nacimiento": p.nacimiento,
+        "Género": p.genero,
+        "Teléfono": p.telefono,
+        "Correo": p.correo,
+        "Dirección": p.direccion
+    }));
+
+    const worksheet = XLSX.utils.json_to_sheet(dataToExport);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Pacientes");
+    
+    // Generar el archivo en formato binario (ArrayBuffer)
+    const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+    const blob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+
+    // Verificar si el navegador soporta la API moderna para sobrescribir archivos directamente
+    if ('showSaveFilePicker' in window) {
+        try {
+            const options = {
+                suggestedName: 'pacientes_lab.xlsx',
+                types: [{
+                    description: 'Archivos Excel',
+                    accept: { 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': ['.xlsx'] }
+                }]
+            };
+            
+            // Si ya guardaste la referencia del archivo antes, la usamos; si no, la pedimos una vez
+            if (!window.fileHandle) {
+                window.fileHandle = await window.showSaveFilePicker(options);
+            }
+            
+            // Escribir directamente sobre el archivo seleccionado sin crear duplicados
+            const writableStream = await window.fileHandle.createWritable();
+            await writableStream.write(blob);
+            await writableStream.close();
+            console.log("Archivo actualizado exitosamente en la misma ruta.");
+            return;
+        } catch (err) {
+            console.log("El usuario canceló el selector o el navegador restringió la acción. Usando método tradicional...", err);
+        }
+    }
+
+    // Método alternativo (si el navegador no soporta la API o se cancela el selector)
+    XLSX.writeFile(workbook, "pacientes_lab.xlsx");
+}
+
+ // XXXXXXX  
+        
+        
+    </script>
+</body>
+</html>
