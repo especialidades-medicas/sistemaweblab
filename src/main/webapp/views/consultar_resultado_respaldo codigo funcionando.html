@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resultado de Exámenes - Laboratorio Clínico Biosalud</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../assets/css/estilos.css">
+    <!-- Librería JsBarcode para generar códigos de barras automáticamente -->
+    <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
+    
+    <style>
+        /* Estilos específicos para impresión directa */
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            #pedidoContainer, #pedidoContainer * {
+                visibility: visible;
+            }
+            #pedidoContainer {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100% !important;
+                margin: 0 !important;
+                padding: 10px !important;
+                background: white !important;
+            }
+            .no-print {
+                display: none !important;
+            }
+        }
+
+        .firma-img {
+            max-height: 120px; 
+            width: auto;
+            max-width: 100%;
+        }
+    </style>
+</head>
+<body>
+    
+    <!-- Menú superior -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary px-3 mb-2 no-print">
+        <div class="container-fluid">
+            <a class="navbar-brand fs-6" href="dashboard.html">Intranet Lab</a>
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="dashboard.html">Inicio</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container-fluid p-2">
+        <!-- Contenedor principal que se imprimirá y exportará a PDF -->
+        <div class="pedido-box border p-3 bg-white" id="pedidoContainer">
+            
+            <!-- Encabezado Institucional -->
+            <table class="table-layout mb-2 border-bottom pb-2" style="width: 100%;">
+                <tr>
+                    <td style="width: 15%;" class="text-start">
+                        <img src="../img/logo_laboratorio.jpg" alt="Logo" style="max-height: 40px;">
+                    </td>
+                    <td style="width: 85%;" class="text-center">
+                        <h4 class="header-title m-0" style="color: #006633; font-weight: bold; font-size: 14px;">BIOSALUD</h4>
+                        <div class="header-sub" style="font-size: 8.5px; color: #333;">
+                            Dirección: Duchicela y Caranqui (Frente al Centro de Salud No 5 La Magdalena)<br>
+                            Tel. 0995225612 / 0998257464 — Quito - Ecuador
+                        </div>
+                        <div style="color: #002b80; font-size: 10px; font-weight: bold; text-decoration: underline; margin-top: 2px;">
+                            RESULTADOS DE LABORATORIO CLÍNICO
+                        </div>
+                    </td>
+                </tr>
+            </table>
+
+            <!-- Datos Generales del Paciente -->
+            <div class="card p-2 mb-2 bg-light border">
+                <div class="row g-2" style="font-size: 11px;">
+                    <div class="col-md-3 col-6">
+                        <strong>ID Orden:</strong> <span id="txtIdOrdenVisual">001245</span>
+                    </div>
+                    <div class="col-md-3 col-6">
+                        <strong>Cod/Doc:</strong> <span id="txtCodDocVisual">1725489632</span>
+                    </div>
+                    <div class="col-md-3 col-6">
+                        <strong>F. Nacimiento:</strong> <span id="txtFechaNacVisual">14/05/2006</span>
+                    </div>
+                    <div class="col-md-3 col-6">
+                        <strong>Fecha:</strong> <span id="txtFechaActualVisual">01/08/2026</span>
+                    </div>
+                    <div class="col-md-12 col-12">
+                        <strong>NOMBRES:</strong> <span id="txtNombreVisual" style="color: #000080; font-weight: bold;">OYAQUE MANOBANDA BRIGETTE ANTONELLA</span>
+                    </div>
+                    <div class="col-md-6 col-6">
+                        <strong>TELÉFONO:</strong> <span id="txtTelVisual">0998877665</span>
+                    </div>
+                    <div class="col-md-6 col-6">
+                        <strong>SEXO:</strong> <span id="txtSexoVisual">Femenino</span>
+                    </div>
+                </div>
+
+                <!-- Inputs originales ocultos -->
+                <div class="d-none">
+                    <input type="text" id="idOrden" value="001245">
+                    <input type="text" id="codDoc" value="1725489632">
+                    <input type="date" id="fechaNacimiento" value="2006-05-14">
+                    <input type="text" id="fechaActual" value="01/08/2026">
+                    <input type="text" id="nombrePaciente" value="OYAQUE MANOBANDA BRIGETTE ANTONELLA">
+                    <input type="text" id="telefonoPaciente" value="0998877665">
+                    <select id="sexoPaciente"><option value="F" selected>Femenino</option></select>
+                </div>
+            </div>
+
+            <!-- Sistema de Pestañas de Resultados (Oculto al imprimir/exportar) -->            
+            <ul class="nav nav-tabs mb-2 flex-wrap no-print" id="mainTabs" role="tablist">
+                <li class="nav-item" role="presentation"><button class="nav-link active py-1 px-3 small fw-bold" data-bs-toggle="tab" data-bs-target="#hematologiaContent" type="button">Hematología</button></li>
+                <li class="nav-item" role="presentation"><button class="nav-link py-1 px-3 small fw-bold" data-bs-toggle="tab" data-bs-target="#qsContent" type="button">Química Sanguínea</button></li>
+            </ul>
+
+            <!-- Contenido de Pestañas (Interfaz de edición en pantalla) -->
+            <div class="tab-content no-print" id="mainTabContent">
+                <div class="tab-pane fade show active" id="hematologiaContent" role="tabpanel">
+                    <div class="border p-2 rounded bg-white">
+                        <div class="section-title text-primary fw-bold border-bottom pb-1 mb-2 small" data-section-name="BIOMETRÍA HEMÁTICA COMPLETA (DIRUI BCC-3900)">BIOMETRÍA HEMÁTICA COMPLETA (DIRUI BCC-3900)</div>
+                        <table class="table table-sm table-bordered align-middle mb-0 small">
+                            <thead class="table-light text-muted">
+                                <tr><th>EXAMEN</th><th>RESULTADO</th><th>UNIDAD</th><th>VALORES DE REFERENCIA</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr><td class="fw-bold">WBC</td><td><input type="text" class="form-control form-control-sm form-control-editable"></td><td>10^9/L</td><td class="text-muted">4.50 – 11.00</td></tr>
+                                <tr><td class="fw-bold">LYM#</td><td><input type="text" class="form-control form-control-sm form-control-editable"></td><td>10^9/L</td><td class="text-muted">0.80 – 4.00</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="qsContent" role="tabpanel">
+                    <div class="border p-2 rounded bg-white">
+                        <div class="section-title text-primary fw-bold border-bottom pb-1 mb-2 small" data-section-name="QUÍMICA SANGUÍNEA">QUÍMICA SANGUÍNEA</div>
+                        <table class="table table-sm table-bordered align-middle mb-0 small">
+                            <thead class="table-light text-muted">
+                                <tr><th>EXAMEN</th><th>RESULTADO</th><th>UNIDAD</th><th>VALORES DE REFERENCIA</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr><td class="fw-bold">GLUCOSA</td><td><input type="text" class="form-control form-control-sm form-control-editable"></td><td>mg/dL</td><td class="text-muted">70 - 110</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TABLA UNIFICADA DE RESULTADOS (Agrupa por categoría y oculta inputs) -->
+            <div class="mb-3">
+                <div class="text-primary fw-bold border-bottom pb-1 mb-2 small">RESULTADOS DE EXÁMENES REGISTRADOS</div>
+                <table class="table table-sm table-bordered align-middle mb-0 small" style="width: 100%;">
+                    <thead class="table-light text-muted">
+                        <tr>
+                            <th style="width: 40%;">EXAMEN</th>
+                            <th style="width: 20%;">RESULTADO</th>
+                            <th style="width: 15%;">UNIDAD</th>
+                            <th style="width: 25%;">VALORES DE REFERENCIA</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tablaResultadosUnificada">
+                        <!-- Se llena automáticamente con JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Sección de Firmas -->
+            <div class="row mt-3 align-items-end g-3">
+                <div class="col-6 text-center">
+                    <div style="min-height: 90px; display: flex; align-items: flex-end; justify-content: center;">
+                        <img src="../img/firma_activa2.jpg" alt="Firma 2" class="firma-img mb-1" id="imgFirma2">
+                    </div>
+                    <div class="border-top pt-1 mx-auto" style="width: 85%; max-width: 180px;">
+                        <small class="text-muted" style="font-size: 0.7rem;">Autorización / Médico</small>
+                    </div>
+                </div>
+                <div class="col-6 text-center">
+                    <div style="min-height: 90px; display: flex; align-items: flex-end; justify-content: center;">
+                        <img src="../img/firma_activa.jpg" alt="Firma 1" class="firma-img mb-1" id="imgFirma1">
+                    </div>
+                    <div class="border-top pt-1 mx-auto" style="width: 85%; max-width: 180px;">
+                        <small class="text-muted" style="font-size: 0.7rem;">Responsable Laboratorio</small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Responsable y Datos Institucionales -->
+            <div class="mt-3 pt-2 border-top" style="font-size: 11px;">
+                <div class="mb-1"><strong>Responsable:</strong> MILTON MOLINA P.</div>
+                <div><strong>Institución:</strong> LABORATORIO CLÍNICO BIOSALUD LA MAGDALENA</div>
+            </div>
+
+            <!-- Contenedor del Código de Barras -->
+            <div class="text-center mt-3 pt-2">
+                <canvas id="codigoBarras"></canvas>
+            </div>
+            
+            <!-- Botones de Acción -->
+            <div class="mt-3 text-center no-print">
+                <button type="button" onclick="imprimirResultados()" class="btn btn-primary btn-sm px-3 fw-bold me-2">Imprimir</button>
+                <button type="button" onclick="descargarPDFResultados()" class="btn btn-success btn-sm fw-bold">Descargar PDF</button>
+            </div>
+            
+            <!-- Pie de página -->
+            <div class="mt-2 pt-2 border-top text-muted" style="font-size: 0.70rem;">
+                <div class="row">
+                    <div class="col-6"><span><strong>Nota:</strong> El resultado debe correlacionarse con el cuadro clínico.</span></div>
+                    <div class="col-6 text-end"><span>Validado por: <strong>Área Técnica / Laboratorio Clínico</strong></span></div>
+                </div>
+            </div>
+            
+            <!-- Footer Horario -->
+            <div class="footer-banner mt-2 text-center text-muted small border-top pt-1" style="font-size: 8px;">
+                HORARIO: Lunes a Viernes de 6h30 a.m. a 13 p.m. Sábado previa cita: 8h00 a.m. a 10 a.m.
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Scripts de Librerías y Lógica -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    
+    <script>
+        // Función para agrupar y renderizar exámenes por categoría y ocultar los inputs de captura
+        function actualizarTablaDinamica() {
+            const tbody = document.getElementById("tablaResultadosUnificada");
+            tbody.innerHTML = "";
+
+            // Agrupar exámenes por la sección a la que pertenecen
+            const secciones = document.querySelectorAll('.tab-content .border.p-2');
+            let totalValidados = 0;
+
+            secciones.forEach(seccion => {
+                const tituloSeccion = seccion.querySelector('.section-title').getAttribute('data-section-name');
+                const inputs = seccion.querySelectorAll('input.form-control-editable');
+                
+                let filasValidasDeSeccion = [];
+
+                inputs.forEach(input => {
+                    let valor = input.value.trim();
+                    if (valor !== "") {
+                        let filaOriginal = input.closest("tr");
+                        if (filaOriginal) {
+                            let celdas = filaOriginal.querySelectorAll("td");
+                            if (celdas.length >= 4) {
+                                let examen = celdas[0].innerText.trim();
+                                let unidad = celdas[2].innerText.trim();
+                                let referencia = celdas[3].innerText.trim();
+
+                                filasValidasDeSeccion.push({
+                                    examen: examen,
+                                    resultado: valor,
+                                    unidad: unidad,
+                                    referencia: referencia
+                                });
+                            }
+                        }
+                    }
+                });
+
+                // Si la sección tiene exámenes con datos, agregamos un encabezado de categoría y sus filas
+                if (filasValidasDeSeccion.length > 0) {
+                    totalValidados += filasValidasDeSeccion.length;
+
+                    // Fila de Título de la Categoría
+                    let filaTitulo = document.createElement("tr");
+                    filaTitulo.innerHTML = `
+                        <td colspan="4" class="table-active text-primary fw-bold" style="font-size: 10px; background-color: #f1f5f9 !important;">
+                            📌 ${tituloSeccion}
+                        </td>
+                    `;
+                    tbody.appendChild(filaTitulo);
+
+                    // Filas de los exámenes
+                    filasValidasDeSeccion.forEach(item => {
+                        let nuevaFila = document.createElement("tr");
+                        nuevaFila.innerHTML = `
+                            <td class="fw-bold ps-3">${item.examen}</td>
+                            <td style="color: #006633; font-weight: bold;">${item.resultado}</td>
+                            <td>${item.unidad}</td>
+                            <td class="text-muted">${item.referencia}</td>
+                        `;
+                        tbody.appendChild(nuevaFila);
+                    });
+                }
+            });
+
+            if (totalValidados === 0) {
+                let filaVacia = document.createElement("tr");
+                filaVacia.innerHTML = `<td colspan="4" class="text-center text-muted fst-italic">No hay exámenes con resultados ingresados.</td>`;
+                tbody.appendChild(filaVacia);
+            }
+        }
+
+        // Ejecutar al escribir en los inputs para vista previa en tiempo real
+        document.addEventListener("input", actualizarTablaDinamica);
+
+        // Generar código de barras al cargar
+        window.addEventListener('DOMContentLoaded', () => {
+            actualizarTablaDinamica();
+            try {
+                if (typeof JsBarcode !== "undefined") {
+                    JsBarcode("#codigoBarras", "01/08/2026 - 001245", {
+                        format: "CODE128",
+                        lineColor: "#000",
+                        width: 1.5,
+                        height: 40,
+                        displayValue: true,
+                        fontSize: 11
+                    });
+                }
+            } catch (e) {
+                console.error("Error al generar código de barras", e);
+            }
+        });
+
+        // Función de Impresión Directa limpia
+        function imprimirResultados() {
+            actualizarTablaDinamica();
+            window.print();
+        }
+
+        // Función de Descarga en PDF
+        
+        function descargarPDFResultados() {
+            actualizarTablaDinamica();
+            
+            // Clonamos el contenedor principal para manipularlo sin afectar la pantalla
+            const elementoOriginal = document.getElementById("pedidoContainer");
+            const elementoClonado = elementoOriginal.cloneNode(true);
+
+            // Eliminamos los elementos con la clase 'no-print' (botones, etc.) del clon
+            const elementosNoImprimibles = elementoClonado.querySelectorAll('.no-print');
+            elementosNoImprimibles.forEach(el => el.remove());
+
+            const opciones = {
+                margin:       5,
+                filename:     '001245_OYAQUE_MANOBANDA.pdf',
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2, useCORS: true, scrollY: 0 },
+                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+
+            if (typeof html2pdf !== "undefined") {
+                // Generamos el PDF usando el clon limpio
+                html2pdf().from(elementoClonado).set(opciones).save();
+            } else {
+                alert("La librería html2pdf no está cargada.");
+            }
+        }
+    </script>
+</body>
+</html>
+    

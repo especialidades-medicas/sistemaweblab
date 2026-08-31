@@ -1,0 +1,2124 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medicina General - Panel Clínico Integrado</title>
+    <!-- Aquí agregas el ícono -->
+    <link rel="icon" type="image/png" href="../img/logFisio2.png"> 
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- SheetJS para Excel -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <!-- jsPDF para PDFs -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        :root {
+            --primary: #1d3557;
+            --primary-dark: #111d2e;
+            --secondary: #457b9d;
+            --accent: #e63946;
+            --light-bg: #f8f9fa;
+            --dark: #212529;
+            --gray: #6c757d;
+            --success: #2a9d8f;
+            --danger: #e63946;
+            --warning: #f4a261;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f0f4f8 0%, #d7e3ec 100%);
+            min-height: 100vh;
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: 260px 1fr;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        .sidebar {
+            background: linear-gradient(180deg, var(--primary) 0%, var(--primary-dark) 100%);
+            padding: 1.5rem 1rem;
+            color: white;
+            box-shadow: 4px 0 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+            z-index: 100;
+        }
+
+        .logo {
+            padding: 0.5rem 1rem 1.5rem 1rem;
+            font-size: 1.5rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+            margin-bottom: 1.5rem;
+            color: #ffffff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .close-sidebar-btn {
+            display: none;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .nav-item {
+            padding: 0.85rem 1rem;
+            margin: 0.4rem 0;
+            border-radius: 0.75rem;
+            cursor: pointer;
+            color: rgba(255, 255, 255, 0.8);
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+
+        .nav-item:hover {
+            background: rgba(255, 255, 255, 0.15);
+            color: white;
+            transform: translateX(5px);
+        }
+
+        .nav-item.active {
+            background: #ffffff;
+            color: var(--primary-dark);
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .menu-toggle {
+            display: none;
+            background: var(--primary);
+            color: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        }
+
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 99;
+        }
+
+        .sidebar-overlay.active { display: block; }
+
+        .main-content {
+            padding: 2.5rem;
+            overflow-y: auto;
+            width: 100%;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            background: white;
+            padding: 1.2rem 2rem;
+            border-radius: 1rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .header h1 { font-size: 1.4rem; color: var(--dark); font-weight: 600; }
+
+        .search-container {
+            display: flex;
+            align-items: center;
+            background: #f1f3f5;
+            border-radius: 50px;
+            padding: 0.3rem 0.3rem 0.3rem 1.2rem;
+            width: 100%;
+            max-width: 320px;
+            border: 1px solid #dee2e6;
+        }
+
+        .search-container input { border: none; background: transparent; outline: none; width: 100%; font-size: 0.9rem; color: var(--dark); }
+        .search-container button { background: var(--primary); border: none; color: white; padding: 0.5rem 1.2rem; border-radius: 50px; cursor: pointer; font-weight: 500; flex-shrink: 0; transition: 0.2s; }
+        .search-container button:hover { background: var(--primary-dark); }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 1rem;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.06);
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            border-left: 5px solid var(--primary);
+        }
+
+        .stat-icon {
+            width: 55px;
+            height: 55px;
+            border-radius: 12px;
+            background: rgba(29, 53, 87, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 26px;
+        }
+
+        .stat-info h3 { color: var(--gray); font-size: 0.85rem; font-weight: 500; margin-bottom: 0.2rem; }
+        .stat-info .number { font-size: 1.6rem; font-weight: 700; color: var(--dark); }
+
+        .section-view { display: none; }
+        .section-view.active { display: block; }
+
+        .content-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 1rem;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.06);
+            margin-bottom: 2rem;
+            overflow-x: auto;
+        }
+
+        .content-card h2 { font-size: 1.25rem; color: var(--dark); margin-bottom: 1.2rem; font-weight: 600; }
+
+        table { 
+            width: 100%; 
+            border-collapse: collapse; 
+            min-width: 600px;
+        }
+        th { text-align: left; padding: 1rem; background: #f8f9fa; color: var(--gray); font-size: 0.85rem; font-weight: 600; border-bottom: 2px solid #dee2e6; }
+        td { padding: 1rem; border-bottom: 1px solid #f1f3f5; font-size: 0.9rem; color: var(--dark); }
+        
+        .status { padding: 0.35rem 0.85rem; border-radius: 50px; font-size: 0.75rem; font-weight: 600; display: inline-block; }
+        .status.confirmed { background: #e8f5e9; color: #2e7d32; }
+
+        .btn-action { background: var(--primary); color: white; border: none; padding: 0.5rem 1.2rem; border-radius: 6px; cursor: pointer; font-size: 0.85rem; transition: 0.2s; text-decoration: none; display: inline-block; font-weight: 500; }
+        .btn-action:hover { background: var(--primary-dark); }
+
+        .btn-secondary { background: var(--secondary); color: white; border: none; padding: 0.5rem 1.2rem; border-radius: 6px; cursor: pointer; font-size: 0.85rem; transition: 0.2s; text-decoration: none; display: inline-block; }
+        .btn-secondary:hover { background: #3d6a87; }
+
+        .btn-delete { background: var(--danger); color: white; border: none; padding: 0.4rem 0.8rem; border-radius: 6px; cursor: pointer; transition: 0.2s; font-size: 0.85rem; }
+        .btn-delete:hover { background: #b82a36; }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.2rem;
+            margin-bottom: 1rem;
+            margin-top: 1rem;
+        }
+
+        .form-group { display: flex; flex-direction: column; gap: 0.4rem; }
+        .form-group label { font-size: 0.85rem; font-weight: 600; color: var(--gray); }
+        .form-group input, .form-group select, .form-group textarea {
+            padding: 0.7rem 1rem;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            border-color: var(--secondary);
+        }
+        .form-group.full-width { grid-column: 1 / -1; }
+
+        /* Estilos Acordeón / Colapsables */
+        details.collapsible-section {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            margin-bottom: 1rem;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        details.collapsible-section[open] {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            border-color: var(--secondary);
+        }
+        summary.section-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--primary);
+            padding: 1rem 1.2rem;
+            background: #f8fafc;
+            cursor: pointer;
+            list-style: none;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            user-select: none;
+        }
+        summary.section-title::-webkit-details-marker {
+            display: none;
+        }
+        summary.section-title::after {
+            content: "▼";
+            font-size: 0.8rem;
+            transition: transform 0.3s ease;
+            color: var(--secondary);
+        }
+        details[open] summary.section-title::after {
+            transform: rotate(180deg);
+        }
+        details.collapsible-section .section-content {
+            padding: 1rem 1.2rem 1.5rem 1.2rem;
+        }
+
+        /* Control dinámico de campos condicionales */
+        .conditional-field { display: none; }
+        .active-conditional { display: block !important; }
+
+        .tabs-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #eef2f5;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            background: transparent;
+            border: none;
+            padding: 10px 18px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #6c757d;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+            margin-bottom: -2px;
+        }
+        .tab-btn:hover { color: var(--primary); }
+        .tab-btn.active { color: var(--primary); border-bottom: 3px solid var(--primary); }
+
+        .med-item {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr 40px;
+            gap: 10px;
+            align-items: center;
+            margin-bottom: 10px;
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 8px;
+        }
+
+        @media (max-width: 992px) {
+            .dashboard { grid-template-columns: 1fr; }
+            .sidebar { position: fixed; top: 0; left: -280px; width: 260px; height: 100vh; transition: transform 0.3s ease-in-out; z-index: 101; }
+            .sidebar.open { transform: translateX(280px); }
+            .close-sidebar-btn { display: block; }
+            .menu-toggle { display: flex; }
+            .main-content { padding: 1.5rem 1rem; }
+
+            .header { flex-direction: column; align-items: stretch; padding: 1rem; }
+            .header-left { justify-content: space-between; width: 100%; }
+            .search-container { max-width: 100%; margin-top: 0.5rem; }
+            .med-item { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+    <div class="dashboard">
+        <!-- Sidebar Colapsable -->
+        <div class="sidebar" id="sidebar">
+            <div class="logo">
+                🩺 MedGeneral.st
+                <button class="close-sidebar-btn" onclick="toggleSidebar()">✕</button>
+            </div>
+            <nav>
+                <a href="#" class="nav-item active" onclick="switchTab(event, 'dashboard-view'); toggleSidebarMobile();">📊 Panel Principal</a>
+                <a href="#" class="nav-item" onclick="switchTab(event, 'pacientes-view'); toggleSidebarMobile();">👥 Pacientes</a>
+                <a href="#" class="nav-item" onclick="switchTab(event, 'certificados-view'); toggleSidebarMobile();">📄 Certificados Médicos</a>
+                <a href="#" class="nav-item" onclick="switchTab(event, 'recetario-view'); toggleSidebarMobile();">💊 Recetario / Prescripción</a>
+                <a href="#" class="nav-item" onclick="switchTab(event, 'citas-view'); toggleSidebarMobile();">📅 Citas Médicas</a>
+                <a href="#" class="nav-item" style="margin-top: 3rem; color: #ffadad;">🚪 Cerrar Sesión</a>
+            </nav>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Header -->
+            <div class="header">
+                <div class="header-left">
+                    <button class="menu-toggle" onclick="toggleSidebar()" title="Abrir Menú">☰</button>
+                    <h1 id="header-title">Sistema de Medicina General</h1>
+                </div>
+                <div style="display: flex; align-items: center; gap: 1rem;">
+                    <div class="search-container">
+                        <input type="text" id="searchInput" placeholder="Buscar cédula o nombre...">
+                        <button onclick="buscarPaciente()">Buscar</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VISTA 1: DASHBOARD -->
+            <div id="dashboard-view" class="section-view active">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">👥</div>
+                        <div class="stat-info">
+                            <h3>Total Pacientes</h3>
+                            <div class="number" id="statPacientes">0</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">📅</div>
+                        <div class="stat-info">
+                            <h3>Consultas Hoy</h3>
+                            <div class="number">12</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">📄</div>
+                        <div class="stat-info">
+                            <h3>Certificados Emitidos</h3>
+                            <div class="number" id="statCertificados">0</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">💊</div>
+                        <div class="stat-info">
+                            <h3>Recetas Generadas</h3>
+                            <div class="number" id="statRecetas">0</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="content-card">
+                    <h2>Consultas Recientes de Medicina General</h2>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Paciente</th>
+                                <th>Cédula</th>
+                                <th>Edad</th>
+                                <th>Tipo Consulta</th>
+                                <th>Estado</th>
+                                <th>Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Carlos Mendoza Parra</td>
+                                <td>1718293847</td>
+                                <td>38 años</td>
+                                <td>Consulta General (Adulto)</td>
+                                <td><span class="status confirmed">Atendido</span></td>
+                                <td><button class="btn-action">Ver Historia</button></td>
+                            </tr>
+                            <tr>
+                                <td>Sofía Benítez Castro</td>
+                                <td>1759403821</td>
+                                <td>6 años</td>
+                                <td>Evaluación Pediátrica</td>
+                                <td><span class="status confirmed">Atendido</span></td>
+                                <td><button class="btn-action">Ver Historia</button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- VISTA 2: PACIENTES -->
+            <div id="pacientes-view" class="section-view">
+                <div class="content-card">
+                    <h2 id="patientFormTitle">Registro de Nuevo Paciente</h2>
+                    <form onsubmit="savePatient(event)">
+                        <input type="hidden" id="editPatientIndex" value="-1">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>Cédula / Pasaporte *</label>
+                                <input type="text" id="patCedula" placeholder="Ej. 1723456789" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Apellidos y Nombres *</label>
+                                <input type="text" id="patNombre" placeholder="Ej. Pérez Gómez Juan" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Fecha de Nacimiento *</label>
+                                <input type="date" id="patNacimiento" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Género</label>
+                                <select id="patGenero">
+                                    <option value="Masculino">Masculino</option>
+                                    <option value="Femenino">Femenino</option>
+                                    <option value="Otro">Otro</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Teléfono de Contacto</label>
+                                <input type="tel" id="patTelefono" placeholder="Ej. 0991234567">
+                            </div>
+                            <div class="form-group">
+                                <label>Correo Electrónico</label>
+                                <input type="email" id="patCorreo" placeholder="correo@ejemplo.com">
+                            </div>
+                            <div class="form-group full-width">
+                                <label>Dirección Domiciliaria</label>
+                                <input type="text" id="patDireccion" placeholder="Calle principal y secundaria, sector">
+                            </div>
+                        </div>
+                        <div style="display: flex; gap: 10px; margin-top: 15px;">
+                            <button type="submit" id="btnSavePatient" class="btn-action" style="padding: 0.7rem 1.5rem; font-size: 0.95rem;">Guardar Paciente</button>
+                            <button type="button" id="btnCancelPatient" onclick="resetPatientForm()" class="btn-delete" style="display: none; padding: 0.7rem 1.5rem; font-size: 0.95rem;">Cancelar</button>
+                        </div>
+                    </form>
+                </div>               
+
+                <div class="content-card">
+                    <h2>Listado de Pacientes Registrados</h2>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Cédula</th>
+                                <th>Apellidos y Nombres</th>
+                                <th>Nacimiento</th>
+                                <th>Género</th>
+                                <th>Teléfono</th>
+                                <th>Correo</th>
+                                <th>Dirección</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="patientTableBody">
+                            <!-- Se renderiza mediante Javascript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- VISTA 3: CERTIFICADOS MÉDICOS -->
+            <div id="certificados-view" class="section-view">
+                <div class="content-card">
+                    <h2>Emisión de Certificados Médicos</h2>
+                    <p style="color: var(--gray); margin-bottom: 1.2rem;">Seleccione la modalidad de certificado que requiere emitir:</p>
+                    
+                    <div class="tabs-container">
+                        <button type="button" class="tab-btn active" id="tab-cert-adulto" onclick="cambiarTipoCertificado('adulto')">👨‍💼 Certificado Adultos (Simple)</button>
+                        <button type="button" class="tab-btn" id="tab-cert-nino" onclick="cambiarTipoCertificado('nino')">👶 Certificado Niños / Pediátrico</button>
+                        <button type="button" class="tab-btn" id="tab-cert-salud-ninos" onclick="cambiarTipoCertificado('salud-ninos')">🏫 Certif. Salud Niños/Jóvenes (Regreso a Clases)</button>
+                        <button type="button" class="tab-btn" id="tab-cert-iess" onclick="cambiarTipoCertificado('iess')">🏢 Formato Obligatorio IESS</button>
+                        <button type="button" class="tab-btn" id="tab-cert-ocupacional" onclick="cambiarTipoCertificado('ocupacional')">💼 Certificado Ocupacional (Aptitud)</button>
+                    </div>
+
+                    <form id="formCertificadoMedico" onsubmit="emitirCertificadoPDF(event)">
+                        <input type="hidden" id="certTipoModalidad" value="adulto">
+
+                        <!-- SECCIÓN 1: DATOS DEL ESTABLECIMIENTO -->
+                        <details class="collapsible-section conditional-field field-iess field-salud-ninos section-iess-header">
+                            <summary class="section-title">📍 Datos del Centro o Establecimiento de Salud</summary>
+                            <div class="section-content">
+                                <div class="form-grid">
+                                    <div class="form-group full-width">
+                                        <label>Nombre del Establecimiento de Salud:</label>
+                                        <input type="text" id="certEstablecimientoNombre" value="Centro Médico MedGeneral.st">
+                                    </div>
+                                    <div class="form-group full-width">
+                                        <label>Dirección del Establecimiento:</label>
+                                        <input type="text" id="certEstablecimientoDireccion" value="Av. Amazonas N35-12 y Av. República">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Teléfono de Contacto:</label>
+                                        <input type="text" id="certEstablecimientoTel" value="(02) 234-5678">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Correo Electrónico:</label>
+                                        <input type="email" id="certEstablecimientoCorreo" value="contacto@medgeneral.st">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Ciudad / Cantón:</label>
+                                        <input type="text" id="certEstablecimientoCiudad" value="Quito">
+                                    </div>
+                                </div>
+                            </div>
+                        </details>
+
+                        <!-- SECCIÓN 2: DATOS DEL PACIENTE -->
+                        <details class="collapsible-section" open>
+                            <summary class="section-title">👤 Datos del Paciente</summary>
+                            <div class="section-content">
+                                <div class="form-grid">
+                                    <div class="form-group">
+                                        <label>Cédula / Pasaporte *:</label>
+                                        <input type="text" id="certCedula" placeholder="Ej. 1723456789" onblur="autocompletarPacienteCert()" required>
+                                    </div>
+                                    <div class="form-group full-width">
+                                        <label>Nombres y Apellidos Completos *:</label>
+                                        <input type="text" id="certNombres" placeholder="Nombres completos" required>
+                                    </div>
+
+                                    <!-- Campos exclusivos IESS / Ocupacional / Salud Niños -->
+                                    <div class="form-group conditional-field field-iess field-ocupacional field-salud-ninos">
+                                        <label>Edad del Paciente:</label>
+                                        <input type="text" id="certEdadPaciente" placeholder="Ej. 10 años / 15 años">
+                                    </div>
+                                    <div class="form-group conditional-field field-iess full-width">
+                                        <label>Dirección Domiciliaria * (Exigido IESS):</label>
+                                        <input type="text" id="certDirPacienteIess" placeholder="Dirección exacta de domicilio">
+                                    </div>
+                                    <div class="form-group conditional-field field-iess">
+                                        <label>Teléfono de Contacto * (Exigido IESS):</label>
+                                        <input type="text" id="certTelPacienteIess" placeholder="Ej. 0991234567">
+                                    </div>
+                                    <div class="form-group conditional-field field-iess">
+                                        <label>N° Historia Clínica * (Exigido IESS):</label>
+                                        <input type="text" id="certHistoriaClinica" placeholder="Ej. HC-1713031">
+                                    </div>
+                                    <div class="form-group conditional-field field-iess field-ocupacional full-width">
+                                        <label>Empresa donde trabaja:</label>
+                                        <input type="text" id="certEmpresa" placeholder="Ej. Corporación Favorita C.A.">
+                                    </div>
+                                    <div class="form-group conditional-field field-iess field-ocupacional">
+                                        <label>Puesto de Trabajo / Cargo:</label>
+                                        <input type="text" id="certCargo" placeholder="Ej. Analista de Sistemas">
+                                    </div>
+                                    <div class="form-group conditional-field field-iess full-width">
+                                        <label>Dirección de la Empresa *:</label>
+                                        <input type="text" id="certEmpresaDir" placeholder="Dirección completa del lugar de trabajo">
+                                    </div>
+                                    <div class="form-group conditional-field field-iess">
+                                        <label>Teléfono de la Empresa:</label>
+                                        <input type="text" id="certEmpresaTel" placeholder="Número directo / Extensión">
+                                    </div>
+                                    <div class="form-group conditional-field field-iess">
+                                        <label>Correo de la Empresa:</label>
+                                        <input type="email" id="certEmpresaCorreo" placeholder="Email corporativo">
+                                    </div>
+
+                                    <!-- Campos Pediátricos / Salud Niños -->
+                                    <div class="form-group conditional-field field-nino field-salud-ninos full-width">
+                                        <label>Institución Educativa / Escuela / Colegio:</label>
+                                        <input type="text" id="certEscuela" placeholder="Ej. Unidad Educativa Borja">
+                                    </div>
+                                </div>
+                            </div>
+                        </details>
+
+                        <!-- SECCIÓN 3: DICTAMEN DE APTITUD (EXCLUSIVO CERTIFICADO OCUPACIONAL) -->
+                        <details class="collapsible-section conditional-field field-ocupacional">
+                            <summary class="section-title">💼 Evaluación de Aptitud Médica Ocupacional</summary>
+                            <div class="section-content">
+                                <div class="form-grid">
+                                    <div class="form-group">
+                                        <label>Tipo de Evaluación Ocupacional:</label>
+                                        <select id="certTipoEvaluacion">
+                                            <option value="INGRESO">INGRESO</option>
+                                            <option value="PERIÓDICO">PERIÓDICO</option>
+                                            <option value="REINTEGRO">REINTEGRO</option>
+                                            <option value="SALIDA">SALIDA</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Dictamen de Aptitud Médico-Ocupacional *:</label>
+                                        <select id="certDictamenAptitud">
+                                            <option value="APTO">APTO</option>
+                                            <option value="APTO CON OBSERVACIÓN">APTO CON OBSERVACIÓN</option>
+                                            <option value="APTO CON LIMITACIONES">APTO CON LIMITACIONES</option>
+                                            <option value="NO APTO">NO APTO</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group full-width">
+                                        <label>Observaciones / Restricciones / Validez:</label>
+                                        <textarea id="certObsAptitud" rows="3">Ninguna. El evaluado se encuentra en condiciones óptimas de salud ocupacional. El presente certificado tiene una validez de 1 año a partir de su fecha de emisión, conforme a la normativa laboral vigente.</textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </details>
+
+                        <!-- SECCIÓN 4: DETALLE MÉDICO Y REPOSO (GENERAL, PEDIÁTRICO Y IESS) -->
+                        <details class="collapsible-section conditional-field field-adulto field-nino field-iess field-salud-ninos active-conditional" id="secDetalleMedico" open>
+                            <summary class="section-title">📋 Detalle Médico y Evaluación</summary>
+                            <div class="section-content">
+                                <div class="form-grid">
+                                    <div class="form-group">
+                                        <label>Fecha de Emisión *:</label>
+                                        <input type="date" id="certFecha" required>
+                                    </div>
+                                    
+                                    <!-- Campos no requeridos para Certificado Salud Niños/Jóvenes -->
+                                    <div class="form-group hide-on-salud-ninos">
+                                        <label>Código CIE-10 *:</label>
+                                        <input type="text" id="certCie" placeholder="Ej. J00" required>
+                                    </div>
+                                    <div class="form-group full-width hide-on-salud-ninos">
+                                        <label>Diagnóstico / Descripción de la Enfermedad *:</label>
+                                        <input type="text" id="certDiagnostico" placeholder="Ej. Rhinopharyngitis aguda [resfriado común]" required>
+                                    </div>
+                                    
+                                    <div class="form-group conditional-field field-iess">
+                                        <label>Presenta síntomas (Enfermedad General):</label>
+                                        <select id="certSintomas">
+                                            <option value="SI">SI</option>
+                                            <option value="NO">NO</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group conditional-field field-iess">
+                                        <label>Fecha de Inicio de Síntomas (FIS):</label>
+                                        <input type="date" id="certFIS">
+                                    </div>
+                                    <div class="form-group conditional-field field-iess full-width">
+                                        <label>Descripción de los síntomas:</label>
+                                        <input type="text" id="certSintomasDesc" placeholder="Ej. Dolor muscular en extremidades inferiores que dificultan la deambulación.">
+                                    </div>
+                                    
+                                    <!-- Campos de reposo ocultos para Salud Niños (regreso a clases preventivo) -->
+                                    <div class="form-group hide-on-salud-ninos">
+                                        <label>Días de Reposo *:</label>
+                                        <input type="number" id="certDias" value="2" min="0" max="30" onchange="calcularFechaFinReposo()" required>
+                                    </div>
+                                    <div class="form-group conditional-field field-iess full-width">
+                                        <label style="display: flex; align-items: center; gap: 8px;">
+                                            <input type="checkbox" id="certReposoAbsoluto" style="width: auto;">
+                                            REPOSO ABSOLUTO
+                                        </label>
+                                    </div>
+                                    <div class="form-group hide-on-salud-ninos">
+                                        <label>Fecha Inicio Reposo *:</label>
+                                        <input type="date" id="certFechaInicio" onchange="calcularFechaFinReposo()" required>
+                                    </div>
+                                    <div class="form-group hide-on-salud-ninos">
+                                        <label>Fecha Fin Reposo (Calculada):</label>
+                                        <input type="date" id="certFechaFin" readonly style="background: #e9ecef;">
+                                    </div>
+                                    <div class="form-group full-width">
+                                        <label id="lblIndicaciones">Indicaciones Médicas / Observaciones:</label>
+                                        <textarea id="certIndicaciones" rows="2" placeholder="Ej. Reposo absoluto en casa, hidratación abundante y tratamiento farmacológico."></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </details>
+
+                        <!-- SECCIÓN 5: MÉDICO RESPONSABLE -->
+                        <details class="collapsible-section" open>
+                            <summary class="section-title">🩺 Profesional Responsable y Emisor</summary>
+                            <div class="section-content">
+                                <div class="form-grid">
+                                    <div class="form-group full-width">
+                                        <label>Seleccionar Médico Prescriptor:</label>
+                                        <select id="selectMedico" onchange="seleccionarMedico(this.value)">
+                                            <option value="1">Dr. Carlos Andrade - Médico General (Cédula: 1713031167)</option>
+                                            <option value="2">Dra. María Elena Torres - Pediatra (Cédula: 1720062692)</option>
+                                            <option value="otro">-- Otro / Ingresar Manualmente --</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Nombres y Apellidos del Médico:</label>
+                                        <input type="text" id="certMedicoNombre" value="DR. MILTON MOLINA P." required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Registro SENESCYT / MSP:</label>
+                                        <input type="text" id="certMedicoMsp" value="1005-12-8472" required>
+                                    </div>
+                                    <div class="form-group conditional-field field-iess">
+                                        <label>Cédula del Médico * (Exigido IESS):</label>
+                                        <input type="text" id="certMedicoCedula" value="1713031167">
+                                    </div>
+                                    <div class="form-group conditional-field field-iess">
+                                        <label>Especialidad Médica * (Exigido IESS):</label>
+                                        <input type="text" id="certMedicoEspecialidad" value="Medicina General">
+                                    </div>
+                                </div>
+                            </div>
+                        </details>
+
+                        <div style="display: flex; gap: 10px; margin-top: 15px;">
+                            <button type="submit" class="btn-action" style="padding: 0.7rem 1.5rem;">Generar y Descargar Certificado (PDF)</button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="content-card">
+                    <h2>Historial de Certificados Emitidos</h2>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Fecha</th>
+                                <th>Cédula</th>
+                                <th>Paciente</th>
+                                <th>Tipo Certificado</th>
+                                <th>CIE-10 / Aptitud</th>
+                                <th>Detalle</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tablaCertificadosBody">
+                            <!-- Filas dinámicas -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- VISTA 4: RECETARIO / PRESCRIPCIÓN MÉDICA -->
+            <div id="recetario-view" class="section-view">
+                <div class="content-card">
+                    <h2>Prescripción Médica y Recetario</h2>
+                    <p style="color: var(--gray); margin-bottom: 1.2rem;">Genere recetas médicas estandarizadas con indicación clara de dosis e indicaciones.</p>
+
+                    <form id="formReceta" onsubmit="generarPDFReceta(event)">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>Fecha:</label>
+                                <input type="date" id="recFecha" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Cédula Paciente:</label>
+                                <input type="text" id="recCedula" placeholder="Ej. 1713031167" onblur="autocompletarPacienteReceta()" required>
+                            </div>
+                            <div class="form-group full-width">
+                                <label>Nombre del Paciente:</label>
+                                <input type="text" id="recNombres" placeholder="Nombres del paciente" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Edad:</label>
+                                <input type="text" id="recEdad" placeholder="Ej. 28 años">
+                            </div>
+                            <div class="form-group">
+                                <label>Alergias Conocidas:</label>
+                                <input type="text" id="recAlergias" placeholder="Ej. Penicilina / Ninguna" value="Ninguna declarada">
+                            </div>
+                            <div class="form-group full-width">
+                                <label>Diagnóstico / Presunción Clínica:</label>
+                                <input type="text" id="recDiagnostico" placeholder="Ej. Gastroenteritis aguda no especificada">
+                            </div>
+                        </div>
+
+                        <h3 style="margin: 1.5rem 0 1rem; color: var(--primary);">Medicamentos Prescritos</h3>
+                        <div id="medicamentosContainer">
+                            <div class="med-item">
+                                <input type="text" class="med-nombre" placeholder="Medicamento / Presentación (Ej. Paracetamol 500mg)" required>
+                                <input type="text" class="med-dosis" placeholder="Dosis (Ej. 1 tableta)" required>
+                                <input type="text" class="med-frecuencia" placeholder="Frecuencia (Ej. c/8 horas)" required>
+                                <input type="text" class="med-duracion" placeholder="Duración (Ej. 5 días)" required>
+                                <button type="button" class="btn-delete" onclick="eliminarFilaMed(this)">✕</button>
+                            </div>
+                        </div>
+                        <button type="button" class="btn-secondary" onclick="agregarFilaMed()" style="margin-bottom: 1.5rem;">+ Agregar Medicamento</button>
+
+                        <div class="form-group full-width">
+                            <label>Indicaciones Adicionales / Dieta / Cuidados Generales:</label>
+                            <textarea id="recIndicaciones" rows="3" placeholder="Ej. Tomar abundantemente líquidos, reposo relativo, acudir a control en 5 días o antes si hay signos de alarma."></textarea>
+                        </div>
+                        <div class="content-card">
+    <h3><i class="fas" style="margin-right: 8px;">🩺</i> Profesional Responsable y Emisor</h3>
+    
+    <label for="selectMedicoPrescriptor">Seleccionar Médico Prescriptor:</label>
+    <select id="selectMedicoPrescriptor" class="form-control" onchange="cargarDatosProfesional()">
+        <option value="">-- Seleccione un profesional --</option>
+        <option value="yadira">Fta. Yadira Estrella - Fisioterapeuta</option>
+        <option value="zulay">Zulay Estrella - Podóloga</option>
+        <option value="bryan">Dr. Bryan Celi - Médico General</option>
+        <option value="liliana">Dra. Liliana Elizabeth Salazar Llusca - Médico General</option>
+    </select>
+
+    <!-- Campos del formulario que se llenarán automáticamente -->
+    <div style="margin-top: 15px; display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+        <div>
+            <label>Nombres y Apellidos del Médico / Profesional:</label>
+            <input type="text" id="medNombres" class="form-control">
+        </div>
+        <div>
+            <label>Registro SENESCYT / MSP:</label>
+            <input type="text" id="medRegistro" class="form-control">
+        </div>
+        <div>
+            <label>Cédula del Profesional *:</label>
+            <input type="text" id="medCedula" class="form-control">
+        </div>
+        <div>
+            <label>Especialidad *:</label>
+            <input type="text" id="medEspecialidad" class="form-control">
+        </div>
+    </div>
+    
+    <div style="margin-top: 15px;">
+        <label>Teléfono de contacto y Dirección del consultorio:</label>
+        <input type="text" id="medDireccionContacto" class="form-control">
+    </div>
+</div>
+
+                        <div style="margin-top: 1.5rem;">
+                            <button type="submit" class="btn-action" style="padding: 0.7rem 1.5rem;">Imprimir / Descargar Receta Médica (PDF)</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- VISTA 5: CITAS -->
+            <div id="citas-view" class="section-view">
+                <div class="content-card">
+                    <h2>Agenda de Citas de Medicina General</h2>
+                    <p style="color: var(--gray);">Gestión de turnos y control de pacientes agendados.</p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        let certificadosBD = [];
+        let pacientesMemoria = [];
+        let recetasBD = [];
+
+        const medicosBD = {
+            "1": {
+                nombre: "DR. MILTON MOLINA P.",
+                cedula: "1713031167",
+                especialidad: "Medicina General",
+                msp: "1005-12-8472"
+            },
+            "2": {
+                nombre: "DRA. MARÍA ELENA TORRES",
+                cedula: "1720062692",
+                especialidad: "Pediatría General",
+                msp: "2004-15-9931"
+            }
+        };
+
+        function numeroALetras(num) {
+            const numeros = ["cero", "uno", "dos", "tres", "cuatro", "cinco", "seis", "siete", "ocho", "nueve", "diez"];
+            const n = parseInt(num, 10);
+            return numeros[n] || num;
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const hoy = new Date().toISOString().split('T')[0];
+            if (document.getElementById('certFecha')) document.getElementById('certFecha').value = hoy;
+            if (document.getElementById('certFechaInicio')) document.getElementById('certFechaInicio').value = hoy;
+            if (document.getElementById('recFecha')) document.getElementById('recFecha').value = hoy;
+            
+            calcularFechaFinReposo();
+            cambiarTipoCertificado('adulto'); // Inicia por defecto en Certificado Simple
+
+            const inputPatCedula = document.getElementById('patCedula');
+            if (inputPatCedula) {
+                inputPatCedula.addEventListener('blur', (e) => buscarPacientePorCedulaDB(e.target.value.trim()));
+            }
+
+            renderPatients();
+        });
+
+        function calcularFechaFinReposo() {
+            const fInicioInput = document.getElementById('certFechaInicio');
+            const diasInput = document.getElementById('certDias');
+            const fFinInput = document.getElementById('certFechaFin');
+
+            if (!fInicioInput || !diasInput || !fFinInput) return;
+
+            const dias = parseInt(diasInput.value, 10) || 0;
+            if (fInicioInput.value) {
+                const fecha = new Date(fInicioInput.value + "T00:00:00");
+                const sumarDias = dias > 0 ? dias - 1 : 0;
+                fecha.setDate(fecha.getDate() + sumarDias);
+                fFinInput.value = fecha.toISOString().split('T')[0];
+            }
+        }
+
+        function seleccionarMedico(id) {
+            if (medicosBD[id]) {
+                document.getElementById('certMedicoNombre').value = medicosBD[id].nombre;
+                document.getElementById('certMedicoCedula').value = medicosBD[id].cedula;
+                document.getElementById('certMedicoEspecialidad').value = medicosBD[id].especialidad;
+                document.getElementById('certMedicoMsp').value = medicosBD[id].msp;
+            } else if (id === 'otro') {
+                document.getElementById('certMedicoNombre').value = '';
+                document.getElementById('certMedicoCedula').value = '';
+                document.getElementById('certMedicoEspecialidad').value = '';
+                document.getElementById('certMedicoMsp').value = '';
+            }
+        }
+
+        function fechaALetras(fechaIso) {
+            if (!fechaIso) return "";
+            const meses = ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"];
+            const partes = fechaIso.split('-');
+            const dia = numeroALetras(partes[2].replace(/^0+/, ''));
+            return `${partes[2]}/${partes[1]}/${partes[0]} (${dia.toUpperCase()} DE ${meses[parseInt(partes[1], 10) - 1].toUpperCase()} DEL ${partes[0]})`;
+        }
+
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            if (sidebar) sidebar.classList.toggle('open');
+            if (overlay) overlay.classList.toggle('active');
+        }
+
+        function toggleSidebarMobile() {
+            if (window.innerWidth <= 992) {
+                toggleSidebar();
+            }
+        }
+
+        function switchTab(event, viewId) {
+            if (event && event.preventDefault) event.preventDefault();
+            document.querySelectorAll('.section-view').forEach(view => view.classList.remove('active'));
+            const targetView = document.getElementById(viewId);
+            if (targetView) targetView.classList.add('active');
+            
+            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+            if (event && event.currentTarget) event.currentTarget.classList.add('active');
+
+            if (viewId === 'pacientes-view') {
+                renderPatients();
+            }
+        }
+
+        // CONTROLADOR DE CAMBIO DE MODALIDAD
+        function cambiarTipoCertificado(tipo) {
+            document.getElementById('certTipoModalidad').value = tipo;
+            document.querySelectorAll('.tabs-container .tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`tab-cert-${tipo}`).classList.add('active');
+
+            // Ocultar todos los condicionales
+            document.querySelectorAll('.conditional-field').forEach(el => el.classList.remove('active-conditional'));
+
+            // Mostrar condicionales según pestaña
+            if (tipo === 'adulto') {
+                document.querySelectorAll('.field-adulto').forEach(el => el.classList.add('active-conditional'));
+            } else if (tipo === 'nino') {
+                document.querySelectorAll('.field-nino').forEach(el => el.classList.add('active-conditional'));
+            } else if (tipo === 'salud-ninos') {
+                document.querySelectorAll('.field-salud-ninos').forEach(el => el.classList.add('active-conditional'));
+            } else if (tipo === 'iess') {
+                document.querySelectorAll('.field-iess').forEach(el => el.classList.add('active-conditional'));
+            } else if (tipo === 'ocupacional') {
+                document.querySelectorAll('.field-ocupacional').forEach(el => el.classList.add('active-conditional'));
+            }
+
+            // Gestionar visibilidad de campos de reposo/diagnóstico condicionales para Salud Niños / Ocupacional
+            const hideFields = document.querySelectorAll('.hide-on-salud-ninos');
+            const certCie = document.getElementById('certCie');
+            const certDiag = document.getElementById('certDiagnostico');
+            const certDias = document.getElementById('certDias');
+            const certFechaInicio = document.getElementById('certFechaInicio');
+
+            if (tipo === 'salud-ninos') {
+                hideFields.forEach(el => el.style.display = 'none');
+                certCie.removeAttribute('required');
+                certDiag.removeAttribute('required');
+                certDias.removeAttribute('required');
+                certFechaInicio.removeAttribute('required');
+                document.getElementById('lblIndicaciones').innerText = "Observaciones Médicas / Exámenes Previstos:";
+            } else if (tipo === 'ocupacional') {
+                hideFields.forEach(el => el.style.display = 'none');
+                certCie.removeAttribute('required');
+                certDiag.removeAttribute('required');
+                certDias.removeAttribute('required');
+                certFechaInicio.removeAttribute('required');
+                document.getElementById('lblIndicaciones').innerText = "Indicaciones Médicas / Observaciones:";
+            } else {
+                hideFields.forEach(el => el.style.display = 'flex');
+                certCie.setAttribute('required', 'required');
+                certDiag.setAttribute('required', 'required');
+                certDias.setAttribute('required', 'required');
+                certFechaInicio.setAttribute('required', 'required');
+                document.getElementById('lblIndicaciones').innerText = "Indicaciones Médicas / Observaciones:";
+            }
+        }
+
+        // CONTROLADOR BD: PACIENTES
+        async function savePatient(event) {
+            if (event) event.preventDefault();
+
+            const cedula = document.getElementById("patCedula")?.value.trim();
+            const nombre = document.getElementById("patNombre")?.value.trim().toUpperCase();
+            
+            if (!cedula || !nombre) {
+                alert("Por favor complete los campos obligatorios: Cédula y Nombres.");
+                return;
+            }
+
+            try {
+                const formData = new URLSearchParams();
+                formData.append("patCedula", cedula);
+                formData.append("patNombre", nombre);
+                formData.append("patNacimiento", document.getElementById("patNacimiento")?.value || "");
+                formData.append("patGenero", document.getElementById("patGenero")?.value || "Masculino");
+                formData.append("patTelefono", document.getElementById("patTelefono")?.value.trim() || "");
+                formData.append("patCorreo", document.getElementById("patCorreo")?.value.trim().toLowerCase() || "");
+                formData.append("patDireccion", document.getElementById("patDireccion")?.value.trim() || "");
+
+                const response = await fetch('/sistemaLaboratorio/ControladorPacientes', {
+                    method: 'POST', 
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: formData.toString()
+                });
+
+                const resultadoTexto = await response.text();
+
+                if (response.ok) {
+                    alert("¡Paciente guardado o actualizado exitosamente!");
+                    renderPatients(); 
+                    resetPatientForm();
+                } else {
+                    alert("Atención: " + resultadoTexto);
+                }
+
+            } catch (error) {
+                console.error("Error en el proceso de guardado:", error);
+                alert("Error de conexión al procesar el paciente.");
+            }
+        }
+
+        async function renderPatients() {
+            const tbody = document.getElementById("patientTableBody");
+            if (!tbody) return;
+
+            try {
+                const response = await fetch('/sistemaLaboratorio/ControladorPacientes');
+                const text = await response.text();
+
+                let patientsDB = [];
+                try {
+                    patientsDB = JSON.parse(text);
+                    pacientesMemoria = patientsDB; 
+                } catch (e) {
+                    tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: red;">Error en formato de datos.</td></tr>`;
+                    return;
+                }
+
+                tbody.innerHTML = "";
+
+                if (!patientsDB || patientsDB.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: var(--gray);">No hay pacientes registrados.</td></tr>`;
+                    if (document.getElementById('statPacientes')) document.getElementById('statPacientes').innerText = "0";
+                    return;
+                }
+
+                if (document.getElementById('statPacientes')) document.getElementById('statPacientes').innerText = patientsDB.length;
+
+                tbody.innerHTML = patientsDB.map((patient) => `
+                    <tr>
+                        <td>${patient.cedula || ''}</td>
+                        <td>${patient.nombres || ''}</td>
+                        <td>${patient.fechaNacimiento || ''}</td>
+                        <td>${patient.genero || ''}</td>
+                        <td>${patient.telefono || ''}</td>
+                        <td>${patient.correo || ''}</td>
+                        <td>${patient.direccion || ''}</td>
+                        <td>
+                            <button type="button" class="btn-action" onclick="editarPacienteBD('${patient.cedula}')" style="padding: 4px 8px; font-size: 0.85rem;">Editar</button>
+                            <button type="button" class="btn-delete" onclick="eliminarPacienteBD('${patient.cedula}')" style="padding: 4px 8px; font-size: 0.85rem;">Eliminar</button>
+                        </td>
+                    </tr>
+                `).join('');
+
+            } catch (error) {
+                tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: red;">Error de conexión.</td></tr>`;
+            }
+        }
+
+        async function eliminarPacienteBD(cedula) {
+            if (!confirm(`¿Está seguro de eliminar al paciente con cédula ${cedula}?`)) return;
+
+            try {
+                const formData = new URLSearchParams();
+                formData.append("accion", "eliminar");
+                formData.append("cedula", cedula);
+
+                const response = await fetch('/sistemaLaboratorio/ControladorPacientes', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: formData.toString()
+                });
+
+                if (response.ok) {
+                    alert("Paciente eliminado correctamente.");
+                    renderPatients();
+                }
+            } catch (error) { console.error(error); }
+        }
+
+        async function editarPacienteBD(cedula) {
+            try {
+                const response = await fetch(`/sistemaLaboratorio/ControladorPacientes?accion=buscar&cedula=${cedula}`);
+                if (response.ok) {
+                    const paciente = await response.json();
+                    if (paciente) {
+                        document.getElementById('patCedula').value = paciente.cedula || '';
+                        document.getElementById('patNombre').value = paciente.nombres || '';
+                        document.getElementById('patNacimiento').value = paciente.fechaNacimiento || '';
+                        document.getElementById('patGenero').value = paciente.genero || 'Masculino';
+                        document.getElementById('patTelefono').value = paciente.telefono || '';
+                        document.getElementById('patCorreo').value = paciente.correo || '';
+                        document.getElementById('patDireccion').value = paciente.direccion || '';
+                        
+                        if (document.getElementById('patientFormTitle')) document.getElementById('patientFormTitle').innerText = "Editar Datos de Paciente";
+                        if (document.getElementById('btnSavePatient')) document.getElementById('btnSavePatient').innerText = "Actualizar Paciente";
+                        if (document.getElementById('btnCancelPatient')) document.getElementById('btnCancelPatient').style.display = "inline-block";
+                        
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }
+                }
+            } catch (error) { console.error(error); }
+        }
+
+        async function buscarPacientePorCedulaDB(cedula) {
+            if (!cedula || cedula.length < 5) return; 
+            try {
+                const response = await fetch(`/sistemaLaboratorio/ControladorPacientes?accion=buscar&cedula=${cedula}`);
+                if (response.ok) {
+                    const paciente = await response.json();
+                    if (paciente && paciente.nombres) {
+                        document.getElementById('patNombre').value = paciente.nombres || '';
+                        document.getElementById('patNacimiento').value = paciente.fechaNacimiento || '';
+                        document.getElementById('patGenero').value = paciente.genero || 'Masculino';
+                        document.getElementById('patTelefono').value = paciente.telefono || '';
+                        document.getElementById('patCorreo').value = paciente.correo || '';
+                        document.getElementById('patDireccion').value = paciente.direccion || '';
+                    }
+                }
+            } catch (error) { console.error(error); }
+        }
+
+        function resetPatientForm() {
+            if (document.getElementById("patCedula")) document.getElementById("patCedula").value = "";
+            if (document.getElementById("patNombre")) document.getElementById("patNombre").value = "";
+            if (document.getElementById("patNacimiento")) document.getElementById("patNacimiento").value = "";
+            if (document.getElementById("patGenero")) document.getElementById("patGenero").value = "Masculino";
+            if (document.getElementById("patTelefono")) document.getElementById("patTelefono").value = "";
+            if (document.getElementById("patCorreo")) document.getElementById("patCorreo").value = "";
+            if (document.getElementById("patDireccion")) document.getElementById("patDireccion").value = "";
+            if (document.getElementById("editPatientIndex")) document.getElementById("editPatientIndex").value = "-1";
+            if (document.getElementById("patientFormTitle")) document.getElementById("patientFormTitle").innerText = "Registro de Nuevo Paciente";
+            if (document.getElementById("btnSavePatient")) document.getElementById("btnSavePatient").innerText = "Guardar Paciente";
+            if (document.getElementById("btnCancelPatient")) document.getElementById("btnCancelPatient").style.display = "none";
+        }
+
+        function calcularEdad(fechaNacimientoStr) {
+            if (!fechaNacimientoStr) return '';
+            let nac = new Date(fechaNacimientoStr);
+            if (isNaN(nac.getTime())) return '';
+            const hoy = new Date();
+            let edad = hoy.getFullYear() - nac.getFullYear();
+            const mes = hoy.getMonth() - nac.getMonth();
+            if (mes < 0 || (mes === 0 && hoy.getDate() < nac.getDate())) edad--;
+            return edad >= 0 ? edad : 0;
+        }
+
+        async function autocompletarPacienteCert() {
+            const ced = document.getElementById('certCedula').value.trim();
+            if(!ced) return;
+            
+            try {
+                const response = await fetch(`/sistemaLaboratorio/ControladorPacientes?accion=buscar&cedula=${ced}`);
+                if (response.ok) {
+                    const p = await response.json();
+                    if (p) {
+                        document.getElementById('certNombres').value = p.nombres || '';
+                        const edadCalculada = p.fechaNacimiento ? calcularEdad(p.fechaNacimiento) + " años" : '';
+                        document.getElementById('certEdadPaciente').value = edadCalculada;
+                        document.getElementById('certDirPacienteIess').value = p.direccion || '';
+                        document.getElementById('certTelPacienteIess').value = p.telefono || '';
+                        document.getElementById('certHistoriaClinica').value = 'HC-' + ced;
+                    }
+                }
+            } catch(e) { console.error(e); }
+        }
+
+        async function autocompletarPacienteReceta() {
+            const ced = document.getElementById('recCedula').value.trim();
+            if(!ced) return;
+
+            try {
+                const response = await fetch(`/sistemaLaboratorio/ControladorPacientes?accion=buscar&cedula=${ced}`);
+                if (response.ok) {
+                    const p = await response.json();
+                    if (p) {
+                        document.getElementById('recNombres').value = p.nombres || '';
+                        document.getElementById('recEdad').value = p.fechaNacimiento ? calcularEdad(p.fechaNacimiento) + " años" : '';
+                    }
+                }
+            } catch(e) { console.error(e); }
+        }
+
+        function agregarFilaMed() {
+            const container = document.getElementById('medicamentosContainer');
+            const div = document.createElement('div');
+            div.className = 'med-item';
+            div.innerHTML = `
+                <input type="text" class="med-nombre" placeholder="Medicamento / Presentación" required>
+                <input type="text" class="med-dosis" placeholder="Dosis" required>
+                <input type="text" class="med-frecuencia" placeholder="Frecuencia" required>
+                <input type="text" class="med-duracion" placeholder="Duración" required>
+                <button type="button" class="btn-delete" onclick="eliminarFilaMed(this)">✕</button>
+            `;
+            container.appendChild(div);
+        }
+
+        function eliminarFilaMed(btn) {
+            const container = document.getElementById('medicamentosContainer');
+            if(container.children.length > 1) {
+                btn.parentElement.remove();
+            } else {
+                alert("Debe haber al menos un medicamento en la receta.");
+            }
+        }
+
+        // MOTOR GENERADOR DE PDF MULTI-PLANTILLA
+        function emitirCertificadoPDF(e) {
+            e.preventDefault();
+
+            const tipo = document.getElementById('certTipoModalidad').value;
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            const fecha = document.getElementById('certFecha').value || new Date().toISOString().split('T')[0];
+            const cedula = document.getElementById('certCedula').value.trim();
+            const nombres = document.getElementById('certNombres').value.toUpperCase().trim();
+            const medNombre = document.getElementById('certMedicoNombre').value.toUpperCase();
+            const medMsp = document.getElementById('certMedicoMsp').value;
+
+            // CASO 1 Y 2: CERTIFICADOS SIMPLES (ADULTO / NIÑO)
+            if (tipo === 'adulto' || tipo === 'nino') {
+                doc.setFillColor(29, 53, 87);
+                doc.rect(0, 0, 210, 30, 'F');
+                doc.setFont("helvetica", "bold");
+                doc.setFontSize(14);
+                doc.setTextColor(255, 255, 255);
+                doc.text("CENTRO MÉDICO MEDGENERAL.ST", 15, 12);
+                doc.setFontSize(8);
+                doc.setFont("helvetica", "normal");
+                doc.text("Av. Amazonas N35-12 y Av. República, Quito | Telf: (02) 234-5678", 15, 18);
+                doc.text("Ciudad: Quito", 15, 24);
+
+                doc.setFontSize(9);
+                doc.setTextColor(50, 50, 50);
+                doc.text(`Fecha: ${fecha}`, 195, 42, { align: "right" });
+
+                const titulo = tipo === 'nino' ? "CERTIFICADO MÉDICO PEDIÁTRICO" : "CERTIFICADO MÉDICO GENERAL";
+                doc.setFont("helvetica", "bold");
+                doc.setFontSize(13);
+                doc.setTextColor(29, 53, 87);
+                doc.text(titulo, 105, 54, { align: "center" });
+
+                doc.setFont("helvetica", "normal");
+                doc.setFontSize(10);
+                doc.setTextColor(30, 30, 30);
+
+                let texto = `Por medio de la presente se certifica que el/la paciente ${nombres}, con número de identificación/cédula ${cedula}, fue evaluado(a) en consulta médica en esta institución.`;
+                
+                if (tipo === 'nino') {
+                    const escuela = document.getElementById('certEscuela').value.trim();
+                    if (escuela) {
+                        texto += ` Perteneciente a la institución: ${escuela}.`;
+                    }
+                }
+
+                let splitTexto = doc.splitTextToSize(texto, 175);
+                doc.text(splitTexto, 15, 70);
+
+                const cie = document.getElementById('certCie').value.toUpperCase();
+                const diagnostico = document.getElementById('certDiagnostico').value;
+                const diasNum = parseInt(document.getElementById('certDias').value, 10) || 0;
+                const fechaInicio = document.getElementById('certFechaInicio').value;
+                const indicaciones = document.getElementById('certIndicaciones').value;
+
+                let y = 70 + (splitTexto.length * 6) + 10;
+
+                doc.setFont("helvetica", "bold");
+                doc.text("Diagnóstico (CIE-10):", 15, y);
+                doc.setFont("helvetica", "normal");
+                doc.text(`${diagnostico} - ${cie}`, 60, y);
+
+                y += 10;
+                doc.setFont("helvetica", "bold");
+                doc.text("Reposo Médico:", 15, y);
+                doc.setFont("helvetica", "normal");
+                doc.text(`${diasNum} día(s) a partir del ${fechaInicio}`, 60, y);
+
+                y += 10;
+                doc.setFont("helvetica", "bold");
+                doc.text("Indicaciones Médicas:", 15, y);
+                y += 6;
+                doc.setFont("helvetica", "normal");
+                let splitInd = doc.splitTextToSize(indicaciones || "Ninguna especificada.", 175);
+                doc.text(splitInd, 15, y);
+
+                y += (splitInd.length * 5) + 25;
+                let pieTexto = "Se expide el presente certificado a solicitud del interesado para los fines legales e institucionales pertinentes.";
+                let splitPie = doc.splitTextToSize(pieTexto, 175);
+                doc.text(splitPie, 15, y);
+
+                y = 230;
+                doc.setLineWidth(0.4);
+                doc.setDrawColor(150, 150, 150);
+                doc.line(70, y, 140, y);
+                doc.setFont("helvetica", "bold");
+                doc.setFontSize(9);
+                doc.text(medNombre, 105, y + 5, { align: "center" });
+                doc.setFont("helvetica", "normal");
+                doc.text(`Reg. SENESCYT / MSP: ${medMsp}`, 105, y + 10, { align: "center" });
+
+                certificadosBD.push({ fecha, cedula, nombres, tipo: titulo, cie, detalle: `${diasNum} día(s)` });
+            }
+
+            // CASO 2.1: CERTIFICADO DE ESTADO DE SALUD PARA NIÑOS Y JÓVENES (REGRESO A CLASES / SIN REPOSO)
+            else if (tipo === 'salud-ninos') {
+                const estNombre = document.getElementById('certEstablecimientoNombre').value.toUpperCase();
+                const estDir = document.getElementById('certEstablecimientoDireccion').value;
+                const estTel = document.getElementById('certEstablecimientoTel').value;
+                const estCorreo = document.getElementById('certEstablecimientoCorreo').value;
+                const estCiudad = document.getElementById('certEstablecimientoCiudad').value;
+                const escuela = document.getElementById('certEscuela').value.trim() || 'N/A';
+                const edad = document.getElementById('certEdadPaciente').value.trim() || 'N/A';
+                const observaciones = document.getElementById('certIndicaciones').value.trim() || 'Ninguna.';
+
+                doc.setFillColor(29, 53, 87);
+                doc.rect(0, 0, 210, 28, 'F');
+                doc.setFont("helvetica", "bold");
+                doc.setFontSize(12);
+                doc.setTextColor(255, 255, 255);
+                doc.text(estNombre, 15, 10);
+                doc.setFontSize(7.5);
+                doc.setFont("helvetica", "normal");
+                doc.text(`Dirección: ${estDir} | Ciudad: ${estCiudad}`, 15, 16);
+                doc.text(`Teléfono: ${estTel} | Correo: ${estCorreo}`, 15, 22);
+
+                doc.setFont("helvetica", "bold");
+                doc.setFontSize(11);
+                doc.setTextColor(29, 53, 87);
+                doc.text("CERTIFICADO ÚNICO DE SALUD (REGRESO A CLASES)", 105, 38, { align: "center" });
+
+                doc.setFontSize(8);
+                doc.setTextColor(80, 80, 80);
+                doc.text(`Fecha de Emisión: ${fecha}`, 195, 43, { align: "right" });
+
+                let y = 50;
+
+                // Bloque Datos
+                doc.setFillColor(240, 244, 248);
+                doc.rect(15, y, 180, 25, 'F');
+                doc.setDrawColor(200, 200, 200);
+                doc.rect(15, y, 180, 25, 'S');
+
+                doc.setFont("helvetica", "bold");
+                doc.setFontSize(8.5);
+                doc.setTextColor(29, 53, 87);
+                doc.text("DATOS DEL MENOR / ESTUDIANTE", 18, y + 5);
+
+                doc.setFont("helvetica", "normal");
+                doc.setFontSize(8);
+                doc.setTextColor(30, 30, 30);
+                doc.text(`Apellidos y Nombres: ${nombres}`, 18, y + 11);
+                doc.text(`Cédula / Identificación: ${cedula}`, 120, y + 11);
+                doc.text(`Edad: ${edad}`, 18, y + 17);
+                doc.text(`Institución Educativa: ${escuela}`, 120, y + 17);
+
+                y += 32;
+
+                doc.setFont("helvetica", "bold");
+                doc.setFontSize(9);
+                doc.setTextColor(29, 53, 87);
+                doc.text("DICTAMEN Y CONDICIÓN DE SALUD", 15, y);
+
+                y += 6;
+                doc.setFont("helvetica", "normal");
+                doc.setFontSize(9);
+                doc.setTextColor(30, 30, 30);
+
+                let textoSalud = `Certifico haber atendido y evaluado físicamente al/la paciente ${nombres}, quien al momento se encuentra en condiciones estables de salud y apto/a para realizar actividades escolares y de educación física presenciales.`;
+                let splitSalud = doc.splitTextToSize(textoSalud, 180);
+                doc.text(splitSalud, 15, y);
+
+                y += (splitSalud.length * 5) + 6;
+
+                doc.setFont("helvetica", "italic");
+                doc.setFontSize(8);
+                doc.setTextColor(100, 100, 100);
+                doc.text("Nota: Este documento es de carácter preventivo para el retorno escolar y no genera días de reposo médico.", 15, y);
+
+                y += 12;
+                if (observaciones) {
+                    doc.setFont("helvetica", "bold");
+                    doc.setFontSize(8.5);
+                    doc.setTextColor(29, 53, 87);
+                    doc.text("Observaciones / Exámenes previos:", 15, y);
+                    y += 5;
+                    doc.setFont("helvetica", "normal");
+                    doc.setFontSize(8.5);
+                    doc.setTextColor(30, 30, 30);
+                    let splitObs = doc.splitTextToSize(observaciones, 180);
+                    doc.text(splitObs, 15, y);
+                    y += (splitObs.length * 4) + 10;
+                }
+
+                y = Math.max(y + 10, 210);
+
+                doc.setLineWidth(0.4);
+                doc.setDrawColor(150, 150, 150);
+                doc.line(65, y, 145, y);
+                
+                doc.setFont("helvetica", "bold");
+                doc.setFontSize(8.5);
+                doc.setTextColor(21, 37, 61);
+                doc.text("FIRMA Y SELLO MÉDICO", 105, y + 4.5, { align: "center" });
+                doc.text(medNombre, 105, y + 9, { align: "center" });
+                
+                doc.setFont("helvetica", "normal");
+                doc.setFontSize(7.5);
+                doc.setTextColor(50, 50, 50);
+                doc.text(`Registro MSP / SENESCYT: ${medMsp}`, 105, y + 13.5, { align: "center" });
+
+                certificadosBD.push({ fecha, cedula, nombres, tipo: "SALUD NIÑOS (CLASES)", cie: "APTO", detalle: "Sin reposo (Preventivo)" });
+            }
+
+            // CASO 3: FORMATO IESS / MSP
+            else if (tipo === 'iess') {
+                const diasNum = parseInt(document.getElementById('certDias').value, 10) || 0;
+                if (diasNum > 3) {
+                    alert("Atención (Normativa IESS): El médico general puede otorgar un máximo de 3 días de reposo.");
+                    return;
+                }
+
+                const estNombre = document.getElementById('certEstablecimientoNombre').value.toUpperCase();
+                const estDir = document.getElementById('certEstablecimientoDireccion').value;
+                const estTel = document.getElementById('certEstablecimientoTel').value;
+                const estCorreo = document.getElementById('certEstablecimientoCorreo').value;
+                const estCiudad = document.getElementById('certEstablecimientoCiudad').value;
+
+                const medCedula = document.getElementById('certMedicoCedula').value;
+                const medEspecialidad = document.getElementById('certMedicoEspecialidad').value;
+
+                const dirPaciente = document.getElementById('certDirPacienteIess').value;
+                const telPaciente = document.getElementById('certTelPacienteIess').value;
+                const hc = document.getElementById('certHistoriaClinica').value;
+                const empresa = document.getElementById('certEmpresa').value;
+                const cargo = document.getElementById('certCargo').value;
+                
+                const empresaDir = document.getElementById('certEmpresaDir').value || 'N/A';
+                const empresaTel = document.getElementById('certEmpresaTel').value || 'N/A';
+                const empresaCorreo = document.getElementById('certEmpresaCorreo').value || 'N/A';
+                const marcaReposo = document.getElementById('certReposoAbsoluto').checked ? "[X] REPOSO ABSOLUTO" : "[ ] REPOSO ABSOLUTO";
+
+                const cie = document.getElementById('certCie').value.toUpperCase();
+                const diagnostico = document.getElementById('certDiagnostico').value;
+                const fechaInicio = document.getElementById('certFechaInicio').value;
+                const inicioLetras = fechaALetras(fechaInicio);
+                
+                const fechaFin = document.getElementById('certFechaFin').value;
+                const finLetras = fechaALetras(fechaFin);
+            
+                const indicaciones = document.getElementById('certIndicaciones').value;
+
+                const sintomas = document.getElementById('certSintomas') ? document.getElementById('certSintomas').value : 'SI';
+                const sintomasDesc = document.getElementById('certSintomasDesc') ? document.getElementById('certSintomasDesc').value : '';
+                const fisRaw = document.getElementById('certFIS') ? document.getElementById('certFIS').value : '';
+                const partesFIS = fisRaw ? fisRaw.split('-') : [];
+                const fisStr = partesFIS.length === 3 ? `${partesFIS[2]}/${partesFIS[1]}/${partesFIS[0]}` : '';
+
+                doc.setFillColor(29, 53, 87);
+                doc.rect(0, 0, 210, 28, 'F');
+                doc.setFont("helvetica", "bold");
+                doc.setFontSize(12);
+                doc.setTextColor(255, 255, 255);
+                doc.text(estNombre, 15, 10);
+                doc.setFontSize(7.5);
+                doc.setFont("helvetica", "normal");
+                doc.text(`Dirección: ${estDir} | Ciudad: ${estCiudad}`, 15, 16);
+                doc.text(`Teléfono: ${estTel} | Correo: ${estCorreo}`, 15, 22);
+
+                doc.setFont("helvetica", "bold");
+                doc.setFontSize(11);
+                doc.setTextColor(29, 53, 87);
+                doc.text("CERTIFICADO MÉDICO PARTICULAR (FORMATO IESS / MSP)", 105, 36, { align: "center" });
+
+                doc.setFontSize(8);
+                doc.setTextColor(80, 80, 80);
+                doc.text(`Fecha de Emisión: ${fecha}`, 195, 41, { align: "right" });
+
+                let y = 46;
+
+                // Bloque 1
+                doc.setFillColor(240, 244, 248);
+                doc.rect(15, y, 180, 28, 'F');
+                doc.setDrawColor(200, 200, 200);
+                doc.rect(15, y, 180, 28, 'S');
+
+                doc.setFont("helvetica", "bold");
+                doc.setFontSize(8.5);
+                doc.setTextColor(29, 53, 87);
+                doc.text("DATOS DEL PACIENTE", 18, y + 5);
+
+                doc.setFont("helvetica", "normal");
+                doc.setFontSize(8);
+                doc.setTextColor(30, 30, 30);
+                doc.text(`Nombres y Apellidos: ${nombres}`, 18, y + 11);
+                doc.text(`Cédula / Pasaporte: ${cedula}`, 120, y + 11);
+                doc.text(`N° Historia Clínica: ${hc}`, 18, y + 17);
+                doc.text(`Teléfono: ${telPaciente}`, 120, y + 17);
+                doc.text(`Dirección Domiciliaria: ${dirPaciente}`, 18, y + 23);
+
+                y += 32;
+
+                // Bloque 2
+                doc.setFillColor(240, 244, 248);
+                doc.rect(15, y, 180, 22, 'F');
+                doc.rect(15, y, 180, 22, 'S');
+
+                doc.setFont("helvetica", "bold");
+                doc.setFontSize(8.5);
+                doc.setTextColor(29, 53, 87);
+                doc.text("DATOS DE LA EMPRESA", 18, y + 5);
+
+                doc.setFont("helvetica", "normal");
+                doc.setFontSize(8);
+                doc.setTextColor(30, 30, 30);
+                doc.text(`Empresa: ${empresa || 'N/A'}`, 18, y + 11);
+                doc.text(`Cargo / Puesto: ${cargo || 'N/A'}`, 120, y + 11);
+                doc.text(`Dirección Empresa: ${empresaDir}`, 18, y + 17);
+                doc.text(`Teléfono: ${empresaTel} | Correo: ${empresaCorreo}`, 120, y + 17);
+
+                y += 26;
+
+                // Bloque 3
+                let startBlock3Y = y;
+                doc.setFont("helvetica", "bold");
+                doc.setFontSize(8.5);
+                doc.setTextColor(29, 53, 87);
+                
+                let currentY = y + 5;
+                doc.text("DETALLE MÉDICO Y REPOSO", 18, currentY);
+
+                doc.setFont("helvetica", "normal");
+                doc.setFontSize(8);
+                doc.setTextColor(30, 30, 30);
+                currentY += 6;
+                doc.text(`Código CIE-10: ${cie}`, 18, currentY);
+                
+                currentY += 5;
+                let splitDiag = doc.splitTextToSize(`Descripción Diagnóstica: ${diagnostico}`, 170);
+                doc.text(splitDiag, 18, currentY);
+
+                currentY += (splitDiag.length * 3.8) + 2;
+
+                doc.setFont("helvetica", "bold");
+                doc.text("Presenta síntomas (Marcar X)", 105, currentY, { align: "center" });
+                
+                currentY += 5;
+                doc.text("Enfermedad General: (Marcar X)", 18, currentY);
+                if(sintomas === 'SI') {
+                    doc.text("SI    [ X ]                 NO    [   ]", 80, currentY);
+                } else {
+                    doc.text("SI    [   ]                 NO    [ X ]", 80, currentY);
+                }
+
+                currentY += 5;
+                doc.setFillColor(242, 242, 242);
+                doc.rect(16, currentY - 3.5, 178, 6.5, 'F');
+                
+                doc.setFont("helvetica", "normal");
+                let splitSintDesc = doc.splitTextToSize(sintomasDesc, 170);
+                doc.text(splitSintDesc, 105, currentY, { align: "center" });
+                
+                currentY += (splitSintDesc.length * 3.8) + 1;
+                doc.setFont("helvetica", "bold");
+                doc.text(`FIS: ${fisStr}`, 105, currentY, { align: "center" });
+
+                currentY += 6;
+
+                const diasLetras = numeroALetras(diasNum);
+                
+                doc.setFont("helvetica", "bold");
+                doc.text(`Total de días concedidos: ${diasNum} (${diasLetras.toUpperCase()})`, 18, currentY);
+                doc.text(marcaReposo, 120, currentY);
+                
+                doc.setFont("helvetica", "normal");
+                doc.text(`Desde: ${inicioLetras}`, 18, currentY + 4.5);
+                doc.text(`Hasta: ${finLetras}`, 18, currentY + 9);
+                
+                currentY += 13;
+
+                let block3Height = currentY - startBlock3Y;
+                doc.setFillColor(240, 244, 248);
+                doc.rect(15, startBlock3Y, 180, block3Height, 'F');
+                doc.rect(15, startBlock3Y, 180, block3Height, 'S');
+
+                y = startBlock3Y;
+                doc.setFont("helvetica", "bold");
+                doc.setFontSize(8.5);
+                doc.setTextColor(29, 53, 87);
+                doc.text("DETALLE MÉDICO Y REPOSO", 18, y + 5);
+                doc.setFont("helvetica", "normal");
+                doc.setFontSize(8);
+                doc.setTextColor(30, 30, 30);
+                doc.text(`Código CIE-10: ${cie}`, 18, y + 11);
+                doc.text(splitDiag, 18, y + 16);
+                
+                let subY = y + 16 + (splitDiag.length * 3.8) + 2;
+                doc.setFont("helvetica", "bold");
+                doc.text("Presenta síntomas (Marcar X)", 105, subY, { align: "center" });
+                doc.text("Enfermedad General: (Marcar X)", 18, subY + 5);
+                if(sintomas === 'SI') {
+                    doc.text("SI    [ X ]                 NO    [   ]", 80, subY + 5);
+                } else {
+                    doc.text("SI    [   ]                 NO    [ X ]", 80, subY + 5);
+                }
+                
+                doc.setFillColor(230, 235, 242);
+                doc.rect(16, subY + 6.5, 178, (splitSintDesc.length * 3.8) + 2, 'F');
+                doc.setFont("helvetica", "normal");
+                doc.text(splitSintDesc, 105, subY + 10, { align: "center" });
+                
+                subY += 10 + (splitSintDesc.length * 3.8) + 1;
+                doc.setFont("helvetica", "bold");
+                doc.text(`FIS: ${fisStr}`, 105, subY, { align: "center" });
+                
+                subY += 6;
+                doc.text(`Total de días concedidos: ${diasNum} (${diasLetras.toUpperCase()})`, 18, subY);
+                doc.text(marcaReposo, 120, subY);
+                doc.setFont("helvetica", "normal");
+                doc.text(`Desde: ${inicioLetras}`, 18, subY + 4.5);
+                doc.text(`Hasta: ${finLetras}`, 18, subY + 9);
+
+                y = startBlock3Y + block3Height + 6;
+
+                if (indicaciones) {
+                    doc.setFont("helvetica", "bold");
+                    doc.setFontSize(8.5);
+                    doc.setTextColor(29, 53, 87);
+                    doc.text("Indicaciones Médicas:", 15, y);
+                    y += 4.5;
+                    doc.setFont("helvetica", "normal");
+                    doc.setFontSize(8);
+                    doc.setTextColor(30, 30, 30);
+                    let splitInd = doc.splitTextToSize(indicaciones, 180);
+                    doc.text(splitInd, 15, y);
+                    y += (splitInd.length * 3.8) + 6;
+                } else {
+                    y += 4;
+                }
+
+                doc.setFont("helvetica", "normal");
+                doc.setFontSize(8);
+                doc.setTextColor(50, 50, 50);
+                let pCierre = "El presente certificado se expide a solicitud del interesado para los fines legales e institucionales del IESS/MSP correspondientes.";
+                let splitCierre = doc.splitTextToSize(pCierre, 180);
+                doc.text(splitCierre, 15, y);
+
+                let firmaY = Math.max(y + 28, 245); 
+
+                if (firmaY > 252) {
+                    firmaY = 252; 
+                }
+
+                doc.setLineWidth(0.4);
+                doc.setDrawColor(150, 150, 150);
+                doc.line(65, firmaY, 145, firmaY);
+                
+                doc.setFont("helvetica", "bold");
+                doc.setFontSize(8.5);
+                doc.setTextColor(21, 37, 61);
+                doc.text("FIRMA DE RESPONSABILIDAD", 105, firmaY + 4.5, { align: "center" });
+                
+                if (typeof medNombre !== 'undefined') {
+                    doc.text(medNombre, 105, firmaY + 9, { align: "center" });
+                }
+                
+                doc.setFont("helvetica", "normal");
+                doc.setFontSize(7.5);
+                doc.setTextColor(50, 50, 50);
+                doc.text(`Cédula de Identidad: ${medCedula}`, 105, firmaY + 13.5, { align: "center" });
+                doc.text(`Especialidad: ${medEspecialidad}`, 105, firmaY + 17.5, { align: "center" });
+                
+                if (typeof medMsp !== 'undefined') {
+                    doc.text(`Reg. MSP / SENESCYT: ${medMsp}`, 105, firmaY + 21.5, { align: "center" });
+                }
+
+                certificadosBD.push({ fecha, cedula, nombres, tipo: "FORMATO IESS / MSP", cie, detalle: `${diasNum} (${diasLetras}) días` });
+            }
+            // CASO 4: CERTIFICADO OCUPACIONAL
+            else if (tipo === 'ocupacional') {
+                const edad = document.getElementById('certEdadPaciente').value.trim();
+                const empresaCargo = `${document.getElementById('certEmpresa').value.trim()} ${document.getElementById('certCargo').value.trim() ? '/ ' + document.getElementById('certCargo').value.trim() : ''}`;
+                const evalTipo = document.getElementById('certTipoEvaluacion').value;
+                const dictamen = document.getElementById('certDictamenAptitud').value;
+                const observaciones = document.getElementById('certObsAptitud').value;
+
+                doc.setFillColor(29, 53, 87);
+                doc.rect(0, 0, 210, 28, 'F');
+                doc.setFont("helvetica", "bold");
+                doc.setFontSize(13);
+                doc.setTextColor(255, 255, 255);
+                doc.text("CERTIFICADO MÉDICO OCUPACIONAL", 105, 13, { align: "center" });
+                doc.setFontSize(9);
+                doc.setFont("helvetica", "normal");
+                doc.text("Evaluación de Aptitud Médica Integral", 105, 20, { align: "center" });
+
+                let y = 38;
+
+                doc.setFont("helvetica", "bold");
+                doc.setFontSize(9);
+                doc.setTextColor(30, 30, 30);
+                doc.text("Apellidos y Nombres:", 15, y);
+                doc.setFont("helvetica", "normal");
+                doc.text(nombres, 55, y);
+
+                y += 8;
+                doc.setFont("helvetica", "bold");
+                doc.text("Cédula de Identidad:", 15, y);
+                doc.setFont("helvetica", "normal");
+                doc.text(cedula, 55, y);
+
+                y += 8;
+                doc.setFont("helvetica", "bold");
+                doc.text("Edad:", 15, y);
+                doc.setFont("helvetica", "normal");
+                doc.text(edad || "N/A", 30, y);
+
+                doc.setFont("helvetica", "bold");
+                doc.text("Fecha:", 100, y);
+                doc.setFont("helvetica", "normal");
+                doc.text(fecha, 115, y);
+
+                doc.setFont("helvetica", "bold");
+                doc.text("Evaluación:", 150, y);
+                doc.setFont("helvetica", "normal");
+                doc.text(evalTipo, 172, y);
+
+                y += 8;
+                doc.setFont("helvetica", "bold");
+                doc.text("Empresa / Puesto:", 15, y);
+                doc.setFont("helvetica", "normal");
+                doc.text(empresaCargo || "N/A", 55, y);
+
+                y += 14;
+
+                doc.setFont("helvetica", "bold");
+                doc.text("Concepto de Aptitud Médico-Ocupacional:", 15, y);
+                y += 6;
+                doc.setFont("helvetica", "normal");
+                doc.setFontSize(8.5);
+
+                let conceptoTexto = "El suscrito médico general certifica que el/la ciudadano(a) detallado(a) en el presente documento ha sido sometido(a) a una evaluación médica ocupacional integral que incluyó anamnesis, examen físico por sistemas, valoración osteomuscular, además de la debida revisión y análisis de los exámenes de laboratorio clínico y paraclínicos correspondientes.";
+                let splitConc1 = doc.splitTextToSize(conceptoTexto, 180);
+                doc.text(splitConc1, 15, y);
+
+                y += (splitConc1.length * 4.5) + 4;
+
+                let conceptoTexto2 = "Tras la valoración clínica e interpretativa de los exámenes, se determina que el/la trabajador(a) NO PRESENTA patologías activas ni limitaciones físicas o mentales que contraindiquen la ejecución de las actividades inherentes al puesto de trabajo al cual aspira o desempeña.";
+                if (dictamen.includes("LIMITACIONES") || dictamen.includes("NO APTO")) {
+                    conceptoTexto2 = "Tras la valoración clínica e interpretativa de los exámenes, se determinan observaciones específicas o contraindicaciones relativas/absolutas descritas a continuación para las actividades del puesto.";
+                }
+                let splitConc2 = doc.splitTextToSize(conceptoTexto2, 180);
+                doc.text(splitConc2, 15, y);
+
+                y += (splitConc2.length * 4.5) + 8;
+
+                doc.setFillColor(240, 248, 245);
+                doc.setDrawColor(42, 157, 143);
+                doc.rect(15, y, 180, 15, 'DF');
+
+                doc.setFont("helvetica", "bold");
+                doc.setFontSize(11);
+                doc.setTextColor(42, 157, 143);
+                doc.text(`DICTAMEN DE APTITUD:  ${dictamen}`, 105, y + 10, { align: "center" });
+
+                y += 24;
+
+                doc.setFont("helvetica", "bold");
+                doc.setFontSize(9);
+                doc.setTextColor(30, 30, 30);
+                doc.text("Observaciones / Restricciones / Validez:", 15, y);
+                y += 6;
+                doc.setFont("helvetica", "normal");
+                doc.setFontSize(8.5);
+                let splitObs = doc.splitTextToSize(observaciones || "Sin observaciones.", 180);
+                doc.text(splitObs, 15, y);
+
+                y = 210;
+                doc.setFont("helvetica", "bold");
+                doc.setFontSize(9.5);
+                doc.setTextColor(29, 53, 87);
+                doc.text("PROFESIONAL RESPONSABLE Y EMISOR:", 15, y);
+
+                y += 20;
+                doc.setLineWidth(0.4);
+                doc.setDrawColor(150, 150, 150);
+                doc.line(15, y, 100, y);
+
+                y += 5;
+                doc.setFont("helvetica", "bold");
+                doc.setFontSize(8.5);
+                doc.setTextColor(30, 30, 30);
+                doc.text(`Médico / Reg.: ${medNombre} - Reg. SENESCYT: ${medMsp}`, 15, y);
+                y += 6;
+                doc.setFont("helvetica", "normal");
+                doc.text("Institución: CENTRO MÉDICO MEDGENERAL.ST", 15, y);
+                y += 6;
+                doc.text(`Fecha de emisión: ${fecha}`, 15, y);
+
+                certificadosBD.push({ fecha, cedula, nombres, tipo: "MÉDICO OCUPACIONAL", cie: dictamen, detalle: evalTipo });
+            }
+
+            doc.save(`Certificado_${tipo.toUpperCase()}_${cedula}.pdf`);
+            renderizarCertificados();
+            alert("¡Certificado generado y descargado exitosamente!");
+        }
+
+        function renderizarCertificados() {
+            const tbody = document.getElementById('tablaCertificadosBody');
+            if(!tbody) return;
+            tbody.innerHTML = '';
+            certificadosBD.forEach(c => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${c.fecha}</td>
+                    <td>${c.cedula}</td>
+                    <td>${c.nombres}</td>
+                    <td>${c.tipo}</td>
+                    <td>${c.cie}</td>
+                    <td>${c.detalle}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+            if (document.getElementById('statCertificados')) {
+                document.getElementById('statCertificados').innerText = certificadosBD.length;
+            }
+        }
+
+        function generarPDFReceta(e) {
+        e.preventDefault();
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+
+        // 1. Capturar datos del paciente y receta
+        const fecha = document.getElementById('recFecha').value;
+        const cedula = document.getElementById('recCedula').value;
+        const nombres = document.getElementById('recNombres').value;
+        const edad = document.getElementById('recEdad').value;
+        const alergias = document.getElementById('recAlergias').value;
+        const diagnostico = document.getElementById('recDiagnostico').value;
+        const indicaciones = document.getElementById('recIndicaciones').value;
+
+        // 2. Capturar datos del profesional emisor desde los inputs del formulario
+        const emisorNombres = document.getElementById('medNombres').value;
+        const emisorEspecialidad = document.getElementById('medEspecialidad').value;
+        const emisorCedula = document.getElementById('medCedula').value;
+        const emisorContacto = document.getElementById('medDireccionContacto').value;
+
+        // Encabezado del PDF
+        doc.setFillColor(29, 53, 87);
+        doc.rect(0, 0, 210, 28, 'F');
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(15);
+        doc.setTextColor(255, 255, 255);
+        doc.text("RECETARIO MÉDICO - ESPECIALIDADES MÉDICAS", 15, 17);
+
+        // Cuadro de información del paciente
+        doc.setFillColor(248, 249, 250);
+        doc.roundedRect(15, 34, 180, 28, 2, 2, 'F');
+        doc.setFontSize(8.5);
+        doc.setTextColor(30, 30, 30);
+        doc.setFont("helvetica", "bold");
+        doc.text(`Paciente:`, 20, 42); doc.setFont("helvetica", "normal"); doc.text(nombres, 40, 42);
+        doc.setFont("helvetica", "bold");
+        doc.text(`Cédula:`, 130, 42); doc.setFont("helvetica", "normal"); doc.text(cedula, 150, 42);
+
+        doc.setFont("helvetica", "bold");
+        doc.text(`Fecha:`, 20, 49); doc.setFont("helvetica", "normal"); doc.text(fecha, 40, 49);
+        doc.setFont("helvetica", "bold");
+        doc.text(`Edad:`, 80, 49); doc.setFont("helvetica", "normal"); doc.text(edad || 'N/D', 95, 49);
+        doc.setFont("helvetica", "bold");
+        doc.text(`Alergias:`, 130, 49); doc.setFont("helvetica", "normal"); doc.text(alergias, 150, 49);
+
+        doc.setFont("helvetica", "bold");
+        doc.text(`Diagnóstico:`, 20, 56); doc.setFont("helvetica", "normal"); doc.text(diagnostico || 'N/D', 45, 56);
+
+        // Tabla de Prescripción Farmacológica
+        let y = 70;
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(10);
+        doc.setTextColor(29, 53, 87);
+        doc.text("PRESCRIPCIÓN FARMACOLÓGICA (Rp.)", 15, y);
+        y += 6;
+
+        doc.setFillColor(230, 235, 240);
+        doc.rect(15, y, 180, 7, 'F');
+        doc.setFontSize(8);
+        doc.setFont("helvetica", "bold");
+        doc.text("Medicamento / Presentación", 18, y + 5);
+        doc.text("Dosis", 100, y + 5);
+        doc.text("Frecuencia", 135, y + 5);
+        doc.text("Duración", 170, y + 5);
+
+        y += 11;
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(8.5);
+
+        const medItems = document.querySelectorAll('.med-item');
+        let totalMedicamentos = 0;
+
+        medItems.forEach(item => {
+            const nombre = item.querySelector('.med-nombre').value;
+            const dosis = item.querySelector('.med-dosis').value;
+            const frec = item.querySelector('.med-frecuencia').value;
+            const duracion = item.querySelector('.med-duracion').value;
+
+            doc.text(nombre, 18, y);
+            doc.text(dosis, 100, y);
+            doc.text(frec, 135, y);
+            doc.text(duracion, 170, y);
+            y += 7;
+            totalMedicamentos++;
+        });
+
+        // Indicaciones generales
+        y += 8;
+        if (indicaciones) {
+            doc.setFont("helvetica", "bold");
+            doc.setFontSize(9.5);
+            doc.setTextColor(29, 53, 87);
+            doc.text("INDICACIONES Y CUIDADOS GENERALES", 15, y);
+            y += 6;
+            doc.setFont("helvetica", "normal");
+            doc.setFontSize(8.5);
+            doc.setTextColor(30, 30, 30);
+            let splitInd = doc.splitTextToSize(indicaciones, 180);
+            doc.text(splitInd, 15, y);
+        }
+
+        // 3. Sección de Firma y Sello primero, y los datos del profesional debajo
+        let yFirma = 220;
+
+        // Línea de firma y etiqueta
+        doc.setLineWidth(0.4);
+        doc.setDrawColor(200, 200, 200);
+        doc.line(70, yFirma, 140, yFirma);
+
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(8.5);
+        doc.setTextColor(29, 53, 87);
+        doc.text("Firma y Sello del Profesional", 105, yFirma + 5, { align: "center" });
+
+        // Datos del profesional colocados debajo de la firma
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(9);
+        doc.text(emisorNombres, 105, yFirma + 12, { align: "center" });
+
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(8);
+        doc.setTextColor(50, 50, 50);
+        doc.text(`${emisorEspecialidad} - C.I.: ${emisorCedula}`, 105, yFirma + 17, { align: "center" });
+        doc.text(emisorContacto, 105, yFirma + 22, { align: "center" });
+
+        // Guardar documento
+        doc.save(`Receta_Medica_${cedula}.pdf`);
+
+        // Actualización de estadísticas y memoria del dashboard
+        if (typeof recetasBD !== 'undefined') {
+            recetasBD.push({ fecha, cedula, nombres, diagnostico, total: totalMedicamentos });
+            const statRecetasEl = document.getElementById('statRecetas');
+            if (statRecetasEl) {
+                statRecetasEl.innerText = recetasBD.length;
+            }
+        }
+
+        alert("¡Receta médica (PDF) generada correctamente!");
+    }
+        
+        const profesionalesData = {
+    yadira: {
+        nombres: "Fta. Yadira Estrella",
+        cedula: "111111",
+        especialidad: "Fisioterapeuta",
+        registro: "N/D",
+        contacto: "Tel: 0995675273 - Dir: Solanda sector 2 Benedicto rincon Oe4j s17"
+    },
+    zulay: {
+        nombres: "Zulay Estrella",
+        cedula: "111111",
+        especialidad: "Podóloga",
+        registro: "N/D",
+        contacto: "Tel: 0995225328 - Dir: Solanda sector 2"
+    },
+    bryan: {
+        nombres: "Dr. Bryan Celi",
+        cedula: "sssss",
+        especialidad: "Médico General",
+        registro: "N/D",
+        contacto: "Tel: 0995315062 - Dir: Biosalud la Magdalena, Caranqui y Maria Duchicela frente al centro de salud"
+    },
+    liliana: {
+        nombres: "DRA. LILIANA ELIZABETH SALAZAR LLUSCA",
+        cedula: "1724443948",
+        especialidad: "Médico General",
+        registro: "N/D",
+        contacto: "Tel: 0995662181 / Email: li_li.eli@hotmail.com - Dir: Biosalud la Magdalena, Caranqui y Maria Duchicela frente al centro de salud"
+    }
+};
+
+function cargarDatosProfesional() {
+    const seleccion = document.getElementById('selectMedicoPrescriptor').value;
+    const prof = profesionalesData[seleccion];
+
+    if (prof) {
+        document.getElementById('medNombres').value = prof.nombres;
+        document.getElementById('medCedula').value = prof.cedula;
+        document.getElementById('medEspecialidad').value = prof.especialidad;
+        document.getElementById('medRegistro').value = prof.registro;
+        document.getElementById('medDireccionContacto').value = prof.contacto;
+    } else {
+        // Limpiar campos si no hay selección válida
+        document.getElementById('medNombres').value = '';
+        document.getElementById('medCedula').value = '';
+        document.getElementById('medEspecialidad').value = '';
+        document.getElementById('medRegistro').value = '';
+        document.getElementById('medDireccionContacto').value = '';
+    }
+}
+
+        function buscarPaciente() {
+            const query = document.getElementById('searchInput').value.trim();
+            if(query) {
+                buscarPacientePorCedulaDB(query);
+            } else {
+                alert("Por favor ingrese un número de cédula o nombre para buscar.");
+            }
+        }
+    </script>
+</body>
+</html>
