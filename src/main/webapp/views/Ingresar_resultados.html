@@ -15,8 +15,7 @@
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <!-- Librería JsBarcode para generar códigos de barras automáticamente -->
     <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
-    <!-- Librería html2pdf para exportar contenedores a PDF -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    
     <style>
        
     </style>
@@ -2459,11 +2458,6 @@
                             <i class="bi bi-envelope-fill"></i>
                         </button>
                     </div>
-                    <div id="pedidoContainer">
-                    <button type="button" class="btn btn-danger btn-sm" onclick="descargarPDF()">
-                        <i class="bi bi-file-earmark-pdf"></i> Descargar PDF
-                    </button>
-                        </div>
                     <div class="divider"></div>
                     <!-- Toggle Firmas Digitales / Manuales -->
                     <button type="button" id="btnToggleFirmas" onclick="toggleFirmas()" class="action-btn btn-signatures active" title="Firmas Digitales (Activo)">
@@ -3054,35 +3048,6 @@ async function descargarPDFResultados() {
     });
 }
 
-function descargarPDF() {
-    console.log("Iniciando descarga de PDF..."); // Esto debe salir en la consola (F12)
-    
-    const elemento = document.getElementById('pedidoContainer');
-    
-    if (!elemento) {
-        alert("Error: No se encontró el contenedor 'pedidoContainer'. Revisa el ID en tu HTML.");
-        return;
-    }
-
-    const opciones = {
-        margin:       [10, 10, 10, 10],
-        filename:     'resultado_examen.pdf',
-        image:        { type: 'jpeg', quality: 0.98 },
-        html2canvas:  { scale: 2, useCORS: true },
-        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
-    };
-
-    // Ejecutar html2pdf con captura de errores
-    html2pdf().from(elemento).set(opciones).save()
-        .then(() => {
-            console.log("PDF generado con éxito.");
-        })
-        .catch(err => {
-            console.error("Error al generar el PDF:", err);
-            alert("Hubo un error al generar el PDF. Revisa la consola.");
-        });
-}
-        
 document.addEventListener("DOMContentLoaded", () => {
     inicializarSeccionesColapsables();
 });
