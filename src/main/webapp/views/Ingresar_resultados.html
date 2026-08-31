@@ -3052,6 +3052,22 @@ async function descargarPDFResultados() {
     });
 }
 
+function descargarPDF() {
+    const elemento = document.getElementById('pedidoContainer');
+    
+    // Opciones de configuración para el PDF
+    const opciones = {
+        margin:       [5, 5, 5, 5], // Márgenes en mm
+        filename:     'resultado_examen_' + document.getElementById('idOrden').value + '.pdf',
+        image:        { type: 'jpeg', quality: 0.98 },
+        html2canvas:  { scale: 2, useCORS: true, logging: true },
+        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    };
+
+    // Generar y descargar el PDF
+    html2pdf().from(elemento).set(opciones).save();
+}
+        
 document.addEventListener("DOMContentLoaded", () => {
     inicializarSeccionesColapsables();
 });
