@@ -4,6 +4,6 @@
     "builder": "Nixpacks"
   },
   "deploy": {
-    "startCommand": "mvn clean package"
+    "restartPolicyType": "ON_FAILURE"
   }
 }
