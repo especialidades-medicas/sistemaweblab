@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generador de Turno de Cita Médica</title>
+
+    <!-- Librería para generar PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        body {
+            background-color: #f4f6f9;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+
+        /* Formulario de Entrada */
+        .form-card {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .form-card h2 {
+            margin-top: 0;
+            color: #1a4a75;
+            font-size: 1.2rem;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 8px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 12px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            font-size: 0.85rem;
+            font-weight: bold;
+            margin-bottom: 4px;
+        }
+
+        .form-group input, .form-group select {
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 0.9rem;
+        }
+
+        .checkbox-group {
+            grid-column: 1 / -1;
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-top: 8px;
+        }
+
+        .checkbox-group label {
+            font-weight: normal;
+            font-size: 0.9rem;
+            cursor: pointer;
+        }
+
+        .actions-bar {
+            margin-top: 15px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 10px 18px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-print { background-color: #0d6efd; color: white; }
+        .btn-pdf { background-color: #198754; color: white; }
+        .btn:hover { opacity: 0.9; }
+
+        /* Plantilla del Documento (Ticket) */
+        .ticket-wrapper {
+            background: #fff;
+            padding: 25px 30px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            width: 100%;
+            background-color: #ffffff;
+        }
+
+        .ticket-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            border-bottom: 1px solid #333;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+        }
+
+        .logo-box img {
+            max-height: 75px;
+            width: auto;
+            object-fit: contain;
+        }
+
+        .header-titles {
+            text-align: center;
+            flex-grow: 1;
+        }
+
+        .header-titles h1 {
+            margin: 0;
+            font-size: 1.5rem;
+            letter-spacing: 1px;
+        }
+
+        .header-titles h2 {
+            margin: 5px 0 0 0;
+            font-size: 1.2rem;
+            letter-spacing: 0.5px;
+        }
+
+        .header-meta {
+            text-align: right;
+            font-size: 0.95rem;
+        }
+
+        .price-badge {
+            font-size: 1.3rem;
+            font-weight: bold;
+            border: 2px solid #000;
+            border-radius: 50%;
+            padding: 4px 12px;
+            display: inline-block;
+            margin-bottom: 5px;
+        }
+
+        /* Datos del Paciente */
+        .patient-info {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 8px 15px;
+            font-size: 0.95rem;
+            margin-bottom: 12px;
+        }
+
+        .line-field {
+            border-bottom: 1px dashed #000;
+            font-weight: bold;
+            padding-left: 5px;
+        }
+
+        /* Servicios */
+        .services-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 15px 0;
+            font-size: 0.9rem;
+            font-weight: bold;
+        }
+
+        .service-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .checkbox-box {
+            width: 16px;
+            height: 16px;
+            border: 2px solid #000;
+            border-radius: 3px;
+            display: inline-block;
+            text-align: center;
+            line-height: 14px;
+            font-size: 12px;
+        }
+
+        /* Consentimiento Informado */
+        .consent-section {
+            margin-top: 15px;
+            border-top: 1px solid #000;
+            padding-top: 10px;
+        }
+
+        .consent-title {
+            text-align: center;
+            font-weight: bold;
+            font-size: 0.85rem;
+            margin-bottom: 6px;
+        }
+
+        .consent-text {
+            font-size: 0.72rem;
+            line-height: 1.35;
+            text-align: justify;
+            margin-bottom: 6px;
+        }
+
+        /* Firmas */
+        .signatures-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-top: 35px;
+            padding: 0 20px;
+        }
+
+        .signature-box {
+            text-align: center;
+            width: 220px;
+        }
+
+        .signature-line {
+            border-top: 1px dashed #000;
+            margin-top: 10px;
+            padding-top: 4px;
+            font-size: 0.85rem;
+            font-weight: bold;
+        }
+
+        .signature-img {
+            max-height: 65px;
+            margin-bottom: -10px;
+        }
+
+        /* REGLAS DE IMPRESIÓN (Oculta el formulario al imprimir) */
+        @media print {
+            body {
+                background: none;
+                padding: 0;
+            }
+            .form-card, .actions-bar {
+                display: none !important;
+            }
+            .container {
+                max-width: 100%;
+                margin: 0;
+            }
+            .ticket-wrapper {
+                border: none;
+                box-shadow: none;
+                padding: 10mm;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- FORMULARIO DE INGRESO DE DATOS -->
+    <div class="form-card">
+        <h2>Ingreso de Datos - Turno Cita Médica</h2>
+        <div class="form-grid">
+            <div class="form-group">
+                <label>N° Turno:</label>
+                <input type="text" id="inTurno" value="2" oninput="actualizarDocumento()">
+            </div>
+            <div class="form-group">
+                <label>Valor ($):</label>
+                <input type="text" id="inPrecio" value="23.00" oninput="actualizarDocumento()">
+            </div>
+            <div class="form-group">
+                <label>Fecha:</label>
+                <input type="date" id="inFecha" onchange="actualizarDocumento()">
+            </div>
+            <div class="form-group">
+                <label>Hora:</label>
+                <input type="time" id="inHora" value="09:00" onchange="actualizarDocumento()">
+            </div>
+
+            <div class="form-group" style="grid-column: span 2;">
+                <label>Paciente:</label>
+                <input type="text" id="inPaciente" placeholder="Nombres y Apellidos" oninput="actualizarDocumento()">
+            </div>
+            <div class="form-group">
+                <label>Edad:</label>
+                <input type="text" id="inEdad" placeholder="Ej: 84" oninput="actualizarDocumento()">
+            </div>
+            <div class="form-group">
+                <label>C.I.:</label>
+                <input type="text" id="inCedula" placeholder="Cédula de Identidad" oninput="actualizarDocumento()">
+            </div>
+            <div class="form-group">
+                <label>Teléfono:</label>
+                <input type="text" id="inTelefono" placeholder="Teléfono/Celular" oninput="actualizarDocumento()">
+            </div>
+            <div class="form-group">
+                <label>Examen / Detalle:</label>
+                <input type="text" id="inExamen" placeholder="Ej: Ecografía / Ayuno" oninput="actualizarDocumento()">
+            </div>
+
+            <div class="checkbox-group">
+                <label><input type="checkbox" id="chkEcografia" onchange="actualizarDocumento()" checked> Ecografía</label>
+                <label><input type="checkbox" id="chkRadiografia" onchange="actualizarDocumento()"> Radiografía</label>
+                <label><input type="checkbox" id="chkConsulta" onchange="actualizarDocumento()"> Consulta médica</label>
+                <label><input type="checkbox" id="chkLaboratorio" onchange="actualizarDocumento()"> Laboratorio Cl.</label>
+            </div>
+        </div>
+
+        <div class="actions-bar">
+            <button class="btn btn-print" onclick="window.print()">🖨️ Imprimir Documento</button>
+            <button class="btn btn-pdf" onclick="descargarPDF()">📄 Descargar PDF</button>
+        </div>
+    </div>
+
+    <!-- DOCUMENTO DIGITAL (TICKET) -->
+    <div class="ticket-wrapper" id="documento-imprimir">
+        <div class="ticket-header">
+            <div class="logo-box">
+                <!-- Ruta del Logo principal -->
+                <img src="../img/logFisio2.png" alt="Logo" onerror="this.src='https://via.placeholder.com/120x60?text=LOGO'">
+            </div>
+            <div class="header-titles">
+                <h1>TURNO CITA MEDICA</h1>
+                <h2>CONVENIO BIOSALUD</h2>
+            </div>
+            <div class="header-meta">
+                <div class="price-badge">$ <span id="outPrecio">23.00</span></div>
+                <div><strong>N°</strong> <span id="outTurno" class="line-field" style="padding: 0 10px;">2</span></div>
+                <div style="margin-top: 4px;"><strong>Fecha:</strong> <span id="outFecha" class="line-field">--/--/----</span></div>
+            </div>
+        </div>
+
+        <div class="patient-info">
+            <div style="grid-column: span 2;">
+                <strong>Paciente:</strong> <span id="outPaciente" class="line-field"></span>
+            </div>
+            <div>
+                <strong>Edad:</strong> <span id="outEdad" class="line-field"></span>
+            </div>
+            <div style="grid-column: span 2;">
+                <strong>C.I.:</strong> <span id="outCedula" class="line-field"></span>
+                <strong style="margin-left: 15px;">Telf.:</strong> <span id="outTelefono" class="line-field"></span>
+            </div>
+            <div>
+                <strong>Hora:</strong> <span id="outHora" class="line-field">09:00</span>
+            </div>
+            <div style="grid-column: 1 / -1;">
+                <strong>Examen:</strong> <span id="outExamen" class="line-field"></span>
+            </div>
+        </div>
+
+        <div class="services-row">
+            <div class="service-item">
+                <span class="checkbox-box" id="boxEcografia">✓</span> Ecografía
+            </div>
+            <div class="service-item">
+                <span class="checkbox-box" id="boxRadiografia"></span> Radiografía
+            </div>
+            <div class="service-item">
+                <span class="checkbox-box" id="boxConsulta"></span> Consulta médica
+            </div>
+            <div class="service-item">
+                <span class="checkbox-box" id="boxLaboratorio"></span> Laboratorio Cl.
+            </div>
+        </div>
+
+        <div class="consent-section">
+            <div class="consent-title">CONSENTIMIENTO INFORMADO DEL PACIENTE</div>
+            <div class="consent-text">
+                EL Profesional ha informado motivos y propósitos del tratamiento de mi enfermedad me han explicado las actividades que se van a realizar durante el examen. Consentimiento a que se realicen procedimientos, diagnósticos y tratamientos necesarios de mi enfermedad. Autorizo el traslado a la unidad de convenio.
+            </div>
+            <div class="consent-text">
+                He comprendido los riesgos y beneficios determinadas al tratamiento me han informado que existen garantías y respeto a mi intimidad, a mis creencias y a la confidencialidad de la información.
+            </div>
+            <div class="consent-text" style="font-weight: bold; margin-top: 4px;">
+                Tengo el derecho a anular este consentimiento informado si lo veo necesario.
+            </div>
+        </div>
+
+        <div class="signatures-container">
+            <div class="signature-box">
+                <div style="height: 55px;"></div>
+                <div class="signature-line">Firma del Paciente</div>
+            </div>
+
+            <div class="signature-box">
+                <!-- Rutas relativas de firma y sello -->
+                <img src="firma_activa-.png" class="signature-img" alt="Firma Autorizada" onerror="this.src='firma_activa2.png'; this.onerror=null;">
+                <div class="signature-line">Firma Autorizacion</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Establecer fecha de hoy por defecto al cargar
+    document.addEventListener("DOMContentLoaded", () => {
+        const hoy = new Date().toISOString().split('T')[0];
+        document.getElementById("inFecha").value = hoy;
+        actualizarDocumento();
+    });
+
+    // Actualiza la plantilla en tiempo real al escribir
+    function actualizarDocumento() {
+        document.getElementById("outTurno").innerText = document.getElementById("inTurno").value || "----";
+        document.getElementById("outPrecio").innerText = document.getElementById("inPrecio").value || "0.00";
+        
+        // Formatear fecha
+        const fechaVal = document.getElementById("inFecha").value;
+        if(fechaVal) {
+            const partes = fechaVal.split('-');
+            document.getElementById("outFecha").innerText = `${partes[2]}-${partes[1]}-${partes[0]}`;
+        } else {
+            document.getElementById("outFecha").innerText = "--/--/----";
+        }
+
+        document.getElementById("outHora").innerText = document.getElementById("inHora").value || "--:--";
+        document.getElementById("outPaciente").innerText = document.getElementById("inPaciente").value;
+        document.getElementById("outEdad").innerText = document.getElementById("inEdad").value;
+        document.getElementById("outCedula").innerText = document.getElementById("inCedula").value;
+        document.getElementById("outTelefono").innerText = document.getElementById("inTelefono").value;
+        document.getElementById("outExamen").innerText = document.getElementById("inExamen").value;
+
+        // Checkboxes de servicios
+        document.getElementById("boxEcografia").innerText = document.getElementById("chkEcografia").checked ? "✓" : "";
+        document.getElementById("boxRadiografia").innerText = document.getElementById("chkRadiografia").checked ? "✓" : "";
+        document.getElementById("boxConsulta").innerText = document.getElementById("chkConsulta").checked ? "✓" : "";
+        document.getElementById("boxLaboratorio").innerText = document.getElementById("chkLaboratorio").checked ? "✓" : "";
+    }
+
+    // Exportación directa a PDF
+    function descargarPDF() {
+        const elemento = document.getElementById('documento-imprimir');
+        const paciente = document.getElementById('inPaciente').value || 'Paciente';
+        
+        const opciones = {
+            margin:       10,
+            filename:     `Turno_Cita_${paciente.replace(/\s+/g, '_')}.pdf`,
+            image:        { type: 'jpeg', quality: 0.98 },
+            html2canvas:  { scale: 2 },
+            jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+        };
+
+        html2pdf().set(opciones).from(elemento).save();
+    }
+</script>
+
+</body>
+</html>
