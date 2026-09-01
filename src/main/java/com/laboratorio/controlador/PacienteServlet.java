@@ -29,14 +29,19 @@ public class PacienteServlet extends HttpServlet {
         response.setContentType("application/json;charset=UTF-8");
         String accion = request.getParameter("accion");
         
-        try {
+        try (Connection con = Conexion.getConnection()) {
+            if (con == null) {
+                response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                response.getWriter().write("{\"error\": \"No se pudo establecer conexión con la base de datos.\"}");
+                return;
+            }
+
             // 1. BUSCAR PACIENTE POR CÉDULA
             if ("buscar".equals(accion)) {
                 String cedula = request.getParameter("cedula");
                 String sql = "SELECT * FROM pacientes WHERE cedula = ?";
                 
-                try (Connection con = Conexion.getConnection();
-                     PreparedStatement ps = con.prepareStatement(sql)) {
+                try (PreparedStatement ps = con.prepareStatement(sql)) {
                     ps.setString(1, cedula);
                     try (ResultSet rs = ps.executeQuery()) {
                         if (rs.next()) {
@@ -51,12 +56,11 @@ public class PacienteServlet extends HttpServlet {
                 return;
             }
             
-            // 2. LISTAR TODOS LOS PACIENTES (Para la tabla)
+            // 2. LISTAR TODOS LOS PACIENTES
             List<Paciente> lista = new ArrayList<>();
             String sql = "SELECT * FROM pacientes";
             
-            try (Connection con = Conexion.getConnection();
-                 PreparedStatement ps = con.prepareStatement(sql);
+            try (PreparedStatement ps = con.prepareStatement(sql);
                  ResultSet rs = ps.executeQuery()) {
                 
                 while (rs.next()) {
@@ -66,10 +70,10 @@ public class PacienteServlet extends HttpServlet {
             
             response.getWriter().write(gson.toJson(lista));
 
-        } catch (SQLException e) {
+        } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Error en doGet: ControladorPacientes", e);
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            response.getWriter().write("[]");
+            response.getWriter().write("{\"error\": \"Error interno en el servidor: " + e.getMessage() + "\"}");
         }
     }
 
@@ -80,52 +84,53 @@ public class PacienteServlet extends HttpServlet {
         
         String accion = request.getParameter("accion");
 
-        // ACCIÓN DE ELIMINAR PACIENTE
-        if ("eliminar".equals(accion)) {
-            String cedulaEliminar = request.getParameter("cedula");
-            if (cedulaEliminar == null || cedulaEliminar.trim().isEmpty()) {
-                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                response.getWriter().write("{\"error\": \"La cédula es obligatoria para eliminar.\"}");
+        try (Connection con = Conexion.getConnection()) {
+            if (con == null) {
+                response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                response.getWriter().write("{\"error\": \"No se pudo conectar a la base de datos.\"}");
                 return;
             }
 
-            String sqlDelete = "DELETE FROM pacientes WHERE cedula = ?";
-            try (Connection con = Conexion.getConnection();
-                 PreparedStatement ps = con.prepareStatement(sqlDelete)) {
-                ps.setString(1, cedulaEliminar.trim());
-                int filasAfectadas = ps.executeUpdate();
-                
-                if (filasAfectadas > 0) {
-                    response.getWriter().write("{\"status\": \"OK\"}");
-                } else {
-                    response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-                    response.getWriter().write("{\"error\": \"Paciente no encontrado para eliminar.\"}");
+            // ACCIÓN DE ELIMINAR PACIENTE
+            if ("eliminar".equals(accion)) {
+                String cedulaEliminar = request.getParameter("cedula");
+                if (cedulaEliminar == null || cedulaEliminar.trim().isEmpty()) {
+                    response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                    response.getWriter().write("{\"error\": \"La cédula es obligatoria para eliminar.\"}");
+                    return;
                 }
-            } catch (SQLException e) {
-                LOGGER.log(Level.SEVERE, "Error al eliminar paciente", e);
-                response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                response.getWriter().write("{\"error\": \"Error al eliminar: " + e.getMessage() + "\"}");
+
+                String sqlDelete = "DELETE FROM pacientes WHERE cedula = ?";
+                try (PreparedStatement ps = con.prepareStatement(sqlDelete)) {
+                    ps.setString(1, cedulaEliminar.trim());
+                    int filasAfectadas = ps.executeUpdate();
+                    
+                    if (filasAfectadas > 0) {
+                        response.getWriter().write("{\"status\": \"OK\"}");
+                    } else {
+                        response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                        response.getWriter().write("{\"error\": \"Paciente no encontrado para eliminar.\"}");
+                    }
+                }
+                return;
             }
-            return;
-        }
 
-        String cedula = request.getParameter("patCedula");
-        String nombres = request.getParameter("patNombre");
+            // GUARDAR / ACTUALIZAR PACIENTE
+            String cedula = request.getParameter("patCedula");
+            String nombres = request.getParameter("patNombre");
 
-        // Validación estricta para Guardar o Actualizar
-        if (cedula == null || cedula.trim().isEmpty() || nombres == null || nombres.trim().isEmpty()) {
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            response.getWriter().write("{\"error\": \"La cédula y los nombres son obligatorios.\"}");
-            return;
-        }
+            if (cedula == null || cedula.trim().isEmpty() || nombres == null || nombres.trim().isEmpty()) {
+                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                response.getWriter().write("{\"error\": \"La cédula y los nombres son obligatorios.\"}");
+                return;
+            }
 
-        String fechaNacimiento = request.getParameter("patNacimiento");
-        String genero = request.getParameter("patGenero");
-        String telefono = request.getParameter("patTelefono");
-        String correo = request.getParameter("patCorreo");
-        String direccion = request.getParameter("patDireccion");
+            String fechaNacimiento = request.getParameter("patNacimiento");
+            String genero = request.getParameter("patGenero");
+            String telefono = request.getParameter("patTelefono");
+            String correo = request.getParameter("patCorreo");
+            String direccion = request.getParameter("patDireccion");
 
-        try (Connection con = Conexion.getConnection()) {
             String sql = "INSERT INTO pacientes (cedula, nombres, fecha_nacimiento, genero, telefono, correo, direccion) " +
                          "VALUES (?, ?, ?, ?, ?, ?, ?) " +
                          "ON DUPLICATE KEY UPDATE " +
@@ -154,17 +159,14 @@ public class PacienteServlet extends HttpServlet {
                 ps.executeUpdate();
                 response.getWriter().write("{\"status\": \"OK\"}");
             }
-            
-        } catch (SQLException e) {
-            LOGGER.log(Level.SEVERE, "Error al procesar paciente", e);
+
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Error en doPost: ControladorPacientes", e);
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            response.getWriter().write("{\"error\": \"Error al procesar: " + e.getMessage() + "\"}");
+            response.getWriter().write("{\"error\": \"Error al procesar la solicitud: " + e.getMessage() + "\"}");
         }
     }
 
-    /**
-     * Método auxiliar para extraer un objeto Paciente desde el ResultSet de manera limpia.
-     */
     private Paciente extraerPaciente(ResultSet rs) throws SQLException {
         Paciente p = new Paciente();
         p.setIdPaciente(rs.getInt("id_paciente"));
@@ -178,9 +180,6 @@ public class PacienteServlet extends HttpServlet {
         return p;
     }
 
-    /**
-     * Método auxiliar para manejar parámetros nulos o vacíos en el PreparedStatement.
-     */
     private void setParamOrNull(PreparedStatement ps, int index, String value) throws SQLException {
         if (value != null && !value.trim().isEmpty()) {
             ps.setString(index, value.trim());
