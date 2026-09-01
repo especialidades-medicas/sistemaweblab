@@ -7,7 +7,9 @@
     <!-- Google Fonts para mejor estética -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <!-- Librería SheetJS (XLSX) para la exportación e importación de archivos Excel -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>   
+    <!-- Librería jsPDF para la exportación de la historia clínica en PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -529,7 +531,8 @@
             </div>
             <nav>
                 <a href="#" class="nav-item active" onclick="switchTab(event, 'dashboard-view'); toggleSidebarMobile();">📊 Panel Principal</a>
-                <a href="#" class="nav-item" onclick="switchTab(event, 'registro-view'); toggleSidebarMobile();">👥 Registro Pacientes</a>
+                <a href="#" class="nav-item" onclick="switchTab(event, 'pacientes-view'); toggleSidebarMobile();">👥 Registro Pacientes</a>
+                
                 <a href="#" class="nav-item" onclick="switchTab(event, 'pedidos-view'); toggleSidebarMobile();">📋 Pedidos de Exámenes</a>
                 <a href="#" class="nav-item" onclick="switchTab(event, 'resultados-view'); toggleSidebarMobile();">🔬 Resultados de Exámenes</a>
                 <a href="#" class="nav-item" onclick="switchTab(event, 'certificados-view'); toggleSidebarMobile();">📄 Certificados</a>
@@ -608,23 +611,16 @@
                                 <td>02 Ago 2026</td>
                                 <td><span class="status ready">Resultado Listo</span></td>
                                 <td><button class="btn-action">Ver Resultados</button></td>
-                            </tr>
-                            <tr>
-                                <td>Carlos Sánchez</td>
-                                <td>0928374651</td>
-                                <td>Perfil Lipídico, Urea, Creatinina</td>
-                                <td>02 Ago 2026</td>
-                                <td><span class="status process">En Proceso</span></td>
-                                <td><button class="btn-action">Ver Detalles</button></td>
-                            </tr>
+                            </tr>                            
                         </tbody>
                     </table>
                 </div>
             </div>
 
             <!-- VISTA 2: REGISTRO Y GESTIÓN DE PACIENTES -->
-            <div id="registro-view" class="section-view">
+            <div id="pacientes-view" class="section-view">
                 <div class="content-card">
+                    <h2>Gestión de Pacientes (Laboratorio)</h2>                    
                     <h2 id="patientFormTitle">Nuevo Registro de Paciente</h2>
                     <form onsubmit="savePatient(event)">
                         <input type="hidden" id="editPatientIndex" value="-1">
@@ -667,27 +663,31 @@
                             <button type="button" id="btnCancelPatient" onclick="resetPatientForm()" class="btn-delete" style="display: none; padding: 0.7rem 1.5rem; font-size: 0.95rem;">Cancelar</button>
                         </div>
                     </form>
-                </div>
+                </div>               
+                
+                <!-- Tabla para visualizar y gestionar los pacientes registrados -->                
+                        <div class="content-card">
+                                <h2>Listado de Pacientes Registrados</h2>
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Cédula</th>
+                                            <th>Apellidos y Nombres</th>
+                                            <th>Fecha Nacimiento</th>
+                                            <th>Género</th>
+                                            <th>Teléfono</th>
+                                            <th>Correo</th>
+                                            <th>Dirección</th>
+                                            <th>Acciones</th>
+                                        </tr>
+                                    </thead>
 
-                <!-- Tabla para visualizar y gestionar los pacientes registrados -->
-                <div class="content-card">
-                    <h2>Listado de Pacientes Registrados</h2>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Cédula</th>
-                                <th>Apellidos y Nombres</th>
-                                <th>Teléfono</th>
-                                <th>Correo</th>
-                                <th>Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody id="patientTableBody">
-                            <!-- Los pacientes se cargan dinámicamente aquí -->
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+                                    <tbody id="patientTableBody">
+                                        <!-- Los pacientes se cargan dinámicamente aquí -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
 
             <!-- VISTA 3: PEDIDOS DE EXÁMENES -->
             <div id="pedidos-view" class="section-view">
@@ -828,7 +828,7 @@
 
         </div>
     </div>
-
+<script src="../controllers/ingresoPacientes.js"></script>
     <script>
         let entries = JSON.parse(localStorage.getItem("lab_cotizaciones")) || [];
 

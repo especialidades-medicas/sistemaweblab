@@ -466,28 +466,29 @@
             <!-- VISTA 2: PACIENTES -->
             <div id="pacientes-view" class="section-view">
                 <div class="content-card">
-                    <h2 id="patientFormTitle">Registro de Nuevo Paciente</h2>
+                    <h2>Gestión de Pacientes (MEDICINA GENERAL)</h2>                    
+                    <h2 id="patientFormTitle">Nuevo Registro de Paciente</h2>
                     <form onsubmit="savePatient(event)">
                         <input type="hidden" id="editPatientIndex" value="-1">
                         <div class="form-grid">
                             <div class="form-group">
-                                <label>Cédula / Pasaporte *</label>
+                                <label>Cédula / Pasaporte</label>
                                 <input type="text" id="patCedula" placeholder="Ej. 1723456789" required>
                             </div>
                             <div class="form-group">
-                                <label>Apellidos y Nombres *</label>
+                                <label>Apellidos y Nombres</label>
                                 <input type="text" id="patNombre" placeholder="Ej. Pérez Gómez Juan" required>
                             </div>
                             <div class="form-group">
-                                <label>Fecha de Nacimiento *</label>
+                                <label>Fecha de Nacimiento</label>
                                 <input type="date" id="patNacimiento" required>
                             </div>
                             <div class="form-group">
                                 <label>Género</label>
                                 <select id="patGenero">
-                                    <option value="Masculino">Masculino</option>
-                                    <option value="Femenino">Femenino</option>
-                                    <option value="Otro">Otro</option>
+                                    <option>Masculino</option>
+                                    <option>Femenino</option>
+                                    <option>Otro</option>
                                 </select>
                             </div>
                             <div class="form-group">
@@ -504,33 +505,35 @@
                             </div>
                         </div>
                         <div style="display: flex; gap: 10px; margin-top: 15px;">
-                            <button type="submit" id="btnSavePatient" class="btn-action" style="padding: 0.7rem 1.5rem; font-size: 0.95rem;">Guardar Paciente</button>
+                            <button type="submit" id="btnSavePatient" class="btn-action" style="padding: 0.7rem 1.5rem; font-size: 0.95rem;">Guardar y Actualizar Excel</button>
                             <button type="button" id="btnCancelPatient" onclick="resetPatientForm()" class="btn-delete" style="display: none; padding: 0.7rem 1.5rem; font-size: 0.95rem;">Cancelar</button>
                         </div>
                     </form>
                 </div>               
+                
+                <!-- Tabla para visualizar y gestionar los pacientes registrados -->                
+                        <div class="content-card">
+                                <h2>Listado de Pacientes Registrados</h2>
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Cédula</th>
+                                            <th>Apellidos y Nombres</th>
+                                            <th>Fecha Nacimiento</th>
+                                            <th>Género</th>
+                                            <th>Teléfono</th>
+                                            <th>Correo</th>
+                                            <th>Dirección</th>
+                                            <th>Acciones</th>
+                                        </tr>
+                                    </thead>
 
-                <div class="content-card">
-                    <h2>Listado de Pacientes Registrados</h2>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Cédula</th>
-                                <th>Apellidos y Nombres</th>
-                                <th>Nacimiento</th>
-                                <th>Género</th>
-                                <th>Teléfono</th>
-                                <th>Correo</th>
-                                <th>Dirección</th>
-                                <th>Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody id="patientTableBody">
-                            <!-- Se renderiza mediante Javascript -->
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+                                    <tbody id="patientTableBody">
+                                        <!-- Los pacientes se cargan dinámicamente aquí -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
 
             <!-- VISTA 3: CERTIFICADOS MÉDICOS -->
             <div id="certificados-view" class="section-view">
