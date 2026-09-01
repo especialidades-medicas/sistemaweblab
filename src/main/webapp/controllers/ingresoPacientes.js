@@ -283,8 +283,8 @@ async function savePatient(event) {
         formData.append("patCorreo", document.getElementById("patCorreo")?.value.trim().toLowerCase() || "");
         formData.append("patDireccion", document.getElementById("patDireccion")?.value.trim() || "");
 
-        const response = await fetch('/sistemaLaboratorio/ControladorPacientes', {
-            method: 'POST', 
+        const response = await fetch('/ControladorPacientes', {
+            method: 'POST',
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
             body: formData.toString()
         });
@@ -310,7 +310,7 @@ async function renderPatients() {
     if (!tbody) return;
 
     try {
-        const response = await fetch('/sistemaLaboratorio/ControladorPacientes');
+        const response = await fetch('/ControladorPacientes');
         const text = await response.text();
 
         let patientsDB = [];
@@ -370,7 +370,7 @@ async function buscarPacientePorCedulaDB(cedula) {
     if (!cedula || cedula.length < 5) return; 
     
     try {
-        const response = await fetch(`/sistemaLaboratorio/ControladorPacientes?accion=buscar&cedula=${cedula}`);
+        const response = await fetch(`/ControladorPacientes?accion=buscar&cedula=${cedula}`);
         if (response.ok) {
             const paciente = await response.json();
             if (paciente && document.getElementById('patNombre')) {
@@ -389,7 +389,7 @@ async function buscarPacientePorCedulaDB(cedula) {
 
 async function editarPacienteBD(cedula) {
     try {
-        const response = await fetch(`/sistemaLaboratorio/ControladorPacientes?accion=buscar&cedula=${cedula}`);
+        const response = await fetch(`/ControladorPacientes?accion=buscar&cedula=${cedula}`);
         if (response.ok) {
             const paciente = await response.json();
             if (paciente) {
@@ -427,7 +427,7 @@ async function eliminarPacienteBD(cedula) {
         formData.append("accion", "eliminar");
         formData.append("cedula", cedula);
 
-        const response = await fetch('/sistemaLaboratorio/ControladorPacientes', {
+        const response = await fetch('/ControladorPacientes', {
             method: 'POST',
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
             body: formData.toString()
@@ -451,11 +451,10 @@ async function buscarPacienteEnHistoriaClinica(cedula) {
     if (!cedula || cedula.length < 5) return;
     
     try {
-        const response = await fetch(`/sistemaLaboratorio/ControladorPacientes?accion=buscar&cedula=${cedula}`);
+        const response = await fetch(`/ControladorPacientes?accion=buscar&cedula=${cedula}`);
         if (response.ok) {
             const paciente = await response.json();
             if (paciente) {
-                // Rellenar datos del paciente
                 if (document.getElementById('hcNombres')) document.getElementById('hcNombres').value = paciente.nombres || '';
                 if (document.getElementById('hcNacimiento')) document.getElementById('hcNacimiento').value = paciente.fechaNacimiento || '';
                 if (document.getElementById('hcSexo')) document.getElementById('hcSexo').value = paciente.genero || 'Masculino';
@@ -463,7 +462,6 @@ async function buscarPacienteEnHistoriaClinica(cedula) {
                 if (document.getElementById('hcEmail')) document.getElementById('hcEmail').value = paciente.correo || '';
                 if (document.getElementById('hcDireccion')) document.getElementById('hcDireccion').value = paciente.direccion || '';
                 
-                // Cálculo automático de la edad usando la función modular
                 if (document.getElementById('hcEdad')) {
                     document.getElementById('hcEdad').value = paciente.fechaNacimiento ? calcularEdad(paciente.fechaNacimiento) : '';
                 }
@@ -474,12 +472,11 @@ async function buscarPacienteEnHistoriaClinica(cedula) {
     }
 }
 
-
 async function buscarPacienteEnCertificados(cedula) {
     if (!cedula || cedula.length < 5) return;
     
     try {
-        const response = await fetch(`/sistemaLaboratorio/ControladorPacientes?accion=buscar&cedula=${cedula}`);
+        const response = await fetch(`/ControladorPacientes?accion=buscar&cedula=${cedula}`);
         if (response.ok) {
             const paciente = await response.json();
             if (paciente) {
@@ -499,11 +496,9 @@ function calcularEdad(fechaNacimientoStr) {
 
     let nac;
     if (fechaNacimientoStr.includes('/')) {
-        // Formato DD/MM/YYYY (ejemplo: 15/08/2026)
         const partes = fechaNacimientoStr.split('/');
         nac = new Date(partes[2], partes[1] - 1, partes[0]);
     } else {
-        // Formato YYYY-MM-DD (estándar HTML input date)
         const partes = fechaNacimientoStr.split('-');
         nac = new Date(partes[0], partes[1] - 1, partes[2]);
     }
@@ -531,8 +526,6 @@ function actualizarCampoEdad(idFechaInput, idEdadInput) {
         inputEdad.value = edad !== '' ? edad : '';
     }
 }
-
-
 
 // --- INICIALIZACIÓN ÚNICA DE EVENTOS Y TABLAS AL CARGAR EL DOM ---
 document.addEventListener('DOMContentLoaded', () => {
@@ -578,5 +571,4 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
-
 
