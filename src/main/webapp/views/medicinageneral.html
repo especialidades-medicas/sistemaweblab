@@ -901,7 +901,7 @@
         </div>
     </div>
 
-    <script>
+     <script>
         let certificadosBD = [];
         let pacientesMemoria = [];
         let recetasBD = [];
@@ -1063,144 +1063,179 @@
         }
 
         // CONTROLADOR BD: PACIENTES
-        async function savePatient(event) {
-            if (event) event.preventDefault();
+        // ==========================================
+// CONTROLADOR DE BASE DE DATOS: PACIENTES
+// ==========================================
 
-            const cedula = document.getElementById("patCedula")?.value.trim();
-            const nombre = document.getElementById("patNombre")?.value.trim().toUpperCase();
-            
-            if (!cedula || !nombre) {
-                alert("Por favor complete los campos obligatorios: Cédula y Nombres.");
-                return;
-            }
+// 1. GUARDAR O ACTUALIZAR PACIENTE EN BD
+async function savePatient(event) {
+    if (event) event.preventDefault();
 
-            try {
-                const formData = new URLSearchParams();
-                formData.append("patCedula", cedula);
-                formData.append("patNombre", nombre);
-                formData.append("patNacimiento", document.getElementById("patNacimiento")?.value || "");
-                formData.append("patGenero", document.getElementById("patGenero")?.value || "Masculino");
-                formData.append("patTelefono", document.getElementById("patTelefono")?.value.trim() || "");
-                formData.append("patCorreo", document.getElementById("patCorreo")?.value.trim().toLowerCase() || "");
-                formData.append("patDireccion", document.getElementById("patDireccion")?.value.trim() || "");
+    const editIndex = document.getElementById("editPatientIndex")?.value || "-1";
+    const cedula = document.getElementById("patCedula")?.value.trim();
+    const nombre = document.getElementById("patNombre")?.value.trim().toUpperCase();
+    
+    if (!cedula || !nombre) {
+        alert("Por favor complete los campos obligatorios: Cédula y Nombres.");
+        return;
+    }
 
-                const response = await fetch('/sistemaLaboratorio/ControladorPacientes', {
-                    method: 'POST', 
-                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                    body: formData.toString()
-                });
+    try {
+        const formData = new URLSearchParams();
+        // Definir la acción que procesará el Servlet/Backend
+        formData.append("accion", editIndex !== "-1" ? "actualizar" : "guardar");
+        formData.append("patCedula", cedula);
+        formData.append("patNombre", nombre);
+        formData.append("patNacimiento", document.getElementById("patNacimiento")?.value || "");
+        formData.append("patGenero", document.getElementById("patGenero")?.value || "Masculino");
+        formData.append("patTelefono", document.getElementById("patTelefono")?.value.trim() || "");
+        formData.append("patCorreo", document.getElementById("patCorreo")?.value.trim().toLowerCase() || "");
+        formData.append("patDireccion", document.getElementById("patDireccion")?.value.trim() || "");
 
-                const resultadoTexto = await response.text();
+        const response = await fetch('/sistemaLaboratorio/ControladorPacientes', {
+            method: 'POST', 
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
+            body: formData.toString()
+        });
 
-                if (response.ok) {
-                    alert("¡Paciente guardado o actualizado exitosamente!");
-                    renderPatients(); 
-                    resetPatientForm();
-                } else {
-                    alert("Atención: " + resultadoTexto);
-                }
+        const resultadoTexto = await response.text();
 
-            } catch (error) {
-                console.error("Error en el proceso de guardado:", error);
-                alert("Error de conexión al procesar el paciente.");
-            }
+        if (response.ok) {
+            alert("¡Operación realizada con éxito en la base de datos!");
+            renderPatients(); 
+            resetPatientForm();
+        } else {
+            alert("Atención de la base de datos: " + resultadoTexto);
         }
 
-        async function renderPatients() {
+    } catch (error) {
+        console.error("Error en el proceso de guardado:", error);
+        alert("Error de conexión al procesar el paciente con la base de datos.");
+    }
+}
+
+        // 2. OBTENER Y RENDERIZAR PACIENTES DESDE LA BD
+async function renderPatients() {
     const tbody = document.getElementById("patientTableBody");
     if (!tbody) return;
 
     try {
-        const response = await fetch('/ControladorPacientes');
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
+        const response = await fetch('/sistemaLaboratorio/ControladorPacientes?accion=listar');
+        if (!response.ok) throw new Error("Error al consultar la base de datos");
 
-        const patientsDB = await response.json();
-        tbody.innerHTML = "";
+        const text = await response.text();
+        let patientsDB = [];
 
-        if (!patientsDB || patientsDB.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: var(--gray);">No hay pacientes registrados.</td></tr>`;
+        try {
+            patientsDB = JSON.parse(text);
+            pacientesMemoria = patientsDB; 
+        } catch (e) {
+            tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: red;">Formato de respuesta no válido.</td></tr>`;
             return;
         }
 
-        tbody.innerHTML = patientsDB.map((patient) => `
-            <tr>
-                <td>${patient.cedula || ''}</td>
-                <td>${patient.nombres || ''}</td>
-                <td>${patient.fechaNacimiento || ''}</td>
-                <td>${patient.genero || ''}</td>
-                <td>${patient.telefono || ''}</td>
-                <td>${patient.correo || ''}</td>
-                <td>${patient.direccion || ''}</td>
-                <td>
-                    <button type="button" class="btn-action" onclick="editarPacienteBD('${patient.cedula}')" style="padding: 4px 8px; font-size: 0.85rem;">Editar</button>
-                    <button type="button" class="btn-delete" onclick="eliminarPacienteBD('${patient.cedula}')" style="padding: 4px 8px; font-size: 0.85rem;">Eliminar</button>
-                </td>
-            </tr>
-        `).join('');
+        tbody.innerHTML = "";
+
+        if (!patientsDB || patientsDB.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: var(--gray);">No hay pacientes registrados en la base de datos.</td></tr>`;
+            if (document.getElementById('statPacientes')) document.getElementById('statPacientes').innerText = "0";
+            return;
+        }
+
+        if (document.getElementById('statPacientes')) {
+            document.getElementById('statPacientes').innerText = patientsDB.length;
+        }
+
+        tbody.innerHTML = patientsDB.map((patient) => {
+            const nac = patient.fechaNacimiento || patient.fecha_nacimiento || '';
+            const nom = patient.nombres || patient.nombre || '';
+            return `
+                <tr>
+                    <td>${patient.cedula || ''}</td>
+                    <td>${nom}</td>
+                    <td>${nac}</td>
+                    <td>${patient.genero || ''}</td>
+                    <td>${patient.telefono || ''}</td>
+                    <td>${patient.correo || ''}</td>
+                    <td>${patient.direccion || ''}</td>
+                    <td>
+                        <button type="button" class="btn-action" onclick="editarPacienteBD('${patient.cedula}')" style="padding: 4px 8px; font-size: 0.85rem;">Editar</button>
+                        <button type="button" class="btn-delete" onclick="eliminarPacienteBD('${patient.cedula}')" style="padding: 4px 8px; font-size: 0.85rem;">Eliminar</button>
+                    </td>
+                </tr>
+            `;
+        }).join('');
 
     } catch (error) {
-        console.error("Error al cargar los pacientes:", error);
-        tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: red;">Error de conexión o servidor al cargar pacientes.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: red;">Error de conexión con la base de datos.</td></tr>`;
     }
 }
 
-        async function eliminarPacienteBD(cedula) {
-            if (!confirm(`¿Está seguro de eliminar al paciente con cédula ${cedula}?`)) return;
+        // 3. ELIMINAR PACIENTE DE LA BD
+async function eliminarPacienteBD(cedula) {
+    if (!confirm(`¿Está seguro de eliminar al paciente con cédula ${cedula} de la base de datos?`)) return;
 
-            try {
-                const formData = new URLSearchParams();
-                formData.append("accion", "eliminar");
-                formData.append("cedula", cedula);
-
-                const response = await fetch('/sistemaLaboratorio/ControladorPacientes', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                    body: formData.toString()
-                });
-
-                if (response.ok) {
-                    alert("Paciente eliminado correctamente.");
-                    renderPatients();
-                }
-            } catch (error) { console.error(error); }
-        }
-
-        async function editarPacienteBD(cedula) {
-            try {
-                const response = await fetch(`/sistemaLaboratorio/ControladorPacientes?accion=buscar&cedula=${cedula}`);
-                if (response.ok) {
-                    const paciente = await response.json();
-                    if (paciente) {
-                        document.getElementById('patCedula').value = paciente.cedula || '';
-                        document.getElementById('patNombre').value = paciente.nombres || '';
-                        document.getElementById('patNacimiento').value = paciente.fechaNacimiento || '';
-                        document.getElementById('patGenero').value = paciente.genero || 'Masculino';
-                        document.getElementById('patTelefono').value = paciente.telefono || '';
-                        document.getElementById('patCorreo').value = paciente.correo || '';
-                        document.getElementById('patDireccion').value = paciente.direccion || '';
-                        
-                        if (document.getElementById('patientFormTitle')) document.getElementById('patientFormTitle').innerText = "Editar Datos de Paciente";
-                        if (document.getElementById('btnSavePatient')) document.getElementById('btnSavePatient').innerText = "Actualizar Paciente";
-                        if (document.getElementById('btnCancelPatient')) document.getElementById('btnCancelPatient').style.display = "inline-block";
-                        
-                        window.scrollTo({ top: 0, behavior: 'smooth' });
-                    }
-                }
-            } catch (error) { console.error(error); }
-        }
-
-        async function buscarPacientePorCedulaDB(cedula) {
-    if (!cedula || cedula.length < 5) return; 
-    
     try {
-        const response = await fetch(`/ControladorPacientes?accion=buscar&cedula=${encodeURIComponent(cedula)}`);
+        const formData = new URLSearchParams();
+        formData.append("accion", "eliminar");
+        formData.append("cedula", cedula);
+
+        const response = await fetch('/sistemaLaboratorio/ControladorPacientes', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
+            body: formData.toString()
+        });
+
+        if (response.ok) {
+            alert("Paciente eliminado de la base de datos correctamente.");
+            renderPatients();
+        } else {
+            const err = await response.text();
+            alert("No se pudo eliminar: " + err);
+        }
+    } catch (error) {
+        console.error("Error al eliminar paciente:", error);
+    }
+}
+
+// 4. CARGAR DATOS EN EL FORMULARIO PARA EDICIÓN
+async function editarPacienteBD(cedula) {
+    try {
+        const response = await fetch(`/sistemaLaboratorio/ControladorPacientes?accion=buscar&cedula=${cedula}`);
         if (response.ok) {
             const paciente = await response.json();
-            if (paciente && document.getElementById('patNombre')) {
-                document.getElementById('patNombre').value = paciente.nombres || '';
-                document.getElementById('patNacimiento').value = paciente.fechaNacimiento || '';
+            if (paciente) {
+                document.getElementById('editPatientIndex').value = "1"; // Indica modo edición
+                document.getElementById('patCedula').value = paciente.cedula || '';
+                document.getElementById('patNombre').value = paciente.nombres || paciente.nombre || '';
+                document.getElementById('patNacimiento').value = paciente.fechaNacimiento || paciente.fecha_nacimiento || '';
+                document.getElementById('patGenero').value = paciente.genero || 'Masculino';
+                document.getElementById('patTelefono').value = paciente.telefono || '';
+                document.getElementById('patCorreo').value = paciente.correo || '';
+                document.getElementById('patDireccion').value = paciente.direccion || '';
+                
+                if (document.getElementById('patientFormTitle')) document.getElementById('patientFormTitle').innerText = "Editar Datos de Paciente (BD)";
+                if (document.getElementById('btnSavePatient')) document.getElementById('btnSavePatient').innerText = "Actualizar en BD";
+                if (document.getElementById('btnCancelPatient')) document.getElementById('btnCancelPatient').style.display = "inline-block";
+                
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        }
+    } catch (error) {
+        console.error("Error al consultar datos del paciente para edición:", error);
+    }
+}
+
+// 5. BÚSQUEDA Y AUTOCOMPLETADO DESDE BD POR CÉDULA
+async function buscarPacientePorCedulaDB(cedula) {
+    if (!cedula || cedula.length < 5) return; 
+    try {
+        const response = await fetch(`/sistemaLaboratorio/ControladorPacientes?accion=buscar&cedula=${cedula}`);
+        if (response.ok) {
+            const paciente = await response.json();
+            if (paciente && (paciente.nombres || paciente.nombre)) {
+                document.getElementById('patNombre').value = paciente.nombres || paciente.nombre || '';
+                document.getElementById('patNacimiento').value = paciente.fechaNacimiento || paciente.fecha_nacimiento || '';
                 document.getElementById('patGenero').value = paciente.genero || 'Masculino';
                 document.getElementById('patTelefono').value = paciente.telefono || '';
                 document.getElementById('patCorreo').value = paciente.correo || '';
@@ -1208,10 +1243,9 @@
             }
         }
     } catch (error) {
-        console.error("Error conectando con la base de datos:", error);
+        console.error("Error al buscar cédula en BD:", error);
     }
 }
-
 
         function resetPatientForm() {
             if (document.getElementById("patCedula")) document.getElementById("patCedula").value = "";
