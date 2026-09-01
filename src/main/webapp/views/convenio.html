@@ -10,267 +10,300 @@
 
     <style>
         * {
-            box-sizing: border-box;
-            font-family: Arial, Helvetica, sans-serif;
-        }
+    box-sizing: border-box;
+    font-family: Arial, Helvetica, sans-serif;
+}
 
-        body {
-            background-color: #f4f6f9;
-            margin: 0;
-            padding: 20px;
-            color: #333;
-        }
+body {
+    background-color: #f4f6f9;
+    margin: 0;
+    padding: 20px;
+    color: #333;
+}
 
-        .container {
-            max-width: 900px;
-            margin: 0 auto;
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 20px;
-        }
+.container {
+    max-width: 900px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 20px;
+}
 
-        /* Formulario de Entrada */
-        .form-card {
-            background: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        }
+/* Formulario de Entrada */
+.form-card {
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
 
-        .form-card h2 {
-            margin-top: 0;
-            color: #1a4a75;
-            font-size: 1.2rem;
-            border-bottom: 2px solid #eee;
-            padding-bottom: 8px;
-        }
+.form-card h2 {
+    margin-top: 0;
+    color: #1a4a75;
+    font-size: 1.2rem;
+    border-bottom: 2px solid #eee;
+    padding-bottom: 8px;
+}
 
-        .form-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 12px;
-        }
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 12px;
+}
 
-        .form-group {
-            display: flex;
-            flex-direction: column;
-        }
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
 
-        .form-group label {
-            font-size: 0.85rem;
-            font-weight: bold;
-            margin-bottom: 4px;
-        }
+.form-group label {
+    font-size: 0.85rem;
+    font-weight: bold;
+    margin-bottom: 4px;
+}
 
-        .form-group input, .form-group select {
-            padding: 8px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            font-size: 0.9rem;
-        }
+.form-group input, .form-group select {
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 0.9rem;
+}
 
-        .checkbox-group {
-            grid-column: 1 / -1;
-            display: flex;
-            gap: 15px;
-            flex-wrap: wrap;
-            margin-top: 8px;
-        }
+.checkbox-group {
+    grid-column: 1 / -1;
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+    margin-top: 8px;
+}
 
-        .checkbox-group label {
-            font-weight: normal;
-            font-size: 0.9rem;
-            cursor: pointer;
-        }
+.checkbox-group label {
+    font-weight: normal;
+    font-size: 0.9rem;
+    cursor: pointer;
+}
 
-        .actions-bar {
-            margin-top: 15px;
-            display: flex;
-            gap: 10px;
-        }
+.actions-bar {
+    margin-top: 18px;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
 
-        .btn {
-            padding: 10px 18px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-weight: bold;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-        }
+.btn {
+    padding: 10px 18px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.9rem;
+}
 
-        .btn-print { background-color: #0d6efd; color: white; }
-        .btn-pdf { background-color: #198754; color: white; }
-        .btn:hover { opacity: 0.9; }
+.btn-print { background-color: #0d6efd; color: white; }
+.btn-pdf { background-color: #198754; color: white; }
+.btn-wsp { background-color: #25D366; color: white; }
+.btn:hover { opacity: 0.9; }
 
-        /* Plantilla del Documento (Ticket) */
-        .ticket-wrapper {
-            background: #fff;
-            padding: 25px 30px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-            width: 100%;
-            background-color: #ffffff;
-        }
+/* Plantilla del Documento (Ticket) */
+.ticket-wrapper {
+    background: #fff;
+    padding: 16px 22px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    width: 100%;
+    background-color: #ffffff;
+    box-sizing: border-box;
+}
 
-        .ticket-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            border-bottom: 1px solid #333;
-            padding-bottom: 10px;
-            margin-bottom: 15px;
-        }
+.ticket-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    border-bottom: 1px solid #333;
+    padding-bottom: 6px;
+    margin-bottom: 10px;
+}
 
-        .logo-box img {
-            max-height: 75px;
-            width: auto;
-            object-fit: contain;
-        }
+.logo-box img {
+    max-height: 70px;
+    width: auto;
+    object-fit: contain;
+}
 
-        .header-titles {
-            text-align: center;
-            flex-grow: 1;
-        }
+.header-titles {
+    text-align: center;
+    flex-grow: 1;
+}
 
-        .header-titles h1 {
-            margin: 0;
-            font-size: 1.5rem;
-            letter-spacing: 1px;
-        }
+.header-titles h1 {
+    margin: 0;
+    font-size: 1.35rem;
+    letter-spacing: 1px;
+}
 
-        .header-titles h2 {
-            margin: 5px 0 0 0;
-            font-size: 1.2rem;
-            letter-spacing: 0.5px;
-        }
+.header-titles h2 {
+    margin: 3px 0 0 0;
+    font-size: 1.1rem;
+    letter-spacing: 0.5px;
+}
 
-        .header-meta {
-            text-align: right;
-            font-size: 0.95rem;
-        }
+.header-meta {
+    text-align: right;
+    font-size: 0.9rem;
+}
 
-        .price-badge {
-            font-size: 1.3rem;
-            font-weight: bold;
-            border: 2px solid #000;
-            border-radius: 50%;
-            padding: 4px 12px;
-            display: inline-block;
-            margin-bottom: 5px;
-        }
+.price-badge {
+    font-size: 1.2rem;
+    font-weight: bold;
+    border: 2px solid #000;
+    border-radius: 50%;
+    padding: 2px 10px;
+    display: inline-block;
+    margin-bottom: 3px;
+}
 
-        /* Datos del Paciente */
-        .patient-info {
-            display: grid;
-            grid-template-columns: 2fr 1fr 1fr;
-            gap: 8px 15px;
-            font-size: 0.95rem;
-            margin-bottom: 12px;
-        }
+/* Datos del Paciente */
+.patient-info {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: 6px 15px;
+    font-size: 0.9rem;
+    margin-bottom: 8px;
+}
 
-        .line-field {
-            border-bottom: 1px dashed #000;
-            font-weight: bold;
-            padding-left: 5px;
-        }
+.line-field {
+    border-bottom: 1px dashed #000;
+    font-weight: bold;
+    padding-left: 5px;
+}
 
-        /* Servicios */
-        .services-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin: 15px 0;
-            font-size: 0.9rem;
-            font-weight: bold;
-        }
+/* Servicios */
+.services-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 10px 0;
+    font-size: 0.85rem;
+    font-weight: bold;
+}
 
-        .service-item {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
+.service-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
 
-        .checkbox-box {
-            width: 16px;
-            height: 16px;
-            border: 2px solid #000;
-            border-radius: 3px;
-            display: inline-block;
-            text-align: center;
-            line-height: 14px;
-            font-size: 12px;
-        }
+.checkbox-box {
+    width: 15px;
+    height: 15px;
+    border: 2px solid #000;
+    border-radius: 3px;
+    display: inline-block;
+    text-align: center;
+    line-height: 13px;
+    font-size: 11px;
+}
 
-        /* Consentimiento Informado */
-        .consent-section {
-            margin-top: 15px;
-            border-top: 1px solid #000;
-            padding-top: 10px;
-        }
+/* Consentimiento Informado */
+.consent-section {
+    margin-top: 8px;
+    border-top: 1px solid #000;
+    padding-top: 6px;
+}
 
-        .consent-title {
-            text-align: center;
-            font-weight: bold;
-            font-size: 0.85rem;
-            margin-bottom: 6px;
-        }
+.consent-title {
+    text-align: center;
+    font-weight: bold;
+    font-size: 0.8rem;
+    margin-bottom: 4px;
+}
 
-        .consent-text {
-            font-size: 0.72rem;
-            line-height: 1.35;
-            text-align: justify;
-            margin-bottom: 6px;
-        }
+.consent-text {
+    font-size: 0.7rem;
+    line-height: 1.25;
+    text-align: justify;
+    margin-bottom: 4px;
+}
 
-        /* Firmas */
-        .signatures-container {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-end;
-            margin-top: 35px;
-            padding: 0 20px;
-        }
+/* Firmas (SEPARACIÓN Y TAMAÑO RESTAURADO) */
+.signatures-container {
+    display: flex;
+    justify-content: space-between; /* Separa las firmas a los extremos */
+    align-items: flex-end;
+    margin-top: 15px;
+    padding: 0 10px;
+    gap: 40px; /* Genera un espacio libre entre la firma del paciente y la autorización */
+}
 
-        .signature-box {
-            text-align: center;
-            width: 220px;
-        }
+.signature-box {
+    text-align: center;
+    width: 42%; /* Limita el ancho para evitar que las líneas de trazo se unan */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    min-height: 90px;
+}
 
-        .signature-line {
-            border-top: 1px dashed #000;
-            margin-top: 10px;
-            padding-top: 4px;
-            font-size: 0.85rem;
-            font-weight: bold;
-        }
+.signature-line {
+    border-top: 1px dashed #000;
+    width: 100%;
+    padding-top: 4px;
+    font-size: 0.8rem;
+    font-weight: bold;
+}
 
-        .signature-img {
-            max-height: 65px;
-            margin-bottom: -10px;
-        }
+/* Tamaño optimizado de la imagen del sello/firma */
+.signature-img {
+    max-height: 95px; /* Restablecido a una altura legible */
+    max-width: 180px;
+    object-fit: contain;
+    margin-bottom: 2px;
+    display: block;
+}
 
-        /* REGLAS DE IMPRESIÓN (Oculta el formulario al imprimir) */
-        @media print {
-            body {
-                background: none;
-                padding: 0;
-            }
-            .form-card, .actions-bar {
-                display: none !important;
-            }
-            .container {
-                max-width: 100%;
-                margin: 0;
-            }
-            .ticket-wrapper {
-                border: none;
-                box-shadow: none;
-                padding: 10mm;
-            }
-        }
+/* ==========================================
+   REGLAS DE IMPRESIÓN / PDF OFFLINE (SIN CORTES)
+   ========================================== */
+@media print {
+    @page {
+        size: auto; /* Permite adaptarse tanto a orientaciones horizontal como vertical */
+        margin: 5mm;
+    }
+
+    html, body {
+        background: #ffffff !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        height: auto !important;
+    }
+
+    .no-print, .form-card, .actions-bar, nav, header, button, .btn, sidebar {
+        display: none !important;
+    }
+
+    .container {
+        max-width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        display: block !important;
+    }
+
+    .ticket-wrapper {
+        border: 1px solid #000 !important;
+        box-shadow: none !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
+        padding: 10px 15px !important;
+        margin: 0 auto !important;
+    }
+}
     </style>
 </head>
 <body>
@@ -310,12 +343,21 @@
                 <input type="text" id="inCedula" placeholder="Cédula de Identidad" oninput="actualizarDocumento()">
             </div>
             <div class="form-group">
-                <label>Teléfono:</label>
-                <input type="text" id="inTelefono" placeholder="Teléfono/Celular" oninput="actualizarDocumento()">
+                <label>Teléfono (WhatsApp):</label>
+                <input type="text" id="inTelefono" placeholder="Ej: 0995225612" oninput="actualizarDocumento()">
             </div>
             <div class="form-group">
                 <label>Examen / Detalle:</label>
                 <input type="text" id="inExamen" placeholder="Ej: Ecografía / Ayuno" oninput="actualizarDocumento()">
+            </div>
+            
+            <!-- Selector para cambiar entre Firma 1 y Firma 2 / Sello -->
+            <div class="form-group" style="grid-column: span 2;">
+                <label>Seleccionar Firma / Sello:</label>
+                <select id="selFirma" onchange="actualizarDocumento()">
+                    <option value="../img/firma_activa-.png">Firma Digital (QR)</option>
+                    <option value="../img/firma_activa2.png">Sello Médico / Firma 2</option>
+                </select>
             </div>
 
             <div class="checkbox-group">
@@ -329,6 +371,7 @@
         <div class="actions-bar">
             <button class="btn btn-print" onclick="window.print()">🖨️ Imprimir Documento</button>
             <button class="btn btn-pdf" onclick="descargarPDF()">📄 Descargar PDF</button>
+            <button class="btn btn-wsp" onclick="enviarWhatsApp()">📱 Enviar WhatsApp</button>
         </div>
     </div>
 
@@ -336,7 +379,6 @@
     <div class="ticket-wrapper" id="documento-imprimir">
         <div class="ticket-header">
             <div class="logo-box">
-                <!-- Ruta del Logo principal -->
                 <img src="../img/logFisio2.png" alt="Logo" onerror="this.src='https://via.placeholder.com/120x60?text=LOGO'">
             </div>
             <div class="header-titles">
@@ -399,33 +441,29 @@
 
         <div class="signatures-container">
             <div class="signature-box">
-                <div style="height: 55px;"></div>
                 <div class="signature-line">Firma del Paciente</div>
             </div>
 
             <div class="signature-box">
-                <!-- Rutas relativas de firma y sello -->
-                <img src="../img/firma_activa-.png" class="signature-img" alt="Firma Autorizada" onerror="this.src='../img/firma_activa2.png'; this.onerror=null;">
-                <div class="signature-line">Firma Autorizacion</div>
+                <!-- Firma/Sello dinámico con tamaño aumentado -->
+                <img id="imgFirmaActiva" src="../img/firma_activa-.png" class="signature-img" alt="Firma / Sello Autorizado">
+                <div class="signature-line">Firma Autorización</div>
             </div>
         </div>
     </div>
 </div>
 
 <script>
-    // Establecer fecha de hoy por defecto al cargar
     document.addEventListener("DOMContentLoaded", () => {
         const hoy = new Date().toISOString().split('T')[0];
         document.getElementById("inFecha").value = hoy;
         actualizarDocumento();
     });
 
-    // Actualiza la plantilla en tiempo real al escribir
     function actualizarDocumento() {
         document.getElementById("outTurno").innerText = document.getElementById("inTurno").value || "----";
         document.getElementById("outPrecio").innerText = document.getElementById("inPrecio").value || "0.00";
         
-        // Formatear fecha
         const fechaVal = document.getElementById("inFecha").value;
         if(fechaVal) {
             const partes = fechaVal.split('-');
@@ -441,6 +479,10 @@
         document.getElementById("outTelefono").innerText = document.getElementById("inTelefono").value;
         document.getElementById("outExamen").innerText = document.getElementById("inExamen").value;
 
+        // Cambiar dinámicamente la imagen de firma/sello seleccionada
+        const rutaFirma = document.getElementById("selFirma").value;
+        document.getElementById("imgFirmaActiva").src = rutaFirma;
+
         // Checkboxes de servicios
         document.getElementById("boxEcografia").innerText = document.getElementById("chkEcografia").checked ? "✓" : "";
         document.getElementById("boxRadiografia").innerText = document.getElementById("chkRadiografia").checked ? "✓" : "";
@@ -448,7 +490,6 @@
         document.getElementById("boxLaboratorio").innerText = document.getElementById("chkLaboratorio").checked ? "✓" : "";
     }
 
-    // Exportación directa a PDF
     function descargarPDF() {
         const elemento = document.getElementById('documento-imprimir');
         const paciente = document.getElementById('inPaciente').value || 'Paciente';
@@ -462,6 +503,39 @@
         };
 
         html2pdf().set(opciones).from(elemento).save();
+    }
+
+    // Función para enviar los datos por WhatsApp
+    function enviarWhatsApp() {
+        let tel = document.getElementById("inTelefono").value.replace(/\D/g, '');
+        if (!tel) {
+            alert("Por favor ingrese un número de teléfono válido.");
+            return;
+        }
+
+        // Si es número local de Ecuador (ej: 0995225612), antepone el código de país 593
+        if (tel.length === 10 && tel.startsWith("0")) {
+            tel = "593" + tel.substring(1);
+        }
+
+        const paciente = document.getElementById("inPaciente").value || "N/A";
+        const fecha = document.getElementById("outFecha").innerText;
+        const hora = document.getElementById("inHora").value || "N/A";
+        const turno = document.getElementById("inTurno").value || "N/A";
+        const valor = document.getElementById("inPrecio").value || "0.00";
+        const examen = document.getElementById("inExamen").value || "N/A";
+
+        const mensaje = `*TURNO DE CITA MÉDICA - CONVENIO BIOSALUD* 🏥\n\n` +
+                        `👤 *Paciente:* ${paciente}\n` +
+                        `🎟️ *N° Turno:* ${turno}\n` +
+                        `📅 *Fecha:* ${fecha}\n` +
+                        `⏰ *Hora:* ${hora}\n` +
+                        `🔬 *Examen:* ${examen}\n` +
+                        `💵 *Valor:* $${valor}\n\n` +
+                        `_Por favor presentarse con 10 minutos de anticipación._`;
+
+        const url = `https://api.whatsapp.com/send?phone=${tel}&text=${encodeURIComponent(mensaje)}`;
+        window.open(url, '_blank');
     }
 </script>
 
