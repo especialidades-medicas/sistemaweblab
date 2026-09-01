@@ -1192,22 +1192,26 @@
         }
 
         async function buscarPacientePorCedulaDB(cedula) {
-            if (!cedula || cedula.length < 5) return; 
-            try {
-                const response = await fetch(`/sistemaLaboratorio/ControladorPacientes?accion=buscar&cedula=${cedula}`);
-                if (response.ok) {
-                    const paciente = await response.json();
-                    if (paciente && paciente.nombres) {
-                        document.getElementById('patNombre').value = paciente.nombres || '';
-                        document.getElementById('patNacimiento').value = paciente.fechaNacimiento || '';
-                        document.getElementById('patGenero').value = paciente.genero || 'Masculino';
-                        document.getElementById('patTelefono').value = paciente.telefono || '';
-                        document.getElementById('patCorreo').value = paciente.correo || '';
-                        document.getElementById('patDireccion').value = paciente.direccion || '';
-                    }
-                }
-            } catch (error) { console.error(error); }
+    if (!cedula || cedula.length < 5) return; 
+    
+    try {
+        const response = await fetch(`/ControladorPacientes?accion=buscar&cedula=${encodeURIComponent(cedula)}`);
+        if (response.ok) {
+            const paciente = await response.json();
+            if (paciente && document.getElementById('patNombre')) {
+                document.getElementById('patNombre').value = paciente.nombres || '';
+                document.getElementById('patNacimiento').value = paciente.fechaNacimiento || '';
+                document.getElementById('patGenero').value = paciente.genero || 'Masculino';
+                document.getElementById('patTelefono').value = paciente.telefono || '';
+                document.getElementById('patCorreo').value = paciente.correo || '';
+                document.getElementById('patDireccion').value = paciente.direccion || '';
+            }
         }
+    } catch (error) {
+        console.error("Error conectando con la base de datos:", error);
+    }
+}
+
 
         function resetPatientForm() {
             if (document.getElementById("patCedula")) document.getElementById("patCedula").value = "";
