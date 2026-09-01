@@ -1107,52 +1107,44 @@
         }
 
         async function renderPatients() {
-            const tbody = document.getElementById("patientTableBody");
-            if (!tbody) return;
+    const tbody = document.getElementById("patientTableBody");
+    if (!tbody) return;
 
-            try {
-                const response = await fetch('/sistemaLaboratorio/ControladorPacientes');
-                const text = await response.text();
-
-                let patientsDB = [];
-                try {
-                    patientsDB = JSON.parse(text);
-                    pacientesMemoria = patientsDB; 
-                } catch (e) {
-                    tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: red;">Error en formato de datos.</td></tr>`;
-                    return;
-                }
-
-                tbody.innerHTML = "";
-
-                if (!patientsDB || patientsDB.length === 0) {
-                    tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: var(--gray);">No hay pacientes registrados.</td></tr>`;
-                    if (document.getElementById('statPacientes')) document.getElementById('statPacientes').innerText = "0";
-                    return;
-                }
-
-                if (document.getElementById('statPacientes')) document.getElementById('statPacientes').innerText = patientsDB.length;
-
-                tbody.innerHTML = patientsDB.map((patient) => `
-                    <tr>
-                        <td>${patient.cedula || ''}</td>
-                        <td>${patient.nombres || ''}</td>
-                        <td>${patient.fechaNacimiento || ''}</td>
-                        <td>${patient.genero || ''}</td>
-                        <td>${patient.telefono || ''}</td>
-                        <td>${patient.correo || ''}</td>
-                        <td>${patient.direccion || ''}</td>
-                        <td>
-                            <button type="button" class="btn-action" onclick="editarPacienteBD('${patient.cedula}')" style="padding: 4px 8px; font-size: 0.85rem;">Editar</button>
-                            <button type="button" class="btn-delete" onclick="eliminarPacienteBD('${patient.cedula}')" style="padding: 4px 8px; font-size: 0.85rem;">Eliminar</button>
-                        </td>
-                    </tr>
-                `).join('');
-
-            } catch (error) {
-                tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: red;">Error de conexión.</td></tr>`;
-            }
+    try {
+        const response = await fetch('/ControladorPacientes');
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
         }
+
+        const patientsDB = await response.json();
+        tbody.innerHTML = "";
+
+        if (!patientsDB || patientsDB.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: var(--gray);">No hay pacientes registrados.</td></tr>`;
+            return;
+        }
+
+        tbody.innerHTML = patientsDB.map((patient) => `
+            <tr>
+                <td>${patient.cedula || ''}</td>
+                <td>${patient.nombres || ''}</td>
+                <td>${patient.fechaNacimiento || ''}</td>
+                <td>${patient.genero || ''}</td>
+                <td>${patient.telefono || ''}</td>
+                <td>${patient.correo || ''}</td>
+                <td>${patient.direccion || ''}</td>
+                <td>
+                    <button type="button" class="btn-action" onclick="editarPacienteBD('${patient.cedula}')" style="padding: 4px 8px; font-size: 0.85rem;">Editar</button>
+                    <button type="button" class="btn-delete" onclick="eliminarPacienteBD('${patient.cedula}')" style="padding: 4px 8px; font-size: 0.85rem;">Eliminar</button>
+                </td>
+            </tr>
+        `).join('');
+
+    } catch (error) {
+        console.error("Error al cargar los pacientes:", error);
+        tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: red;">Error de conexión o servidor al cargar pacientes.</td></tr>`;
+    }
+}
 
         async function eliminarPacienteBD(cedula) {
             if (!confirm(`¿Está seguro de eliminar al paciente con cédula ${cedula}?`)) return;
