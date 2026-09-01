@@ -54,7 +54,7 @@ function buscarPaciente() {
     const searchInput = document.getElementById('searchInput');
     if (!searchInput) return;
     const query = searchInput.value.trim();
-    if(query) {
+    if (query) {
         alert("Buscando paciente por cédula o apellidos: " + query);
     } else {
         alert("Por favor ingrese un número de cédula o apellido para buscar.");
@@ -172,7 +172,7 @@ function deleteEntry(index) {
 }
 
 function clearAllData() {
-    if(confirm("¿Está seguro de borrar todas las cotizaciones guardadas?")) {
+    if (confirm("¿Está seguro de borrar todas las cotizaciones guardadas?")) {
         entries = [];
         localStorage.removeItem("lab_cotizaciones");
         renderTable();
@@ -289,14 +289,14 @@ async function savePatient(event) {
             body: formData.toString()
         });
 
-        const resultadoTexto = await response.text();
+        const data = await response.json();
 
         if (response.ok) {
             alert("¡Operación exitosa! Los datos del paciente han sido guardados o actualizados correctamente.");
             renderPatients(); 
             resetPatientForm();
         } else {
-            alert("Atención: " + resultadoTexto);
+            alert("Atención: " + (data.error || "No se pudo guardar el paciente."));
         }
 
     } catch (error) {
@@ -311,17 +311,11 @@ async function renderPatients() {
 
     try {
         const response = await fetch('/ControladorPacientes');
-        const text = await response.text();
-
-        let patientsDB = [];
-        try {
-            patientsDB = JSON.parse(text);
-        } catch (e) {
-            console.error("El servidor no devolvió un JSON válido:", text);
-            tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: red;">Error en el formato de datos del servidor.</td></tr>`;
-            return;
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
         }
 
+        const patientsDB = await response.json();
         tbody.innerHTML = "";
 
         if (!patientsDB || patientsDB.length === 0) {
@@ -347,7 +341,7 @@ async function renderPatients() {
 
     } catch (error) {
         console.error("Error al cargar los pacientes:", error);
-        tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: red;">Error de conexión al cargar pacientes.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: red;">Error de conexión o servidor al cargar pacientes.</td></tr>`;
     }
 }
 
@@ -370,7 +364,7 @@ async function buscarPacientePorCedulaDB(cedula) {
     if (!cedula || cedula.length < 5) return; 
     
     try {
-        const response = await fetch(`/ControladorPacientes?accion=buscar&cedula=${cedula}`);
+        const response = await fetch(`/ControladorPacientes?accion=buscar&cedula=${encodeURIComponent(cedula)}`);
         if (response.ok) {
             const paciente = await response.json();
             if (paciente && document.getElementById('patNombre')) {
@@ -389,7 +383,7 @@ async function buscarPacientePorCedulaDB(cedula) {
 
 async function editarPacienteBD(cedula) {
     try {
-        const response = await fetch(`/ControladorPacientes?accion=buscar&cedula=${cedula}`);
+        const response = await fetch(`/ControladorPacientes?accion=buscar&cedula=${encodeURIComponent(cedula)}`);
         if (response.ok) {
             const paciente = await response.json();
             if (paciente) {
@@ -412,6 +406,8 @@ async function editarPacienteBD(cedula) {
                 
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             }
+        } else {
+            alert("No se encontró la información del paciente especificado.");
         }
     } catch (error) {
         console.error("Error al cargar los datos para editar:", error);
@@ -433,13 +429,13 @@ async function eliminarPacienteBD(cedula) {
             body: formData.toString()
         });
 
-        const resultado = await response.text();
+        const data = await response.json();
 
         if (response.ok) {
             alert("Paciente eliminado correctamente.");
             renderPatients();
         } else {
-            alert("Atención: " + resultado);
+            alert("Atención: " + (data.error || "Error al intentar eliminar."));
         }
     } catch (error) {
         console.error("Error al eliminar el paciente:", error);
@@ -451,7 +447,7 @@ async function buscarPacienteEnHistoriaClinica(cedula) {
     if (!cedula || cedula.length < 5) return;
     
     try {
-        const response = await fetch(`/ControladorPacientes?accion=buscar&cedula=${cedula}`);
+        const response = await fetch(`/ControladorPacientes?accion=buscar&cedula=${encodeURIComponent(cedula)}`);
         if (response.ok) {
             const paciente = await response.json();
             if (paciente) {
@@ -476,7 +472,7 @@ async function buscarPacienteEnCertificados(cedula) {
     if (!cedula || cedula.length < 5) return;
     
     try {
-        const response = await fetch(`/ControladorPacientes?accion=buscar&cedula=${cedula}`);
+        const response = await fetch(`/ControladorPacientes?accion=buscar&cedula=${encodeURIComponent(cedula)}`);
         if (response.ok) {
             const paciente = await response.json();
             if (paciente) {
@@ -571,4 +567,3 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
-
