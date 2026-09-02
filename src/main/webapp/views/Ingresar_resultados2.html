@@ -3901,7 +3901,56 @@ async function guardarEnBaseDeDatos() {
         alert('No se pudo establecer comunicación con el servidor.');
     }
 }
-       
+
+
+        async function cargarDatosPorOrden(idOrden) {
+    if (!idOrden) return;
+
+    try {
+        const respuesta = await fetch(`/BuscarResultadosServlet?id_orden=${encodeURIComponent(idOrden)}`);
+        
+        if (!respuesta.ok) {
+            console.warn('Orden no encontrada o nueva orden.');
+            return;
+        }
+
+        const datos = await respuesta.json();
+
+        if (datos.length === 0) {
+            console.log('No hay resultados previos guardados para esta orden.');
+            return;
+        }
+
+        // 1. Cargar datos generales del paciente en la cabecera (tomando el primer registro)
+        const primerRegistro = datos[0];
+        if (document.getElementById('cod_doc')) document.getElementById('cod_doc').value = primerRegistro.cod_doc || '';
+        if (document.getElementById('nombre_paciente')) document.getElementById('nombre_paciente').value = primerRegistro.nombre_paciente || '';
+        if (document.getElementById('edad')) document.getElementById('edad').value = primerRegistro.edad || '';
+        if (document.getElementById('sexo')) document.getElementById('sexo').value = primerRegistro.sexo || '';
+        if (document.getElementById('telefono')) document.getElementById('telefono').value = primerRegistro.telefono || '';
+
+        // 2. Llenar los inputs de resultados del formulario
+        datos.forEach(item => {
+            // Asumiendo que tus inputs de examen tienen id o name que coincide con el nombre_examen o un atributo data
+            const inputResultado = document.querySelector(`input[data-examen="${item.nombre_examen}"]`) 
+                                || document.getElementById(item.nombre_examen);
+
+            if (inputResultado) {
+                inputResultado.value = item.resultado;
+            }
+        });
+
+        alert(`Se cargaron ${datos.length} resultados guardados anteriormente para la orden ${idOrden}.`);
+
+    } catch (error) {
+        console.error('Error al cargar datos de la orden:', error);
+    }
+}
+
+// Escuchar el evento cuando el usuario termina de escribir o selecciona la orden
+document.getElementById('id_orden').addEventListener('change', function() {
+    cargarDatosPorOrden(this.value);
+});
     </script>
 </body>
 </html>
