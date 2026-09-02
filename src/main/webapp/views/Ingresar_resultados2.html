@@ -3903,65 +3903,88 @@ async function guardarEnBaseDeDatos() {
 }
 
 
-        async function cargarDatosPorOrden(idOrden) {
-    if (!idOrden) return;
-
+        async function buscarOrden(idOrden) {
     try {
-        const respuesta = await fetch(`/BuscarResultadosServlet?id_orden=${encodeURIComponent(idOrden)}`);
+        const response = await fetch(`../BuscarResultadosServlet?id_orden=${encodeURIComponent(idOrden)}`);
         
-        if (!respuesta.ok) {
-            console.warn('Orden no encontrada o nueva orden.');
+        if (!response.ok) {
+            throw new Error("No se encontraron resultados para esta orden.");
+        }
+
+        const resultados = await response.json();
+
+        if (!Array.isArray(resultados) || resultados.length === 0) {
+            alert("La orden no existe o no tiene resultados registradas.");
             return;
         }
 
-        const datos = await respuesta.json();
-
-        if (datos.length === 0) {
-            console.log('No hay resultados previos guardados para esta orden.');
-            return;
-        }
-
-        // 1. Cargar datos generales del paciente en la cabecera (tomando el primer registro)
-        const primerRegistro = datos[0];
-        if (document.getElementById('cod_doc')) document.getElementById('cod_doc').value = primerRegistro.cod_doc || '';
-        if (document.getElementById('nombre_paciente')) document.getElementById('nombre_paciente').value = primerRegistro.nombre_paciente || '';
-        if (document.getElementById('edad')) document.getElementById('edad').value = primerRegistro.edad || '';
-        if (document.getElementById('sexo')) document.getElementById('sexo').value = primerRegistro.sexo || '';
-        if (document.getElementById('telefono')) document.getElementById('telefono').value = primerRegistro.telefono || '';
-
-        // 2. Llenar los inputs de resultados del formulario
-        datos.forEach(item => {
-            // Asumiendo que tus inputs de examen tienen id o name que coincide con el nombre_examen o un atributo data
-            const inputResultado = document.querySelector(`input[data-examen="${item.nombre_examen}"]`) 
-                                || document.getElementById(item.nombre_examen);
-
-            if (inputResultado) {
-                inputResultado.value = item.resultado;
-            }
-        });
-
-        alert(`Se cargaron ${datos.length} resultados guardados anteriormente para la orden ${idOrden}.`);
+        llenarFormularioResultados(resultados);
 
     } catch (error) {
-        console.error('Error al cargar datos de la orden:', error);
+        console.error("Error al buscar orden:", error);
+        alert(error.message);
     }
 }
 
-// Escuchar el evento cuando el usuario termina de escribir o selecciona la orden
-document.addEventListener('DOMContentLoaded', function() {
-    // Busca el elemento de la orden
-    const inputOrden = document.getElementById('id_orden') || document.querySelector('input[name="id_orden"]');
+function llenarFormularioResultados(resultados) {
+    // 1. Llenar datos generales del paciente (primer objeto del array)
+    const p = resultados[0];
 
-    if (inputOrden) {
-        inputOrden.addEventListener('change', function() {
-            if (typeof cargarDatosPorOrden === 'function') {
-                cargarDatosPorOrden(this.value);
-            }
-        });
-    } else {
-        console.warn('Atención: No se encontró el campo de texto con ID "id_orden" en el DOM.');
+    document.getElementById('idOrden').value = p.id_orden || '';
+    document.getElementById('codDoc').value = p.cod_doc || '';
+    document.getElementById('nombrePaciente').value = p.nombre_paciente || '';
+    document.getElementById('edadPaciente').value = p.edad || '';
+    document.getElementById('fechaActual').value = p.fecha_registro || '';
+    document.getElementById('sexoPaciente').value = p.sexo || ' - ';
+    document.getElementById('telefonoPaciente').value = p.telefono || '';
+
+    // Ajuste de formato para input type="date" (extrae solo YYYY-MM-DD)
+    if (p.fecha_nacimiento && document.getElementById('fechaNacimiento')) {
+        const fechaLimpia = p.fecha_nacimiento.split('T')[0].split(' ')[0];
+        document.getElementById('fechaNacimiento').value = fechaLimpia;
     }
-});
+
+    // Actualizar vista previa de impresión
+    if (document.getElementById('txtIdOrdenVisual')) document.getElementById('txtIdOrdenVisual').innerText = p.id_orden || '';
+    if (document.getElementById('txtCodDocVisual')) document.getElementById('txtCodDocVisual').innerText = p.cod_doc || '';
+    if (document.getElementById('txtNombreVisual')) document.getElementById('txtNombreVisual').innerText = p.nombre_paciente || '';
+    if (document.getElementById('txtFechaNacVisual')) document.getElementById('txtFechaNacVisual').innerText = p.fecha_nacimiento || '';
+    if (document.getElementById('txtEdadVisual')) document.getElementById('txtEdadVisual').innerText = p.edad || '';
+    if (document.getElementById('txtFechaActualVisual')) document.getElementById('txtFechaActualVisual').innerText = p.fecha_registro || '';
+    if (document.getElementById('txtSexoVisual')) document.getElementById('txtSexoVisual').innerText = p.sexo || '';
+    if (document.getElementById('txtTelVisual')) document.getElementById('txtTelVisual').innerText = p.telefono || '';
+
+    // 2. Crear un mapa clave-valor con los resultados { NOMBRE_EXAMEN: RESULTADO }
+    const mapaExamenes = {};
+    resultados.forEach(item => {
+        if (item.nombre_examen) {
+            mapaExamenes[item.nombre_examen.trim().toUpperCase()] = item.resultado;
+        }
+    });
+
+    // 3. Estrategia A: Buscar por el texto de la primera celda (para tablas sin ID en sus inputs)
+    document.querySelectorAll('table tbody tr').forEach(row => {
+        const celdaNombre = row.querySelector('td:first-child');
+        const inputResultado = row.querySelector('input.form-control-editable, select.form-control-editable');
+
+        if (celdaNombre && inputResultado) {
+            const nombreExamenDOM = celdaNombre.innerText.trim().toUpperCase();
+            if (mapaExamenes.hasOwnProperty(nombreExamenDOM)) {
+                inputResultado.value = mapaExamenes[nombreExamenDOM];
+            }
+        }
+    });
+
+    // 4. Estrategia B: Buscar por ID exacto (para campos con IDs como #txtGlucosa, #resTSH, etc.)
+    resultados.forEach(item => {
+        if (item.nombre_examen) {
+            const inputPorId = document.getElementById(item.nombre_examen);
+            if (inputPorId) {
+                inputPorId.value = item.resultado;
+            }
+        }
+    });
+}
     </script>
 </body>
 </html>
