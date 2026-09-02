@@ -50,7 +50,8 @@
                 <div class="row g-2" style="font-size: 11px;">
                     <div class="col-md-6 col-12">
                         <strong class="text-primary">ORDEN NO:</strong>
-                        <input type="text" id="idOrden" class="form-control form-control-sm fw-bold text-primary" value="1000">
+                        <input type="text" id="idOrden" class="form-control form-control-sm fw-bold text-primary" value="1000" onchange="cargarResultadosPorOrden(this.value)">
+                       
                     </div>
                     <div class="col-md-6 col-6">
                         <strong>Cod/Doc:</strong>
@@ -3986,49 +3987,53 @@ function llenarFormularioResultados(resultados) {
     });
 }
 
-        function cargarDatosYResultados(idOrden) {
-    fetch(`BuscarResultadosServlet?id_orden=${encodeURIComponent(idOrden)}`)
+        function cargarResultadosPorOrden(idOrden) {
+    if (!idOrden || idOrden.trim() === "") {
+        alert("Por favor ingrese un número de orden válido.");
+        return;
+    }
+
+    fetch(`BuscarResultadosServlet?id_orden=${encodeURIComponent(idOrden.trim())}`)
         .then(response => {
-            if (!response.ok) throw new Error("Error en la consulta");
+            if (!response.ok) throw new Error("Error en la solicitud al servidor");
             return response.json();
         })
         .then(data => {
+            console.log("Resultados obtenidos para la orden:", data);
+
             if (!data || data.length === 0) {
-                console.warn("No se encontraron resultados previos para esta orden.");
+                alert("No se encontraron resultados registrados para la orden N° " + idOrden);
                 return;
             }
 
-            // A. Llenar cabecera con datos del paciente (tomados del primer registro)
-            const paciente = data[0];
-            if (document.getElementById('idOrden')) document.getElementById('idOrden').value = paciente.id_orden || idOrden;
-            if (document.getElementById('cedulaPaciente')) document.getElementById('cedulaPaciente').value = paciente.cedula || '';
-            if (document.getElementById('nombrePaciente')) document.getElementById('nombrePaciente').value = paciente.nombre_paciente || '';
-            if (document.getElementById('fechaNacimiento')) document.getElementById('fechaNacimiento').value = paciente.fecha_nacimiento || '';
-            if (document.getElementById('edadPaciente')) document.getElementById('edadPaciente').value = paciente.edad || '';
-            if (document.getElementById('sexoPaciente')) document.getElementById('sexoPaciente').value = paciente.sexo || '';
-            if (document.getElementById('medicoPaciente')) document.getElementById('medicoPaciente').value = paciente.medico || '';
+            // 1. Cargar datos demográficos del paciente (primer registro)
+            const pac = data[0];
+            if (document.getElementById('idOrden')) document.getElementById('idOrden').value = pac.id_orden || '';
+            if (document.getElementById('cedulaPaciente')) document.getElementById('cedulaPaciente').value = pac.cod_doc || '';
+            if (document.getElementById('nombrePaciente')) document.getElementById('nombrePaciente').value = pac.nombre_paciente || '';
+            if (document.getElementById('fechaNacimiento')) document.getElementById('fechaNacimiento').value = pac.fecha_nacimiento || '';
+            if (document.getElementById('edadPaciente')) document.getElementById('edadPaciente').value = pac.edad || '';
+            if (document.getElementById('sexoPaciente')) document.getElementById('sexoPaciente').value = pac.sexo || '';
+            if (document.getElementById('telefonoPaciente')) document.getElementById('telefonoPaciente').value = pac.telefono || '';
 
-            // B. Recorrer la lista de exámenes y llenar las pestañas
+            // 2. Llenar los campos de los exámenes
             data.forEach(item => {
-                // Asumiendo que el 'id' del input HTML coincide con la columna 'parametro'
-                const inputExamen = document.getElementById(item.parametro);
-                
-                if (inputExamen) {
-                    inputExamen.value = item.resultado;
+                // El atributo id="..." del <input> debe ser idéntico al valor almacenado en 'nombre_examen'
+                const inputExamen = document.getElementById(item.nombre_examen);
 
-                    // Disparar eventos para recalcular formulas automáticas (ej. BUN, LDL, HOMA-IR)
+                if (inputExamen) {
+                    inputExamen.value = item.resultado || '';
+
+                    // Forzar eventos 'input' y 'change' para ejecutar cálculos automáticos (BUN, LDL, HOMA, etc.)
                     inputExamen.dispatchEvent(new Event('input', { bubbles: true }));
                     inputExamen.dispatchEvent(new Event('change', { bubbles: true }));
                 }
-
-                // Llenar observación asociada al parámetro (si aplica)
-                const inputObs = document.getElementById(`obs_${item.parametro}`);
-                if (inputObs && item.observacion) {
-                    inputObs.value = item.observacion;
-                }
             });
         })
-        .catch(error => console.error("Error al cargar resultados:", error));
+        .catch(error => {
+            console.error("Error al consultar la orden:", error);
+            alert("Ocurrió un error al cargar la información de la orden.");
+        });
 }
     </script>
 </body>
