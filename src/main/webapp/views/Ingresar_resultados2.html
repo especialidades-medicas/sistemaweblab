@@ -3987,28 +3987,19 @@ function llenarFormularioResultados(resultados) {
     });
 }
 
-        function cargarResultadosPorOrden(idOrden) {
-    if (!idOrden || idOrden.trim() === "") {
-        alert("Por favor ingrese un número de orden válido.");
-        return;
-    }
+       function buscarPorOrden(idOrden) {
+    if (!idOrden || idOrden.trim() === '') return;
 
     fetch(`BuscarResultadosServlet?id_orden=${encodeURIComponent(idOrden.trim())}`)
-        .then(response => {
-            if (!response.ok) throw new Error("Error en la solicitud al servidor");
-            return response.json();
-        })
+        .then(res => res.json())
         .then(data => {
-            console.log("Resultados obtenidos para la orden:", data);
-
             if (!data || data.length === 0) {
-                alert("No se encontraron resultados registrados para la orden N° " + idOrden);
+                alert("No se encontraron resultados guardados para esta orden.");
                 return;
             }
 
-            // 1. Cargar datos demográficos del paciente (primer registro)
+            // 1. Cargar datos del paciente tomados del primer registro
             const pac = data[0];
-            if (document.getElementById('idOrden')) document.getElementById('idOrden').value = pac.id_orden || '';
             if (document.getElementById('cedulaPaciente')) document.getElementById('cedulaPaciente').value = pac.cod_doc || '';
             if (document.getElementById('nombrePaciente')) document.getElementById('nombrePaciente').value = pac.nombre_paciente || '';
             if (document.getElementById('fechaNacimiento')) document.getElementById('fechaNacimiento').value = pac.fecha_nacimiento || '';
@@ -4016,24 +4007,18 @@ function llenarFormularioResultados(resultados) {
             if (document.getElementById('sexoPaciente')) document.getElementById('sexoPaciente').value = pac.sexo || '';
             if (document.getElementById('telefonoPaciente')) document.getElementById('telefonoPaciente').value = pac.telefono || '';
 
-            // 2. Llenar los campos de los exámenes
+            // 2. Iterar la lista y mapear cada examen al input HTML cuyo ID coincida con 'nombre_examen'
             data.forEach(item => {
-                // El atributo id="..." del <input> debe ser idéntico al valor almacenado en 'nombre_examen'
                 const inputExamen = document.getElementById(item.nombre_examen);
-
                 if (inputExamen) {
                     inputExamen.value = item.resultado || '';
-
-                    // Forzar eventos 'input' y 'change' para ejecutar cálculos automáticos (BUN, LDL, HOMA, etc.)
+                    
+                    // Disparar evento para recalcular automáticamente fórmulas o visualizaciones en pantalla
                     inputExamen.dispatchEvent(new Event('input', { bubbles: true }));
-                    inputExamen.dispatchEvent(new Event('change', { bubbles: true }));
                 }
             });
         })
-        .catch(error => {
-            console.error("Error al consultar la orden:", error);
-            alert("Ocurrió un error al cargar la información de la orden.");
-        });
+        .catch(err => console.error("Error al consultar la orden:", err));
 }
     </script>
 </body>
