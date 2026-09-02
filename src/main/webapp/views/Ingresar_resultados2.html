@@ -3986,56 +3986,49 @@ function llenarFormularioResultados(resultados) {
     });
 }
 
-        function cargarResultadosEnPantalla(listaResultados) {
-    if (!listaResultados || listaResultados.length === 0) {
-        console.warn("No se encontraron resultados para esta orden.");
-        return;
-    }
-
-    // 1. Mapear datos de la cabecera del paciente (desde el primer objeto)
-    const p = listaResultados[0];
-
-    // Inputs editables de cabecera
-    if (document.getElementById('idOrden')) document.getElementById('idOrden').value = p.id_orden || '';
-    if (document.getElementById('codDoc')) document.getElementById('codDoc').value = p.cod_doc || '';
-    if (document.getElementById('nombrePaciente')) document.getElementById('nombrePaciente').value = p.nombre_paciente || '';
-    if (document.getElementById('fechaNacimiento')) document.getElementById('fechaNacimiento').value = p.fecha_nacimiento || '';
-    if (document.getElementById('edadPaciente')) document.getElementById('edadPaciente').value = p.edad || '';
-    if (document.getElementById('fechaActual')) document.getElementById('fechaActual').value = p.fecha_registro || '';
-    if (document.getElementById('sexoPaciente')) document.getElementById('sexoPaciente').value = p.sexo || ' - ';
-    if (document.getElementById('telefonoPaciente')) document.getElementById('telefonoPaciente').value = p.telefono || '';
-
-    // Spans del bloque de impresión visual
-    if (document.getElementById('txtIdOrdenVisual')) document.getElementById('txtIdOrdenVisual').textContent = p.id_orden || '';
-    if (document.getElementById('txtCodDocVisual')) document.getElementById('txtCodDocVisual').textContent = p.cod_doc || '';
-    if (document.getElementById('txtNombreVisual')) document.getElementById('txtNombreVisual').textContent = p.nombre_paciente || '';
-    if (document.getElementById('txtFechaNacVisual')) document.getElementById('txtFechaNacVisual').textContent = p.fecha_nacimiento || '';
-    if (document.getElementById('txtEdadVisual')) document.getElementById('txtEdadVisual').textContent = p.edad || '';
-    if (document.getElementById('txtFechaActualVisual')) document.getElementById('txtFechaActualVisual').textContent = p.fecha_registro || '';
-    if (document.getElementById('txtSexoVisual')) document.getElementById('txtSexoVisual').textContent = p.sexo || '';
-    if (document.getElementById('txtTelVisual')) document.getElementById('txtTelVisual').textContent = p.telefono || '';
-
-    // 2. Mapear resultados de exámenes buscando por el texto de la fila (TD)
-    listaResultados.forEach(item => {
-        if (!item.nombre_examen) return;
-
-        const nombreExamenDB = item.nombre_examen.trim().toUpperCase();
-
-        // Recorrer todas las filas de las tablas del documento
-        document.querySelectorAll('tbody tr').forEach(fila => {
-            const primeraCelda = fila.querySelector('td:first-child');
-            if (primeraCelda) {
-                const nombreExamenTabla = primeraCelda.textContent.trim().toUpperCase();
-
-                if (nombreExamenTabla === nombreExamenDB) {
-                    const campoEntrada = fila.querySelector('input.form-control-editable, select.form-control-editable');
-                    if (campoEntrada) {
-                        campoEntrada.value = item.resultado || '';
-                    }
-                }
+        function cargarDatosYResultados(idOrden) {
+    fetch(`BuscarResultadosServlet?id_orden=${encodeURIComponent(idOrden)}`)
+        .then(response => {
+            if (!response.ok) throw new Error("Error en la consulta");
+            return response.json();
+        })
+        .then(data => {
+            if (!data || data.length === 0) {
+                console.warn("No se encontraron resultados previos para esta orden.");
+                return;
             }
-        });
-    });
+
+            // A. Llenar cabecera con datos del paciente (tomados del primer registro)
+            const paciente = data[0];
+            if (document.getElementById('idOrden')) document.getElementById('idOrden').value = paciente.id_orden || idOrden;
+            if (document.getElementById('cedulaPaciente')) document.getElementById('cedulaPaciente').value = paciente.cedula || '';
+            if (document.getElementById('nombrePaciente')) document.getElementById('nombrePaciente').value = paciente.nombre_paciente || '';
+            if (document.getElementById('fechaNacimiento')) document.getElementById('fechaNacimiento').value = paciente.fecha_nacimiento || '';
+            if (document.getElementById('edadPaciente')) document.getElementById('edadPaciente').value = paciente.edad || '';
+            if (document.getElementById('sexoPaciente')) document.getElementById('sexoPaciente').value = paciente.sexo || '';
+            if (document.getElementById('medicoPaciente')) document.getElementById('medicoPaciente').value = paciente.medico || '';
+
+            // B. Recorrer la lista de exámenes y llenar las pestañas
+            data.forEach(item => {
+                // Asumiendo que el 'id' del input HTML coincide con la columna 'parametro'
+                const inputExamen = document.getElementById(item.parametro);
+                
+                if (inputExamen) {
+                    inputExamen.value = item.resultado;
+
+                    // Disparar eventos para recalcular formulas automáticas (ej. BUN, LDL, HOMA-IR)
+                    inputExamen.dispatchEvent(new Event('input', { bubbles: true }));
+                    inputExamen.dispatchEvent(new Event('change', { bubbles: true }));
+                }
+
+                // Llenar observación asociada al parámetro (si aplica)
+                const inputObs = document.getElementById(`obs_${item.parametro}`);
+                if (inputObs && item.observacion) {
+                    inputObs.value = item.observacion;
+                }
+            });
+        })
+        .catch(error => console.error("Error al cargar resultados:", error));
 }
     </script>
 </body>
