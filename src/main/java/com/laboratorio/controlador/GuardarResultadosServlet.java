@@ -1,4 +1,4 @@
-package com.laboratorio.controlador; // Mismo paquete que tu clase Conexion
+package com.laboratorio.controlador;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -6,6 +6,8 @@ import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -13,12 +15,13 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-// Importante: Asegúrate de tener la librería org.json en tu proyecto
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 @WebServlet("/GuardarResultadosServlet")
 public class GuardarResultadosServlet extends HttpServlet {
+
+    private static final Logger LOGGER = Logger.getLogger(GuardarResultadosServlet.class.getName());
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) 
@@ -29,7 +32,7 @@ public class GuardarResultadosServlet extends HttpServlet {
         response.setCharacterEncoding("UTF-8");
         PrintWriter out = response.getWriter();
 
-        // 1. Leer el JSON enviado desde el Frontend
+        // 1. Lectura del JSON del cuerpo de la petición
         StringBuilder sb = new StringBuilder();
         String line;
         try (BufferedReader reader = request.getReader()) {
@@ -38,18 +41,19 @@ public class GuardarResultadosServlet extends HttpServlet {
             }
         }
 
-        // 2. Obtener la conexión utilizando la clase Conexion existente
+        // 2. Obtención de conexión a través de Conexion.getConnection()
         try (Connection conn = Conexion.getConnection()) {
 
             if (conn == null) {
+                LOGGER.log(Level.SEVERE, "No se pudo obtener la conexión a la base de datos.");
                 response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                out.print("{\"status\":\"error\", \"message\":\"No se pudo conectar a la base de datos en Railway.\"}");
+                out.print("{\"status\":\"error\", \"message\":\"No se pudo conectar a la base de datos de Railway.\"}");
                 return;
             }
 
             JSONArray listaResultados = new JSONArray(sb.toString());
 
-            // 3. Sentencia SQL de inserción en la tabla de especialidades_medicas
+            // 3. Sentencia SQL de inserción en lote
             String sql = "INSERT INTO laboratorio_resultados "
                     + "(id_orden, cod_doc, nombre_paciente, fecha_nacimiento, edad, fecha_registro, sexo, telefono, categoria, nombre_examen, resultado, unidad, valores_referencia) "
                     + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
@@ -79,19 +83,19 @@ public class GuardarResultadosServlet extends HttpServlet {
                     stmt.setString(12, obj.optString("unidad", null));
                     stmt.setString(13, obj.optString("valores_referencia", null));
 
-                    stmt.addBatch(); // Ejecución por lote para mayor rapidez
+                    stmt.addBatch();
                 }
                 stmt.executeBatch();
             }
 
-            out.print("{\"status\":\"success\", \"message\":\"Resultados guardados con éxito\"}");
+            out.print("{\"status\":\"success\", \"message\":\"Resultados guardados correctamente\"}");
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, "Error SQL al insertar resultados: " + e.getMessage(), e);
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            out.print("{\"status\":\"error\", \"message\":\"Error de base de datos: " + e.getMessage() + "\"}");
+            out.print("{\"status\":\"error\", \"message\":\"Error en la base de datos: " + e.getMessage() + "\"}");
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, "Error inesperado en el servidor: " + e.getMessage(), e);
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             out.print("{\"status\":\"error\", \"message\":\"Error interno: " + e.getMessage() + "\"}");
         }
