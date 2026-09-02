@@ -3882,23 +3882,22 @@ async function guardarEnBaseDeDatos() {
         return;
     }
 
-    console.log('Registros listos para insertar en la BD:', datosAGuardar);
-
-    // Ejemplo de envío a tu API / Servicio Web (Node.js, Supabase, Firebase, Express, etc.)
     try {
-        const respuesta = await fetch('/api/guardar-resultados', {
+        const respuesta = await fetch('../GuardarResultadosServlet', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 'Content-Type': 'application/json; charset=UTF-8' },
             body: JSON.stringify(datosAGuardar)
         });
 
         if (respuesta.ok) {
-            alert('¡Resultados guardados exitosamente!');
+            alert('¡Resultados guardados exitosamente en la base de datos!');
         } else {
-            alert('Error al guardar en la base de datos.');
+            const errorData = await respuesta.json().catch(() => ({}));
+            alert('Error: ' + (errorData.message || 'No se pudo guardar.'));
         }
     } catch (error) {
         console.error('Error de conexión:', error);
+        alert('No se pudo comunicar con el servidor.');
     }
 }
        
