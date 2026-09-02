@@ -3624,6 +3624,84 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
+// --- BÚSQUEDA Y AUTOCOMPLETADO AUTOMÁTICO DE PACIENTE ---
+async function buscarYCompletarPaciente(cedula) {
+    const docLimpio = cedula ? cedula.trim() : "";
+    if (!docLimpio || docLimpio.length < 5) return;
+
+    try {
+        const response = await fetch(`/ControladorPacientes?accion=buscar&cedula=${encodeURIComponent(docLimpio)}`);
+        
+        if (response.ok) {
+            const paciente = await response.json();
+
+            // Si el paciente existe en la BD, autocompletamos los campos
+            if (paciente && (paciente.cedula || paciente.nombres)) {
+                if (document.getElementById('nombrePaciente')) {
+                    document.getElementById('nombrePaciente').value = paciente.nombres || paciente.nombre || '';
+                }
+                if (document.getElementById('fechaNacimiento')) {
+                    document.getElementById('fechaNacimiento').value = paciente.fechaNacimiento || '';
+                    if (paciente.fechaNacimiento) {
+                        calcularYSetearEdad(paciente.fechaNacimiento);
+                    }
+                }
+                if (document.getElementById('sexoPaciente')) {
+                    document.getElementById('sexoPaciente').value = paciente.genero || paciente.sexo || ' - ';
+                }
+                if (document.getElementById('telefonoPaciente')) {
+                    document.getElementById('telefonoPaciente').value = paciente.telefono || '';
+                }
+                if (document.getElementById('txtMail')) {
+                    document.getElementById('txtMail').value = paciente.correo || paciente.email || '';
+                }
+            }
+        }
+    } catch (error) {
+        console.error("Error al consultar el paciente en la base de datos:", error);
+    }
+}
+
+// Función auxiliar para calcular y formatear la edad automáticamente
+function calcularYSetearEdad(fechaNacStr) {
+    if (!fechaNacStr) return;
+    const nac = new Date(fechaNacStr);
+    const hoy = new Date();
+    if (isNaN(nac.getTime())) return;
+
+    let edad = hoy.getFullYear() - nac.getFullYear();
+    const mes = hoy.getMonth() - nac.getMonth();
+    if (mes < 0 || (mes === 0 && hoy.getDate() < nac.getDate())) {
+        edad--;
+    }
+    
+    const inputEdad = document.getElementById('edadPaciente');
+    if (inputEdad) {
+        inputEdad.value = (edad >= 0 ? edad : 0) + " años";
+    }
+}
+
+// --- VINCULACIÓN DE EVENTOS AL CARGAR EL DOM ---
+document.addEventListener('DOMContentLoaded', () => {
+    const inputCodDoc = document.getElementById('codDoc');
+
+    if (inputCodDoc) {
+        // Buscar al salir del campo (perder el foco)
+        inputCodDoc.addEventListener('blur', (e) => {
+            buscarYCompletarPaciente(e.target.value);
+        });
+
+        // Buscar al presionar la tecla Enter
+        inputCodDoc.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                buscarYCompletarPaciente(e.target.value);
+            }
+        });
+    }
+});
+
+        
 
 // Función auxiliar para exportar automáticamente y evitar el sufijo (1).xlsx
 async function autoExportarPacientesExcel(listaPacientes) {
