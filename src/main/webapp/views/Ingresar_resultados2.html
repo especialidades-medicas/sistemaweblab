@@ -3903,6 +3903,29 @@ async function guardarEnBaseDeDatos() {
     }
 }
 
+async function buscarOrden(idOrden) {
+    try {
+        const response = await fetch(`../BuscarResultadosServlet?id_orden=${encodeURIComponent(idOrden)}`);
+        
+        if (!response.ok) {
+            throw new Error("No se encontraron resultados para esta orden.");
+        }
+
+        const resultados = await response.json();
+
+        if (!Array.isArray(resultados) || resultados.length === 0) {
+            alert("La orden no existe o no tiene resultados registradas.");
+            return;
+        }
+
+        llenarFormularioResultados(resultados);
+
+    } catch (error) {
+        console.error("Error al buscar orden:", error);
+        alert(error.message);
+    }
+}
+
 function llenarFormularioResultados(resultados) {
     // 1. Llenar datos generales del paciente (primer objeto del array)
     const p = resultados[0];
@@ -3974,6 +3997,40 @@ function llenarFormularioResultados(resultados) {
     if (typeof actualizarTablaResultadosRegistrados === 'function') {
         actualizarTablaResultadosRegistrados();
     }
+}
+
+       function buscarPorOrden(idOrden) {
+    if (!idOrden || idOrden.trim() === '') return;
+
+    fetch(`BuscarResultadosServlet?id_orden=${encodeURIComponent(idOrden.trim())}`)
+        .then(res => res.json())
+        .then(data => {
+            if (!data || data.length === 0) {
+                alert("No se encontraron resultados guardados para esta orden.");
+                return;
+            }
+
+            // 1. Cargar datos del paciente tomados del primer registro
+            const pac = data[0];
+            if (document.getElementById('cedulaPaciente')) document.getElementById('cedulaPaciente').value = pac.cod_doc || '';
+            if (document.getElementById('nombrePaciente')) document.getElementById('nombrePaciente').value = pac.nombre_paciente || '';
+            if (document.getElementById('fechaNacimiento')) document.getElementById('fechaNacimiento').value = pac.fecha_nacimiento || '';
+            if (document.getElementById('edadPaciente')) document.getElementById('edadPaciente').value = pac.edad || '';
+            if (document.getElementById('sexoPaciente')) document.getElementById('sexoPaciente').value = pac.sexo || '';
+            if (document.getElementById('telefonoPaciente')) document.getElementById('telefonoPaciente').value = pac.telefono || '';
+
+            // 2. Iterar la lista y mapear cada examen al input HTML cuyo ID coincida con 'nombre_examen'
+            data.forEach(item => {
+                const inputExamen = document.getElementById(item.nombre_examen);
+                if (inputExamen) {
+                    inputExamen.value = item.resultado || '';
+                    
+                    // Disparar evento para recalcular automáticamente fórmulas o visualizaciones en pantalla
+                    inputExamen.dispatchEvent(new Event('input', { bubbles: true }));
+                }
+            });
+        })
+        .catch(err => console.error("Error al consultar la orden:", err));
 }
         
     </script>
