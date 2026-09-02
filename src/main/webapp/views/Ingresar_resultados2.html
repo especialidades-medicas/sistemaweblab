@@ -3883,7 +3883,8 @@ async function guardarEnBaseDeDatos() {
     }
 
     try {
-        const respuesta = await fetch('../GuardarResultadosServlet', {
+        // La ruta mapea directamente con la anotación @WebServlet("/GuardarResultadosServlet")
+        const respuesta = await fetch('/GuardarResultadosServlet', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json; charset=UTF-8' },
             body: JSON.stringify(datosAGuardar)
@@ -3893,11 +3894,11 @@ async function guardarEnBaseDeDatos() {
             alert('¡Resultados guardados exitosamente en la base de datos!');
         } else {
             const errorData = await respuesta.json().catch(() => ({}));
-            alert('Error: ' + (errorData.message || 'No se pudo guardar.'));
+            alert('Error: ' + (errorData.message || 'No se pudo guardar la información.'));
         }
     } catch (error) {
-        console.error('Error de conexión:', error);
-        alert('No se pudo comunicar con el servidor.');
+        console.error('Error de red o conexión:', error);
+        alert('No se pudo establecer comunicación con el servidor.');
     }
 }
        
