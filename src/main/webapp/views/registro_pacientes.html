@@ -835,7 +835,8 @@
        
 
         // Carga de arrays desde localStorage o base de datos
-let patients = JSON.parse(localStorage.getItem("lab_pacientes")) || [];
+
+patients = JSON.parse(localStorage.getItem("lab_pacientes")) || [];
 let laboratorio_resultados = JSON.parse(localStorage.getItem("laboratorio_resultados")) || [];
 
 // Ejecutar al cargar la página
