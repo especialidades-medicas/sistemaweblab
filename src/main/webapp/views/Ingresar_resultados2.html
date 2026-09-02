@@ -2365,6 +2365,11 @@
                 </div>
             </div>
 
+<!-- Botón para guardar en la Base de Datos en la Nube -->
+<button type="button" class="btn btn-primary btn-sm ms-2 no-print" onclick="almacenarExamenesNube()">
+    <i class="bi bi-cloud-arrow-up-fill me-1"></i> Guardar en la Nube
+</button>
+            
             <!-- TABLA UNIFICADA DE RESULTADOS (Agrupa por categoría y oculta inputs al imprimir/PDF) -->
             <div class="mb-3">
                 <div class="text-primary fw-bold border-bottom pb-1 mb-2 small">RESULTADOS DE EXÁMENES REGISTRADOS</div>
@@ -3784,6 +3789,178 @@ function nuevoPaciente() {
     }
 }
 
+
+     // ==========================================
+// 1. INICIALIZACIÓN DE INDEXEDDB
+// ==========================================
+const DB_NAME = "BiosaludExamenesDB";
+const DB_VERSION = 1;
+const STORE_NAME = "registro_examenes";
+
+function abrirDB() {
+    return new Promise((resolve, reject) => {
+        const request = indexedDB.open(DB_NAME, DB_VERSION);
+
+        request.onupgradeneeded = (e) => {
+            const db = e.target.result;
+            if (!db.objectStoreNames.contains(STORE_NAME)) {
+                // Creamos el almacén con clave primaria autoincrementable 'id'
+                const store = db.createObjectStore(STORE_NAME, { keyPath: "id", autoIncrement: true });
+                store.createIndex("idOrden", "paciente.idOrden", { unique: false });
+                store.createIndex("fecha", "fecha_guardado", { unique: false });
+            }
+        };
+
+        request.onsuccess = (e) => resolve(e.target.result);
+        request.onerror = (e) => reject("Error al abrir IndexedDB: " + e.target.error);
+    });
+}
+
+// ==========================================
+// 2. FUNCIÓN PARA RECOPILAR Y GUARDAR DATOS
+// ==========================================
+async function almacenarExamenesDB() {
+    try {
+        // A. Obtener Datos del Paciente (Ningún campo obligatorio)
+        const paciente = {
+            idOrden: document.getElementById("idOrden")?.value.trim() || "",
+            codDoc: document.getElementById("codDoc")?.value.trim() || "",
+            nombrePaciente: document.getElementById("nombrePaciente")?.value.trim() || "",
+            fechaNacimiento: document.getElementById("fechaNacimiento")?.value || "",
+            edadPaciente: document.getElementById("edadPaciente")?.value.trim() || "",
+            fechaActual: document.getElementById("fechaActual")?.value.trim() || "",
+            sexoPaciente: document.getElementById("sexoPaciente")?.value || "",
+            telefonoPaciente: document.getElementById("telefonoPaciente")?.value.trim() || ""
+        };
+
+        // B. Recorrer Tablas y Extraer Exámenes Registrados
+        const examenesRegistrados = [];
+
+        // Buscamos todos los paneles de categorías/pestañas
+        const paneles = document.querySelectorAll(".tab-pane");
+
+        paneles.forEach(panel => {
+            // Identificar categoría o título de sección
+            let categoriaNombre = "General";
+            const tituloSeccion = panel.querySelector(".section-title");
+            if (tituloSeccion) {
+                categoriaNombre = tituloSeccion.getAttribute("data-section-name") || tituloSeccion.innerText.trim();
+            }
+
+            // Recorrer filas de tablas dentro del panel
+            const filas = panel.querySelectorAll("table tbody tr");
+
+            filas.forEach(fila => {
+                const celdas = fila.querySelectorAll("td");
+                
+                // Ignorar filas de subtítulos que ocupan todas las columnas
+                if (celdas.length < 2 || fila.querySelector("td[colspan]")) return;
+
+                // 1. Nombre del Examen
+                let nombreExamen = "";
+                const inputNombre = celdas[0].querySelector("input[type='text']");
+                if (inputNombre) {
+                    nombreExamen = inputNombre.value.trim();
+                } else {
+                    nombreExamen = celdas[0].innerText.replace(/\n/g, " ").trim();
+                }
+
+                // 2. Resultado
+                let resultado = "";
+                const inputRes = celdas[1]?.querySelector("input, select");
+                if (inputRes) {
+                    resultado = inputRes.value.trim();
+                } else if (celdas[1]) {
+                    resultado = celdas[1].innerText.trim();
+                }
+
+                // 3. Unidad
+                let unidad = "";
+                if (celdas[2]) {
+                    const inputUnidad = celdas[2].querySelector("input, select");
+                    unidad = inputUnidad ? inputUnidad.value.trim() : celdas[2].innerText.trim();
+                }
+
+                // 4. Valores de Referencia
+                let valoresReferencia = "";
+                if (celdas[3]) {
+                    const inputRef = celdas[3].querySelector("input, select");
+                    valoresReferencia = inputRef ? inputRef.value.trim() : celdas[3].innerText.trim();
+                }
+
+                // Guardar solo si se registró un resultado o si el examen tiene nombre definido
+                if (resultado !== "" || (nombreExamen !== "" && !celdas[0].classList.contains("fw-bold"))) {
+                    examenesRegistrados.push({
+                        categoria: categoriaNombre,
+                        nombre_examen: nombreExamen,
+                        resultado: resultado,
+                        unidad: unidad,
+                        valores_referencia: valoresReferencia
+                    });
+                }
+            });
+        });
+
+        // C. Estructura Final del Registro
+        const registroCompleto = {
+            fecha_guardado: new Date().toISOString(),
+            paciente: paciente,
+            total_examenes: examenesRegistrados.length,
+            examenes: examenesRegistrados
+        };
+
+        // D. Guardar en IndexedDB
+        const db = await abrirDB();
+        const tx = db.transaction(STORE_NAME, "readwrite");
+        const store = tx.objectStore(STORE_NAME);
+        
+        const request = store.add(registroCompleto);
+
+        request.onsuccess = () => {
+            alert(`✅ Exámenes almacenados exitosamente en la base de datos local.\nTotal de exámenes registrados: ${examenesRegistrados.length}`);
+        };
+
+        request.onerror = (e) => {
+            alert("❌ Error al guardar en la base de datos: " + e.target.error);
+        };
+
+    } catch (error) {
+        console.error(error);
+        alert("Ocurrió un error al procesar el guardado: " + error.message);
+    }
+}
+
+// ==========================================
+// 3. EXPORTAR BASE DE DATOS (RESPALDO JSON)
+// ==========================================
+async function exportarBaseDatosJSON() {
+    try {
+        const db = await abrirDB();
+        const tx = db.transaction(STORE_NAME, "readonly");
+        const store = tx.objectStore(STORE_NAME);
+        const request = store.getAll();
+
+        request.onsuccess = () => {
+            const data = request.result;
+            if (data.length === 0) {
+                alert("La base de datos está vacía.");
+                return;
+            }
+
+            const jsonStr = JSON.stringify(data, null, 2);
+            const blob = new Blob([jsonStr], { type: "application/json" });
+            const url = URL.createObjectURL(blob);
+            
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = `Respaldos_Examenes_Biosalud_${new Date().toISOString().slice(0, 10)}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+        };
+    } catch (e) {
+        alert("Error al exportar: " + e.message);
+    }
+}   
     </script>
 </body>
 </html>
