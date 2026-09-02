@@ -1,106 +1,115 @@
 package com.laboratorio.controlador;
 
-import java.io.File;
+import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.PrintWriter;
-import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import jakarta.servlet.ServletException;
-import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.Part;
 
-@WebServlet(name = "GuardarPdfServlet", urlPatterns = {"/GuardarPdfServlet"})
-@MultipartConfig(
-    fileSizeThreshold = 1024 * 1024 * 2,  // 2MB
-    maxFileSize = 1024 * 1024 * 10,        // 10MB
-    maxRequestSize = 1024 * 1024 * 50      // 50MB
-)
-public class GuardarPdfServlet extends HttpServlet {
+import org.json.JSONArray;
+import org.json.JSONObject;
 
-    private static final Logger LOGGER = Logger.getLogger(GuardarPdfServlet.class.getName());
+@WebServlet("/GuardarResultadosServlet")
+public class GuardarResultadosServlet extends HttpServlet {
+
+    private static final Logger LOGGER = Logger.getLogger(GuardarResultadosServlet.class.getName());
 
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) 
             throws ServletException, IOException {
         
         request.setCharacterEncoding("UTF-8");
-        response.setContentType("application/json;charset=UTF-8");
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
         PrintWriter out = response.getWriter();
-        
-        try {
-            // 1. Obtener parámetros enviados por FormData desde JavaScript
-            String carpetaFecha = request.getParameter("fecha");
-            String nombreArchivo = request.getParameter("nombreArchivo");
-            Part archivoPart = request.getPart("pdfFile");
 
-            if (carpetaFecha == null || nombreArchivo == null || archivoPart == null 
-                || carpetaFecha.trim().isEmpty() || nombreArchivo.trim().isEmpty()) {
-                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                out.print("{\"status\":\"error\", \"message\":\"Faltan datos requeridos o el archivo PDF.\"}");
-                return;
+        // 1. Leer el JSON enviado desde el Frontend
+        StringBuilder sb = new StringBuilder();
+        String line;
+        try (BufferedReader reader = request.getReader()) {
+            while ((line = reader.readLine()) != null) {
+                sb.append(line);
             }
+        }
 
-            // Prevención de Path Traversal (limpia caracteres ../ en los nombres)
-            carpetaFecha = new File(carpetaFecha).getName();
-            nombreArchivo = new File(nombreArchivo).getName();
+        // 2. Conexión a la Base de Datos
+        try (Connection conn = Conexion.getConnection()) {
 
-            // 2. Definición de la ruta física de almacenamiento
-            // Prioriza una variable de entorno si usas un Volume en Railway, o el path del Servlet
-            String rutaBase = System.getenv("PDF_STORAGE_DIR");
-            if (rutaBase == null || rutaBase.trim().isEmpty()) {
-                String realPath = getServletContext().getRealPath("/");
-                rutaBase = (realPath != null) ? realPath + "Resultados" : "Resultados";
-            }
-
-            File dirFecha = new File(rutaBase, carpetaFecha);
-            if (!dirFecha.exists()) {
-                dirFecha.mkdirs();
-            }
-
-            File archivoFinal = new File(dirFecha, nombreArchivo);
-
-            // 3. Guardado/Reemplazo del archivo usando NIO
-            try (InputStream inputStream = archivoPart.getInputStream()) {
-                Files.copy(inputStream, archivoFinal.toPath(), StandardCopyOption.REPLACE_EXISTING);
-            } catch (IOException e) {
-                LOGGER.log(Level.SEVERE, "Error de escritura al guardar PDF: " + e.getMessage(), e);
+            if (conn == null) {
+                LOGGER.log(Level.SEVERE, "No se pudo establecer conexión con la BD en Railway.");
                 response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                out.print("{\"status\":\"error\", \"message\":\"El archivo podría estar bloqueado o no se tienen permisos de escritura.\"}");
+                out.print("{\"status\":\"error\", \"message\":\"No se pudo conectar a la base de datos.\"}");
                 return;
             }
 
-            LOGGER.info("PDF guardado con éxito en: " + archivoFinal.getAbsolutePath());
+            JSONArray listaResultados = new JSONArray(sb.toString());
 
-            // 4. Respuesta de confirmación
-            response.setStatus(HttpServletResponse.SC_OK);
-            out.print("{\"status\":\"success\", \"message\":\"PDF guardado correctamente en Resultados/" 
-                    + carpetaFecha + "/" + nombreArchivo + "\"}");
+            if (listaResultados.length() > 0) {
+                // 3. Eliminar registros previos de esta orden (permite actualizar sin duplicar)
+                String idOrdenActual = listaResultados.getJSONObject(0).optString("id_orden", "");
+                if (!idOrdenActual.trim().isEmpty()) {
+                    String deleteSql = "DELETE FROM laboratorio_resultados WHERE id_orden = ?";
+                    try (PreparedStatement stmtDelete = conn.prepareStatement(deleteSql)) {
+                        stmtDelete.setString(1, idOrdenActual);
+                        stmtDelete.executeUpdate();
+                    }
+                }
 
+                // 4. Inserción en lote (Batch Insert)
+                String insertSql = "INSERT INTO laboratorio_resultados "
+                        + "(id_orden, cod_doc, nombre_paciente, fecha_nacimiento, edad, fecha_registro, sexo, telefono, categoria, nombre_examen, resultado, unidad, valores_referencia) "
+                        + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+                try (PreparedStatement stmtInsert = conn.prepareStatement(insertSql)) {
+                    for (int i = 0; i < listaResultados.length(); i++) {
+                        JSONObject obj = listaResultados.getJSONObject(i);
+
+                        stmtInsert.setString(1, obj.optString("id_orden", null));
+                        stmtInsert.setString(2, obj.optString("cod_doc", null));
+                        stmtInsert.setString(3, obj.optString("nombre_paciente", null));
+                        
+                        String fnac = obj.optString("fecha_nacimiento", "");
+                        if (!fnac.isEmpty()) {
+                            stmtInsert.setString(4, fnac);
+                        } else {
+                            stmtInsert.setNull(4, java.sql.Types.DATE);
+                        }
+
+                        stmtInsert.setString(5, obj.optString("edad", null));
+                        stmtInsert.setString(6, obj.optString("fecha_registro", null));
+                        stmtInsert.setString(7, obj.optString("sexo", null));
+                        stmtInsert.setString(8, obj.optString("telefono", null));
+                        stmtInsert.setString(9, obj.optString("categoria", "GENERAL"));
+                        stmtInsert.setString(10, obj.optString("nombre_examen", ""));
+                        stmtInsert.setString(11, obj.optString("resultado", ""));
+                        stmtInsert.setString(12, obj.optString("unidad", null));
+                        stmtInsert.setString(13, obj.optString("valores_referencia", null));
+
+                        stmtInsert.addBatch();
+                    }
+                    stmtInsert.executeBatch();
+                }
+            }
+
+            out.print("{\"status\":\"success\", \"message\":\"Resultados guardados o actualizados con éxito\"}");
+
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Error SQL en GuardarResultadosServlet: " + e.getMessage(), e);
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            out.print("{\"status\":\"error\", \"message\":\"Error de base de datos: " + e.getMessage() + "\"}");
         } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "Error procesando la solicitud de PDF: " + e.getMessage(), e);
+            LOGGER.log(Level.SEVERE, "Error interno en GuardarResultadosServlet: " + e.getMessage(), e);
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             out.print("{\"status\":\"error\", \"message\":\"Error interno: " + e.getMessage() + "\"}");
         }
-    }
-
-    @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        response.setStatus(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
-        response.setContentType("application/json;charset=UTF-8");
-        response.getWriter().print("{\"status\":\"error\", \"message\":\"Método GET no permitido para subir archivos.\"}");
-    }
-
-    @Override
-    public String getServletInfo() {
-        return "Servlet para guardar y organizar PDFs de resultados en el servidor";
     }
 }
