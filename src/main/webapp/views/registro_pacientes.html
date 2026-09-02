@@ -558,37 +558,38 @@
             </div>
 
             <!-- VISTA 1: PANEL PRINCIPAL -->
-            <div id="dashboard-view" class="section-view active">
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <div class="stat-icon">👥</div>
-                        <div class="stat-info">
-                            <h3>Pacientes Registrados</h3>
-                            <div class="number">340</div>
-                        </div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-icon">📋</div>
-                        <div class="stat-info">
-                            <h3>Pedidos de Hoy</h3>
-                            <div class="number">28</div>
-                        </div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-icon">🔬</div>
-                        <div class="stat-info">
-                            <h3>Resultados Listos</h3>
-                            <div class="number">24</div>
-                        </div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-icon">💰</div>
-                        <div class="stat-info">
-                            <h3>Cotizaciones del Día</h3>
-                            <div class="number">15</div>
-                        </div>
-                    </div>
-                </div>
+<div id="dashboard-view" class="section-view active">
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-icon">👥</div>
+            <div class="stat-info">
+                <h3>Pacientes Registrados</h3>
+                <div class="number" id="statPacientes">0</div>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">📋</div>
+            <div class="stat-info">
+                <h3>Pedidos de Hoy</h3>
+                <div class="number" id="statPedidos">1</div>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">🔬</div>
+            <div class="stat-info">
+                <h3>Resultados Listos</h3>
+                <div class="number" id="statResultados">0</div>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">💰</div>
+            <div class="stat-info">
+                <h3>Cotizaciones del Día</h3>
+                <div class="number" id="statCotizaciones">0</div>
+            </div>
+        </div>
+    </div>
+</div>
 
                 <div class="content-card">
                     <h2>Últimos Pedidos e Ingresos al Laboratorio</h2>
@@ -830,12 +831,63 @@
     </div>
 <script src="../controllers/ingresoPacientes.js?v=2.0"></script>
     <script>
-        let entries = JSON.parse(localStorage.getItem("lab_cotizaciones")) || [];
+        
+        // Unificación del evento de carga inicial
+window.onload = function() {
+    renderTable();       // Carga el cotizador de exámenes
+    renderPatients();    // Carga la tabla de pacientes y actualiza estadísticas
+};
 
-        window.onload = function() {
-            renderTable();
-        };
+        // Función para actualizar las métricas del Dashboard en tiempo real
+function updateDashboardStats() {
+    // Total de Pacientes Registrados en localStorage
+    const statPacientes = document.getElementById("statPacientes");
+    if (statPacientes) statPacientes.innerText = patients.length;
 
+    // Total de Cotizaciones en la lista
+    const statCotizaciones = document.getElementById("statCotizaciones");
+    if (statCotizaciones) statCotizaciones.innerText = entries.length;
+
+    // Conteo dinámico de Resultados Listos presentes en la tabla
+    const statResultados = document.getElementById("statResultados");
+    if (statResultados) {
+        const listos = document.querySelectorAll('.status.ready').length;
+        statResultados.innerText = listos;
+    }
+}
+// Renderizado completo de las 8 columnas de la tabla de Pacientes
+function renderPatients() {
+    const tbody = document.getElementById("patientTableBody");
+    tbody.innerHTML = "";
+
+    if (patients.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: var(--gray);">No hay pacientes registrados.</td></tr>`;
+        updateDashboardStats();
+        return;
+    }
+
+    patients.forEach((patient, index) => {
+        const row = tbody.insertRow();
+        row.innerHTML = `
+            <td><span class="badge-id">${patient.cedula}</span></td>
+            <td>${patient.nombre}</td>
+            <td>${patient.nacimiento || 'N/A'}</td>
+            <td>${patient.genero || 'N/A'}</td>
+            <td>${patient.telefono || 'N/A'}</td>
+            <td>${patient.correo || 'N/A'}</td>
+            <td>${patient.direccion || 'N/A'}</td>
+            <td>
+                <button class="btn-edit" onclick="editPatient(${index})">Editar</button>
+                <button class="btn-delete" onclick="deletePatient(${index})">Eliminar</button>
+            </td>
+        `;
+    });
+
+    // Actualiza los contadores cada vez que se renderiza la tabla
+    updateDashboardStats();
+}
+        
+        
         function switchTab(event, viewId) {
             event.preventDefault();
             document.querySelectorAll('.nav-item').forEach(item => {
