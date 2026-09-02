@@ -3529,81 +3529,101 @@ function descargarPDFSoloPaciente() {
 
 // Función para guardar o actualizar los datos del paciente según la cédula (Cod/Doc)
 // Función para guardar o actualizar los datos del paciente según la cédula (Cod/Doc)
-async function guardarOActualizarPaciente() {
-    // 1. Capturar los valores de los inputs del formulario
-    let cedula = document.getElementById('codDoc')?.value.trim() || '';
-    let orden = document.getElementById('idOrden')?.value.trim() || '';
-    let nombre = document.getElementById('nombrePaciente')?.value.trim() || '';
-    let fechaNacimiento = document.getElementById('fechaNacimiento')?.value || '';
-    let edad = document.getElementById('edadPaciente')?.value.trim() || '';
-    let telefono = document.getElementById('telefonoPaciente')?.value.trim() || '';
-    let fecha = document.getElementById('fechaActual')?.value || '';
-    let sexoSelect = document.getElementById('sexoPaciente');
-    let sexo = sexoSelect ? (sexoSelect.value.trim() || '') : '';
+// --- FUNCIÓN PARA GUARDAR O ACTUALIZAR PACIENTE ---
+async function guardarOActualizarPaciente(event) {
+    if (event) event.preventDefault();
 
-    // 2. Validación: ÚNICAMENTE CEDULA Y NOMBRES SON OBLIGATORIOS
-    if (!cedula) {
-        alert("⚠️ Por favor ingrese el número de Cédula o Documento para poder guardar el registro.");
-        document.getElementById('codDoc')?.focus();
+    // Captura de valores usando los IDs de tu HTML
+    const idOrden = document.getElementById("idOrden")?.value.trim() || "";
+    const codDoc = document.getElementById("codDoc")?.value.trim() || "";
+    const nombrePaciente = document.getElementById("nombrePaciente")?.value.trim().toUpperCase() || "";
+    const fechaNacimiento = document.getElementById("fechaNacimiento")?.value || "";
+    const edadPaciente = document.getElementById("edadPaciente")?.value || "";
+    const fechaActual = document.getElementById("fechaActual")?.value || "";
+    const sexoPaciente = document.getElementById("sexoPaciente")?.value || "";
+    const telefonoPaciente = document.getElementById("telefonoPaciente")?.value.trim() || "";
+    const txtMail = document.getElementById("txtMail")?.value.trim().toLowerCase() || "";
+
+    // Validación de campos obligatorios
+    if (!codDoc || codDoc === "" || !nombrePaciente || nombrePaciente === "") {
+        alert("Por favor complete los campos obligatorios: Cod/Doc (Cédula) y Apellidos y Nombres.");
         return;
     }
 
-    if (!nombre) {
-        alert("⚠️ Por favor asegúrese de ingresar el Nombre del Paciente antes de guardar.");
-        document.getElementById('nombrePaciente')?.focus();
-        return;
-    }
+    try {
+        // Mapeo de parámetros para enviar a tu Backend / Controlador Java (Servlet / Spring)
+        const formData = new URLSearchParams();
+        formData.append("idOrden", idOrden);
+        formData.append("patCedula", codDoc);            // Corresponde a codDoc
+        formData.append("patNombre", nombrePaciente);     // Corresponde a nombrePaciente
+        formData.append("patNacimiento", fechaNacimiento);
+        formData.append("patEdad", edadPaciente);
+        formData.append("fechaActual", fechaActual);
+        formData.append("patGenero", sexoPaciente);
+        formData.append("patTelefono", telefonoPaciente);
+        formData.append("patCorreo", txtMail);
 
-    // 3. Estructurar el objeto del paciente unificado (guardando todos los datos opcionales que tenga el formulario)
-    const pacienteData = {
-        cedula: cedula,
-        orden: orden,
-        nombre: nombre,
-        fechaNacimiento: fechaNacimiento,
-        edad: edad,
-        telefono: telefono,
-        fecha: fecha,
-        sexo: sexo
-    };
+        // Envío por AJAX a la base de datos
+        const response = await fetch('/ControladorPacientes', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: formData.toString()
+        });
 
-    // 4. Sincronizar con localStorage unificado ("lab_pacientes" para que comparta la base)
-    let pacientesGuardados = JSON.parse(localStorage.getItem('lab_pacientes')) || [];
-    
-    // Verificar si ya existe en la lista general por cédula
-    let indexExistente = pacientesGuardados.findIndex(p => p.cedula === cedula);
-    let esActualizacion = indexExistente !== -1;
+        const data = await response.json();
 
-    if (esActualizacion) {
-        pacientesGuardados[indexExistente] = pacienteData; // Actualiza
-    } else {
-        pacientesGuardados.push(pacienteData); // Agrega nuevo
-    }
+        if (response.ok) {
+            alert("¡Paciente y Orden guardados/actualizados con éxito en la base de datos!");
+            
+            // Si tienes una función para refrescar una tabla de pacientes existente, la ejecuta
+            if (typeof renderPatients === 'function') {
+                renderPatients();
+            }
+        } else {
+            alert("Atención: " + (data.error || "No se pudo guardar la información del paciente."));
+        }
 
-    // Guardar en el almacenamiento local compartido
-    localStorage.setItem('lab_pacientes', JSON.stringify(pacientesGuardados));
-
-    // Mantener compatibilidad con la estructura interna anterior
-    let bdInterna = JSON.parse(localStorage.getItem('bd_pacientes_biosalud')) || {};
-    bdInterna[cedula] = pacienteData;
-    localStorage.setItem('bd_pacientes_biosalud', JSON.stringify(bdInterna));
-
-    // 5. AUTOMATIZACIÓN EXCEL: Generar y sobrescribir el archivo pacientes_lab.xlsx sin duplicados
-    await autoExportarPacientesExcel(pacientesGuardados);
-
-    // 6. Notificación visual de éxito
-    if (esActualizacion) {
-        alert(`¡Datos del paciente "${nombre}" (Cédula: ${cedula}) actualizados y sincronizados en el Excel!`);
-    } else {
-        alert(`¡Paciente "${nombre}" guardado y sincronizado en el Excel exitosamente!`);
-    }
-
-    // 7. Enfoque automático
-    let inputOrden = document.getElementById('idOrden');
-    if (inputOrden) {
-        inputOrden.focus();
-        inputOrden.select();
+    } catch (error) {
+        console.error("Error al procesar la solicitud:", error);
+        alert("Error de conexión al intentar guardar en la base de datos.");
     }
 }
+
+// --- FUNCIÓN PARA EL BOTÓN "NUEVO PACIENTE" ---
+function nuevoPaciente() {
+    if (document.getElementById("idOrden")) document.getElementById("idOrden").value = "";
+    if (document.getElementById("codDoc")) document.getElementById("codDoc").value = "";
+    if (document.getElementById("nombrePaciente")) document.getElementById("nombrePaciente").value = "";
+    if (document.getElementById("fechaNacimiento")) document.getElementById("fechaNacimiento").value = "";
+    if (document.getElementById("edadPaciente")) document.getElementById("edadPaciente").value = "";
+    if (document.getElementById("fechaActual")) document.getElementById("fechaActual").value = new Date().toISOString().split('T')[0];
+    if (document.getElementById("sexoPaciente")) document.getElementById("sexoPaciente").value = " - ";
+    if (document.getElementById("telefonoPaciente")) document.getElementById("telefonoPaciente").value = "099";
+    if (document.getElementById("txtMail")) document.getElementById("txtMail").value = "";
+}
+
+// --- CÁLCULO AUTOMÁTICO DE EDAD AL CAMBIAR FECHA DE NACIMIENTO ---
+document.addEventListener('DOMContentLoaded', () => {
+    const inputFechaNac = document.getElementById('fechaNacimiento');
+    if (inputFechaNac) {
+        inputFechaNac.addEventListener('change', () => {
+            const fechaStr = inputFechaNac.value;
+            if (fechaStr) {
+                const nac = new Date(fechaStr);
+                const hoy = new Date();
+                let edad = hoy.getFullYear() - nac.getFullYear();
+                const mes = hoy.getMonth() - nac.getMonth();
+                if (mes < 0 || (mes === 0 && hoy.getDate() < nac.getDate())) {
+                    edad--;
+                }
+                const inputEdad = document.getElementById('edadPaciente');
+                if (inputEdad) {
+                    inputEdad.value = (edad >= 0 ? edad : 0) + " años";
+                }
+            }
+        });
+    }
+});
 
 // Función auxiliar para exportar automáticamente y evitar el sufijo (1).xlsx
 async function autoExportarPacientesExcel(listaPacientes) {
