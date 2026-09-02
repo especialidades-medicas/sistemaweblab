@@ -832,58 +832,74 @@
 <script src="../controllers/ingresoPacientes.js?v=2.0"></script>
     <script>
         
-        // Unificación del evento de carga inicial
+       
+
+        // Carga de arrays desde localStorage o base de datos
+let patients = JSON.parse(localStorage.getItem("lab_pacientes")) || [];
+let laboratorio_resultados = JSON.parse(localStorage.getItem("laboratorio_resultados")) || [];
+
+// Ejecutar al cargar la página
 window.onload = function() {
-    renderTable();       // Carga el cotizador de exámenes
-    renderPatients();    // Carga la tabla de pacientes y actualiza estadísticas
+    renderPatients();
+    updateDashboardStats();
 };
 
-        // Función para actualizar las métricas del Dashboard en tiempo real
 function updateDashboardStats() {
-    // Total de Pacientes Registrados en localStorage
+    // 1. Total de Pacientes Registrados en la base de datos 'pacientes'
     const statPacientes = document.getElementById("statPacientes");
-    if (statPacientes) statPacientes.innerText = patients.length;
+    if (statPacientes) {
+        statPacientes.innerText = patients.length;
+    }
 
-    // Total de Cotizaciones en la lista
-    const statCotizaciones = document.getElementById("statCotizaciones");
-    if (statCotizaciones) statCotizaciones.innerText = entries.length;
-
-    // Conteo dinámico de Resultados Listos presentes en la tabla
-    const statResultados = document.getElementById("statResultados");
+    // 2. Total de Resultados Enviados / Listos por PACIENTE (Únicos)
+    const statResultados = document.getElementById("statResultadosPacientes");
     if (statResultados) {
-        const listos = document.querySelectorAll('.status.ready').length;
-        statResultados.innerText = listos;
+        // Extrae el identificador único (cod_doc, cédula o ID de orden) por paciente
+        const pacientesConResultados = new Set(
+            laboratorio_resultados
+                .filter(res => !res.estado || res.estado === 'Listo') // Filtra solo exámenes completados
+                .map(res => res.cod_doc || res.cedula || res.resOrden || res.nombre_paciente) // Obtiene la cédula o documento
+                .filter(id => id != null && id !== "") // Descarta valores vacíos
+        );
+
+        // .size devuelve la cantidad de PACIENTES ÚNICOS, no de exámenes individuales
+        statResultados.innerText = pacientesConResultados.size;
+    }
+
+    // 3. Cotizaciones cargadas
+    const statCotizaciones = document.getElementById("statCotizaciones");
+    if (statCotizaciones) {
+        statCotizaciones.innerText = entries.length;
     }
 }
-// Renderizado completo de las 8 columnas de la tabla de Pacientes
+
+// Llama a updateDashboardStats() cada vez que guardes, edites o elimines registros
 function renderPatients() {
     const tbody = document.getElementById("patientTableBody");
+    if (!tbody) return;
     tbody.innerHTML = "";
 
     if (patients.length === 0) {
         tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: var(--gray);">No hay pacientes registrados.</td></tr>`;
-        updateDashboardStats();
-        return;
+    } else {
+        patients.forEach((patient, index) => {
+            const row = tbody.insertRow();
+            row.innerHTML = `
+                <td><span class="badge-id">${patient.cedula}</span></td>
+                <td>${patient.nombre}</td>
+                <td>${patient.nacimiento || 'N/A'}</td>
+                <td>${patient.genero || 'N/A'}</td>
+                <td>${patient.telefono || 'N/A'}</td>
+                <td>${patient.correo || 'N/A'}</td>
+                <td>${patient.direccion || 'N/A'}</td>
+                <td>
+                    <button class="btn-edit" onclick="editPatient(${index})">Editar</button>
+                    <button class="btn-delete" onclick="deletePatient(${index})">Eliminar</button>
+                </td>
+            `;
+        });
     }
 
-    patients.forEach((patient, index) => {
-        const row = tbody.insertRow();
-        row.innerHTML = `
-            <td><span class="badge-id">${patient.cedula}</span></td>
-            <td>${patient.nombre}</td>
-            <td>${patient.nacimiento || 'N/A'}</td>
-            <td>${patient.genero || 'N/A'}</td>
-            <td>${patient.telefono || 'N/A'}</td>
-            <td>${patient.correo || 'N/A'}</td>
-            <td>${patient.direccion || 'N/A'}</td>
-            <td>
-                <button class="btn-edit" onclick="editPatient(${index})">Editar</button>
-                <button class="btn-delete" onclick="deletePatient(${index})">Eliminar</button>
-            </td>
-        `;
-    });
-
-    // Actualiza los contadores cada vez que se renderiza la tabla
     updateDashboardStats();
 }
         
