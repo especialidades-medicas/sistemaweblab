@@ -34,11 +34,18 @@
             <version>8.3.0</version>
         </dependency>
         
-        <!-- Librería Gson para JSON (Ahora dentro de dependencies) -->
+        <!-- Librería Gson para JSON -->
         <dependency>
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
             <version>2.10.1</version>
+        </dependency>
+
+        <!-- Librería org.json para JSONObject y JSONArray -->
+        <dependency>
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
+            <version>20240303</version>
         </dependency>
     </dependencies>
     
