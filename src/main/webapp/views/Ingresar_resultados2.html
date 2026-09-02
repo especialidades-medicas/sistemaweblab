@@ -3948,8 +3948,19 @@ async function guardarEnBaseDeDatos() {
 }
 
 // Escuchar el evento cuando el usuario termina de escribir o selecciona la orden
-document.getElementById('id_orden').addEventListener('change', function() {
-    cargarDatosPorOrden(this.value);
+document.addEventListener('DOMContentLoaded', function() {
+    // Busca el elemento de la orden
+    const inputOrden = document.getElementById('id_orden') || document.querySelector('input[name="id_orden"]');
+
+    if (inputOrden) {
+        inputOrden.addEventListener('change', function() {
+            if (typeof cargarDatosPorOrden === 'function') {
+                cargarDatosPorOrden(this.value);
+            }
+        });
+    } else {
+        console.warn('Atención: No se encontró el campo de texto con ID "id_orden" en el DOM.');
+    }
 });
     </script>
 </body>
