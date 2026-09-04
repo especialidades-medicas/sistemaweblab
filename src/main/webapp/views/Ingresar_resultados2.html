@@ -3161,13 +3161,33 @@ async function descargarPDFResultados() {
     elementoClonado.querySelectorAll('.no-print').forEach(el => el.remove());
     if (bloqueImpresion) bloqueImpresion.classList.add("d-none");
 
+    // =========================================================================
+    // AJUSTES EN EL CLON PARA EVITAR HOJAS EN BLANCO Y REPETIR CABECERAS
+    // =========================================================================
+    elementoClonado.style.height = "auto";
+    elementoClonado.style.maxHeight = "none";
+    elementoClonado.style.margin = "0px";
+    elementoClonado.style.padding = "0px";
+
+    // Asegurar que thead se repita en saltos de página
+    elementoClonado.querySelectorAll("thead").forEach(thead => {
+        thead.style.display = "table-header-group";
+    });
+
+    // Evitar que las filas se corten por la mitad
+    elementoClonado.querySelectorAll("tr").forEach(tr => {
+        tr.style.pageBreakInside = "avoid";
+        tr.style.breakInside = "avoid";
+    });
+
     const opciones = {
-        margin:       5,
+        margin:       [8, 5, 8, 5], // Márgenes estables [arriba, izquierda, abajo, derecha] en mm
         filename:     nombreArchivoFinal,
         image:        { type: 'jpeg', quality: 0.98 },
         html2canvas:  { scale: 2, useCORS: true, scrollY: 0 },
         jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
-        pagebreak:    { mode: ['css', 'legacy'], avoid: ['tr', '.section-title'] }
+        // 'avoid-all' evita generar páginas en blanco por desbordamientos mínimos
+        pagebreak:    { mode: ['avoid-all', 'css', 'legacy'], avoid: ['tr', '.section-title', '.firma-container'] }
     };
 
     if (typeof html2pdf === "undefined") {
@@ -3177,7 +3197,6 @@ async function descargarPDFResultados() {
 
     html2pdf().from(elementoClonado).set(opciones).outputPdf('blob').then(async (pdfBlob) => {
         try {
-            // Verificamos si el navegador soporta el selector de archivos con sugerencia de nombre
             if ('showSaveFilePicker' in window) {
                 const opcionesArchivo = {
                     suggestedName: nombreArchivoFinal,
@@ -3191,14 +3210,12 @@ async function descargarPDFResultados() {
                 try {
                     archivoHandle = await window.showSaveFilePicker(opcionesArchivo);
                 } catch (err) {
-                    // Si el usuario cancela el cuadro de diálogo
                     if (err.name !== 'AbortError') {
                         console.error(err);
                     }
                     return;
                 }
 
-                // Intentar escribir en el archivo (Valida si está abierto o protegido)
                 try {
                     const writableStream = await archivoHandle.createWritable();
                     await writableStream.write(pdfBlob);
@@ -3206,7 +3223,6 @@ async function descargarPDFResultados() {
                     
                     alert(`¡PDF guardado exitosamente como "${nombreArchivoFinal}"!`);
 
-                    // Abrir una copia en una pestaña nueva para revisión inmediata
                     const blobUrl = URL.createObjectURL(pdfBlob);
                     window.open(blobUrl, '_blank');
 
@@ -3215,7 +3231,6 @@ async function descargarPDFResultados() {
                 }
 
             } else {
-                // Método convencional de respaldo para navegadores que no soportan el selector avanzado
                 html2pdf().from(elementoClonado).set(opciones).save();
                 
                 const blobUrl = URL.createObjectURL(pdfBlob);
