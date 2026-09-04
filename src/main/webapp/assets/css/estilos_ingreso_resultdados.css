@@ -49,7 +49,7 @@
 }
 
 /* ==========================================================================
-   2. ESTRUCTURA Y CONTENEDOR PRINCIPAL METALIZADO
+   2. ESTRUCTURA Y CONTENEDOR PRINCIPAL
    ========================================================================== */
 body {
     background-color: var(--lab-bg);
@@ -62,53 +62,45 @@ body {
     max-width: 1250px !important;
     margin: 30px auto !important;
     padding: 24px !important;
-    background: linear-gradient(145deg, #f1f5f9 0%, #e2e8f0 50%, #cbd5e1 100%) !important;
-    border: 1px solid #94a3b8 !important;
+    background: #ffffff !important;
+    border: 1px solid #cbd5e1 !important;
     border-radius: 16px !important;
-    box-shadow: 
-        0 20px 25px -5px rgba(0, 0, 0, 0.1),
-        0 8px 10px -6px rgba(0, 0, 0, 0.1),
-        inset 0 1px 2px rgba(255, 255, 255, 0.9),
-        inset 0 -2px 4px rgba(0, 0, 0, 0.08) !important;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05) !important;
 }
 
 /* Tarjetas Internas */
 .pedido-box, 
 #pedidoContainer .card {
-    background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%) !important;
-    border: 1px solid #94a3b8 !important;
+    background: #ffffff !important;
+    border: 1px solid #e2e8f0 !important;
     border-radius: 10px !important;
     padding: 16px !important;
     margin-bottom: 20px !important;
-    box-shadow: 
-        0 4px 6px -1px rgba(0, 0, 0, 0.05),
-        inset 0 1px 0 rgba(255, 255, 255, 0.8) !important;
+    box-shadow: none !important;
 }
 
 /* Encabezados de Sección */
 .section-title {
-    color: #0f172a !important;
-    font-size: 0.85rem !important;
+    color: #0284c7 !important;
+    font-size: 0.9rem !important;
     font-weight: 700 !important;
     letter-spacing: 0.6px;
     padding: 6px 12px !important;
-    background: linear-gradient(90deg, #cbd5e1 0%, #f1f5f9 100%) !important;
+    background: #f0f9ff !important;
     border-left: 4px solid #0284c7 !important;
     border-radius: 4px !important;
     margin-bottom: 14px !important;
 }
 
-/* Pestaña contenedora activa */
+/* Contenedor de Pestañas en Fondo Blanco */
 #pedidoContainer .tab-content,
+#pedidoContainer .tab-pane,
 #pedidoContainer .tab-pane.active {
-    background: linear-gradient(135deg, #e2e8f0 0%, #cbd5e1 45%, #94a3b8 100%) !important;
+    background: #ffffff !important;
     padding: 16px !important;
     border-radius: 12px !important;
-    border: 2px solid #64748b !important;
-    box-shadow: 
-        inset 0 2px 4px rgba(255, 255, 255, 0.9), 
-        inset 0 -2px 6px rgba(0, 0, 0, 0.25),
-        0 8px 16px rgba(0, 0, 0, 0.15) !important;
+    border: none !important;
+    box-shadow: none !important;
 }
 
 .tab-content > .tab-pane {
@@ -137,7 +129,7 @@ body {
 /* Pestaña Inactiva */
 #mainTabs .nav-link,
 .lab-main-tabs .nav-link {
-    background: linear-gradient(180deg, #ffffff 0%, #f1f5f9 100%) !important;
+    background: #f1f5f9 !important;
     color: #475569 !important;
     border: 1px solid #cbd5e1 !important;
     border-radius: 20px !important;
@@ -152,17 +144,15 @@ body {
     color: #0f172a !important;
 }
 
-/* Pestaña Activa (Azul Metalizado Neón) */
+/* Pestaña Activa */
 #mainTabs .nav-link.active,
 .lab-main-tabs .nav-link.active {
-    background: linear-gradient(180deg, #0284c7 0%, #0369a1 100%) !important;
+    background: #0284c7 !important;
     color: #ffffff !important;
     border: 1px solid #075985 !important;
     font-weight: 700 !important;
-    box-shadow: 
-        0 4px 10px rgba(2, 132, 199, 0.4),
-        inset 0 1px 2px rgba(255, 255, 255, 0.6) !important;
-    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(2, 132, 199, 0.3) !important;
+    transform: translateY(-1px);
 }
 
 /* Sub-pestañas Internas */
@@ -186,20 +176,20 @@ body {
 }
 
 /* ==========================================================================
-   4. TABLAS Y CAMPOS DE ENTRADA (ESTADOS NEÓN Y RESULTADOS)
+   4. TABLAS Y CAMPOS DE ENTRADA (LIMPIO Y BLANCO)
    ========================================================================== */
 .table {
-    border-color: var(--lab-border);
-    background-color: rgba(255, 255, 255, 0.85) !important;
-    backdrop-filter: blur(4px);
+    border-color: #e2e8f0;
+    background-color: #ffffff !important;
     border-radius: 8px !important;
     overflow: hidden;
 }
 
+/* Cabeceras de Tabla */
 .table tr:has(td[colspan]), 
 .table th,
 .table td.bg-light {
-    background: linear-gradient(180deg, #475569 0%, #334155 100%) !important;
+    background: #334155 !important;
     color: #ffffff !important;
     font-weight: 700 !important;
     text-transform: uppercase;
@@ -207,45 +197,43 @@ body {
     border-bottom: 2px solid #1e293b !important;
 }
 
+/* Celdas de la tabla */
+.table td {
+    background-color: #ffffff !important;
+    color: #1e293b !important;
+}
+
+/* Resaltar fila al enfocar un campo (ayuda visual de lectura) */
+.table tbody tr:focus-within {
+    background-color: #f0f9ff !important;
+}
+
 .input-group-text {
-    background: linear-gradient(180deg, #e2e8f0 0%, #cbd5e1 100%) !important;
-    border: 1px solid #94a3b8 !important;
+    background: #f1f5f9 !important;
+    border: 1px solid #cbd5e1 !important;
     color: #334155 !important;
     font-weight: 600 !important;
 }
 
-/* Campo Vacío */
+/* Campos de entrada */
 .form-control, 
 .form-select, 
-.table input.form-control:placeholder-shown {
+.table input.form-control {
     background-color: #ffffff !important;
-    border: 1px solid #94a3b8 !important;
+    border: 1px solid #cbd5e1 !important;
     border-radius: 6px !important;
     color: #1e293b !important;
     padding: 5px 8px !important;
-    box-shadow: inset 0 2px 3px rgba(0, 0, 0, 0.07) !important;
+    box-shadow: none !important;
 }
 
-/* Campo con Datos Ingresados (Verde Neón Suave) */
-.table input.form-control:not(:placeholder-shown),
-.table input.form-control.con-dato,
-.form-control.con-dato {
-    background-color: #dcfce7 !important;
-    border: 2px solid #16a34a !important;
-    color: #14532d !important;
-    font-weight: 700 !important;
-    box-shadow: 
-        0 0 6px rgba(22, 163, 74, 0.3),
-        inset 0 1px 2px rgba(0, 0, 0, 0.1) !important;
-}
-
-/* Edición / Foco */
+/* Enfoque al digitar */
 .form-control:focus, 
 .form-select:focus,
 .table input.form-control:focus {
-    background-color: #f0f9ff !important;
+    background-color: #ffffff !important;
     border-color: #0284c7 !important;
-    box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.25) !important;
+    box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.15) !important;
     outline: none !important;
 }
 
@@ -382,6 +370,7 @@ body {
     overflow: visible !important;
     visibility: visible !important;
     margin-bottom: 20px;
+    background: #ffffff !important;
 }
 
 .pdf-mode .nav-tabs,
@@ -393,6 +382,8 @@ body {
 .pdf-mode tr, .pdf-mode .card, .pdf-mode table {
     page-break-inside: avoid !important;
     break-inside: avoid !important;
+    background-color: #ffffff !important;
+    box-shadow: none !important;
 }
 
 @page {
@@ -410,6 +401,8 @@ body {
         margin: 0 !important;
         padding: 10px !important;
         background: #ffffff !important;
+        box-shadow: none !important;
+        border: none !important;
     }
     .no-print, .d-none-print { display: none !important; }
 }
