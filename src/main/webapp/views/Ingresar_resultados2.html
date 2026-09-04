@@ -3137,7 +3137,7 @@ async function descargarPDFResultados() {
     if (fechaVal) {
         let partes = fechaVal.split('-');
         if (partes.length === 3) {
-            fechaFormateada = `${partes[2]}-${partes[1]}-${partes[0]}`; // DD-MM-YYYY
+            fechaFormateada = `${partes[2]}-${partes[1]}-${partes[0]}`;
         } else {
             fechaFormateada = fechaVal.replace(/\//g, '-');
         }
@@ -3161,33 +3161,22 @@ async function descargarPDFResultados() {
     elementoClonado.querySelectorAll('.no-print').forEach(el => el.remove());
     if (bloqueImpresion) bloqueImpresion.classList.add("d-none");
 
-    // =========================================================================
-    // AJUSTES EN EL CLON PARA EVITAR HOJAS EN BLANCO Y REPETIR CABECERAS
-    // =========================================================================
+    // Limpieza de estilos que fuerzan saltos de página erróneos
     elementoClonado.style.height = "auto";
-    elementoClonado.style.maxHeight = "none";
     elementoClonado.style.margin = "0px";
-    elementoClonado.style.padding = "0px";
-
-    // Asegurar que thead se repita en saltos de página
-    elementoClonado.querySelectorAll("thead").forEach(thead => {
-        thead.style.display = "table-header-group";
+    elementoClonado.querySelectorAll('.section-title, table, .card').forEach(el => {
+        el.style.pageBreakBefore = 'avoid';
+        el.style.breakBefore = 'avoid';
     });
 
-    // Evitar que las filas se corten por la mitad
-    elementoClonado.querySelectorAll("tr").forEach(tr => {
-        tr.style.pageBreakInside = "avoid";
-        tr.style.breakInside = "avoid";
-    });
-
+    // CONFIGURACIÓN CORREGIDA: Sin 'avoid-all' para eliminar el espacio en blanco gigante
     const opciones = {
-        margin:       [8, 5, 8, 5], // Márgenes estables [arriba, izquierda, abajo, derecha] en mm
+        margin:       [8, 5, 8, 5],
         filename:     nombreArchivoFinal,
         image:        { type: 'jpeg', quality: 0.98 },
         html2canvas:  { scale: 2, useCORS: true, scrollY: 0 },
         jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
-        // 'avoid-all' evita generar páginas en blanco por desbordamientos mínimos
-        pagebreak:    { mode: ['avoid-all', 'css', 'legacy'], avoid: ['tr', '.section-title', '.firma-container'] }
+        pagebreak:    { mode: ['css', 'legacy'], avoid: ['tr', '.firma-container'] }
     };
 
     if (typeof html2pdf === "undefined") {
@@ -3210,9 +3199,7 @@ async function descargarPDFResultados() {
                 try {
                     archivoHandle = await window.showSaveFilePicker(opcionesArchivo);
                 } catch (err) {
-                    if (err.name !== 'AbortError') {
-                        console.error(err);
-                    }
+                    if (err.name !== 'AbortError') console.error(err);
                     return;
                 }
 
@@ -3232,7 +3219,6 @@ async function descargarPDFResultados() {
 
             } else {
                 html2pdf().from(elementoClonado).set(opciones).save();
-                
                 const blobUrl = URL.createObjectURL(pdfBlob);
                 window.open(blobUrl, '_blank');
             }
