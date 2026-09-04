@@ -1,9 +1,8 @@
 /* ==========================================================================
-   1. CONTENEDOR PRINCIPAL (#pedidoContainer) Y FONDO GENERAL - BLANCO PURO
+   1. CONTENEDOR PRINCIPAL (#pedidoContainer) - BLANCO PURO
    ========================================================================== */
 html, body {
-    background: #ffffff !important;
-    background-color: #ffffff !important;
+    background: #f8fafc !important; /* Fondo sutil para la pantalla */
 }
 
 #pedidoContainer,
@@ -12,8 +11,8 @@ div#pedidoContainer {
     background-color: #ffffff !important;
     background-image: none !important;
     border: 1px solid #cbd5e1 !important;
-    border-radius: 12px !important;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04) !important;
+    border-radius: 14px !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05) !important;
     padding: 24px !important;
     margin: 20px auto !important;
     max-width: 1250px !important;
@@ -21,13 +20,13 @@ div#pedidoContainer {
 }
 
 /* ==========================================================================
-   2. CAJA DE DATOS DEL PACIENTE E INPUTS (BORDES SUAVES)
+   2. CAJA DE DATOS DEL PACIENTE E INPUTS
    ========================================================================== */
 .patient-box, 
 #pedidoContainer .card:first-child {
     background: #ffffff !important;
     border: 1px solid #cbd5e1 !important;
-    border-radius: 10px !important;
+    border-radius: 12px !important;
     padding: 16px !important;
     margin-bottom: 20px !important;
 }
@@ -48,11 +47,12 @@ div#pedidoContainer {
 }
 
 /* ==========================================================================
-   3. PESTAÑAS CATEGORÍAS (BORDES SUAVES)
+   3. PESTAÑAS DE CATEGORÍAS (PÍLDORAS)
    ========================================================================== */
 #mainTabs, .lab-main-tabs {
     border-bottom: none !important;
     gap: 8px;
+    margin-bottom: 12px !important;
 }
 
 #mainTabs .nav-link,
@@ -62,6 +62,7 @@ div#pedidoContainer {
     color: #475569 !important;
     border-radius: 20px !important;
     padding: 6px 18px !important;
+    font-weight: 500;
 }
 
 #mainTabs .nav-link.active,
@@ -73,7 +74,7 @@ div#pedidoContainer {
 }
 
 /* ==========================================================================
-   4. MARCO INTERNO DE DIGITACIÓN (RELIEVE SOLO EN SUB-CONTENEDORES)
+   4. MARCO INTERNO DE DIGITACIÓN (RELIEVE METÁLICO)
    ========================================================================== */
 .framed-section, 
 .tab-content .pedido-box,
@@ -93,31 +94,37 @@ div#pedidoContainer {
 }
 
 /* ==========================================================================
-   5. BARRA INFERIOR DE ACCIONES Y FIRMAS (FONDO BLANCO)
+   5. TABLA DE RESULTADOS REGISTRADOS (ENCABEZADO OSCURO)
    ========================================================================== */
-.seccion-firma-completa,
-.nota-pie-pagina {
-    background: #ffffff !important;
+.table-resultados,
+.table-resultados table,
+#pedidoContainer .table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+    margin-top: 15px !important;
 }
 
-.liquid-nav, 
-.action-bar,
-div[class*="liquid-nav"] {
-    background: #ffffff !important;
-    border: 1px solid #e2e8f0 !important;
-    border-radius: 30px !important;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05) !important;
-    padding: 8px 20px !important;
+.table-resultados th,
+#pedidoContainer .table th {
+    background-color: #1e293b !important;
+    color: #ffffff !important;
+    font-weight: 700 !important;
+    text-transform: uppercase !important;
+    font-size: 11px !important;
+    padding: 8px 12px !important;
+    border: 1px solid #334155 !important;
 }
 
-.seccion-firma-completa img,
-.header-reporte img {
-    background-color: transparent !important;
-    mix-blend-mode: multiply;
+.table-resultados td,
+#pedidoContainer .table td {
+    background-color: #ffffff !important;
+    color: #1e293b !important;
+    border: 1px solid #cbd5e1 !important;
+    padding: 8px 12px !important;
 }
 
 /* ==========================================================================
-   6. LIMPIEZA AUTOMÁTICA EN PDF E IMPRESIÓN
+   6. MODO PDF E IMPRESIÓN (BLANCO ABSOLUTO Y LIMPIO)
    ========================================================================== */
 .pdf-mode,
 .pdf-mode body,
@@ -132,6 +139,12 @@ div[class*="liquid-nav"] {
     padding: 0 !important;
     margin: 0 !important;
     width: 100% !important;
+}
+
+.pdf-mode .table th {
+    background-color: #e2e8f0 !important;
+    color: #1e293b !important;
+    border: 1px solid #cbd5e1 !important;
 }
 
 .pdf-mode .no-print,
