@@ -2178,60 +2178,159 @@
         <div class="tab-content" id="secrecionesSubContentContainer">
             
             <!-- Sub-panel Secreción Vaginal -->
-            <div class="tab-pane fade show active" id="vaginalSubContent" role="tabpanel">
-                <div class="section-title text-center text-primary fw-bold border-bottom pb-2 mb-3" style="font-size: 13px; cursor: default;" data-section-name="INFORME DE MICROBIOLOGÍA - SECRECIÓN VAGINAL">
-                    INFORME DE MICROBIOLOGÍA - SECRECIÓN VAGINAL
-                </div>
-                
-                <div class="text-secondary fw-bold small mb-2 border-bottom pb-1">EXAMEN EN FRESCO Y GRAM</div>
-                <div class="row g-2 mb-3" style="font-size: 11px;">
-                    <div class="col-12 mb-2">
-                        <div class="fw-bold text-dark mb-1">MUESTRA</div>
-                        <select class="form-select form-select-sm form-control-editable">
-                            <option value="" selected>-</option>
-                            <option value="Secreción Vaginal">Secreción Vaginal</option>
-                            <option value="Exudado Endocervical">Exudado Endocervical</option>
-                            <option value="Fondo de Saco">Fondo de Saco</option>
-                        </select>
-                    </div>
-                    <div class="col-12 mb-2">
-                        <div class="fw-bold text-dark mb-1">LEUCOCITOS (PMN)</div>
-                        <select class="form-select form-select-sm form-control-editable">
-                            <option value="" selected>-</option>
-                            <option value="Escasos">Escasos</option>
-                            <option value="Moderados">Moderados</option>
-                            <option value="Abundantes (Sugiere proceso inflamatorio/infeccioso)">Abundantes (Sugiere proceso inflamatorio/infeccioso)</option>
-                        </select>
-                    </div>
-                    <div class="col-12 mb-2">
-                        <div class="fw-bold text-dark mb-1">CÉLULAS CLAVE (CLUE CELLS)</div>
-                        <select class="form-select form-select-sm form-control-editable">
-                            <option value="" selected>-</option>
-                            <option value="Ausentes">Ausentes</option>
-                            <option value="Presentes (Sugestivo de Vaginosis Bacteriana)">Presentes (Sugestivo de Vaginosis Bacteriana)</option>
-                        </select>
-                    </div>
-                    <div class="col-12 mb-2">
-                        <div class="fw-bold text-dark mb-1">FLORA BACTERIANA (GRAM)</div>
-                        <select class="form-select form-select-sm form-control-editable">
-                            <option value="" selected>-</option>
-                            <option value="Bacilos de Döderlein predominantes (Flora Normal)">Bacilos de Döderlein predominantes (Flora Normal)</option>
-                            <option value="Flora Mixta">Flora Mixta</option>
-                            <option value="Ausencia de Bacilos de Döderlein">Ausencia de Bacilos de Döderlein</option>
-                            <option value="Abundantes cocobacilos Gram variables">Abundantes cocobacilos Gram variables</option>
-                        </select>
-                    </div>
-                    <div class="col-12 mb-2">
-                        <div class="fw-bold text-dark mb-1">PARÁSITOS Y HONGOS</div>
-                        <select class="form-select form-select-sm form-control-editable">
-                            <option value="" selected>-</option>
-                            <option value="No se observan formas parasitarias ni micóticas">No se observan formas parasitarias ni micóticas</option>
-                            <option value="Presencia de Trichomonas vaginalis">Presencia de Trichomonas vaginalis</option>
-                            <option value="Presencia de levaduras y pseudohifas (Sugestivo de Candidiasis)">Presencia de levaduras y pseudohifas (Sugestivo de Candidiasis)</option>
-                        </select>
-                    </div>
-                </div>
-            </div>
+<div class="tab-pane fade show active" id="vaginalSubContent" role="tabpanel">
+    <div class="section-title text-center text-primary fw-bold border-bottom pb-2 mb-3" style="font-size: 13px; cursor: default;" data-section-name="INFORME DE MICROBIOLOGÍA - SECRECIÓN VAGINAL">
+        INFORME DE MICROBIOLOGÍA - SECRECIÓN VAGINAL
+    </div>
+    
+    <div class="text-secondary fw-bold small mb-2 border-bottom pb-1">EXAMEN EN FRESCO Y GRAM</div>
+    <div class="row g-2 mb-3" style="font-size: 11px;">
+        <div class="col-12 mb-2">
+            <div class="fw-bold text-dark mb-1">MUESTRA</div>
+            <select class="form-select form-select-sm form-control-editable">
+                <option value="" selected>-</option>
+                <option value="Secreción Vaginal">Secreción Vaginal</option>
+                <option value="Exudado Endocervical">Exudado Endocervical</option>
+                <option value="Fondo de Saco">Fondo de Saco</option>
+            </select>
+        </div>
+
+        <div class="col-12 mb-2">
+            <div class="fw-bold text-dark mb-1">CÉLULAS EPITELIALES</div>
+            <select class="form-select form-select-sm form-control-editable">
+                <option value="" selected>-</option>
+                <option value="Ausentes">Ausentes</option>
+                <option value="+">+</option>
+                <option value="++">++</option>
+                <option value="+++">+++</option>
+                <option value="Escasas">Escasas</option>
+                <option value="Moderadas">Moderadas</option>
+                <option value="Abundantes">Abundantes</option>
+            </select>
+        </div>
+
+        <div class="col-12 mb-2">
+            <div class="fw-bold text-dark mb-1">PIOCITOS</div>
+            <select class="form-select form-select-sm form-control-editable">
+                <option value="" selected>-</option>
+                <option value="Ausentes">Ausentes</option>
+                <option value="+">+</option>
+                <option value="++">++</option>
+                <option value="+++">+++</option>
+                <option value="Escasos">Escasos</option>
+                <option value="Moderados">Moderados</option>
+                <option value="Abundantes (Sugiere proceso inflamatorio/infeccioso)">Abundantes (Sugiere proceso inflamatorio/infeccioso)</option>
+            </select>
+        </div>
+
+        <div class="col-12 mb-2">
+            <div class="fw-bold text-dark mb-1">HEMATÍES</div>
+            <select class="form-select form-select-sm form-control-editable">
+                <option value="" selected>-</option>
+                <option value="Ausentes">Ausentes</option>
+                <option value="+">+</option>
+                <option value="++">++</option>
+                <option value="+++">+++</option>
+                <option value="Escasos">Escasos</option>
+                <option value="Moderados">Moderados</option>
+                <option value="Abundantes">Abundantes</option>
+            </select>
+        </div>
+
+        <div class="col-12 mb-2">
+            <div class="fw-bold text-dark mb-1">BACTERIAS</div>
+            <select class="form-select form-select-sm form-control-editable">
+                <option value="" selected>-</option>
+                <option value="Ausentes">Ausentes</option>
+                <option value="+">+</option>
+                <option value="++">++</option>
+                <option value="+++">+++</option>
+                <option value="Escasas">Escasas</option>
+                <option value="Moderadas">Moderadas</option>
+                <option value="Abundantes">Abundantes</option>
+            </select>
+        </div>
+
+        <div class="col-12 mb-2">
+            <div class="fw-bold text-dark mb-1">FLORA MUCOSA</div>
+            <select class="form-select form-select-sm form-control-editable">
+                <option value="" selected>-</option>
+                <option value="Ausentes">Ausentes</option>
+                <option value="Presente">Presente</option>
+                <option value="+">+</option>
+                <option value="++">++</option>
+                <option value="+++">+++</option>
+            </select>
+        </div>
+
+        <div class="col-12 mb-2">
+            <div class="fw-bold text-dark mb-1">CÉLULAS CLAVE (CLUE CELLS)</div>
+            <select class="form-select form-select-sm form-control-editable">
+                <option value="" selected>-</option>
+                <option value="Ausentes">Ausentes</option>
+                <option value="+">+</option>
+                <option value="++">++</option>
+                <option value="+++">+++</option>
+                <option value="Presentes (Sugestivo de Vaginosis Bacteriana)">Presentes (Sugestivo de Vaginosis Bacteriana)</option>
+            </select>
+        </div>
+
+        <div class="col-12 mb-2">
+            <div class="fw-bold text-dark mb-1">LEVADURAS</div>
+            <select class="form-select form-select-sm form-control-editable">
+                <option value="" selected>-</option>
+                <option value="Ausentes">Ausentes</option>
+                <option value="+">+</option>
+                <option value="++">++</option>
+                <option value="+++">+++</option>
+                <option value="Presentes (Sugestivo de Candidiasis)">Presentes (Sugestivo de Candidiasis)</option>
+            </select>
+        </div>
+
+        <div class="col-12 mb-2">
+            <div class="fw-bold text-dark mb-1">HIFAS DE HONGOS</div>
+            <select class="form-select form-select-sm form-control-editable">
+                <option value="" selected>-</option>
+                <option value="Ausentes">Ausentes</option>
+                <option value="+">+</option>
+                <option value="++">++</option>
+                <option value="+++">+++</option>
+                <option value="Presentes">Presentes</option>
+            </select>
+        </div>
+
+        <div class="col-12 mb-2">
+            <div class="fw-bold text-dark mb-1">PARÁSITOS</div>
+            <select class="form-select form-select-sm form-control-editable">
+                <option value="" selected>-</option>
+                <option value="No se observan">No se observan</option>
+                <option value="Presencia de Trichomonas vaginalis">Presencia de Trichomonas vaginalis</option>
+            </select>
+        </div>
+
+        <div class="col-12 mb-2">
+            <div class="fw-bold text-dark mb-1">PRUEBA KOH</div>
+            <select class="form-select form-select-sm form-control-editable">
+                <option value="" selected>-</option>
+                <option value="-">- (Negativo)</option>
+                <option value="+">+ (Positivo)</option>
+            </select>
+        </div>
+
+        <div class="col-12 mb-2">
+            <div class="fw-bold text-dark mb-1">COLORACIÓN DE GRAM</div>
+            <select class="form-select form-select-sm form-control-editable">
+                <option value="" selected>-</option>
+                <option value="Bacilos de Döderlein predominantes (Flora Normal)">Bacilos de Döderlein predominantes (Flora Normal)</option>
+                <option value="Tipo Gardnerella Vaginalis">Tipo Gardnerella Vaginalis</option>
+                <option value="Numerosos Cocos Gram Positivos">Numerosos Cocos Gram Positivos</option>
+                <option value="Abundantes cocobacilos Gram variables">Abundantes cocobacilos Gram variables</option>
+                <option value="Flora Mixta">Flora Mixta</option>
+                <option value="Ausencia de Bacilos de Döderlein">Ausencia de Bacilos de Döderlein</option>
+            </select>
+        </div>
+    </div>
+</div>
 
             <!-- Sub-panel Papa Test (Papanicolaou) -->
             <div class="tab-pane fade" id="papatestSubContent" role="tabpanel">
