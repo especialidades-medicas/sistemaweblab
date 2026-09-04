@@ -1,8 +1,16 @@
 /* ==========================================================================
-   1. CONTENEDOR PRINCIPAL (#pedidoContainer) - BLANCO PURO
+   1. CONTENEDOR PRINCIPAL (#pedidoContainer) Y FONDO GENERAL - BLANCO PURO
    ========================================================================== */
-#pedidoContainer {
+html, body {
     background: #ffffff !important;
+    background-color: #ffffff !important;
+}
+
+#pedidoContainer,
+div#pedidoContainer {
+    background: #ffffff !important;
+    background-color: #ffffff !important;
+    background-image: none !important;
     border: 1px solid #cbd5e1 !important;
     border-radius: 12px !important;
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04) !important;
@@ -65,10 +73,10 @@
 }
 
 /* ==========================================================================
-   4. MARCO INTERNO DE DIGITACIÓN (RELIEVE)
+   4. MARCO INTERNO DE DIGITACIÓN (RELIEVE SOLO EN SUB-CONTENEDORES)
    ========================================================================== */
 .framed-section, 
-.pedido-box,
+.tab-content .pedido-box,
 #pedidoContainer .tab-content .card {
     background: linear-gradient(180deg, #e2e8f0 0%, #cbd5e1 100%) !important;
     border: 2px solid #94a3b8 !important;
