@@ -4279,8 +4279,16 @@ function limpiarSecrecionVaginal() {
     selects.forEach(select => select.value = "");
 }
 
-        
-        
+            // diseño imput colores
+      document.querySelectorAll('.table input').forEach(input => {
+    input.addEventListener('input', function() {
+        if (this.value.trim() !== '') {
+            this.classList.add('con-dato');
+        } else {
+            this.classList.remove('con-dato');
+        }
+    });
+});  
     </script>
 </body>
 </html>
