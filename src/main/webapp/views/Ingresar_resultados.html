@@ -1165,7 +1165,7 @@
     <div class="border p-3 rounded bg-white shadow-sm">
         
         <!-- TÍTULO PRINCIPAL ÚNICO PARA QUE EL SCRIPT DETECTE TODA LA SECCIÓN -->
-        <div class="section-title text-primary fw-bold border-bottom pb-1 mb-2 small" data-section-name="ELEMENTAL Y MICROSCOPICO">ELEMENTAL Y MICROSCOPICO / EXAMEN ESPECIAL ORINA</div>
+        <div class="section-title text-primary fw-bold border-bottom pb-1 mb-2 small" data-section-name="ELEMENTAL Y MICROSCOPICO">ELEMENTAL Y MICROSCOPICO / EXAMEN ESPECIAL EN ORINA</div>
         
         <table class="table table-sm table-bordered align-middle mb-0 small bg-white">
             <thead class="table-light text-muted">
@@ -1284,6 +1284,7 @@
             <td>
                 <select class="form-select form-select-sm form-control-editable" id="orinaCetonas">
                     <option value="" selected disabled>Seleccione...</option>
+                    <option value=""></option>
                     <option value="Negativo">Negativo</option>
                     <option value="Trazas">Trazas</option>
                     <option value="Positivo (+)">Positivo (+)</option>
@@ -1298,6 +1299,7 @@
             <td>
                 <select class="form-select form-select-sm form-control-editable" id="orinaBilirrubina">
                     <option value="" selected disabled>Seleccione...</option>
+                    <option value=""></option>
                     <option value="Negativo">Negativo</option>
                     <option value="Positivo (+)">Positivo (+)</option>
                     <option value="Positivo (++)">Positivo (++)</option>
@@ -1332,10 +1334,7 @@
             <td>
                 <select class="form-select form-select-sm form-control-editable" id="orinaNitritos">
                     <option value="" selected disabled>Seleccione...</option>
-                    <option value="Negativo">Negativo</option>
-                    <option value="+">+</option>
-                    <option value="++">++</option>
-                    <option value="+++">+++</option>
+                    <option value="Negativo">Negativo</option>                    
                     <option value="Positivo">Positivo</option>
                 </select>
             </td>
@@ -1383,7 +1382,7 @@
                     <td>
                     <select class="form-select form-select-sm form-control-editable" id="orinaBacterias">
                         <option value="" selected disabled>Seleccione...</option>
-                        <option value="Negativo">Negativo</option>
+                        <option value="Escasas">Escasas</option>
                         <option value="+">+</option>
                         <option value="++">++</option>
                         <option value="+++">+++</option>
@@ -1398,6 +1397,7 @@
                     <td>
                     <select class="form-select form-select-sm form-control-editable" id="orinaCristales">
                         <option value="" selected disabled>Seleccione...</option>
+                        <option value=""></option>
                         <option value=" ">Negativo</option>
                         <option value="Oxalato de calcio">Oxalato de calcio</option>
                         <option value="Ácido úrico">Ácido úrico</option>
@@ -1434,6 +1434,7 @@
                     <td>
                     <select class="form-select form-select-sm form-control-editable" id="orinaCristales2">
                         <option value="" selected disabled>Seleccione...</option>
+                        <option value=""></option>
                         <option value=" ">Negativo</option>
                         <option value="Oxalato de calcio">Oxalato de calcio</option>
                         <option value="Ácido úrico">Ácido úrico</option>
@@ -1620,6 +1621,7 @@
                     <td>
                         <select class="form-select form-select-sm form-control-editable" id="hecesMoco">
                             <option value="" selected disabled>Seleccione...</option>
+                            <option value=""></option>
                             <option value="Ausente">Ausente</option>
                             <option value="Escaso">Escaso</option>
                             <option value="Moderado">Moderado</option>
@@ -1634,6 +1636,7 @@
                     <td>
                         <select class="form-select form-select-sm form-control-editable" id="hecesSangre">
                             <option value="" selected disabled>Seleccione...</option>
+                            <option value=""></option>
                             <option value="Ausente">Ausente</option>
                             <option value="Presente">Presente</option>
                         </select>
@@ -1649,6 +1652,7 @@
                     <td>
                         <select class="form-select form-select-sm form-control-editable" id="hecesRestos">
                             <option value="" selected disabled>Seleccione...</option>
+                            <option value=""></option>
                             <option value="">-</option>
                             <option value="Escasos">Escasos</option>
                             <option value="Moderados">Moderados</option>
@@ -1677,6 +1681,7 @@
                     <td>
                         <select class="form-select form-select-sm form-control-editable" id="hecesRestosVegetales">
                             <option value="" selected disabled>Seleccione...</option>
+                            <option value=""></option>
                             <option value="Ausentes">Ausentes</option>
                             <option value="Escasos">Escasos</option>
                             <option value="Moderados">Moderados</option>
@@ -1770,7 +1775,7 @@
                             <option value="+++">+++</option>   
                         </select>
                     </td>
-                    <td class="text-muted">Negativo/+,++,+++</td>
+                    <td class="text-muted">Negativo/Positivo</td>
                 </tr>
                 <tr>
                     <td class="fw-bold ps-3">PARÁSITOS 2</td>
