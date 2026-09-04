@@ -3167,7 +3167,10 @@ async function descargarPDFResultados() {
         image:        { type: 'jpeg', quality: 0.98 },
         html2canvas:  { scale: 2, useCORS: true, scrollY: 0 },
         jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
-        pagebreak:    { mode: ['css', 'legacy'], avoid: ['tr', '.section-title'] }
+        pagebreak:    { 
+            mode: ['css', 'legacy'], 
+            avoid: ['tr', '.section-title', '.bloque-firma', '.firma-container', '#firmaResponsable'] 
+        }
     };
 
     if (typeof html2pdf === "undefined") {
@@ -3177,7 +3180,6 @@ async function descargarPDFResultados() {
 
     html2pdf().from(elementoClonado).set(opciones).outputPdf('blob').then(async (pdfBlob) => {
         try {
-            // Verificamos si el navegador soporta el selector de archivos con sugerencia de nombre
             if ('showSaveFilePicker' in window) {
                 const opcionesArchivo = {
                     suggestedName: nombreArchivoFinal,
@@ -3191,14 +3193,12 @@ async function descargarPDFResultados() {
                 try {
                     archivoHandle = await window.showSaveFilePicker(opcionesArchivo);
                 } catch (err) {
-                    // Si el usuario cancela el cuadro de diálogo
                     if (err.name !== 'AbortError') {
                         console.error(err);
                     }
                     return;
                 }
 
-                // Intentar escribir en el archivo (Valida si está abierto o protegido)
                 try {
                     const writableStream = await archivoHandle.createWritable();
                     await writableStream.write(pdfBlob);
@@ -3206,7 +3206,6 @@ async function descargarPDFResultados() {
                     
                     alert(`¡PDF guardado exitosamente como "${nombreArchivoFinal}"!`);
 
-                    // Abrir una copia en una pestaña nueva para revisión inmediata
                     const blobUrl = URL.createObjectURL(pdfBlob);
                     window.open(blobUrl, '_blank');
 
@@ -3215,7 +3214,6 @@ async function descargarPDFResultados() {
                 }
 
             } else {
-                // Método convencional de respaldo para navegadores que no soportan el selector avanzado
                 html2pdf().from(elementoClonado).set(opciones).save();
                 
                 const blobUrl = URL.createObjectURL(pdfBlob);
@@ -3231,7 +3229,9 @@ async function descargarPDFResultados() {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-    inicializarSeccionesColapsables();
+    if (typeof inicializarSeccionesColapsables === "function") {
+        inicializarSeccionesColapsables();
+    }
 });
 
 
