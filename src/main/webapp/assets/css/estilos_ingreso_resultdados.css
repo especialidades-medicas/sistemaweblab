@@ -18,7 +18,7 @@ html, body,
 .nota-pie-pagina,
 div[class*="container"] {
     background: #ffffff !important;
-    background-color: #ffffff !important;
+   
     background-image: none !important;
     box-shadow: none !important;
 }
