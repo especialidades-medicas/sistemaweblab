@@ -3162,12 +3162,12 @@ async function descargarPDFResultados() {
     if (bloqueImpresion) bloqueImpresion.classList.add("d-none");
 
     const opciones = {
-        margin:       7,
+        margin:       5,
         filename:     nombreArchivoFinal,
         image:        { type: 'jpeg', quality: 0.98 },
         html2canvas:  { scale: 2, useCORS: true, scrollY: 0 },
         jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
-        pagebreak:    { mode: ['avoid-all','css', 'legacy'], avoid: ['tr', '.section-title'] }
+        pagebreak:    { mode: ['css', 'legacy'], avoid: ['tr', '.section-title'] }
     };
 
     if (typeof html2pdf === "undefined") {
