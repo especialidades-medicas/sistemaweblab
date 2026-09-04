@@ -1,111 +1,7 @@
 /* ==========================================================================
-   1. FONDO METALIZADO PARA EL ÁREA DE INGRESO DE EXÁMENES
+   1. VARIABLES GLOBALES Y TEMAS (Claro / Oscuro)
    ========================================================================== */
-
-/* Fondo Platinado Cepillado en el Contenedor de Pestañas y Tablas */
-#pedidoContainer .tab-content,
-#pedidoContainer .tab-pane,
-.tab-pane.active {
-    background: linear-gradient(135deg, #e2e8f0 0%, #cbd5e1 45%, #94a3b8 100%) !important;
-    padding: 16px !important;
-    border-radius: 12px !important;
-    border: 2px solid #64748b !important;
-    box-shadow: 
-        inset 0 2px 4px rgba(255, 255, 255, 0.9), 
-        inset 0 -2px 6px rgba(0, 0, 0, 0.25),
-        0 8px 16px rgba(0, 0, 0, 0.15) !important;
-}
-
-/* Tarjeta Interna y Tabla de Exámenes */
-.tab-pane .table,
-.tab-pane .card {
-    background-color: rgba(255, 255, 255, 0.85) !important;
-    backdrop-filter: blur(4px);
-    border-radius: 8px !important;
-    border: 1px solid #94a3b8 !important;
-    overflow: hidden;
-}
-
-/* Encabezados de Subgrupos (Ej: TRANSAMINASAS, BILIRRUBINAS) */
-.table tr:has(td[colspan]), 
-.table th,
-.table td.bg-light,
-.table tbody tr:first-child td {
-    background: linear-gradient(180deg, #475569 0%, #334155 100%) !important;
-    color: #ffffff !important;
-    font-weight: 700 !important;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    border-bottom: 2px solid #1e293b !important;
-}
-
-/* ==========================================================================
-   2. PESTAÑA SELECCIONADA (DIFERENCIACIÓN VISUAL DE EXAMEN ACTIVO)
-   ========================================================================== */
-
-/* Estado Inactivo */
-#mainTabs .nav-link,
-.lab-main-tabs .nav-link {
-    background: linear-gradient(180deg, #ffffff 0%, #f1f5f9 100%) !important;
-    color: #475569 !important;
-    border: 1px solid #cbd5e1 !important;
-    font-weight: 600 !important;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05) !important;
-}
-
-/* Pestaña ACTIVA / SELECCIONADA (Azul Metalizado Neón) */
-#mainTabs .nav-link.active,
-.lab-main-tabs .nav-link.active {
-    background: linear-gradient(180deg, #0284c7 0%, #0369a1 100%) !important;
-    color: #ffffff !important;
-    border: 1px solid #075985 !important;
-    font-weight: 700 !important;
-    box-shadow: 
-        0 4px 10px rgba(2, 132, 199, 0.4),
-        inset 0 1px 2px rgba(255, 255, 255, 0.6) !important;
-    transform: translateY(-2px);
-}
-
-/* ==========================================================================
-   3. DIFERENCIACIÓN DE CAMPOS CON RESULTADOS INGRESADOS
-   ========================================================================== */
-
-/* Campo VACÍO */
-.table input.form-control:placeholder-shown,
-.table input.form-control[value=""] {
-    background-color: #ffffff !important;
-    border: 1px solid #94a3b8 !important;
-    color: #1e293b !important;
-}
-
-/* Campo CON RESULTADO INGRESADO (Verde Neón Suave con Texto Negrita) */
-.table input.form-control:not(:placeholder-shown),
-.table input.form-control.con-dato {
-    background-color: #dcfce7 !important; /* Verde claro */
-    border: 2px solid #16a34a !important; /* Borde verde fuerte */
-    color: #14532d !important;             /* Texto verde oscuro */
-    font-weight: 700 !important;
-    box-shadow: 
-        0 0 6px rgba(22, 163, 74, 0.3),
-        inset 0 1px 2px rgba(0, 0, 0, 0.1) !important;
-}
-
-/* Efecto al escribir/editar */
-.table input.form-control:focus {
-    background-color: #f0f9ff !important;
-    border-color: #0284c7 !important;
-    box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.25) !important;
-}
-
-/* ==========================================================================
-   HOJA DE ESTILOS UNIFICADA - SISTEMA DE LABORATORIO CLÍNICO Y PDF
-   ========================================================================== */
-
-/* --------------------------------------------------------------------------
-   1. VARIABLES GLOBALES Y TEMAS (Luz / Oscuro)
-   -------------------------------------------------------------------------- */
 :root {
-    /* Paleta de Identidad del Laboratorio */
     --lab-primary: #0284c7;
     --lab-primary-hover: #0369a1;
     --lab-bg: #f8fafc;
@@ -113,7 +9,7 @@
     --lab-border: #cbd5e1;
     --lab-text: #1e293b;
 
-    /* Barra Liquid Glass (Modo Claro) */
+    /* Barra Liquid Glass */
     --glass-bg: rgba(255, 255, 255, 0.15);
     --glass-border: rgba(255, 255, 255, 0.4);
     --glass-shadow: rgba(0, 0, 0, 0.1);
@@ -131,13 +27,11 @@
 }
 
 [data-theme="dark"] {
-    /* Paleta para Modo Oscuro */
     --lab-bg: #0f172a;
     --lab-card-bg: #1e293b;
     --lab-border: #334155;
     --lab-text: #f8fafc;
 
-    /* Barra Liquid Glass (Modo Oscuro) */
     --glass-bg: rgba(30, 30, 35, 0.45);
     --glass-border: rgba(255, 255, 255, 0.15);
     --glass-shadow: rgba(0, 0, 0, 0.8);
@@ -154,9 +48,9 @@
     --input-bg: rgba(40, 40, 45, 0.6);
 }
 
-/* --------------------------------------------------------------------------
-   2. REGLAS BASE Y CONTENEDORES
-   -------------------------------------------------------------------------- */
+/* ==========================================================================
+   2. ESTRUCTURA Y CONTENEDOR PRINCIPAL METALIZADO
+   ========================================================================== */
 body {
     background-color: var(--lab-bg);
     color: var(--lab-text);
@@ -164,34 +58,59 @@ body {
 }
 
 #pedidoContainer {
-    width: 100% !important;
-    max-width: 100% !important;
-    margin: 0 auto !important;
-    background-color: #ffffff !important;
+    width: 95% !important;
+    max-width: 1250px !important;
+    margin: 30px auto !important;
+    padding: 24px !important;
+    background: linear-gradient(145deg, #f1f5f9 0%, #e2e8f0 50%, #cbd5e1 100%) !important;
+    border: 1px solid #94a3b8 !important;
+    border-radius: 16px !important;
+    box-shadow: 
+        0 20px 25px -5px rgba(0, 0, 0, 0.1),
+        0 8px 10px -6px rgba(0, 0, 0, 0.1),
+        inset 0 1px 2px rgba(255, 255, 255, 0.9),
+        inset 0 -2px 4px rgba(0, 0, 0, 0.08) !important;
 }
 
-#pedidoContainer .card .row > div {
-    margin-bottom: 4px;
+/* Tarjetas Internas */
+.pedido-box, 
+#pedidoContainer .card {
+    background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%) !important;
+    border: 1px solid #94a3b8 !important;
+    border-radius: 10px !important;
+    padding: 16px !important;
+    margin-bottom: 20px !important;
+    box-shadow: 
+        0 4px 6px -1px rgba(0, 0, 0, 0.05),
+        inset 0 1px 0 rgba(255, 255, 255, 0.8) !important;
 }
 
-.pedido-box {
-    border-radius: 8px !important;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
-}
-
-.card {
-    border-radius: 6px;
-    border: 1px solid var(--lab-border) !important;
-}
-
+/* Encabezados de Sección */
 .section-title {
-    color: var(--lab-primary) !important;
+    color: #0f172a !important;
     font-size: 0.85rem !important;
-    letter-spacing: 0.5px;
-    text-transform: uppercase;
+    font-weight: 700 !important;
+    letter-spacing: 0.6px;
+    padding: 6px 12px !important;
+    background: linear-gradient(90deg, #cbd5e1 0%, #f1f5f9 100%) !important;
+    border-left: 4px solid #0284c7 !important;
+    border-radius: 4px !important;
+    margin-bottom: 14px !important;
 }
 
-/* Control de Visibilidad de Pestañas en Pantalla */
+/* Pestaña contenedora activa */
+#pedidoContainer .tab-content,
+#pedidoContainer .tab-pane.active {
+    background: linear-gradient(135deg, #e2e8f0 0%, #cbd5e1 45%, #94a3b8 100%) !important;
+    padding: 16px !important;
+    border-radius: 12px !important;
+    border: 2px solid #64748b !important;
+    box-shadow: 
+        inset 0 2px 4px rgba(255, 255, 255, 0.9), 
+        inset 0 -2px 6px rgba(0, 0, 0, 0.25),
+        0 8px 16px rgba(0, 0, 0, 0.15) !important;
+}
+
 .tab-content > .tab-pane {
     height: 0;
     overflow: hidden;
@@ -202,9 +121,141 @@ body {
     overflow: visible;
 }
 
-/* --------------------------------------------------------------------------
-   3. BARRA DE NAVEGACIÓN FLOTANTE (LIQUID GLASS)
-   -------------------------------------------------------------------------- */
+/* ==========================================================================
+   3. NAVEGACIÓN Y PESTAÑAS (DIFERENCIACIÓN VISUAL)
+   ========================================================================== */
+#mainTabs, .lab-main-tabs {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    overflow-x: auto !important;
+    white-space: nowrap;
+    padding-bottom: 8px;
+    gap: 6px;
+    border-bottom: 2px solid var(--lab-border) !important;
+}
+
+/* Pestaña Inactiva */
+#mainTabs .nav-link,
+.lab-main-tabs .nav-link {
+    background: linear-gradient(180deg, #ffffff 0%, #f1f5f9 100%) !important;
+    color: #475569 !important;
+    border: 1px solid #cbd5e1 !important;
+    border-radius: 20px !important;
+    font-weight: 600 !important;
+    padding: 6px 14px;
+    transition: all 0.2s ease-in-out;
+}
+
+#mainTabs .nav-link:hover,
+.lab-main-tabs .nav-link:hover {
+    background-color: #e2e8f0 !important;
+    color: #0f172a !important;
+}
+
+/* Pestaña Activa (Azul Metalizado Neón) */
+#mainTabs .nav-link.active,
+.lab-main-tabs .nav-link.active {
+    background: linear-gradient(180deg, #0284c7 0%, #0369a1 100%) !important;
+    color: #ffffff !important;
+    border: 1px solid #075985 !important;
+    font-weight: 700 !important;
+    box-shadow: 
+        0 4px 10px rgba(2, 132, 199, 0.4),
+        inset 0 1px 2px rgba(255, 255, 255, 0.6) !important;
+    transform: translateY(-2px);
+}
+
+/* Sub-pestañas Internas */
+.lab-sub-tabs {
+    background-color: #f1f5f9;
+    padding: 4px;
+    border-radius: 12px;
+    display: inline-flex;
+}
+
+.lab-sub-tabs .nav-link {
+    border-radius: 8px !important;
+    color: #475569;
+    border: none !important;
+}
+
+.lab-sub-tabs .nav-link.active {
+    background-color: #ffffff !important;
+    color: var(--lab-primary) !important;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+/* ==========================================================================
+   4. TABLAS Y CAMPOS DE ENTRADA (ESTADOS NEÓN Y RESULTADOS)
+   ========================================================================== */
+.table {
+    border-color: var(--lab-border);
+    background-color: rgba(255, 255, 255, 0.85) !important;
+    backdrop-filter: blur(4px);
+    border-radius: 8px !important;
+    overflow: hidden;
+}
+
+.table tr:has(td[colspan]), 
+.table th,
+.table td.bg-light {
+    background: linear-gradient(180deg, #475569 0%, #334155 100%) !important;
+    color: #ffffff !important;
+    font-weight: 700 !important;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 2px solid #1e293b !important;
+}
+
+.input-group-text {
+    background: linear-gradient(180deg, #e2e8f0 0%, #cbd5e1 100%) !important;
+    border: 1px solid #94a3b8 !important;
+    color: #334155 !important;
+    font-weight: 600 !important;
+}
+
+/* Campo Vacío */
+.form-control, 
+.form-select, 
+.table input.form-control:placeholder-shown {
+    background-color: #ffffff !important;
+    border: 1px solid #94a3b8 !important;
+    border-radius: 6px !important;
+    color: #1e293b !important;
+    padding: 5px 8px !important;
+    box-shadow: inset 0 2px 3px rgba(0, 0, 0, 0.07) !important;
+}
+
+/* Campo con Datos Ingresados (Verde Neón Suave) */
+.table input.form-control:not(:placeholder-shown),
+.table input.form-control.con-dato,
+.form-control.con-dato {
+    background-color: #dcfce7 !important;
+    border: 2px solid #16a34a !important;
+    color: #14532d !important;
+    font-weight: 700 !important;
+    box-shadow: 
+        0 0 6px rgba(22, 163, 74, 0.3),
+        inset 0 1px 2px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Edición / Foco */
+.form-control:focus, 
+.form-select:focus,
+.table input.form-control:focus {
+    background-color: #f0f9ff !important;
+    border-color: #0284c7 !important;
+    box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.25) !important;
+    outline: none !important;
+}
+
+/* Métodos analíticos */
+.input-metodo-oculto { display: none !important; }
+.input-metodo-visible { display: block !important; }
+
+/* ==========================================================================
+   5. BARRA DE NAVEGACIÓN FLOTANTE (LIQUID GLASS)
+   ========================================================================== */
 .liquid-nav {
     position: relative;
     display: flex;
@@ -238,37 +289,6 @@ body {
     z-index: 6; 
 }
 
-.liquid-glare-container {
-    position: absolute;
-    inset: 0;
-    border-radius: 24px;
-    overflow: hidden;
-    pointer-events: none;
-    z-index: 5;
-}
-
-.liquid-glare {
-    position: absolute;
-    inset: 0;
-    opacity: 0;
-    transition: opacity 0.3s ease;
-    background: radial-gradient(circle 120px at var(--x, 50%) var(--y, 50%), var(--glare-color) 0%, transparent 100%);
-    mix-blend-mode: overlay;
-}
-
-.liquid-nav:hover .liquid-glare {
-    opacity: 1;
-}
-
-.nav-items {
-    position: relative;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    flex-wrap: wrap;
-    z-index: 3;
-}
-
 .action-btn {
     position: relative;
     background: rgba(255, 255, 255, 0.1);
@@ -282,7 +302,6 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    -webkit-tap-highlight-color: transparent;
     transition: all 0.2s ease;
     outline: none;
     z-index: 3;
@@ -295,23 +314,11 @@ body {
     transform: translateY(-1px);
 }
 
-.action-btn:active {
-    transform: scale(0.9);
-}
-
-/* Colores Dinámicos de Botones */
 .btn-primary-custom { color: #007aff; }
 .btn-success-custom { color: #28a745; }
 .btn-whatsapp-custom { color: #25d366; }
 .btn-info-custom    { color: #17a2b8; }
-.btn-secondary-custom { color: var(--icon-active); }
 
-[data-theme="dark"] .btn-primary-custom { color: #0a84ff; }
-[data-theme="dark"] .btn-success-custom { color: #32d74b; }
-[data-theme="dark"] .btn-whatsapp-custom { color: #25d366; }
-[data-theme="dark"] .btn-info-custom    { color: #64d2ff; }
-
-/* Grupo de Entrada de Correo Electrónico */
 .email-group {
     display: flex;
     align-items: center;
@@ -333,27 +340,17 @@ body {
     width: 160px;
 }
 
-.email-input::placeholder {
-    color: var(--icon-color);
-}
-
 .email-btn {
     background: transparent;
     border: none;
     border-left: 1px solid var(--glass-border);
     width: 40px;
     height: 100%;
-    font-size: 15px;
     color: #17a2b8;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: background 0.2s;
-}
-
-.email-btn:hover {
-    background: rgba(23, 162, 184, 0.15);
 }
 
 .divider {
@@ -364,237 +361,20 @@ body {
     z-index: 3;
 }
 
-/* Interruptor de Tema y Firmas */
-.theme-btn {
-    position: relative;
-    background: transparent;
-    border: none;
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    color: var(--icon-color);
-    cursor: pointer;
-    z-index: 3;
-    outline: none;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: color 0.3s ease;
-}
-
-.theme-btn:hover {
-    color: var(--icon-active);
-    background: var(--pill-bg);
-}
-
-.theme-icon-wrapper {
-    position: relative;
-    width: 18px;
-    height: 18px;
-}
-
-.theme-icon-wrapper svg {
-    position: absolute;
-    top: 0; left: 0;
-    transition: transform 0.5s cubic-bezier(0.34, 1.2, 0.64, 1), opacity 0.4s ease;
-}
-
-.sun { opacity: 1; transform: rotate(0deg) scale(1); }
-.moon { opacity: 0; transform: rotate(-90deg) scale(0); }
-
-[data-theme="dark"] .sun { opacity: 0; transform: rotate(90deg) scale(0); }
-[data-theme="dark"] .moon { opacity: 1; transform: rotate(0deg) scale(1); }
-
-.btn-signatures {
-    color: #6c757d;
-    transition: all 0.3s ease;
-}
-
-.btn-signatures.active {
-    color: #007aff;
-    background: rgba(0, 122, 255, 0.1);
-}
-
-[data-theme="dark"] .btn-signatures.active {
-    color: #0a84ff;
-    background: rgba(10, 132, 255, 0.15);
-}
-
-.btn-signatures:not(.active) {
-    opacity: 0.6;
-}
-
-/* --------------------------------------------------------------------------
-   4. SISTEMA DE NAVEGACIÓN POR PESTAÑAS (Categorías y Sub-pestañas)
-   -------------------------------------------------------------------------- */
-/* Menú Principal Fluido con Scroll Horizontal */
-#mainTabs, .lab-main-tabs {
-    display: flex !important;
-    flex-wrap: nowrap !important;
-    overflow-x: auto !important;
-    white-space: nowrap;
-    padding-bottom: 8px;
-    gap: 6px;
-    border-bottom: 2px solid var(--lab-border) !important;
-}
-
-#mainTabs::-webkit-scrollbar, .lab-main-tabs::-webkit-scrollbar {
-    height: 5px;
-}
-
-#mainTabs::-webkit-scrollbar-thumb, .lab-main-tabs::-webkit-scrollbar-thumb {
-    background: var(--lab-border);
-    border-radius: 4px;
-}
-
-#mainTabs .nav-link, .lab-main-tabs .nav-link {
-    border: 1px solid var(--lab-border) !important;
-    border-radius: 20px !important;
-    color: #64748b;
-    background-color: #f8fafc;
-    padding: 6px 14px;
-    transition: all 0.2s ease-in-out;
-}
-
-#mainTabs .nav-link:hover, .lab-main-tabs .nav-link:hover {
-    background-color: #e2e8f0;
-    color: #0f172a;
-}
-
-#mainTabs .nav-link.active, .lab-main-tabs .nav-link.active {
-    background-color: var(--lab-primary) !important;
-    color: #ffffff !important;
-    border-color: var(--lab-primary) !important;
-    box-shadow: 0 4px 6px -1px rgba(2, 132, 199, 0.3);
-    font-weight: 600;
-}
-
-/* Sub-pestañas Internas (Ej. Dirui, Manual, VES) */
-.lab-sub-tabs {
-    background-color: #f1f5f9;
-    padding: 4px;
-    border-radius: 12px;
-    display: inline-flex;
-}
-
-.lab-sub-tabs .nav-link {
-    border-radius: 8px !important;
-    color: #475569;
-    transition: all 0.2s;
-    border: none !important;
-}
-
-.lab-sub-tabs .nav-link.active {
-    background-color: #ffffff !important;
-    color: var(--lab-primary) !important;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-}
-
-/* --------------------------------------------------------------------------
-   5. FORMULARIOS, TABLAS Y ENTRADAS DE DATOS
-   -------------------------------------------------------------------------- */
-.table {
-    border-color: var(--lab-border);
-}
-
-.table th {
-    background-color: #f1f5f9 !important;
-    color: #475569;
-    font-weight: 600;
-    font-size: 0.78rem;
-    text-transform: uppercase;
-    letter-spacing: 0.025em;
-}
-
-.input-group.input-group-sm {
-    flex-wrap: nowrap !important;
-}
-
-.input-group-sm .input-group-text {
-    font-size: 0.75rem;
-    padding: 0.25rem 0.4rem;
-    background-color: #f8f9fa;
-    white-space: nowrap;
-}
-
-.form-control, .form-select,
-.input-group-sm .form-control, 
-.input-group-sm .form-select {
-    font-size: 0.78rem;
-    padding: 0.25rem 0.4rem;
-    border: 1px solid var(--lab-border);
-    border-radius: 4px;
-    min-width: 0;
-    transition: border-color 0.15s ease, box-shadow 0.15s ease;
-}
-
-.form-control-editable:focus, .form-select:focus {
-    border-color: var(--lab-primary) !important;
-    box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.15) !important;
-    background-color: #f0f9ff;
-}
-
-/* Control de visibilidad de métodos analíticos */
-.input-metodo-oculto {
-    display: none !important;
-}
-
-.input-metodo-visible {
-    display: block !important;
-}
-
-/* --------------------------------------------------------------------------
-   6. CONTROL DE FIRMAS Y MARCAS VISUALES
-   -------------------------------------------------------------------------- */
-.bloque-firma, 
-.firma-container, 
-#firmaResponsable {
+/* ==========================================================================
+   6. EXPORTACIÓN PDF Y REGLAS DE IMPRESIÓN
+   ========================================================================== */
+.bloque-firma, .firma-container, #firmaResponsable, .seccion-firma-completa {
     page-break-inside: avoid !important;
     break-inside: avoid !important;
     display: block;
     margin-top: 15px;
 }
 
-.seccion-firma-completa {
-    page-break-inside: avoid !important;
-    break-inside: avoid !important;
-    display: block !important;
-    width: 100%;
-    clear: both;
-    margin-top: 15px;
-}
+.print-only { display: none; }
+.pdf-mode .no-print { display: none !important; }
+.pdf-mode .print-only { display: block !important; }
 
-.seccion-firma-completa img {
-    display: inline-block;
-    max-height: 70px;
-    width: auto;
-    page-break-inside: avoid !important;
-    break-inside: avoid !important;
-}
-
-.firma-img {
-    max-height: 120px; 
-    width: auto;
-    max-width: 100%;
-    transition: opacity 0.2s ease-in-out;
-}
-
-/* --------------------------------------------------------------------------
-   7. REGLAS EXCLUSIVAS DE EXPORTACIÓN PDF (html2pdf / .pdf-mode)
-   -------------------------------------------------------------------------- */
-.print-only { 
-    display: none; 
-}
-
-.pdf-mode .no-print { 
-    display: none !important; 
-}
-
-.pdf-mode .print-only { 
-    display: block !important; 
-}
-
-/* Muestra todas las pestañas simultáneamente para renderizado en PDF */
 .pdf-mode .tab-pane {
     display: block !important;
     height: auto !important;
@@ -604,136 +384,32 @@ body {
     margin-bottom: 20px;
 }
 
-/* Oculta los controles de navegación UI en el archivo PDF */
 .pdf-mode .nav-tabs,
 .pdf-mode #mainTabs,
 .pdf-mode .lab-main-tabs {
     display: none !important;
 }
 
-/* Previene cortes de página imprevistos en tablas, tarjetas y títulos */
-.pdf-mode tr, 
-.pdf-mode .card, 
-.pdf-mode .border, 
-.pdf-mode table {
+.pdf-mode tr, .pdf-mode .card, .pdf-mode table {
     page-break-inside: avoid !important;
     break-inside: avoid !important;
 }
 
-.pdf-mode .section-title {
-    page-break-after: avoid !important;
-    break-after: avoid !important;
-}
-
-/* --------------------------------------------------------------------------
-   8. REGLAS DE IMPRESIÓN DIRECTA DEL NAVEGADOR (@media print)
-   -------------------------------------------------------------------------- */
 @page {
     size: A4 portrait;
     margin: 12mm 10mm 12mm 10mm;
 }
 
 @media print {
-    body * {
-        visibility: hidden;
-    }
-
-    #pedidoContainer, 
-    #pedidoContainer * {
-        visibility: visible;
-    }
-
+    body * { visibility: hidden; }
+    #pedidoContainer, #pedidoContainer * { visibility: visible; }
     #pedidoContainer {
         position: absolute;
-        left: 0;
-        top: 0;
+        left: 0; top: 0;
         width: 100% !important;
         margin: 0 !important;
         padding: 10px !important;
         background: #ffffff !important;
     }
-
-    .no-print,
-    .d-none-print {
-        display: none !important;
-    }
-}
-
-/* ==========================================================================
-   DISEÑO METALIZADO Y MARGENES PARA LA PANTALLA DE INGRESO
-   ========================================================================== */
-
-/* Contenedor Principal: Marco de Acero y Márgenes Externe/Internos */
-#pedidoContainer {
-    width: 95% !important;
-    max-width: 1250px !important;
-    margin: 30px auto !important;
-    padding: 24px !important;
-    background: linear-gradient(145deg, #f1f5f9 0%, #e2e8f0 50%, #cbd5e1 100%) !important;
-    border: 1px solid #94a3b8 !important;
-    border-radius: 16px !important;
-    box-shadow: 
-        0 20px 25px -5px rgba(0, 0, 0, 0.1),
-        0 8px 10px -6px rgba(0, 0, 0, 0.1),
-        inset 0 1px 2px rgba(255, 255, 255, 0.9),
-        inset 0 -2px 4px rgba(0, 0, 0, 0.08) !important;
-}
-
-/* Tarjetas e Ingresos con Textura Platinada */
-.pedido-box, 
-#pedidoContainer .card {
-    background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%) !important;
-    border: 1px solid #94a3b8 !important;
-    border-radius: 10px !important;
-    padding: 16px !important;
-    margin-bottom: 20px !important;
-    box-shadow: 
-        0 4px 6px -1px rgba(0, 0, 0, 0.05),
-        inset 0 1px 0 rgba(255, 255, 255, 0.8) !important;
-}
-
-/* Encabezados de Sección con Destello Metálico */
-.section-title {
-    color: #0f172a !important;
-    font-size: 0.85rem !important;
-    font-weight: 700 !important;
-    letter-spacing: 0.6px;
-    padding: 6px 12px !important;
-    background: linear-gradient(90deg, #cbd5e1 0%, #f1f5f9 100%) !important;
-    border-left: 4px solid #0284c7 !important;
-    border-radius: 4px !important;
-    margin-bottom: 14px !important;
-}
-
-/* Campos de Entrada (Inputs) con Bisel Hundido */
-.form-control, 
-.form-select, 
-.input-group-sm .form-control, 
-.input-group-sm .form-select {
-    background-color: #ffffff !important;
-    border: 1px solid #94a3b8 !important;
-    border-radius: 6px !important;
-    padding: 5px 8px !important;
-    box-shadow: inset 0 2px 3px rgba(0, 0, 0, 0.07) !important;
-    transition: all 0.2s ease-in-out !important;
-}
-
-/* Resaltado Neón/Activo al Hacer Clic en un Campo */
-.form-control:focus, 
-.form-select:focus,
-.form-control-editable:focus {
-    border-color: #0284c7 !important;
-    background-color: #ffffff !important;
-    box-shadow: 
-        0 0 0 3px rgba(2, 132, 199, 0.25),
-        inset 0 1px 2px rgba(0, 0, 0, 0.05) !important;
-    outline: none !important;
-}
-
-/* Etiquetas Integradas con Acabado Metálico Oscuro */
-.input-group-text {
-    background: linear-gradient(180deg, #e2e8f0 0%, #cbd5e1 100%) !important;
-    border: 1px solid #94a3b8 !important;
-    color: #334155 !important;
-    font-weight: 600 !important;
+    .no-print, .d-none-print { display: none !important; }
 }
