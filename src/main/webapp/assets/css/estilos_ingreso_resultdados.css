@@ -2,6 +2,15 @@
     size: A4 portrait;
     margin: 12mm 10mm 12mm 10mm; /* Margen superior, derecho, inferior, izquierdo */
   }
+/* Evita el corte de la firma */
+.bloque-firma, 
+.firma-container, 
+#firmaResponsable {
+  page-break-inside: avoid !important;
+  break-inside: avoid !important;
+  display: block;
+  margin-top: 15px;
+}
 @media print {
     body * {
         visibility: hidden;
