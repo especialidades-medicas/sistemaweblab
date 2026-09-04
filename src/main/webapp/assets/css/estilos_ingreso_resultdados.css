@@ -559,3 +559,82 @@ body {
         display: none !important;
     }
 }
+
+/* ==========================================================================
+   DISEÑO METALIZADO Y MARGENES PARA LA PANTALLA DE INGRESO
+   ========================================================================== */
+
+/* Contenedor Principal: Marco de Acero y Márgenes Externe/Internos */
+#pedidoContainer {
+    width: 95% !important;
+    max-width: 1250px !important;
+    margin: 30px auto !important;
+    padding: 24px !important;
+    background: linear-gradient(145deg, #f1f5f9 0%, #e2e8f0 50%, #cbd5e1 100%) !important;
+    border: 1px solid #94a3b8 !important;
+    border-radius: 16px !important;
+    box-shadow: 
+        0 20px 25px -5px rgba(0, 0, 0, 0.1),
+        0 8px 10px -6px rgba(0, 0, 0, 0.1),
+        inset 0 1px 2px rgba(255, 255, 255, 0.9),
+        inset 0 -2px 4px rgba(0, 0, 0, 0.08) !important;
+}
+
+/* Tarjetas e Ingresos con Textura Platinada */
+.pedido-box, 
+#pedidoContainer .card {
+    background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%) !important;
+    border: 1px solid #94a3b8 !important;
+    border-radius: 10px !important;
+    padding: 16px !important;
+    margin-bottom: 20px !important;
+    box-shadow: 
+        0 4px 6px -1px rgba(0, 0, 0, 0.05),
+        inset 0 1px 0 rgba(255, 255, 255, 0.8) !important;
+}
+
+/* Encabezados de Sección con Destello Metálico */
+.section-title {
+    color: #0f172a !important;
+    font-size: 0.85rem !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.6px;
+    padding: 6px 12px !important;
+    background: linear-gradient(90deg, #cbd5e1 0%, #f1f5f9 100%) !important;
+    border-left: 4px solid #0284c7 !important;
+    border-radius: 4px !important;
+    margin-bottom: 14px !important;
+}
+
+/* Campos de Entrada (Inputs) con Bisel Hundido */
+.form-control, 
+.form-select, 
+.input-group-sm .form-control, 
+.input-group-sm .form-select {
+    background-color: #ffffff !important;
+    border: 1px solid #94a3b8 !important;
+    border-radius: 6px !important;
+    padding: 5px 8px !important;
+    box-shadow: inset 0 2px 3px rgba(0, 0, 0, 0.07) !important;
+    transition: all 0.2s ease-in-out !important;
+}
+
+/* Resaltado Neón/Activo al Hacer Clic en un Campo */
+.form-control:focus, 
+.form-select:focus,
+.form-control-editable:focus {
+    border-color: #0284c7 !important;
+    background-color: #ffffff !important;
+    box-shadow: 
+        0 0 0 3px rgba(2, 132, 199, 0.25),
+        inset 0 1px 2px rgba(0, 0, 0, 0.05) !important;
+    outline: none !important;
+}
+
+/* Etiquetas Integradas con Acabado Metálico Oscuro */
+.input-group-text {
+    background: linear-gradient(180deg, #e2e8f0 0%, #cbd5e1 100%) !important;
+    border: 1px solid #94a3b8 !important;
+    color: #334155 !important;
+    font-weight: 600 !important;
+}
