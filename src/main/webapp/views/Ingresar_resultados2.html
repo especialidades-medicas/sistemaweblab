@@ -2179,9 +2179,10 @@
             
             <!-- Sub-panel Secreción Vaginal -->
 <!-- Sub-panel Secreción Vaginal -->
+<!-- Sub-panel Secreción Vaginal -->
 <div class="tab-pane fade show active" id="vaginalSubContent" role="tabpanel">
     
-    <!-- Título / Botón que activa el colapso -->
+    <!-- Título / Botón de colapso -->
     <div class="section-title text-center text-primary fw-bold border-bottom pb-2 mb-3" 
          style="font-size: 13px; cursor: pointer;" 
          data-bs-toggle="collapse" 
@@ -2192,10 +2193,24 @@
         ▲ INFORME DE MICROBIOLOGÍA - SECRECIÓN VAGINAL
     </div>
 
-    <!-- CONTENEDOR COLAPSABLE: Todo lo que esté aquí dentro se ocultará -->
+    <!-- CONTENEDOR COLAPSABLE -->
     <div class="collapse show" id="collapseVaginalContent">
         
-        <div class="text-secondary fw-bold small mb-2 border-bottom pb-1">EXAMEN EN FRESCO Y GRAM</div>
+        <!-- BARRA DE BOTONES DE ACCIÓN RÁPIDA -->
+        <div class="d-flex justify-content-between align-items-center mb-2 pb-1 border-bottom">
+            <span class="text-secondary fw-bold small">EXAMEN EN FRESCO Y GRAM</span>
+            <div class="btn-group btn-group-sm" role="group">
+                <button type="button" class="btn btn-outline-success btn-sm" onclick="cargarPatronNormal()" style="font-size: 10px;">
+                    ✓ Normal
+                </button>
+                <button type="button" class="btn btn-outline-warning btn-sm" onclick="cargarPatronGardnerella()" style="font-size: 10px;">
+                    ⚠ Gardnerella
+                </button>
+                <button type="button" class="btn btn-outline-danger btn-sm" onclick="limpiarSecrecionVaginal()" style="font-size: 10px;">
+                    ✕ Limpiar
+                </button>
+            </div>
+        </div>
 
         <div class="table-responsive">
             <table class="table table-sm table-borderless align-middle mb-3" style="font-size: 11px;">
@@ -2385,7 +2400,7 @@
             </table>
         </div>
 
-    </div> <!-- Fin del div #collapseVaginalContent -->
+    </div>
 </div>
 
             <!-- Sub-panel Papa Test (Papanicolaou) -->
@@ -4187,6 +4202,51 @@ function llenarFormularioResultados(resultados) {
             });
         })
         .catch(err => console.error("Error al consultar la orden:", err));
+}
+
+        function cargarPatronGardnerella() {
+    const selects = document.querySelectorAll('#collapseVaginalContent select');
+    const valoresGardnerella = [
+        "Secreción Vaginal",             // MUESTRA
+        "+++",                            // CÉLULAS EPITELIALES
+        "++",                             // PIOCITOS
+        "Ausentes",                       // HEMATÍES
+        "+++",                            // BACTERIAS
+        "Ausentes",                       // FLORA MUCOSA
+        "++",                             // CÉLULAS CLAVE
+        "Ausentes",                       // LEVADURAS
+        "Ausentes",                       // HIFAS DE HONGOS
+        "No se observan",                 // PARÁSITOS
+        "-",                              // PRUEBA KOH
+        "Numerosos",                      // COLORACIÓN DE GRAM
+        "Tipo Gardnerella Vaginalis"     // MICROORGANISMO / HALLAZGO
+    ];
+    selects.forEach((select, i) => { if (valoresGardnerella[i] !== undefined) select.value = valoresGardnerella[i]; });
+}
+
+function cargarPatronNormal() {
+    const selects = document.querySelectorAll('#collapseVaginalContent select');
+    const valoresNormal = [
+        "Secreción Vaginal",                                        // MUESTRA
+        "Escasas",                                                  // CÉLULAS EPITELIALES
+        "Escasos",                                                  // PIOCITOS
+        "Ausentes",                                                 // HEMATÍES
+        "Escasas",                                                  // BACTERIAS
+        "Ausentes",                                                 // FLORA MUCOSA
+        "Ausentes",                                                 // CÉLULAS CLAVE
+        "Ausentes",                                                 // LEVADURAS
+        "Ausentes",                                                 // HIFAS DE HONGOS
+        "No se observan",                                           // PARÁSITOS
+        "-",                                                        // PRUEBA KOH
+        "Moderadas",                                                // COLORACIÓN DE GRAM
+        "Bacilos de Döderlein predominantes (Flora Normal)"         // MICROORGANISMO / HALLAZGO
+    ];
+    selects.forEach((select, i) => { if (valoresNormal[i] !== undefined) select.value = valoresNormal[i]; });
+}
+
+function limpiarSecrecionVaginal() {
+    const selects = document.querySelectorAll('#collapseVaginalContent select');
+    selects.forEach(select => select.value = "");
 }
         
     </script>
