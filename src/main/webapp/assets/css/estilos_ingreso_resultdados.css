@@ -1,5 +1,5 @@
 /* ==========================================================================
-   1. VARIABLES GLOBALES Y TEMAS (Claro / Oscuro)
+   1. VARIABLES GLOBALES Y TEMAS
    ========================================================================== */
 :root {
     --lab-primary: #0284c7;
@@ -9,7 +9,7 @@
     --lab-border: #cbd5e1;
     --lab-text: #1e293b;
 
-    /* Barra Liquid Glass */
+    /* Barra Liquid Glass UI */
     --glass-bg: rgba(255, 255, 255, 0.15);
     --glass-border: rgba(255, 255, 255, 0.4);
     --glass-shadow: rgba(0, 0, 0, 0.1);
@@ -17,10 +17,8 @@
     --glass-caustic: rgba(255, 255, 255, 0.4);
     --reflection-start: rgba(255, 255, 255, 0.6);
     --reflection-end: rgba(255, 255, 255, 0.0);
-    --glare-color: rgba(255, 255, 255, 0.5);
     --pill-bg: rgba(255, 255, 255, 0.7);
-    --pill-shadow: 0 4px 12px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.05), inset 0 1px 1px rgba(255,255,255,0.8);
-    --icon-color: rgba(0, 0, 0, 0.6);
+    --pill-shadow: 0 4px 12px rgba(0,0,0,0.08), inset 0 1px 1px rgba(255,255,255,0.8);
     --icon-active: rgba(0, 0, 0, 0.95);
     --divider: rgba(0, 0, 0, 0.15);
     --input-bg: rgba(255, 255, 255, 0.5);
@@ -39,17 +37,15 @@
     --glass-caustic: rgba(255, 255, 255, 0.05);
     --reflection-start: rgba(255, 255, 255, 0.15);
     --reflection-end: rgba(255, 255, 255, 0.0);
-    --glare-color: rgba(255, 255, 255, 0.15);
     --pill-bg: rgba(60, 60, 65, 0.8);
-    --pill-shadow: 0 4px 12px rgba(0,0,0,0.4), 0 1px 2px rgba(0,0,0,0.2), inset 0 1px 1px rgba(255,255,255,0.2);
-    --icon-color: rgba(255, 255, 255, 0.6);
+    --pill-shadow: 0 4px 12px rgba(0,0,0,0.4), inset 0 1px 1px rgba(255,255,255,0.2);
     --icon-active: #ffffff;
     --divider: rgba(255, 255, 255, 0.15);
     --input-bg: rgba(40, 40, 45, 0.6);
 }
 
 /* ==========================================================================
-   2. ESTRUCTURA Y CONTENEDOR PRINCIPAL
+   2. ESTRUCTURA DE INTERFAZ WEB (SISTEMA)
    ========================================================================== */
 body {
     background-color: var(--lab-bg);
@@ -68,7 +64,7 @@ body {
     box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05) !important;
 }
 
-/* Tarjetas Internas */
+/* Tarjetas e ingresar datos */
 .pedido-box, 
 #pedidoContainer .card {
     background: #ffffff !important;
@@ -79,7 +75,7 @@ body {
     box-shadow: none !important;
 }
 
-/* Encabezados de Sección */
+/* Títulos de sección */
 .section-title {
     color: #0284c7 !important;
     font-size: 0.9rem !important;
@@ -92,30 +88,7 @@ body {
     margin-bottom: 14px !important;
 }
 
-/* Contenedor de Pestañas en Fondo Blanco */
-#pedidoContainer .tab-content,
-#pedidoContainer .tab-pane,
-#pedidoContainer .tab-pane.active {
-    background: #ffffff !important;
-    padding: 16px !important;
-    border-radius: 12px !important;
-    border: none !important;
-    box-shadow: none !important;
-}
-
-.tab-content > .tab-pane {
-    height: 0;
-    overflow: hidden;
-}
-
-.tab-content > .tab-pane.active {
-    height: auto;
-    overflow: visible;
-}
-
-/* ==========================================================================
-   3. NAVEGACIÓN Y PESTAÑAS (DIFERENCIACIÓN VISUAL)
-   ========================================================================== */
+/* Pestañas */
 #mainTabs, .lab-main-tabs {
     display: flex !important;
     flex-wrap: nowrap !important;
@@ -126,7 +99,6 @@ body {
     border-bottom: 2px solid var(--lab-border) !important;
 }
 
-/* Pestaña Inactiva */
 #mainTabs .nav-link,
 .lab-main-tabs .nav-link {
     background: #f1f5f9 !important;
@@ -135,106 +107,50 @@ body {
     border-radius: 20px !important;
     font-weight: 600 !important;
     padding: 6px 14px;
-    transition: all 0.2s ease-in-out;
 }
 
-#mainTabs .nav-link:hover,
-.lab-main-tabs .nav-link:hover {
-    background-color: #e2e8f0 !important;
-    color: #0f172a !important;
-}
-
-/* Pestaña Activa */
 #mainTabs .nav-link.active,
 .lab-main-tabs .nav-link.active {
     background: #0284c7 !important;
     color: #ffffff !important;
     border: 1px solid #075985 !important;
     font-weight: 700 !important;
-    box-shadow: 0 4px 10px rgba(2, 132, 199, 0.3) !important;
-    transform: translateY(-1px);
 }
 
-/* Sub-pestañas Internas */
-.lab-sub-tabs {
-    background-color: #f1f5f9;
-    padding: 4px;
-    border-radius: 12px;
-    display: inline-flex;
-}
-
-.lab-sub-tabs .nav-link {
-    border-radius: 8px !important;
-    color: #475569;
-    border: none !important;
-}
-
-.lab-sub-tabs .nav-link.active {
-    background-color: #ffffff !important;
-    color: var(--lab-primary) !important;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-}
-
-/* ==========================================================================
-   4. TABLAS Y CAMPOS DE ENTRADA (LIMPIO Y BLANCO)
-   ========================================================================== */
+/* Tabla en la Web */
 .table {
-    border-color: #e2e8f0;
+    border-color: #cbd5e1;
     background-color: #ffffff !important;
-    border-radius: 8px !important;
+    border-radius: 6px !important;
     overflow: hidden;
 }
 
-/* Cabeceras de Tabla */
-.table tr:has(td[colspan]), 
 .table th,
-.table td.bg-light {
-    background: #334155 !important;
+.table tr:has(td[colspan]) {
+    background: #1e293b !important;
     color: #ffffff !important;
     font-weight: 700 !important;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
-    border-bottom: 2px solid #1e293b !important;
 }
 
-/* Celdas de la tabla */
 .table td {
     background-color: #ffffff !important;
     color: #1e293b !important;
 }
 
-/* Resaltar fila al enfocar un campo en pantalla */
-.table tbody tr:focus-within {
-    background-color: #f0f9ff !important;
-}
-
-.input-group-text {
-    background: #f1f5f9 !important;
+/* Inputs en la pantalla de digitación */
+.form-control, .form-select, .table input.form-control {
+    background-color: #f8fafc !important;
     border: 1px solid #cbd5e1 !important;
-    color: #334155 !important;
-    font-weight: 600 !important;
+    border-radius: 4px !important;
+    color: #0f172a !important;
+    padding: 4px 8px !important;
 }
 
-/* Campos de entrada */
-.form-control, 
-.form-select, 
-.table input.form-control {
-    background-color: #ffffff !important;
-    border: 1px solid #cbd5e1 !important;
-    border-radius: 6px !important;
-    color: #1e293b !important;
-    padding: 5px 8px !important;
-    box-shadow: none !important;
-}
-
-/* Enfoque al digitar */
-.form-control:focus, 
-.form-select:focus,
-.table input.form-control:focus {
+.form-control:focus, .table input.form-control:focus {
     background-color: #ffffff !important;
     border-color: #0284c7 !important;
-    box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.15) !important;
-    outline: none !important;
+    box-shadow: 0 0 0 2px rgba(2, 132, 199, 0.2) !important;
 }
 
 /* Métodos analíticos */
@@ -242,7 +158,7 @@ body {
 .input-metodo-visible { display: block !important; }
 
 /* ==========================================================================
-   5. BARRA DE NAVEGACIÓN FLOTANTE (LIQUID GLASS)
+   3. BARRA FLOTANTE LIQUID GLASS
    ========================================================================== */
 .liquid-nav {
     position: relative;
@@ -250,62 +166,28 @@ body {
     justify-content: center;
     margin: 20px auto;
     align-items: center;
-    flex-wrap: wrap;
     gap: 6px;
     padding: 10px 14px;
     border-radius: 24px;
     background: var(--glass-bg);
     backdrop-filter: blur(50px) saturate(200%);
     -webkit-backdrop-filter: blur(50px) saturate(200%);
-    box-shadow: 
-        0 40px 80px -20px var(--glass-shadow),
-        0 10px 30px -10px var(--glass-shadow),
-        inset 0 2px 3px -1px var(--glass-highlight),
-        inset 0 -2px 4px -1px var(--glass-caustic),
-        inset 0 0 0 1px var(--glass-border);
-    transition: all 0.5s ease;
+    box-shadow: 0 20px 40px -10px var(--glass-shadow);
     z-index: 10;
 }
 
-.liquid-nav::before {
-    content: '';
-    position: absolute;
-    top: 1px; left: 1px; right: 1px; height: 40%;
-    border-radius: 24px 24px 12px 12px;
-    background: linear-gradient(180deg, var(--reflection-start) 0%, var(--reflection-end) 100%);
-    pointer-events: none;
-    z-index: 6; 
-}
-
 .action-btn {
-    position: relative;
     background: rgba(255, 255, 255, 0.1);
     border: 1px solid var(--glass-border);
     width: 40px;
     height: 40px;
     border-radius: 50%;
-    font-size: 16px;
     color: var(--icon-active);
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: all 0.2s ease;
-    outline: none;
-    z-index: 3;
-    text-decoration: none;
 }
-
-.action-btn:hover {
-    background: var(--pill-bg);
-    box-shadow: var(--pill-shadow);
-    transform: translateY(-1px);
-}
-
-.btn-primary-custom { color: #007aff; }
-.btn-success-custom { color: #28a745; }
-.btn-whatsapp-custom { color: #25d366; }
-.btn-info-custom    { color: #17a2b8; }
 
 .email-group {
     display: flex;
@@ -315,8 +197,6 @@ body {
     border-radius: 99px;
     height: 40px;
     padding-left: 12px;
-    overflow: hidden;
-    z-index: 3;
 }
 
 .email-input {
@@ -336,9 +216,6 @@ body {
     height: 100%;
     color: #17a2b8;
     cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
 }
 
 .divider {
@@ -346,68 +223,114 @@ body {
     height: 24px;
     background: var(--divider);
     margin: 0 4px;
-    z-index: 3;
 }
 
 /* ==========================================================================
-   6. EXPORTACIÓN PDF Y REGLAS DE IMPRESIÓN (BLANCO PURO SIN SOMBRAS)
+   4. EXPORTACIÓN PDF Y REPORTE IMPRESO (FONDO 100% BLANCO Y NATURAL)
    ========================================================================== */
-.bloque-firma, .firma-container, #firmaResponsable, .seccion-firma-completa {
-    page-break-inside: avoid !important;
-    break-inside: avoid !important;
-    display: block;
-    margin-top: 15px;
+/* Ocultar elementos navegables en el PDF */
+.pdf-mode .nav,
+.pdf-mode .nav-tabs,
+.pdf-mode #mainTabs,
+.pdf-mode .lab-main-tabs,
+.pdf-mode .liquid-nav,
+.pdf-mode .btn,
+.pdf-mode .no-print {
+    display: none !important;
 }
 
-.print-only { display: none; }
-.pdf-mode .no-print { display: none !important; }
-.pdf-mode .print-only { display: block !important; }
-
-/* Modo PDF */
+/* Eliminar marquetes, sombras, bordes redondeados y fondos de color en PDF */
 .pdf-mode,
-.pdf-mode *,
-.pdf-mode .tab-pane,
+.pdf-mode body,
+.pdf-mode #pedidoContainer,
+.pdf-mode .pedido-box,
 .pdf-mode .card,
-.pdf-mode table,
-.pdf-mode tr,
-.pdf-mode td {
+.pdf-mode div,
+.pdf-mode section,
+.pdf-mode .tab-pane {
     background: #ffffff !important;
     background-color: #ffffff !important;
     background-image: none !important;
     box-shadow: none !important;
+    border: none !important;
+    border-radius: 0 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
 }
 
+/* Forzar visualización continua de pestañas activas */
 .pdf-mode .tab-pane {
     display: block !important;
     height: auto !important;
     opacity: 1 !important;
     overflow: visible !important;
     visibility: visible !important;
-    margin-bottom: 20px;
+    margin-bottom: 15px !important;
 }
 
-.pdf-mode .nav-tabs,
-.pdf-mode #mainTabs,
-.pdf-mode .lab-main-tabs {
-    display: none !important;
+/* Formato texto plano para inputs dentro del PDF */
+.pdf-mode input,
+.pdf-mode select,
+.pdf-mode .form-control {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    font-weight: 600 !important;
+    color: #0f172a !important;
+    appearance: none !important;
+    -webkit-appearance: none !important;
 }
 
-.pdf-mode tr, .pdf-mode .card, .pdf-mode table {
+/* Tabla clínica en el PDF */
+.pdf-mode .table {
+    border-collapse: collapse !important;
+    width: 100% !important;
+    margin-bottom: 12px !important;
+    border: 1px solid #94a3b8 !important;
+}
+
+.pdf-mode .table th,
+.pdf-mode .table td {
+    border: 1px solid #cbd5e1 !important;
+    padding: 5px 8px !important;
+    font-size: 10pt !important;
+    color: #0f172a !important;
+    background: #ffffff !important;
+}
+
+/* Encabezados de tabla médicos en PDF */
+.pdf-mode .table th,
+.pdf-mode .table tr:has(td[colspan]) {
+    background-color: #1e293b !important;
+    color: #ffffff !important;
+    font-weight: 700 !important;
+    text-transform: uppercase !important;
+}
+
+/* Firma */
+.pdf-mode .bloque-firma, 
+.pdf-mode .firma-container, 
+.pdf-mode #firmaResponsable {
     page-break-inside: avoid !important;
     break-inside: avoid !important;
+    display: block !important;
+    margin-top: 20px !important;
+    background: #ffffff !important;
 }
 
+/* Configuración de Impresión Navegador (Ctrl+P) */
 @page {
     size: A4 portrait;
-    margin: 12mm 10mm 12mm 10mm;
+    margin: 10mm 10mm 10mm 10mm;
 }
 
-/* Modo Impresión */
 @media print {
     html, body {
         background: #ffffff !important;
         background-color: #ffffff !important;
-        background-image: none !important;
     }
 
     body * { 
@@ -418,9 +341,7 @@ body {
         visibility: visible; 
         background: #ffffff !important;
         background-color: #ffffff !important;
-        background-image: none !important;
         box-shadow: none !important;
-        border-color: #cbd5e1 !important;
     }
 
     #pedidoContainer {
@@ -433,7 +354,7 @@ body {
         border: none !important;
     }
 
-    .no-print, .d-none-print { 
+    .no-print, .d-none-print, .liquid-nav, #mainTabs { 
         display: none !important; 
     }
 }
