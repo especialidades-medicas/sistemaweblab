@@ -3161,22 +3161,48 @@ async function descargarPDFResultados() {
     elementoClonado.querySelectorAll('.no-print').forEach(el => el.remove());
     if (bloqueImpresion) bloqueImpresion.classList.add("d-none");
 
-    // Limpieza de estilos que fuerzan saltos de página erróneos
-    elementoClonado.style.height = "auto";
-    elementoClonado.style.margin = "0px";
-    elementoClonado.querySelectorAll('.section-title, table, .card').forEach(el => {
-        el.style.pageBreakBefore = 'avoid';
-        el.style.breakBefore = 'avoid';
+    // =========================================================================
+    // 1. EVITAR CORTE DE FIRMAS (Las empuja completas a la página 2 si no entran)
+    // =========================================================================
+    const elementosProtegidos = elementoClonado.querySelectorAll('img, .firma-container, [class*="firma"], .nota-footer, table tr');
+    elementosProtegidos.forEach(el => {
+        el.style.pageBreakInside = 'avoid';
+        el.style.breakInside = 'avoid';
     });
 
-    // CONFIGURACIÓN CORREGIDA: Sin 'avoid-all' para eliminar el espacio en blanco gigante
+    // =========================================================================
+    // 2. DUPLICAR CABECERA AUTOMÁTICAMENTE EN CADA SECCIÓN/TABLA
+    // =========================================================================
+    // Convierte cada grupo de exámenes en su propia tabla con su propio <thead>
+    const tablas = elementoClonado.querySelectorAll("table");
+    tablas.forEach(tabla => {
+        const theadOriginal = tabla.querySelector("thead");
+        if (!theadOriginal) return;
+
+        // Buscar títulos de categorías (ej. QUÍMICA SANGUÍNEA) dentro de la tabla
+        const filasSubtitulos = tabla.querySelectorAll("tr.table-group-header, tr.seccion-header, td[colspan='4']");
+        
+        filasSubtitulos.forEach(subtitulo => {
+            const trPadre = subtitulo.closest("tr");
+            if (trPadre && trPadre.previousElementSibling) {
+                // Inserta una copia del encabezado automáticamente antes de cada nueva sección
+                const theadClon = theadOriginal.cloneNode(true);
+                const nuevaFilaHeader = theadClon.querySelector("tr");
+                if (nuevaFilaHeader) {
+                    nuevaFilaHeader.style.pageBreakBefore = "auto";
+                    trPadre.parentNode.insertBefore(nuevaFilaHeader, trPadre);
+                }
+            }
+        });
+    });
+
     const opciones = {
         margin:       [8, 5, 8, 5],
         filename:     nombreArchivoFinal,
         image:        { type: 'jpeg', quality: 0.98 },
         html2canvas:  { scale: 2, useCORS: true, scrollY: 0 },
         jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
-        pagebreak:    { mode: ['css', 'legacy'], avoid: ['tr', '.firma-container'] }
+        pagebreak:    { mode: ['css', 'legacy'], avoid: ['tr', '.firma-container', 'img'] }
     };
 
     if (typeof html2pdf === "undefined") {
