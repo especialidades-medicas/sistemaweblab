@@ -1,18 +1,31 @@
 /* ==========================================================================
-   1. CONTENEDOR PRINCIPAL (#pedidoContainer) - BLANCO PURO
+   1. ELIMINACIÓN TOTAL DE FONDOS GRISES / PLOMOS (EXTERNOS E INTERNOS)
    ========================================================================== */
-html, body {
-    background: #f8fafc !important; /* Fondo sutil para la pantalla */
-}
-
+html, body,
 #pedidoContainer,
-div#pedidoContainer {
+div#pedidoContainer,
+.pedido-box,
+.framed-section,
+.inner-framed-box,
+.patient-box,
+.card,
+.card-body,
+.tab-content,
+.tab-pane,
+.tab-pane.active,
+div[class*="container"] {
     background: #ffffff !important;
     background-color: #ffffff !important;
     background-image: none !important;
+    box-shadow: none !important;
+}
+
+/* ==========================================================================
+   2. CONTENEDOR PRINCIPAL
+   ========================================================================== */
+#pedidoContainer {
     border: 1px solid #cbd5e1 !important;
-    border-radius: 14px !important;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05) !important;
+    border-radius: 12px !important;
     padding: 24px !important;
     margin: 20px auto !important;
     max-width: 1250px !important;
@@ -20,15 +33,17 @@ div#pedidoContainer {
 }
 
 /* ==========================================================================
-   2. CAJA DE DATOS DEL PACIENTE E INPUTS
+   3. MARCOS E INPUTS CON BORDES SUAVES
    ========================================================================== */
-.patient-box, 
-#pedidoContainer .card:first-child {
-    background: #ffffff !important;
+.framed-section, 
+.pedido-box,
+.inner-framed-box,
+#pedidoContainer .tab-content .card,
+.patient-box {
     border: 1px solid #cbd5e1 !important;
-    border-radius: 12px !important;
+    border-radius: 10px !important;
     padding: 16px !important;
-    margin-bottom: 20px !important;
+    margin-bottom: 15px !important;
 }
 
 .form-control, 
@@ -47,104 +62,65 @@ div#pedidoContainer {
 }
 
 /* ==========================================================================
-   3. PESTAÑAS DE CATEGORÍAS (PÍLDORAS)
+   4. PESTAÑAS (CATEGORÍAS Y SUB-PESTAÑAS)
    ========================================================================== */
-#mainTabs, .lab-main-tabs {
+#mainTabs, .lab-main-tabs, .sub-tabs {
     border-bottom: none !important;
     gap: 8px;
-    margin-bottom: 12px !important;
+    background: transparent !important;
 }
 
-#mainTabs .nav-link,
-.lab-main-tabs .nav-link {
+.nav-link {
     background: #ffffff !important;
     border: 1px solid #e2e8f0 !important;
     color: #475569 !important;
     border-radius: 20px !important;
     padding: 6px 18px !important;
-    font-weight: 500;
 }
 
-#mainTabs .nav-link.active,
-.lab-main-tabs .nav-link.active {
+.nav-link.active {
     background: #0284c7 !important;
     border-color: #0284c7 !important;
     color: #ffffff !important;
-    box-shadow: 0 2px 6px rgba(2, 132, 199, 0.25) !important;
 }
 
 /* ==========================================================================
-   4. MARCO INTERNO DE DIGITACIÓN (RELIEVE METÁLICO)
+   5. TABLA DE RESULTADOS Y BARRA INFERIOR
    ========================================================================== */
-.framed-section, 
-.tab-content .pedido-box,
-#pedidoContainer .tab-content .card {
-    background: linear-gradient(180deg, #e2e8f0 0%, #cbd5e1 100%) !important;
-    border: 2px solid #94a3b8 !important;
-    border-radius: 14px !important;
-    padding: 16px !important;
-    box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.8), 0 4px 10px rgba(0, 0, 0, 0.08) !important;
-}
-
-.inner-framed-box {
-    background: #ffffff !important;
-    border: 2px solid #94a3b8 !important;
-    border-radius: 10px !important;
-    padding: 12px !important;
-}
-
-/* ==========================================================================
-   5. TABLA DE RESULTADOS REGISTRADOS (ENCABEZADO OSCURO)
-   ========================================================================== */
-.table-resultados,
-.table-resultados table,
-#pedidoContainer .table {
-    width: 100% !important;
-    border-collapse: collapse !important;
-    margin-top: 15px !important;
-}
-
-.table-resultados th,
-#pedidoContainer .table th {
-    background-color: #1e293b !important;
-    color: #ffffff !important;
-    font-weight: 700 !important;
-    text-transform: uppercase !important;
-    font-size: 11px !important;
-    padding: 8px 12px !important;
-    border: 1px solid #334155 !important;
-}
-
-.table-resultados td,
-#pedidoContainer .table td {
+.table, 
+.table td, 
+.table th {
     background-color: #ffffff !important;
-    color: #1e293b !important;
     border: 1px solid #cbd5e1 !important;
-    padding: 8px 12px !important;
+    color: #1e293b !important;
+}
+
+.seccion-firma-completa,
+.nota-pie-pagina,
+.liquid-nav, 
+.action-bar {
+    background: #ffffff !important;
+    border: 1px solid #e2e8f0 !important;
+}
+
+/* Integración limpia de imágenes */
+img {
+    background-color: transparent !important;
+    mix-blend-mode: multiply;
 }
 
 /* ==========================================================================
-   6. MODO PDF E IMPRESIÓN (BLANCO ABSOLUTO Y LIMPIO)
+   6. EXPORTACIÓN PDF E IMPRESIÓN
    ========================================================================== */
 .pdf-mode,
 .pdf-mode body,
 .pdf-mode #pedidoContainer,
-.pdf-mode .pedido-box,
-.pdf-mode .framed-section,
-.pdf-mode .card,
 .pdf-mode div {
     background: #ffffff !important;
     border: none !important;
-    box-shadow: none !important;
     padding: 0 !important;
     margin: 0 !important;
     width: 100% !important;
-}
-
-.pdf-mode .table th {
-    background-color: #e2e8f0 !important;
-    color: #1e293b !important;
-    border: 1px solid #cbd5e1 !important;
 }
 
 .pdf-mode .no-print,
