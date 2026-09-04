@@ -3137,7 +3137,7 @@ async function descargarPDFResultados() {
     if (fechaVal) {
         let partes = fechaVal.split('-');
         if (partes.length === 3) {
-            fechaFormateada = `${partes[2]}-${partes[1]}-${partes[0]}`;
+            fechaFormateada = `${partes[2]}-${partes[1]}-${partes[0]}`; // DD-MM-YYYY
         } else {
             fechaFormateada = fechaVal.replace(/\//g, '-');
         }
@@ -3161,85 +3161,13 @@ async function descargarPDFResultados() {
     elementoClonado.querySelectorAll('.no-print').forEach(el => el.remove());
     if (bloqueImpresion) bloqueImpresion.classList.add("d-none");
 
-    // =========================================================================
-    // 1. APLICAR ESTILOS DE CORTE Y ESPACIADO DELGADO ENTRE EXÁMENES
-    // =========================================================================
-    const estiloEspecial = document.createElement('style');
-    estiloEspecial.innerHTML = `
-        /* Evitar que las filas se corten por la mitad */
-        tr { 
-            page-break-inside: avoid !important; 
-            break-inside: avoid !important; 
-        }
-        
-        /* Agrupación indivisible de la sección de firmas y sellos */
-        .bloque-firmas-completo, .firma-container, #seccionFirmas, .nota-footer {
-            page-break-inside: avoid !important;
-            break-inside: avoid !important;
-            display: block !important;
-        }
-
-        /* Espaciado fino para separar exámenes sin generar huecos blancos */
-        tr.table-group-header td, tr.seccion-header td {
-            padding-top: 12px !important;
-            padding-bottom: 4px !important;
-        }
-    `;
-    elementoClonado.appendChild(estiloEspecial);
-
-    // Identificar el contenedor de firmas y protegerlo como un bloque indivisible
-    const contenedorFirmas = elementoClonado.querySelector('.firma-container, [class*="firma"]')?.parentElement;
-    if (contenedorFirmas) {
-        contenedorFirmas.classList.add('bloque-firmas-completo');
-    }
-
-    // =========================================================================
-    // 2. INSERTAR ENCABEZADO Y SALTO LIMPIO EN LA FILA DE DESBORDE EXACTA
-    // =========================================================================
-    elementoClonado.style.position = "absolute";
-    elementoClonado.style.left = "-9999px";
-    elementoClonado.style.width = "190mm";
-    document.body.appendChild(elementoClonado);
-
-    const ALTO_MAX_PAGINA_PX = 980; // Límite real de la Hoja 1
-    const filas = elementoClonado.querySelectorAll("tbody tr");
-    let cabeceraInsertada = false;
-
-    filas.forEach((fila) => {
-        if (!cabeceraInsertada && (fila.offsetTop + fila.offsetHeight) > ALTO_MAX_PAGINA_PX) {
-            cabeceraInsertada = true;
-
-            // Fila de encabezado que ejecuta el salto justo en la fila límite
-            const filaEncabezado = document.createElement("tr");
-            filaEncabezado.style.pageBreakBefore = "always";
-            filaEncabezado.style.breakBefore = "page";
-            filaEncabezado.style.fontWeight = "bold";
-            filaEncabezado.style.backgroundColor = "#f8f9fa";
-            filaEncabezado.innerHTML = `
-                <td style="padding: 6px; border-bottom: 2px solid #333;">EXAMEN</td>
-                <td style="padding: 6px; border-bottom: 2px solid #333;">RESULTADO</td>
-                <td style="padding: 6px; border-bottom: 2px solid #333;">UNIDAD</td>
-                <td style="padding: 6px; border-bottom: 2px solid #333;">V. REFERENCIA</td>
-            `;
-
-            fila.parentNode.insertBefore(filaEncabezado, fila);
-        }
-    });
-
-    document.body.removeChild(elementoClonado);
-    elementoClonado.style.position = "";
-    elementoClonado.style.left = "";
-
-    // =========================================================================
-    // 3. GENERACIÓN DEL PDF
-    // =========================================================================
     const opciones = {
-        margin:       [8, 5, 8, 5],
+        margin:       5,
         filename:     nombreArchivoFinal,
         image:        { type: 'jpeg', quality: 0.98 },
         html2canvas:  { scale: 2, useCORS: true, scrollY: 0 },
         jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
-        pagebreak:    { mode: ['css', 'legacy'], avoid: ['tr', '.bloque-firmas-completo', '.firma-container', 'img'] }
+        pagebreak:    { mode: ['css', 'legacy'], avoid: ['tr', '.section-title'] }
     };
 
     if (typeof html2pdf === "undefined") {
@@ -3249,6 +3177,7 @@ async function descargarPDFResultados() {
 
     html2pdf().from(elementoClonado).set(opciones).outputPdf('blob').then(async (pdfBlob) => {
         try {
+            // Verificamos si el navegador soporta el selector de archivos con sugerencia de nombre
             if ('showSaveFilePicker' in window) {
                 const opcionesArchivo = {
                     suggestedName: nombreArchivoFinal,
@@ -3262,10 +3191,14 @@ async function descargarPDFResultados() {
                 try {
                     archivoHandle = await window.showSaveFilePicker(opcionesArchivo);
                 } catch (err) {
-                    if (err.name !== 'AbortError') console.error(err);
+                    // Si el usuario cancela el cuadro de diálogo
+                    if (err.name !== 'AbortError') {
+                        console.error(err);
+                    }
                     return;
                 }
 
+                // Intentar escribir en el archivo (Valida si está abierto o protegido)
                 try {
                     const writableStream = await archivoHandle.createWritable();
                     await writableStream.write(pdfBlob);
@@ -3273,6 +3206,7 @@ async function descargarPDFResultados() {
                     
                     alert(`¡PDF guardado exitosamente como "${nombreArchivoFinal}"!`);
 
+                    // Abrir una copia en una pestaña nueva para revisión inmediata
                     const blobUrl = URL.createObjectURL(pdfBlob);
                     window.open(blobUrl, '_blank');
 
@@ -3281,7 +3215,9 @@ async function descargarPDFResultados() {
                 }
 
             } else {
+                // Método convencional de respaldo para navegadores que no soportan el selector avanzado
                 html2pdf().from(elementoClonado).set(opciones).save();
+                
                 const blobUrl = URL.createObjectURL(pdfBlob);
                 window.open(blobUrl, '_blank');
             }
@@ -3297,6 +3233,7 @@ async function descargarPDFResultados() {
 document.addEventListener("DOMContentLoaded", () => {
     inicializarSeccionesColapsables();
 });
+
 
 function inicializarSeccionesColapsables() {
     // Inyectar estilos CSS dinámicamente para el efecto hover y diseño del título colapsable
