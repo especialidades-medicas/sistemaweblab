@@ -203,7 +203,7 @@ body {
     color: #1e293b !important;
 }
 
-/* Resaltar fila al enfocar un campo (ayuda visual de lectura) */
+/* Resaltar fila al enfocar un campo en pantalla */
 .table tbody tr:focus-within {
     background-color: #f0f9ff !important;
 }
@@ -350,7 +350,7 @@ body {
 }
 
 /* ==========================================================================
-   6. EXPORTACIÓN PDF Y REGLAS DE IMPRESIÓN
+   6. EXPORTACIÓN PDF Y REGLAS DE IMPRESIÓN (BLANCO PURO SIN SOMBRAS)
    ========================================================================== */
 .bloque-firma, .firma-container, #firmaResponsable, .seccion-firma-completa {
     page-break-inside: avoid !important;
@@ -363,6 +363,20 @@ body {
 .pdf-mode .no-print { display: none !important; }
 .pdf-mode .print-only { display: block !important; }
 
+/* Modo PDF */
+.pdf-mode,
+.pdf-mode *,
+.pdf-mode .tab-pane,
+.pdf-mode .card,
+.pdf-mode table,
+.pdf-mode tr,
+.pdf-mode td {
+    background: #ffffff !important;
+    background-color: #ffffff !important;
+    background-image: none !important;
+    box-shadow: none !important;
+}
+
 .pdf-mode .tab-pane {
     display: block !important;
     height: auto !important;
@@ -370,7 +384,6 @@ body {
     overflow: visible !important;
     visibility: visible !important;
     margin-bottom: 20px;
-    background: #ffffff !important;
 }
 
 .pdf-mode .nav-tabs,
@@ -382,8 +395,6 @@ body {
 .pdf-mode tr, .pdf-mode .card, .pdf-mode table {
     page-break-inside: avoid !important;
     break-inside: avoid !important;
-    background-color: #ffffff !important;
-    box-shadow: none !important;
 }
 
 @page {
@@ -391,18 +402,38 @@ body {
     margin: 12mm 10mm 12mm 10mm;
 }
 
+/* Modo Impresión */
 @media print {
-    body * { visibility: hidden; }
-    #pedidoContainer, #pedidoContainer * { visibility: visible; }
+    html, body {
+        background: #ffffff !important;
+        background-color: #ffffff !important;
+        background-image: none !important;
+    }
+
+    body * { 
+        visibility: hidden; 
+    }
+
+    #pedidoContainer, #pedidoContainer * { 
+        visibility: visible; 
+        background: #ffffff !important;
+        background-color: #ffffff !important;
+        background-image: none !important;
+        box-shadow: none !important;
+        border-color: #cbd5e1 !important;
+    }
+
     #pedidoContainer {
         position: absolute;
-        left: 0; top: 0;
+        left: 0; 
+        top: 0;
         width: 100% !important;
         margin: 0 !important;
-        padding: 10px !important;
-        background: #ffffff !important;
-        box-shadow: none !important;
+        padding: 0 !important;
         border: none !important;
     }
-    .no-print, .d-none-print { display: none !important; }
+
+    .no-print, .d-none-print { 
+        display: none !important; 
+    }
 }
