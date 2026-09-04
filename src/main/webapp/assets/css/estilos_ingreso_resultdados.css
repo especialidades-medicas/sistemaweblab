@@ -11,6 +11,25 @@
   display: block;
   margin-top: 15px;
 }
+
+/* Fuerza a que todo el bloque de firma pase completo a la siguiente página */
+.seccion-firma-completa {
+  page-break-inside: avoid !important;
+  break-inside: avoid !important;
+  display: block !important;
+  width: 100%;
+  clear: both;
+  margin-top: 15px;
+}
+
+/* Evita que las imágenes (firmas/QR/logos) pierdan su alto durante la renderización */
+.seccion-firma-completa img {
+  display: inline-block;
+  max-height: 70px; /* Ajusta este valor al tamaño real de tus firmas/sellos */
+  width: auto;
+  page-break-inside: avoid !important;
+  break-inside: avoid !important;
+}
 @media print {
     body * {
         visibility: hidden;
