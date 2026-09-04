@@ -3161,40 +3161,65 @@ async function descargarPDFResultados() {
     elementoClonado.querySelectorAll('.no-print').forEach(el => el.remove());
     if (bloqueImpresion) bloqueImpresion.classList.add("d-none");
 
-    // =========================================================================
-    // 1. EVITAR CORTE DE FIRMAS (Las empuja completas a la página 2 si no entran)
-    // =========================================================================
-    const elementosProtegidos = elementoClonado.querySelectorAll('img, .firma-container, [class*="firma"], .nota-footer, table tr');
-    elementosProtegidos.forEach(el => {
+    // -------------------------------------------------------------------------
+    // 1. PROTEGER FIRMAS Y PIE DE PÁGINA PARA QUE NUNCA SE CORTEN
+    // -------------------------------------------------------------------------
+    const bloquesProtegidos = elementoClonado.querySelectorAll(
+        '.firma-container, [class*="firma"], .autorizacion-medico, .responsable-lab, table:has(img)'
+    );
+    bloquesProtegidos.forEach(el => {
         el.style.pageBreakInside = 'avoid';
         el.style.breakInside = 'avoid';
+        el.style.display = 'block';
     });
 
-    // =========================================================================
-    // 2. DUPLICAR CABECERA AUTOMÁTICAMENTE EN CADA SECCIÓN/TABLA
-    // =========================================================================
-    // Convierte cada grupo de exámenes en su propia tabla con su propio <thead>
-    const tablas = elementoClonado.querySelectorAll("table");
-    tablas.forEach(tabla => {
-        const theadOriginal = tabla.querySelector("thead");
-        if (!theadOriginal) return;
+    // -------------------------------------------------------------------------
+    // 2. INSERTAR ENCABEZADO ÚNICAMENTE AL INICIO DE LA HOJA 2
+    // -------------------------------------------------------------------------
+    // Insertamos temporalmente el clon en el DOM para medir alturas reales
+    elementoClonado.style.position = "absolute";
+    elementoClonado.style.left = "-9999px";
+    elementoClonado.style.top = "0";
+    elementoClonado.style.width = "190mm";
+    document.body.appendChild(elementoClonado);
 
-        // Buscar títulos de categorías (ej. QUÍMICA SANGUÍNEA) dentro de la tabla
-        const filasSubtitulos = tabla.querySelectorAll("tr.table-group-header, tr.seccion-header, td[colspan='4']");
-        
-        filasSubtitulos.forEach(subtitulo => {
-            const trPadre = subtitulo.closest("tr");
-            if (trPadre && trPadre.previousElementSibling) {
-                // Inserta una copia del encabezado automáticamente antes de cada nueva sección
-                const theadClon = theadOriginal.cloneNode(true);
-                const nuevaFilaHeader = theadClon.querySelector("tr");
-                if (nuevaFilaHeader) {
-                    nuevaFilaHeader.style.pageBreakBefore = "auto";
-                    trPadre.parentNode.insertBefore(nuevaFilaHeader, trPadre);
-                }
-            }
-        });
+    // Límite de alto útil para la Hoja 1 en píxeles (~260mm a 96 DPI)
+    const LIMITE_HOJA_1_PX = 950; 
+    let encabezadoInsertado = false;
+
+    const filasExamenes = elementoClonado.querySelectorAll("tbody tr");
+    filasExamenes.forEach(fila => {
+        // Detecta la primera fila que sobrepasa el límite de la primera hoja
+        if (!encabezadoInsertado && (fila.offsetTop + fila.offsetHeight) > LIMITE_HOJA_1_PX) {
+            encabezadoInsertado = true;
+
+            // Fila invisible para forzar el salto limpio de página
+            const filaSalto = document.createElement("tr");
+            filaSalto.style.pageBreakBefore = "always";
+            filaSalto.style.breakBefore = "page";
+
+            // Fila con la cabecera EXCLUSIVA para la Hoja 2
+            const filaHeaderHoja2 = document.createElement("tr");
+            filaHeaderHoja2.style.fontWeight = "bold";
+            filaHeaderHoja2.style.backgroundColor = "#f8f9fa";
+            filaHeaderHoja2.innerHTML = `
+                <td style="padding: 6px; border-bottom: 2px solid #ccc;">EXAMEN</td>
+                <td style="padding: 6px; border-bottom: 2px solid #ccc;">RESULTADO</td>
+                <td style="padding: 6px; border-bottom: 2px solid #ccc;">UNIDAD</td>
+                <td style="padding: 6px; border-bottom: 2px solid #ccc;">V. REFERENCIA</td>
+            `;
+
+            // Insertar justo antes de la fila que provocaba el desborde
+            fila.parentNode.insertBefore(filaSalto, fila);
+            fila.parentNode.insertBefore(filaHeaderHoja2, fila);
+        }
     });
+
+    // Retiramos el clon del DOM tras medir e insertar los elementos
+    document.body.removeChild(elementoClonado);
+    elementoClonado.style.position = "";
+    elementoClonado.style.left = "";
+    elementoClonado.style.top = "";
 
     const opciones = {
         margin:       [8, 5, 8, 5],
