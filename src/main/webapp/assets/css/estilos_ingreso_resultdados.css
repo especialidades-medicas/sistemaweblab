@@ -1,56 +1,118 @@
 /* ==========================================================================
-   1. FONDO BLANCO ABSOLUTO PARA CONTENEDORES, FIRMAS Y CABECERA
+   1. CONTENEDOR PRINCIPAL Y PACIENTE (PANTALLA)
    ========================================================================== */
-html, body, 
-#pedidoContainer, 
-.pedido-box, 
-.card, 
-.card-body,
-.tab-content, 
-.tab-pane, 
-.tab-pane.active,
-.header-reporte, 
-.footer-reporte,
-.seccion-firma-completa, 
-.bloque-firma, 
-.firma-container, 
-#firmaResponsable,
-.nota-pie-pagina,
-div[class*="container"] {
-    background: #ffffff !important;
-   
-    background-image: none !important;
-    box-shadow: none !important;
-}
-
-/* Estructura limpia del contenedor en pantalla */
 #pedidoContainer {
     width: 95% !important;
     max-width: 1250px !important;
     margin: 20px auto !important;
-    padding: 24px !important;
-    border: 1px solid #e2e8f0 !important;
-    border-radius: 8px !important;
+    padding: 20px !important;
+    background: #ffffff !important;
+    border: 1px solid #cbd5e1 !important;
+    border-radius: 12px !important;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05) !important;
 }
 
-/* Integración perfecta de imágenes (Logo y Firmas) sin recuadros */
-.header-reporte img,
-.firma-container img,
-.bloque-firma img,
-#firmaResponsable img,
-.table img {
+/* Caja de datos del paciente */
+.patient-box, 
+#pedidoContainer .card:first-child {
+    background: #ffffff !important;
+    border: 1px solid #cbd5e1 !important;
+    border-radius: 10px !important;
+    padding: 16px !important;
+    margin-bottom: 20px !important;
+}
+
+/* Campos de entrada (Inputs) */
+.form-control, .form-select {
     background-color: #ffffff !important;
-    mix-blend-mode: multiply; /* Fusiona recuadros blancos de las imágenes */
-    display: inline-block;
+    border: 1px solid #94a3b8 !important;
+    border-radius: 8px !important;
+    color: #0f172a !important;
+    padding: 6px 12px !important;
+    font-weight: 500 !important;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: #0284c7 !important;
+    box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.15) !important;
 }
 
 /* ==========================================================================
-   2. ENCABEZADOS DE TABLA EN GRIS SUAVE
+   2. PESTAÑAS PRINCIPALES (CATEGORÍAS DE EXÁMENES)
+   ========================================================================== */
+#mainTabs, .lab-main-tabs {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    overflow-x: auto !important;
+    gap: 8px;
+    padding-bottom: 10px;
+    border-bottom: none !important;
+}
+
+#mainTabs .nav-link,
+.lab-main-tabs .nav-link {
+    background: #ffffff !important;
+    color: #475569 !important;
+    border: 1px solid #cbd5e1 !important;
+    border-radius: 20px !important;
+    font-weight: 600 !important;
+    padding: 6px 18px !important;
+    transition: all 0.2s ease;
+}
+
+#mainTabs .nav-link.active,
+.lab-main-tabs .nav-link.active {
+    background: #0284c7 !important;
+    color: #ffffff !important;
+    border-color: #0284c7 !important;
+    box-shadow: 0 3px 8px rgba(2, 132, 199, 0.3) !important;
+}
+
+/* ==========================================================================
+   3. MARCO CON RELIEVE / BISEL (ÁREA DE DIGITACIÓN)
+   ========================================================================== */
+.framed-section, 
+.pedido-box,
+#pedidoContainer .tab-content .card {
+    background: linear-gradient(180deg, #e2e8f0 0%, #cbd5e1 100%) !important;
+    border: 2px solid #94a3b8 !important;
+    border-radius: 14px !important;
+    padding: 16px !important;
+    box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.8), 
+                0 4px 10px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Sub-marcos internos */
+.inner-framed-box {
+    background: #ffffff !important;
+    border: 2px solid #94a3b8 !important;
+    border-radius: 10px !important;
+    padding: 12px !important;
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.1) !important;
+}
+
+/* Pestañas secundarias internas */
+.sub-tabs .nav-link {
+    background: #f1f5f9 !important;
+    color: #334155 !important;
+    border: 1px solid #cbd5e1 !important;
+    border-radius: 8px !important;
+    font-weight: 600 !important;
+}
+
+.sub-tabs .nav-link.active {
+    background: #ffffff !important;
+    color: #0284c7 !important;
+    border-color: #0284c7 !important;
+}
+
+/* ==========================================================================
+   4. TABLAS DE RESULTADOS (GRIS SUAVE EN PANTALLA)
    ========================================================================== */
 .table {
-    border-color: #cbd5e1;
+    border-color: #cbd5e1 !important;
     background-color: #ffffff !important;
-    border-radius: 4px !important;
+    border-radius: 6px !important;
     overflow: hidden;
 }
 
@@ -69,7 +131,7 @@ div[class*="container"] {
 }
 
 /* ==========================================================================
-   3. EXPORTACIÓN PDF Y REPORTE IMPRESO (100% BLANCO)
+   5. MODO EXPORTACIÓN PDF Y REPORTE IMPRESO (FONDO BLANCO Y LIMPIO)
    ========================================================================== */
 .pdf-mode .nav,
 .pdf-mode .nav-tabs,
@@ -81,17 +143,17 @@ div[class*="container"] {
     display: none !important;
 }
 
+/* Eliminación total de biseles y marcos en PDF */
 .pdf-mode,
 .pdf-mode body,
 .pdf-mode #pedidoContainer,
 .pdf-mode .pedido-box,
+.pdf-mode .framed-section,
+.pdf-mode .inner-framed-box,
 .pdf-mode .card,
 .pdf-mode div,
 .pdf-mode section,
-.pdf-mode .tab-pane,
-.pdf-mode header,
-.pdf-mode footer,
-.pdf-mode .seccion-firma-completa {
+.pdf-mode .tab-pane {
     background: #ffffff !important;
     background-color: #ffffff !important;
     background-image: none !important;
@@ -101,7 +163,6 @@ div[class*="container"] {
     padding: 0 !important;
     margin: 0 !important;
     width: 100% !important;
-    max-width: 100% !important;
 }
 
 .pdf-mode .tab-pane {
@@ -113,6 +174,15 @@ div[class*="container"] {
     margin-bottom: 15px !important;
 }
 
+/* Integración de firmas y logos sin recuadros en PDF */
+.pdf-mode img,
+.pdf-mode .header-reporte img,
+.pdf-mode .firma-container img {
+    background-color: transparent !important;
+    mix-blend-mode: multiply;
+}
+
+/* Inputs como texto plano en el PDF */
 .pdf-mode input,
 .pdf-mode select,
 .pdf-mode .form-control {
@@ -124,10 +194,10 @@ div[class*="container"] {
     color: #0f172a !important;
 }
 
+/* Encabezados de tabla gris suave en PDF */
 .pdf-mode .table {
     border-collapse: collapse !important;
     width: 100% !important;
-    margin-bottom: 12px !important;
     border: 1px solid #cbd5e1 !important;
 }
 
@@ -135,7 +205,6 @@ div[class*="container"] {
     border: 1px solid #cbd5e1 !important;
     padding: 5px 8px !important;
     font-size: 10pt !important;
-    color: #0f172a !important;
     background: #ffffff !important;
 }
 
@@ -157,7 +226,6 @@ div[class*="container"] {
 @media print {
     html, body, #pedidoContainer, #pedidoContainer * { 
         background: #ffffff !important;
-        background-color: #ffffff !important;
         box-shadow: none !important;
     }
 
