@@ -1,4 +1,103 @@
 /* ==========================================================================
+   1. FONDO METALIZADO PARA EL ÁREA DE INGRESO DE EXÁMENES
+   ========================================================================== */
+
+/* Fondo Platinado Cepillado en el Contenedor de Pestañas y Tablas */
+#pedidoContainer .tab-content,
+#pedidoContainer .tab-pane,
+.tab-pane.active {
+    background: linear-gradient(135deg, #e2e8f0 0%, #cbd5e1 45%, #94a3b8 100%) !important;
+    padding: 16px !important;
+    border-radius: 12px !important;
+    border: 2px solid #64748b !important;
+    box-shadow: 
+        inset 0 2px 4px rgba(255, 255, 255, 0.9), 
+        inset 0 -2px 6px rgba(0, 0, 0, 0.25),
+        0 8px 16px rgba(0, 0, 0, 0.15) !important;
+}
+
+/* Tarjeta Interna y Tabla de Exámenes */
+.tab-pane .table,
+.tab-pane .card {
+    background-color: rgba(255, 255, 255, 0.85) !important;
+    backdrop-filter: blur(4px);
+    border-radius: 8px !important;
+    border: 1px solid #94a3b8 !important;
+    overflow: hidden;
+}
+
+/* Encabezados de Subgrupos (Ej: TRANSAMINASAS, BILIRRUBINAS) */
+.table tr:has(td[colspan]), 
+.table th,
+.table td.bg-light,
+.table tbody tr:first-child td {
+    background: linear-gradient(180deg, #475569 0%, #334155 100%) !important;
+    color: #ffffff !important;
+    font-weight: 700 !important;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 2px solid #1e293b !important;
+}
+
+/* ==========================================================================
+   2. PESTAÑA SELECCIONADA (DIFERENCIACIÓN VISUAL DE EXAMEN ACTIVO)
+   ========================================================================== */
+
+/* Estado Inactivo */
+#mainTabs .nav-link,
+.lab-main-tabs .nav-link {
+    background: linear-gradient(180deg, #ffffff 0%, #f1f5f9 100%) !important;
+    color: #475569 !important;
+    border: 1px solid #cbd5e1 !important;
+    font-weight: 600 !important;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05) !important;
+}
+
+/* Pestaña ACTIVA / SELECCIONADA (Azul Metalizado Neón) */
+#mainTabs .nav-link.active,
+.lab-main-tabs .nav-link.active {
+    background: linear-gradient(180deg, #0284c7 0%, #0369a1 100%) !important;
+    color: #ffffff !important;
+    border: 1px solid #075985 !important;
+    font-weight: 700 !important;
+    box-shadow: 
+        0 4px 10px rgba(2, 132, 199, 0.4),
+        inset 0 1px 2px rgba(255, 255, 255, 0.6) !important;
+    transform: translateY(-2px);
+}
+
+/* ==========================================================================
+   3. DIFERENCIACIÓN DE CAMPOS CON RESULTADOS INGRESADOS
+   ========================================================================== */
+
+/* Campo VACÍO */
+.table input.form-control:placeholder-shown,
+.table input.form-control[value=""] {
+    background-color: #ffffff !important;
+    border: 1px solid #94a3b8 !important;
+    color: #1e293b !important;
+}
+
+/* Campo CON RESULTADO INGRESADO (Verde Neón Suave con Texto Negrita) */
+.table input.form-control:not(:placeholder-shown),
+.table input.form-control.con-dato {
+    background-color: #dcfce7 !important; /* Verde claro */
+    border: 2px solid #16a34a !important; /* Borde verde fuerte */
+    color: #14532d !important;             /* Texto verde oscuro */
+    font-weight: 700 !important;
+    box-shadow: 
+        0 0 6px rgba(22, 163, 74, 0.3),
+        inset 0 1px 2px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Efecto al escribir/editar */
+.table input.form-control:focus {
+    background-color: #f0f9ff !important;
+    border-color: #0284c7 !important;
+    box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.25) !important;
+}
+
+/* ==========================================================================
    HOJA DE ESTILOS UNIFICADA - SISTEMA DE LABORATORIO CLÍNICO Y PDF
    ========================================================================== */
 
