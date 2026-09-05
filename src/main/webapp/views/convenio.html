@@ -369,6 +369,8 @@ body {
         </div>
 
         <div class="actions-bar">
+            <!-- Botón para guardar paciente en BD -->
+            <button class="btn" style="background-color: #28a745; color: white;" onclick="guardarPacienteBD()">💾 Guardar Paciente</button>
             <button class="btn btn-print" onclick="window.print()">🖨️ Imprimir Documento</button>
             <button class="btn btn-pdf" onclick="descargarPDF()">📄 Descargar PDF</button>
             <button class="btn btn-wsp" onclick="enviarWhatsApp()">📱 Enviar WhatsApp</button>
@@ -537,6 +539,87 @@ body {
         const url = `https://api.whatsapp.com/send?phone=${tel}&text=${encodeURIComponent(mensaje)}`;
         window.open(url, '_blank');
     }
+
+
+    // 1. Evento para detectar cuándo se digita la Cédula y buscar automáticamente
+document.getElementById('inCedula').addEventListener('keyup', function(e) {
+    const cedula = this.value.trim();
+    
+    // Ejecuta la búsqueda al ingresar 10 dígitos (o al presionar Enter)
+    if (cedula.length === 10 || e.key === 'Enter') {
+        buscarPacientePorCedula(cedula);
+    }
+});
+
+// 2. Función para buscar el paciente desde el Servidor
+function buscarPacientePorCedula(cedula) {
+    if (!cedula) return;
+
+    fetch(`/ControladorPacientes?accion=buscar&cedula=${encodeURIComponent(cedula)}`, {
+        method: 'GET',
+        headers: {
+            'Accept': 'application/json'
+        }
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Paciente no encontrado');
+        }
+        return response.json();
+    })
+    .then(data => {
+        if (data && data.patNombre) {
+            // Autocompletar campos del formulario
+            document.getElementById('inPaciente').value = data.patNombre || '';
+            document.getElementById('inEdad').value = data.patEdad || '';
+            document.getElementById('inTelefono').value = data.patTelefono || '';
+            
+            // Actualizar la vista del documento/ticket
+            actualizarDocumento();
+        }
+    })
+    .catch(error => {
+        console.log("Información:", error.message);
+    });
+}
+
+// 3. Función para guardar o actualizar el paciente en la BD
+function guardarPacienteBD() {
+    const cedula = document.getElementById('inCedula').value.trim();
+    const paciente = document.getElementById('inPaciente').value.trim();
+    const edad = document.getElementById('inEdad').value.replace(/\D/g, '').trim();
+    const telefono = document.getElementById('inTelefono').value.trim();
+
+    if (!cedula || !paciente) {
+        alert("Por favor, ingrese al menos la Cédula y el Nombre del Paciente.");
+        return;
+    }
+
+    const params = new URLSearchParams();
+    params.append('patCedula', cedula);
+    params.append('patNombre', paciente);
+    params.append('patEdad', edad);
+    params.append('patTelefono', telefono);
+
+    fetch('/ControladorPacientes', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
+        },
+        body: params.toString()
+    })
+    .then(response => {
+        if (response.ok) {
+            alert("¡Paciente guardado exitosamente!");
+        } else {
+            alert("Error: El servidor no pudo guardar la información (HTTP " + response.status + ").");
+        }
+    })
+    .catch(error => {
+        console.error("Error en la petición:", error);
+        alert("Error de conexión al guardar el paciente.");
+    });
+}
 </script>
 
 </body>
