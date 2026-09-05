@@ -64,12 +64,15 @@ body {
     font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
 }
 
-#pedidoContainer {
+/* ==========================================================================
+   #pedidoContainer {
     width: 100% !important;
     max-width: 100% !important;
     margin: 0 auto !important;
     background-color: #ffffff !important;
 }
+   ========================================================================== */
+
 
 #pedidoContainer .card .row > div {
     margin-bottom: 4px;
