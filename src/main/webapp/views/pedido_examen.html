@@ -1188,7 +1188,6 @@ async function buscarPacientePorCedulaDB() {
 }
 
 // 2. Guardar paciente con la condición de fecha de nacimiento
-// 2. Guardar o actualizar los datos del paciente desde la orden
 async function guardarPacienteBD() {
     const inputCedula = document.getElementById('cedulaPaciente');
     const inputNombre = document.getElementById('nombrePaciente');
@@ -1200,7 +1199,6 @@ async function guardarPacienteBD() {
     const edadTexto = inputEdad ? inputEdad.value.replace(/\D/g, '').trim() : '';
     const telefono = inputTelefono ? inputTelefono.value.trim() : '';
 
-    // Campos condicionales o extendidos
     const genero = document.getElementById('generoPaciente') ? document.getElementById('generoPaciente').value : '';
     const correo = document.getElementById('correoPaciente') ? document.getElementById('correoPaciente').value.trim() : '';
     const direccion = document.getElementById('direccionPaciente') ? document.getElementById('direccionPaciente').value.trim() : '';
@@ -1212,7 +1210,6 @@ async function guardarPacienteBD() {
 
     let fechaNacimientoFinal = fechaNacimientoRegistradaBD;
 
-    // Si NO hay fecha registrada, se calcula a partir de la edad o input de fecha
     if (!fechaNacimientoFinal) {
         const inputFecha = document.getElementById('fechaNacimiento');
         if (inputFecha && inputFecha.value) {
@@ -1227,12 +1224,14 @@ async function guardarPacienteBD() {
         }
     }
 
-    // Formatear datos para el Servlet
+    // Se envían ambas llaves ('nombre' y 'nombres') para compatibilidad con el Backend
     const params = new URLSearchParams();
     params.append('accion', 'guardar');
     params.append('cedula', cedula);
+    params.append('nombre', nombreCompleto);
     params.append('nombres', nombreCompleto);
     params.append('fecha_nacimiento', fechaNacimientoFinal);
+    params.append('fechaNacimiento', fechaNacimientoFinal);
     params.append('telefono', telefono);
     params.append('genero', genero);
     params.append('correo', correo);
@@ -1260,7 +1259,6 @@ async function guardarPacienteBD() {
         alert("Ocurrió un error al conectar con el servidor.");
     }
 }
-
 // Función auxiliar para calcular la edad exacta
 function calcularEdadPrecisa(fechaNacStr) {
     const partes = fechaNacStr.split('-');
