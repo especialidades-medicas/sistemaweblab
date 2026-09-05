@@ -450,6 +450,8 @@ body {
 /* --------------------------------------------------------------------------
    6. CONTROL DE FIRMAS Y MARCAS VISUALES
    -------------------------------------------------------------------------- */
+
+/* Previene cortes de página en bloques de firma */
 .bloque-firma, 
 .firma-container, 
 #firmaResponsable {
@@ -459,27 +461,29 @@ body {
     margin-top: 15px;
 }
 
+/* Contenedor principal de firmas: Alinea las firmas lado a lado (frente a frente) */
 .seccion-firma-completa {
     page-break-inside: avoid !important;
     break-inside: avoid !important;
-    display: block !important;
+    display: flex !important; /* Mantiene la distribución tipo Grid/Flex de Bootstrap */
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-end;
     width: 100%;
     clear: both;
     margin-top: 15px;
 }
 
-.seccion-firma-completa img {
-    display: inline-block;
-    max-height: 70px;
-    width: auto;
-    page-break-inside: avoid !important;
-    break-inside: avoid !important;
-}
-
+/* Reglas de tamaño y renderizado para las imágenes de firmas */
+.seccion-firma-completa img,
 .firma-img {
-    max-height: 120px; 
+    display: inline-block;
+    max-height: 85px;
     width: auto;
     max-width: 100%;
+    object-fit: contain;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
     transition: opacity 0.2s ease-in-out;
 }
 
