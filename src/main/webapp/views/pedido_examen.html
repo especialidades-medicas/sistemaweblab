@@ -1143,24 +1143,34 @@ function enviarWhatsAppResultado() {
 let fechaNacimientoRegistradaBD = "";
 
 // 1. Buscar paciente por cédula en la BD
-// 1. Corrección para la búsqueda (evita el Error 404)
-async function buscarPacientePorCedula(cedula) {
+// Función con el nombre EXACTO que invoca el HTML
+async function buscarPacientePorCedulaDB() {
+    const inputCedula = document.getElementById('cedulaPaciente');
+    if (!inputCedula) return;
+
+    const cedula = inputCedula.value.trim();
+    if (!cedula) return;
+
     try {
-        // Se usa 'ControladorPacientes' en lugar de '/ControladorPacientes'
+        // Petición al servlet sin el '/' inicial para evitar el 404
         const response = await fetch(`ControladorPacientes?accion=buscar&cedula=${encodeURIComponent(cedula)}`);
         if (!response.ok) return;
 
         const data = await response.json();
 
         if (data && (data.cedula || data.nombres || data.nombre)) {
-            document.getElementById('nombrePaciente').value = data.nombres || data.nombre || '';
-            document.getElementById('telefonoPaciente').value = data.telefono || '';
+            // Autocompletar campos
+            const inputNombre = document.getElementById('nombrePaciente');
+            const inputTelefono = document.getElementById('telefonoPaciente');
 
-            const fechaNac = data.fecha_nacimiento || data.fechaNacimiento || '';
-            fechaNacimientoRegistradaBD = fechaNac;
+            if (inputNombre) inputNombre.value = data.nombres || data.nombre || '';
+            if (inputTelefono) inputTelefono.value = data.telefono || '';
+
+            // Guardar fecha en variable global si existe
+            fechaNacimientoRegistradaBD = data.fecha_nacimiento || data.fechaNacimiento || '';
         }
     } catch (e) {
-        console.log("Paciente no encontrado o error en búsqueda inicial.");
+        console.log("Paciente nuevo o no encontrado en la consulta.");
     }
 }
 
