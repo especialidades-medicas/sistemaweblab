@@ -593,7 +593,7 @@ body {
                             <div class="form-check"><input class="form-check-input examen-chk" type="checkbox" data-id="ENZ02" data-nombre="Transaminasas TGP" data-precio="3.00"><label class="form-check-label">Transaminasas TGP</label></div>
                             <div class="form-check"><input class="form-check-input examen-chk" type="checkbox" data-id="ENZ03" data-nombre="Fosfatasa Alcalina" data-precio="5.00"><label class="form-check-label">Fosfatasa Alcalina</label></div>
                             <div class="form-check"><input class="form-check-input examen-chk" type="checkbox" data-id="ENZ04" data-nombre="GGT" data-precio="5.00"><label class="form-check-label">GGT</label></div>
-                            <div class="form-check"><input class="form-check-input examen-chk" type="checkbox" data-id="ENZ05" data-nombre="Amilasa" data-precio="6.00"><label class="form-check-label">Amilasa</div>
+                            <div class="form-check"><input class="form-check-input examen-chk" type="checkbox" data-id="ENZ05" data-nombre="Amilasa" data-precio="6.00"><label class="form-check-label">Amilasa</label></div>
                             <div class="form-check"><input class="form-check-input examen-chk" type="checkbox" data-id="ENZ06" data-nombre="Lipasa" data-precio="6.00"><label class="form-check-label">Lipasa</label></div>
                             <div class="form-check"><input class="form-check-input examen-chk" type="checkbox" data-id="ENZ07" data-nombre="Lipidos Totales" data-precio="20.00"><label class="form-check-label">Lipidos Totales</label></div>
                             <div class="form-check"><input class="form-check-input examen-chk" type="checkbox" data-id="ENZ08" data-nombre="Ferritina" data-precio="20.00"><label class="form-check-label">Ferritina</label></div>
@@ -1188,13 +1188,19 @@ async function buscarPacientePorCedulaDB() {
 }
 
 // 2. Guardar paciente con la condición de fecha de nacimiento
+// 2. Guardar o actualizar los datos del paciente desde la orden
 async function guardarPacienteBD() {
-    const cedula = document.getElementById('cedulaPaciente').value.trim();
-    const nombreCompleto = document.getElementById('nombrePaciente').value.trim();
-    const edadTexto = document.getElementById('edadPaciente').value.replace(/\D/g, '').trim();
-    const telefono = document.getElementById('telefonoPaciente').value.trim();
+    const inputCedula = document.getElementById('cedulaPaciente');
+    const inputNombre = document.getElementById('nombrePaciente');
+    const inputEdad = document.getElementById('edadPaciente');
+    const inputTelefono = document.getElementById('telefonoPaciente');
 
-    // Campos adicionales opcionales
+    const cedula = inputCedula ? inputCedula.value.trim() : '';
+    const nombreCompleto = inputNombre ? inputNombre.value.trim() : '';
+    const edadTexto = inputEdad ? inputEdad.value.replace(/\D/g, '').trim() : '';
+    const telefono = inputTelefono ? inputTelefono.value.trim() : '';
+
+    // Campos condicionales o extendidos
     const genero = document.getElementById('generoPaciente') ? document.getElementById('generoPaciente').value : '';
     const correo = document.getElementById('correoPaciente') ? document.getElementById('correoPaciente').value.trim() : '';
     const direccion = document.getElementById('direccionPaciente') ? document.getElementById('direccionPaciente').value.trim() : '';
@@ -1206,22 +1212,22 @@ async function guardarPacienteBD() {
 
     let fechaNacimientoFinal = fechaNacimientoRegistradaBD;
 
-    // CONDICIÓN: Si NO tiene una fecha de nacimiento registrada en la BD
+    // Si NO hay fecha registrada, se calcula a partir de la edad o input de fecha
     if (!fechaNacimientoFinal) {
-        // Verificar si el HTML tiene un input específico de fecha (ej: tipo date)
         const inputFecha = document.getElementById('fechaNacimiento');
         if (inputFecha && inputFecha.value) {
             fechaNacimientoFinal = inputFecha.value;
         } else if (edadTexto) {
-            // Si solo se ingresó la edad, calcular 01/01/AÑO
             const edadNum = parseInt(edadTexto, 10);
-            const anioActual = new Date().getFullYear();
-            const anioNacimiento = anioActual - edadNum;
-            fechaNacimientoFinal = `${anioNacimiento}-01-01`;
+            if (!isNaN(edadNum)) {
+                const anioActual = new Date().getFullYear();
+                const anioNacimiento = anioActual - edadNum;
+                fechaNacimientoFinal = `${anioNacimiento}-01-01`;
+            }
         }
     }
 
-    // Parámetros formateados para enviar al Servlet / Backend
+    // Formatear datos para el Servlet
     const params = new URLSearchParams();
     params.append('accion', 'guardar');
     params.append('cedula', cedula);
@@ -1242,18 +1248,39 @@ async function guardarPacienteBD() {
         });
 
         if (response.ok) {
-            alert("¡Paciente guardado exitosamente!");
-            // Actualizamos la variable local con la fecha procesada
+            alert("¡Paciente guardado/actualizado exitosamente!");
             fechaNacimientoRegistradaBD = fechaNacimientoFinal;
         } else {
             const errorText = await response.text();
-            console.error("Detalle del error servidor:", errorText);
-            alert(`Error ${response.status}: El servidor rechazó la solicitud.`);
+            console.error("Detalle del error en servidor:", errorText);
+            alert(`Error ${response.status}: No se pudo registrar el paciente.`);
         }
     } catch (error) {
-        console.error("Error en la red:", error);
+        console.error("Error de conexión:", error);
         alert("Ocurrió un error al conectar con el servidor.");
     }
+}
+
+// Función auxiliar para calcular la edad exacta
+function calcularEdadPrecisa(fechaNacStr) {
+    const partes = fechaNacStr.split('-');
+    if (partes.length !== 3) return null;
+    
+    const anio = parseInt(partes[0], 10);
+    const mes = parseInt(partes[1], 10) - 1;
+    const dia = parseInt(partes[2], 10);
+    
+    const nacimiento = new Date(anio, mes, dia);
+    const hoy = new Date();
+    
+    let edad = hoy.getFullYear() - nacimiento.getFullYear();
+    const diferenciaMeses = hoy.getMonth() - nacimiento.getMonth();
+    
+    if (diferenciaMeses < 0 || (diferenciaMeses === 0 && hoy.getDate() < nacimiento.getDate())) {
+        edad--;
+    }
+    
+    return edad >= 0 ? edad : 0;
 }
         </script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
