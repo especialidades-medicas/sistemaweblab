@@ -50,7 +50,7 @@
                 <div class="row g-2" style="font-size: 11px;">
                     <div class="col-md-6 col-12">
                         <strong class="text-primary">ORDEN NO:</strong>
-                        <input type="text" id="idOrden" class="form-control form-control-sm fw-bold text-primary" value="1000" onchange="buscarOrden(this.value)">
+                        <input type="text" id="idOrden" class="form-control form-control-sm fw-bold text-primary" value=" " onchange="buscarOrden(this.value)">
                        
                     </div>
                     <div class="col-md-6 col-6">
@@ -2583,45 +2583,26 @@
                 </label>
             </div>
         </div>
-
-        <!-- Selector: Firma Autorización / Médico -->
-        <div class="col-md-4">
-            <label for="selectFirmaMedico" class="form-label small fw-bold mb-1">Firma Médico:</label>
-            <select class="form-select form-select-sm" id="selectFirmaMedico" onchange="cambiarFirma('imgFirmaMedico', this.value)">
-                <option value="../img/firma_activa2.jpg">Dr. Juan Pérez (Médico General)</option>
-                <option value="../img/firma_medico_2.jpg">Dra. María López (Especialista)</option>
-                <option value="">Sin Firma (Para firmar a mano)</option>
-            </select>
-        </div>
-
-        <!-- Selector: Firma Responsable Laboratorio -->
-        <div class="col-md-4">
-            <label for="selectFirmaLab" class="form-label small fw-bold mb-1">Firma Laboratorio:</label>
-            <select class="form-select form-select-sm" id="selectFirmaLab" onchange="cambiarFirma('imgFirmaLab', this.value)">
-                <option value="../img/firma_activa.jpg">Lic. Carlos Gómez (Lab. Central)</option>
-                <option value="../img/firma_lab_2.jpg">Dra. Ana Silva (Lab. Guardia)</option>
-                <option value="">Sin Firma (Para firmar a mano)</option>
-            </select>
-        </div>
+        
     </div>
 </div>
 
 <!-- Contenedor de las Firmas (Alineadas Lado a Lado / Frente a Frente) -->
 <div class="row text-center mt-3 seccion-firma-completa d-flex flex-row justify-content-between align-items-end" id="contenedorFirmas" style="page-break-inside: avoid !important; break-inside: avoid !important;">
     
-    <!-- Columna Izquierda: Firma Médico -->
+    <!-- Columna Izquierda: Firma1 -->
     <div class="col-6">
         <div style="height: 85px;" class="d-flex align-items-center justify-content-center">
-            <img src="../img/firma_activa2.jpg" id="imgFirmaMedico" alt="Firma Médico" class="firma-img" style="max-height: 85px; width: auto; display: inline-block; object-fit: contain;">
+            <img src="../img/firma_activa2.png" id="imgFirmaMedico" alt="Firma Médico" class="firma-img" style="max-height: 85px; width: auto; display: inline-block; object-fit: contain;">
         </div>
         <hr class="w-75 mx-auto border-dark my-1">
-        <span class="small fw-bold text-muted d-block">Autorización / Médico</span>
+        <span class="small fw-bold text-muted d-block">Autorización</span>
     </div>
 
     <!-- Columna Derecha: Firma Responsable Laboratorio -->
     <div class="col-6">
         <div style="height: 85px;" class="d-flex align-items-center justify-content-center">
-            <img src="../img/firma_activa.jpg" id="imgFirmaLab" alt="Firma Responsable Laboratorio" class="firma-img" style="max-height: 85px; width: auto; display: inline-block; object-fit: contain;">
+            <img src="../img/firma_activa.png" id="imgFirmaLab" alt="Firma Responsable Laboratorio" class="firma-img" style="max-height: 85px; width: auto; display: inline-block; object-fit: contain;">
         </div>
         <hr class="w-75 mx-auto border-dark my-1">
         <span class="small fw-bold text-muted d-block">Responsable Laboratorio</span>
