@@ -608,47 +608,62 @@ function buscarPacientePorCedula(cedula) {
         });
     }
 
-    function guardarPacienteBD() {
+    async function guardarPacienteBD() {
     const cedula = document.getElementById('inCedula').value.trim();
     const paciente = document.getElementById('inPaciente').value.trim();
     const edadTexto = document.getElementById('inEdad').value.replace(/\D/g, '').trim();
     const telefono = document.getElementById('inTelefono').value.trim();
 
-    // 1. La cédula es el único campo estrictamente requerido en el formulario.
     if (!cedula) {
         alert("Por favor, ingrese el número de cédula del paciente.");
         return;
     }
 
-    // 2. Si el nombre está vacío, se envía 'S/N' para cumplir con la validación obligatoria del backend
     const nombreEnvio = paciente.length > 0 ? paciente.toUpperCase() : "S/N";
+    let fechaNacimientoFinal = "";
 
-    // 3. Cálculo interno de fecha_nacimiento (01/01/AÑO) según la edad ingresada
-    let fechaNacimientoCalculada = "";
-    if (edadTexto) {
+    try {
+        // 1. Consultar si el paciente ya existe en la BD para verificar si ya tiene fecha de nacimiento registrada
+        const checkResponse = await fetch(`/ControladorPacientes?accion=buscar&cedula=${encodeURIComponent(cedula)}`);
+        
+        if (checkResponse.ok) {
+            const datosExistentes = await checkResponse.json();
+            
+            // Si ya existe en la BD y tiene una fecha de nacimiento válida, SE CONSERVA ESA FECHA
+            if (datosExistentes && (datosExistentes.fecha_nacimiento || datosExistentes.fechaNacimiento)) {
+                fechaNacimientoFinal = datosExistentes.fecha_nacimiento || datosExistentes.fechaNacimiento;
+            }
+        }
+    } catch (e) {
+        console.log("Paciente nuevo o no encontrado en la consulta previa.");
+    }
+
+    // 2. CONDICIÓN: Si NO existe una fecha de nacimiento previa y hay una edad digitada, se calcula 01/01/AÑO
+    if (!fechaNacimientoFinal && edadTexto) {
         const edadNum = parseInt(edadTexto, 10);
         const anioActual = new Date().getFullYear();
         const anioNacimiento = anioActual - edadNum;
-        fechaNacimientoCalculada = `${anioNacimiento}-01-01`;
+        fechaNacimientoFinal = `${anioNacimiento}-01-01`;
     }
 
-    // 4. Parámetros compatibles con las dos estructuras de servlets
+    // 3. Preparar parámetros para el envío
     const params = new URLSearchParams();
     params.append('accion', 'guardar');
     
-    // Parámetros formato 1
+    // Parámetros estándar
     params.append('cedula', cedula);
     params.append('nombres', nombreEnvio);
     params.append('telefono', telefono);
     params.append('edad', edadTexto);
-    params.append('fecha_nacimiento', fechaNacimientoCalculada);
+    params.append('fecha_nacimiento', fechaNacimientoFinal);
 
-    // Parámetros formato 2 (patNombre, patCedula, etc.)
+    // Parámetros alternativos para compatibilidad
     params.append('patCedula', cedula);
     params.append('patNombre', nombreEnvio);
     params.append('patTelefono', telefono);
-    params.append('patNacimiento', fechaNacimientoCalculada);
+    params.append('patNacimiento', fechaNacimientoFinal);
 
+    // 4. Guardar o actualizar en el backend
     fetch('/ControladorPacientes', {
         method: 'POST',
         headers: {
