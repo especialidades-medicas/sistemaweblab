@@ -12,210 +12,265 @@
     <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
         
         <style>
-            body {
-                background-color: #f8f9fa;
-                color: #002b80;
-                font-family: Arial, sans-serif;
-                margin: 0;
-                padding: 5px;
-            }
-            /* Contenedor adaptado al ancho exacto de impresión A4 */
-            .pedido-box {
-                background: white;
-                width: 100%;
-                max-width: 790px;
-                margin: 0 auto;
-                padding: 8px 10px;
-                border: 1px solid #bce8f1;
-                box-shadow: 0 0 10px rgba(0,43,128,0.1);
-                box-sizing: border-box;
-                font-size: 9.5px;
-            }
-            .header-title {
-                color: #006633;
-                font-weight: bold;
-                font-size: 14px;
-                margin: 0;
-            }
-            .header-sub {
-                font-size: 8.5px;
-                color: #333;
-                line-height: 1.1;
-            }
-            .form-control-editable {
-                border: none;
-                border-bottom: 1px dashed #002b80;
-                background-color: #fafafa;
-                border-radius: 0;
-                font-size: 9.5px;
-                padding: 1px 3px;
-                height: 16px;
-                color: #000;
-                width: 100%;
-            }
-            .form-control-editable:focus {
-                background-color: #fff;
-                border-color: #006633;
-                box-shadow: none;
-            }
-            .section-title {
-                background-color: #e6f2ff;
-                color: #002b80;
-                font-weight: bold;
-                text-align: center;
-                font-size: 9px;
-                padding: 2px 1px;
-                margin-top: 3px;
-                margin-bottom: 2px;
-                border: 1px solid #bce8f1;
-                letter-spacing: 0.2px;
-            }
-            .form-check {
-                min-height: auto;
-                margin-bottom: 1px;
-                padding-left: 15px;
-            }
-            .form-check-input {
-                width: 9px;
-                height: 9px;
-                margin-top: 2px;
-                margin-left: -15px;
-                border-color: #002b80;
-            }
-            .form-check-input:checked {
-                background-color: #006633;
-                border-color: #006633;
-            }
-            .form-check-label {
-                font-size: 8.5px;
-                color: #222;
-                line-height: 1.05;
-            }
-            .table-layout {
-                width: 100%;
-                table-layout: fixed;
-            }
-            .table-layout td {
-                vertical-align: top;
-                padding: 1px 2px;
-                word-wrap: break-word;
-            }
-            /* Estilos para la tabla de cotización integrada */
-            .tabla-cotizacion {
-                width: 100%;
-                margin-top: 5px;
-                font-size: 9px;
-                border-collapse: collapse;
-            }
-            .tabla-cotizacion th, .tabla-cotizacion td {
-                border: 1px solid #bce8f1;
-                padding: 3px 5px;
-            }
-            .tabla-cotizacion th {
-                background-color: #e6f2ff;
-                color: #002b80;
-                text-align: center;
-            }
-            .footer-banner {
-                background-color: #e6f2ff;
-                border-top: 1px solid #002b80;
-                font-size: 8.5px;
-                text-align: center;
-                padding: 2px;
-                font-weight: bold;
-                color: #002b80;
-                margin-top: 3px;
-            }
-            @media print {
-                body { 
-                    background: white; 
-                    padding: 0; 
-                }
-                .no-print { 
-                    display: none !important; 
-                }
-                .pedido-box { 
-                    border: none; 
-                    box-shadow: none; 
-                    margin: 0; 
-                    max-width: 100%;
-                    width: 100%;
-                }
-            }
-            
-            /* Oculta los botones de navegación de las pestañas en el PDF */
-                .pdf-mode .nav-tabs {
-                    display: none !important;
-                }
-            /* Reglas vitales para la exportación a PDF */
-                .print-only { display: none; }
-                .pdf-mode .no-print { display: none !important; }
-                .pdf-mode .print-only { display: block !important; }
-            /* =========================================
-   ESTILOS EXCLUSIVOS DE LA BARRA LIQUID GLASS
-   ========================================= */
-:root {
-    --glass-bg: rgba(255, 255, 255, 0.15);
-    --glass-border: rgba(255, 255, 255, 0.4);
-    --glass-shadow: rgba(0, 0, 0, 0.1);
-    --glass-highlight: rgba(255, 255, 255, 0.8);
-    --glass-caustic: rgba(255, 255, 255, 0.4);
-    --reflection-start: rgba(255, 255, 255, 0.6);
+            :root {
+    /* Paleta Médica Moderna (Light) */
+    --primary: #0056b3;
+    --primary-hover: #004085;
+    --secondary: #28a745;
+    --bg-page: #f4f7f6;
+    --bg-surface: #ffffff;
+    --bg-header: #f8fafc;
+    --border-color: #e2e8f0;
+    --border-dashed: #cbd5e1;
+    --text-main: #1e293b;
+    --text-muted: #64748b;
+    --input-bg: #f8fafc;
+    --input-focus-bg: #ffffff;
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.05);
+
+    /* Estilos Glassmorphism */
+    --glass-bg: rgba(255, 255, 255, 0.75);
+    --glass-border: rgba(255, 255, 255, 0.6);
+    --glass-shadow: rgba(0, 0, 0, 0.08);
+    --glass-highlight: rgba(255, 255, 255, 0.9);
+    --glass-caustic: rgba(255, 255, 255, 0.3);
+    --reflection-start: rgba(255, 255, 255, 0.7);
     --reflection-end: rgba(255, 255, 255, 0.0);
-    --glare-color: rgba(255, 255, 255, 0.5);
-    --pill-bg: rgba(255, 255, 255, 0.7);
-    --pill-shadow: 0 4px 12px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.05), inset 0 1px 1px rgba(255,255,255,0.8);
-    --icon-color: rgba(0, 0, 0, 0.6);
-    --icon-active: rgba(0, 0, 0, 0.95);
-    --divider: rgba(0, 0, 0, 0.15);
-    --input-bg: rgba(255, 255, 255, 0.5);
+    --glare-color: rgba(255, 255, 255, 0.6);
+    --pill-bg: rgba(255, 255, 255, 0.9);
+    --pill-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+    --icon-color: rgba(30, 41, 59, 0.7);
+    --icon-active: #0f172a;
+    --divider: rgba(0, 0, 0, 0.1);
 }
 
 [data-theme="dark"] {
-    --glass-bg: rgba(30, 30, 35, 0.45);
-    --glass-border: rgba(255, 255, 255, 0.15);
-    --glass-shadow: rgba(0, 0, 0, 0.8);
-    --glass-highlight: rgba(255, 255, 255, 0.25);
-    --glass-caustic: rgba(255, 255, 255, 0.05);
-    --reflection-start: rgba(255, 255, 255, 0.15);
+    --primary: #3b82f6;
+    --primary-hover: #60a5fa;
+    --secondary: #10b981;
+    --bg-page: #0f172a;
+    --bg-surface: #1e293b;
+    --bg-header: #0f172a;
+    --border-color: #334155;
+    --border-dashed: #475569;
+    --text-main: #f8fafc;
+    --text-muted: #94a3b8;
+    --input-bg: #0f172a;
+    --input-focus-bg: #1e293b;
+
+    --glass-bg: rgba(30, 41, 59, 0.75);
+    --glass-border: rgba(255, 255, 255, 0.1);
+    --glass-shadow: rgba(0, 0, 0, 0.5);
+    --glass-highlight: rgba(255, 255, 255, 0.15);
+    --glass-caustic: rgba(255, 255, 255, 0.02);
+    --reflection-start: rgba(255, 255, 255, 0.1);
     --reflection-end: rgba(255, 255, 255, 0.0);
-    --glare-color: rgba(255, 255, 255, 0.15);
-    --pill-bg: rgba(60, 60, 65, 0.8);
-    --pill-shadow: 0 4px 12px rgba(0,0,0,0.4), 0 1px 2px rgba(0,0,0,0.2), inset 0 1px 1px rgba(255,255,255,0.2);
-    --icon-color: rgba(255, 255, 255, 0.6);
-    --icon-active: #ffffff;
+    --glare-color: rgba(255, 255, 255, 0.1);
+    --pill-bg: rgba(51, 65, 85, 0.8);
+    --pill-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    --icon-color: rgba(248, 250, 252, 0.7);
+    --icon-active: #f8fafc;
     --divider: rgba(255, 255, 255, 0.15);
-    --input-bg: rgba(40, 40, 45, 0.6);
 }
 
+/* =========================================
+   ESTILOS GENERALES DEL DOCUMENTO
+   ========================================= */
+body {
+    background-color: var(--bg-page);
+    color: var(--text-main);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    margin: 0;
+    padding: 12px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.pedido-box {
+    background: var(--bg-surface);
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 16px 20px;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    box-shadow: var(--shadow-md);
+    box-sizing: border-box;
+    font-size: 10px;
+    transition: all 0.3s ease;
+}
+
+/* Encabezados */
+.header-title {
+    color: var(--primary);
+    font-weight: 700;
+    font-size: 15px;
+    letter-spacing: -0.2px;
+    margin: 0;
+}
+
+.header-sub {
+    font-size: 9px;
+    color: var(--text-muted);
+    line-height: 1.3;
+}
+
+/* Campos Editables de Formulario */
+.form-control-editable {
+    border: none;
+    border-bottom: 1.5px dashed var(--border-dashed);
+    background-color: var(--input-bg);
+    border-radius: 4px 4px 0 0;
+    font-size: 10px;
+    font-weight: 500;
+    padding: 2px 6px;
+    height: 20px;
+    color: var(--text-main);
+    width: 100%;
+    transition: all 0.2s ease;
+}
+
+.form-control-editable:focus {
+    background-color: var(--input-focus-bg);
+    border-bottom: 2px solid var(--primary);
+    outline: none;
+    box-shadow: var(--shadow-sm);
+}
+
+/* Secciones e Indicadores */
+.section-title {
+    background-color: var(--bg-header);
+    color: var(--primary);
+    font-weight: 700;
+    text-align: center;
+    font-size: 9.5px;
+    padding: 4px;
+    margin-top: 6px;
+    margin-bottom: 4px;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
+}
+
+/* Checkboxes Personalizados */
+.form-check {
+    min-height: auto;
+    margin-bottom: 2px;
+    padding-left: 18px;
+    display: flex;
+    align-items: center;
+}
+
+.form-check-input {
+    width: 11px;
+    height: 11px;
+    margin-top: 0;
+    margin-left: -18px;
+    border: 1px solid var(--border-dashed);
+    border-radius: 3px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.form-check-input:checked {
+    background-color: var(--primary);
+    border-color: var(--primary);
+}
+
+.form-check-label {
+    font-size: 9px;
+    color: var(--text-main);
+    line-height: 1.2;
+    cursor: pointer;
+}
+
+/* Tablas */
+.table-layout {
+    width: 100%;
+    table-layout: fixed;
+}
+
+.table-layout td {
+    vertical-align: middle;
+    padding: 2px 3px;
+    word-wrap: break-word;
+}
+
+.tabla-cotizacion {
+    width: 100%;
+    margin-top: 8px;
+    font-size: 9.5px;
+    border-collapse: separate;
+    border-spacing: 0;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid var(--border-color);
+}
+
+.tabla-cotizacion th, 
+.tabla-cotizacion td {
+    border-bottom: 1px solid var(--border-color);
+    border-right: 1px solid var(--border-color);
+    padding: 5px 8px;
+}
+
+.tabla-cotizacion th:last-child, 
+.tabla-cotizacion td:last-child {
+    border-right: none;
+}
+
+.tabla-cotizacion tr:last-child td {
+    border-bottom: none;
+}
+
+.tabla-cotizacion th {
+    background-color: var(--bg-header);
+    color: var(--primary);
+    font-weight: 700;
+    text-align: center;
+}
+
+.footer-banner {
+    background-color: var(--bg-header);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    font-size: 8.5px;
+    text-align: center;
+    padding: 4px;
+    font-weight: 600;
+    color: var(--primary);
+    margin-top: 6px;
+}
+
+/* =========================================
+   BARRA NAVEGACIÓN LIQUID GLASS
+   ========================================= */
 .liquid-nav {
     position: relative;
-    display: flex;             /* Cambiado de inline-flex a flex */
-    justify-content: center;   /* Centra el contenido interno si es necesario */
-    margin: 20px auto;         /* Centra la barra horizontalmente en la página */
+    display: flex;
+    justify-content: center;
+    margin: 16px auto;
     align-items: center;
     flex-wrap: wrap;
-    gap: 6px;
-    padding: 10px 14px;
-    border-radius: 24px;
+    gap: 8px;
+    padding: 8px 16px;
+    border-radius: 99px;
     background: var(--glass-bg);
-    backdrop-filter: blur(50px) saturate(200%);
-    -webkit-backdrop-filter: blur(50px) saturate(200%);
-    box-shadow: 
-        0 40px 80px -20px var(--glass-shadow),
-        0 10px 30px -10px var(--glass-shadow),
-        inset 0 2px 3px -1px var(--glass-highlight),
-        inset 0 -2px 4px -1px var(--glass-caustic),
-        inset 0 0 0 1px var(--glass-border);
-    transition: all 0.5s ease;
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    box-shadow: 0 10px 30px -5px var(--glass-shadow),
+                inset 0 1px 1px var(--glass-highlight),
+                inset 0 0 0 1px var(--glass-border);
+    transition: all 0.3s ease;
     z-index: 10;
 }
 
 .liquid-nav::before {
     content: '';
     position: absolute;
-    top: 1px; left: 1px; right: 1px; height: 40%;
-    border-radius: 24px 24px 12px 12px;
+    top: 1px; left: 1px; right: 1px; height: 45%;
+    border-radius: 99px 99px 12px 12px;
     background: linear-gradient(180deg, var(--reflection-start) 0%, var(--reflection-end) 100%);
     pointer-events: none;
     z-index: 6; 
@@ -224,7 +279,7 @@
 .liquid-glare-container {
     position: absolute;
     inset: 0;
-    border-radius: 24px;
+    border-radius: 99px;
     overflow: hidden;
     pointer-events: none;
     z-index: 5;
@@ -239,93 +294,86 @@
     mix-blend-mode: overlay;
 }
 
-.liquid-nav:hover .liquid-glare {
-    opacity: 1;
-}
+.liquid-nav:hover .liquid-glare { opacity: 1; }
 
 .nav-items {
     position: relative;
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 8px;
     flex-wrap: wrap;
-    z-index: 3;
+    z-index: 7;
 }
 
 .action-btn {
     position: relative;
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid var(--glass-border);
-    width: 40px;
-    height: 40px;
+    background: transparent;
+    border: 1px solid transparent;
+    width: 36px;
+    height: 36px;
     border-radius: 50%;
-    font-size: 16px;
-    color: var(--icon-active);
+    font-size: 15px;
+    color: var(--icon-color);
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    -webkit-tap-highlight-color: transparent;
     transition: all 0.2s ease;
     outline: none;
-    z-index: 3;
     text-decoration: none;
 }
 
 .action-btn:hover {
     background: var(--pill-bg);
+    border-color: var(--glass-border);
+    color: var(--icon-active);
     box-shadow: var(--pill-shadow);
     transform: translateY(-1px);
 }
 
-.action-btn:active {
-    transform: scale(0.9);
-}
+.action-btn:active { transform: scale(0.95); }
 
-.btn-primary-custom { color: #007aff; }
-.btn-success-custom { color: #28a745; }
-.btn-whatsapp-custom { color: #25d366; }
-.btn-info-custom    { color: #17a2b8; }
-.btn-secondary-custom { color: var(--icon-active); }
-
-[data-theme="dark"] .btn-primary-custom { color: #0a84ff; }
-[data-theme="dark"] .btn-success-custom { color: #32d74b; }
-[data-theme="dark"] .btn-whatsapp-custom { color: #25d366; }
-[data-theme="dark"] .btn-info-custom    { color: #64d2ff; }
+.btn-primary-custom   { color: var(--primary); }
+.btn-success-custom   { color: #10b981; }
+.btn-whatsapp-custom  { color: #22c55e; }
+.btn-info-custom       { color: #06b6d4; }
+.btn-secondary-custom  { color: var(--icon-color); }
 
 .email-group {
     display: flex;
     align-items: center;
     background: var(--input-bg);
-    border: 1px solid var(--glass-border);
+    border: 1px solid var(--border-color);
     border-radius: 99px;
-    height: 40px;
+    height: 36px;
     padding-left: 12px;
     overflow: hidden;
-    z-index: 3;
+    transition: border-color 0.2s ease;
+}
+
+.email-group:focus-within {
+    border-color: var(--primary);
 }
 
 .email-input {
     background: transparent;
     border: none;
     outline: none;
-    font-size: 13px;
-    color: var(--icon-active);
-    width: 160px;
+    font-size: 12px;
+    color: var(--text-main);
+    width: 150px;
 }
 
-.email-input::placeholder {
-    color: var(--icon-color);
-}
+.email-input::placeholder { color: var(--text-muted); }
 
 .email-btn {
     background: transparent;
     border: none;
-    border-left: 1px solid var(--glass-border);
-    width: 40px;
+    border-left: 1px solid var(--border-color);
+    width: 36px;
     height: 100%;
-    font-size: 15px;
-    color: #17a2b8;
+    font-size: 14px;
+    color: var(--primary);
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -333,33 +381,27 @@
     transition: background 0.2s;
 }
 
-.email-btn:hover {
-    background: rgba(23, 162, 184, 0.15);
-}
+.email-btn:hover { background: rgba(59, 130, 246, 0.1); }
 
 .divider {
     width: 1px;
-    height: 24px;
+    height: 20px;
     background: var(--divider);
-    margin: 0 4px;
-    z-index: 3;
+    margin: 0 2px;
 }
 
 .theme-btn {
-    position: relative;
     background: transparent;
     border: none;
-    width: 40px;
-    height: 40px;
+    width: 36px;
+    height: 36px;
     border-radius: 50%;
     color: var(--icon-color);
     cursor: pointer;
-    z-index: 3;
-    outline: none;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: color 0.3s ease;
+    transition: all 0.2s ease;
 }
 
 .theme-btn:hover {
@@ -376,7 +418,7 @@
 .theme-icon-wrapper svg {
     position: absolute;
     top: 0; left: 0;
-    transition: transform 0.5s cubic-bezier(0.34, 1.2, 0.64, 1), opacity 0.4s ease;
+    transition: transform 0.4s ease, opacity 0.3s ease;
 }
 
 .sun { opacity: 1; transform: rotate(0deg) scale(1); }
@@ -385,26 +427,49 @@
 [data-theme="dark"] .sun { opacity: 0; transform: rotate(90deg) scale(0); }
 [data-theme="dark"] .moon { opacity: 1; transform: rotate(0deg) scale(1); }
 
+.btn-signatures { color: var(--text-muted); transition: all 0.2s ease; }
+.btn-signatures.active { color: var(--primary); background: rgba(59, 130, 246, 0.1); }
 
+/* =========================================
+   REGLAS DE IMPRESIÓN Y EXPORTACIÓN PDF
+   ========================================= */
+.print-only { display: none; }
 
-/* Estilos para el botón de firmas en la barra */
-.btn-signatures {
-    color: #6c757d;
-    transition: all 0.3s ease;
+@media print {
+    body {
+        background: white !important;
+        color: #000 !important;
+        padding: 0;
+    }
+    .no-print { display: none !important; }
+    .pedido-box {
+        border: none !important;
+        box-shadow: none !important;
+        margin: 0 !important;
+        max-width: 100% !important;
+        width: 100% !important;
+        padding: 0 !important;
+    }
+    .form-control-editable {
+        background-color: transparent !important;
+        border-bottom: 1px solid #000 !important;
+    }
 }
 
-.btn-signatures.active {
-    color: #007aff;
-    background: rgba(0, 122, 255, 0.1);
+.pdf-mode .nav-tabs,
+.pdf-mode .no-print {
+    display: none !important;
 }
 
-[data-theme="dark"] .btn-signatures.active {
-    color: #0a84ff;
-    background: rgba(10, 132, 255, 0.15);
+.pdf-mode .print-only {
+    display: block !important;
 }
 
-.btn-signatures:not(.active) {
-    opacity: 0.6;
+.pdf-mode .pedido-box {
+    border: none !important;
+    box-shadow: none !important;
+    background: #ffffff !important;
+    color: #000000 !important;
 }
   
         </style>
