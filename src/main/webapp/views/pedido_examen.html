@@ -1177,65 +1177,72 @@ async function buscarPacientePorCedulaDB() {
 
 // 2. Corrección para guardar (evita el Error 400)
 async function guardarPacienteBD() {
-    const inputCedula = document.getElementById('cedulaPaciente');
-    const inputNombre = document.getElementById('nombrePaciente');
-    const inputEdad = document.getElementById('edadPaciente');
-    const inputTelefono = document.getElementById('telefonoPaciente');
+        const cedula = document.getElementById('inCedula').value.trim();
+        const paciente = document.getElementById('inPaciente').value.trim();
+        const edadTexto = document.getElementById('inEdad').value.replace(/\D/g, '').trim();
+        const telefono = document.getElementById('inTelefono').value.trim();
 
-    const cedula = inputCedula ? inputCedula.value.trim() : "";
-    const paciente = inputNombre ? inputNombre.value.trim() : "";
-    const edadTexto = inputEdad ? inputEdad.value.replace(/\D/g, '').trim() : "";
-    const telefono = inputTelefono ? inputTelefono.value.trim() : "";
+        if (!cedula) {
+            alert("Por favor, ingrese el número de cédula del paciente.");
+            return;
+        }
 
-    if (!cedula) {
-        alert("Por favor, ingrese el número de cédula del paciente.");
-        return;
-    }
+        const nombreEnvio = paciente.length > 0 ? paciente.toUpperCase() : "S/N";
+        let fechaNacimientoFinal = "";
 
-    // Aseguramos que siempre lleve un valor válido para evitar el 400
-    const nombreEnvio = paciente.length > 0 ? paciente.toUpperCase() : "S/N";
-    let fechaNacimientoFinal = fechaNacimientoRegistradaBD || "";
+        try {
+            // 1. Consultar si el paciente ya existe para conservar su fecha de nacimiento si aplica
+            const checkResponse = await fetch(`ControladorPacientes?accion=buscar&cedula=${encodeURIComponent(cedula)}`);
+            if (checkResponse.ok) {
+                const datosExistentes = await checkResponse.json();
+                if (datosExistentes) {
+                    fechaNacimientoFinal = datosExistentes.fecha_nacimiento || datosExistentes.fechaNacimiento || "";
+                }
+            }
 
-    if (!fechaNacimientoFinal && edadTexto) {
-        const edadNum = parseInt(edadTexto, 10);
-        if (!isNaN(edadNum)) {
-            const anioActual = new Date().getFullYear();
-            fechaNacimientoFinal = `${anioActual - edadNum}-01-01`;
+            // 2. Si es paciente nuevo y hay edad, estimar año de nacimiento para evitar errores
+            if (!fechaNacimientoFinal && edadTexto) {
+                const edadNum = parseInt(edadTexto, 10);
+                if (!isNaN(edadNum)) {
+                    const anioActual = new Date().getFullYear();
+                    fechaNacimientoFinal = `${anioActual - edadNum}-01-01`;
+                }
+            }
+
+            // 3. Preparar parámetros para el Servlet
+            const params = new URLSearchParams();
+            params.append('accion', 'guardar');
+            params.append('cedula', cedula);
+            params.append('nombres', nombreEnvio);
+            params.append('nombre', nombreEnvio);
+            params.append('telefono', telefono);
+            params.append('edad', edadTexto);
+            params.append('fecha_nacimiento', fechaNacimientoFinal);
+            params.append('fechaNacimiento', fechaNacimientoFinal);
+
+            // 4. Enviar petición POST
+            const response = await fetch('ControladorPacientes', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
+                },
+                body: params.toString()
+            });
+
+            if (response.ok) {
+                alert("¡Paciente guardado exitosamente desde el convenio!");
+            } else {
+                const errorText = await response.text();
+                alert(`Error ${response.status}: ${errorText}`);
+            }
+        } catch (error) {
+            console.error("Error en la petición:", error);
+            alert("Error de conexión al guardar el paciente.");
         }
     }
-
-    // Configuración explícita del cuerpo
-    const params = new URLSearchParams();
-    params.append('accion', 'guardar');
-    params.append('cedula', cedula);
-    params.append('nombres', nombreEnvio); // Parámetro principal requerido
-    params.append('nombre', nombreEnvio);  // Respaldo
-    params.append('telefono', telefono);
-    params.append('edad', edadTexto);
-    params.append('fecha_nacimiento', fechaNacimientoFinal);
-    params.append('fechaNacimiento', fechaNacimientoFinal);
-
-    try {
-        // Se quita la barra inicial '/' para respetar la estructura del despliegue
-        const response = await fetch('ControladorPacientes', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
-            },
-            body: params.toString()
-        });
-
-        if (response.ok) {
-            alert("¡Paciente guardado exitosamente!");
-        } else {
-            const errorText = await response.text();
-            alert(`Error ${response.status}: ${errorText}`);
-        }
-    } catch (error) {
-        console.error("Error en la petición:", error);
-        alert("Error de conexión al guardar.");
-    }
-}
+</script>
+</body>
+</html>
 // Función auxiliar para calcular la edad exacta
 function calcularEdadPrecisa(fechaNacStr) {
     const partes = fechaNacStr.split('-');
