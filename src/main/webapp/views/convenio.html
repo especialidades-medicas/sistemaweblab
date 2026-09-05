@@ -540,12 +540,11 @@ body {
         window.open(url, '_blank');
     }
 
-
-    // 1. Evento para detectar cuándo se digita la Cédula y buscar automáticamente
+// 1. Evento para detectar cuándo se digita la Cédula y buscar automáticamente
 document.getElementById('inCedula').addEventListener('keyup', function(e) {
     const cedula = this.value.trim();
     
-    // Ejecuta la búsqueda al ingresar 10 dígitos (o al presionar Enter)
+    // Ejecuta la búsqueda al ingresar 10 dígitos o presionar Enter
     if (cedula.length === 10 || e.key === 'Enter') {
         buscarPacientePorCedula(cedula);
     }
@@ -568,14 +567,24 @@ function buscarPacientePorCedula(cedula) {
         return response.json();
     })
     .then(data => {
-        if (data && data.patNombre) {
-            // Autocompletar campos del formulario
-            document.getElementById('inPaciente').value = data.patNombre || '';
-            document.getElementById('inEdad').value = data.patEdad || '';
-            document.getElementById('inTelefono').value = data.patTelefono || '';
+        if (data && (data.cedula || data.nombres)) {
+            // Autocompletar campos del formulario 'inPaciente', 'inEdad', 'inTelefono'
+            document.getElementById('inPaciente').value = data.nombres || '';
+            document.getElementById('inTelefono').value = data.telefono || '';
+
+            // Calcular y formatear la edad a partir de fecha_nacimiento/fechaNacimiento
+            const fechaNac = data.fecha_nacimiento || data.fechaNacimiento;
+            if (fechaNac && typeof calcularEdad === 'function') {
+                const edadCalculada = calcularEdad(fechaNac);
+                document.getElementById('inEdad').value = `${edadCalculada} años`;
+            } else if (data.edad) {
+                document.getElementById('inEdad').value = data.edad;
+            }
             
-            // Actualizar la vista del documento/ticket
-            actualizarDocumento();
+            // Actualizar la vista del documento/ticket si la función existe
+            if (typeof actualizarDocumento === 'function') {
+                actualizarDocumento();
+            }
         }
     })
     .catch(error => {
@@ -595,11 +604,13 @@ function guardarPacienteBD() {
         return;
     }
 
+    // Adaptación a la estructura de la base de datos 'pacientes' y Servlet
     const params = new URLSearchParams();
-    params.append('patCedula', cedula);
-    params.append('patNombre', paciente);
-    params.append('patEdad', edad);
-    params.append('patTelefono', telefono);
+    params.append('accion', 'guardar');
+    params.append('cedula', cedula);
+    params.append('nombres', paciente);
+    params.append('telefono', telefono);
+    params.append('edad', edad);
 
     fetch('/ControladorPacientes', {
         method: 'POST',
@@ -608,11 +619,13 @@ function guardarPacienteBD() {
         },
         body: params.toString()
     })
-    .then(response => {
+    .then(async response => {
         if (response.ok) {
             alert("¡Paciente guardado exitosamente!");
         } else {
-            alert("Error: El servidor no pudo guardar la información (HTTP " + response.status + ").");
+            const errorText = await response.text();
+            console.error("Detalle error servidor:", errorText);
+            alert(`Error ${response.status}: El servidor rechazó la solicitud.`);
         }
     })
     .catch(error => {
@@ -620,6 +633,7 @@ function guardarPacienteBD() {
         alert("Error de conexión al guardar el paciente.");
     });
 }
+    
 </script>
 
 </body>
