@@ -1086,50 +1086,83 @@
                 </div>
 
                 <!-- 10. Otros -->
-                <div class="tab-pane fade" id="otrosContent" role="tabpanel">
-                    <div class="border p-2 rounded bg-white">
-                        <div class="section-title text-primary fw-bold border-bottom pb-1 mb-2 small" data-section-name="EXÁMENES">OTROS EXÁMENES</div>
-                        <table class="table table-sm table-bordered align-middle mb-0 small">
-                            <thead class="table-light text-muted"><tr><th>EXAMEN</th><th>RESULTADO</th><th>UNIDAD</th><th>V. REFERENCIA</th></tr></thead>
-                            <tbody>
-                                <tr><td class="fw-bold">PRUEBA DE EMBARAZO BETA-HCG CUANTITATIVA</td><td><input type="text" class="form-control form-control-sm form-control-editable"></td><td>-</td><td class="text-muted">Negativo: Menor a 5 / Zona Gris O Dudoso: 5 a 25Positivo: Mayor a 25 / Semanas 3 a 4: 5 a 130 / Semanas 4 a 5: 75 a 2.600 / Semanas 5 a 6: 850 a 20.800 / Semanas 6 a 7: 4.000 a 100.200 / Semanas 7 a 12: 11.500 a 289.000</td></tr>
-                             
-                            <!-- Prueba de Embarazo Cualitativa -->
-            <tr>
-                <td class="fw-bold">PRUEBA DE EMBARAZO EN SANGRE BHCG</td>
-                <td>
-                    <select class="form-select form-select-sm form-control-editable" id="resPruebaEmbarazo">
-                        <option value="" selected disabled>Seleccione...</option>
-                        <option value="Negativo">Negativo</option>
-                        <option value="Positivo">Positivo</option>
-                    </select>
-                </td>
-                <td class="text-muted">-</td>
-                <td class="text-muted">CUALITATIVA</td>
-            </tr>
-            <!-- Grupo y Factor Sanguíneo -->
-            <tr>
-                <td class="fw-bold">GRUPO SANGUÍNEO Y FACTOR RH</td>
-                <td>
-                    <select class="form-select form-select-sm form-control-editable" id="resGrupoSanguineo">
-                        <option value="" selected disabled>Seleccione Grupo...</option>
-                        <option value="A Positivo (A+)">A Positivo (A+)</option>
-                        <option value="A Negativo (A-)">A Negativo (A-)</option>
-                        <option value="B Positivo (B+)">B Positivo (B+)</option>
-                        <option value="B Negativo (B-)">B Negativo (B-)</option>
-                        <option value="AB Positivo (AB+)">AB Positivo (AB+)</option>
-                        <option value="AB Negativo (AB-)">AB Negativo (AB-)</option>
-                        <option value="O Positivo (O+)">O Positivo (O+)</option>
-                        <option value="O Negativo (O-)">O Negativo (O-)</option>
-                    </select>
-                </td>
-                <td class="text-muted">-</td>
-                <td class="text-muted">Rh</td>
-            </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+<div class="tab-pane fade" id="otrosContent" role="tabpanel">
+    <div class="border p-2 rounded bg-white">
+        
+        <!-- Subtítulo 1: Prueba Cuantitativa -->
+        <div class="section-title text-primary fw-bold border-bottom pb-1 mb-2 small" data-section-name="BETA-HCG CUANTITATIVA">
+            PRUEBA DE EMBARAZO BETA-HCG CUANTITATIVA
+        </div>
+        <table class="table table-sm table-bordered align-middle mb-3 small">
+            <thead class="table-light text-muted">
+                <tr><th>EXAMEN</th><th>RESULTADO</th><th>UNIDAD</th><th>V. REFERENCIA</th></tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="fw-bold">PRUEBA DE EMBARAZO BETA-HCG CUANTITATIVA</td>
+                    <td><input type="text" class="form-control form-control-sm form-control-editable"></td>
+                    <td>mIU/mL</td>
+                    <td class="text-muted">Negativo: Menor a 5 / Zona Gris O Dudoso: 5 a 25 / Positivo: Mayor a 25 / Semanas 3 a 4: 5 a 130 / Semanas 4 a 5: 75 a 2.600 / Semanas 5 a 6: 850 a 20.800 / Semanas 6 a 7: 4.000 a 100.200 / Semanas 7 a 12: 11.500 a 289.000</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- Subtítulo 2: Prueba Cualitativa -->
+        <div class="section-title text-primary fw-bold border-bottom pb-1 mb-2 small" data-section-name="BETA-HCG CUALITATIVA">
+            PRUEBA DE EMBARAZO CUALITATIVA
+        </div>
+        <table class="table table-sm table-bordered align-middle mb-3 small">
+            <thead class="table-light text-muted">
+                <tr><th>EXAMEN</th><th>RESULTADO</th><th>UNIDAD</th><th>V. REFERENCIA</th></tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="fw-bold">PRUEBA DE EMBARAZO EN SANGRE BHCG</td>
+                    <td>
+                        <select class="form-select form-select-sm form-control-editable" id="resPruebaEmbarazo">
+                            <option value="" selected disabled>Seleccione...</option>
+                            <option value="Negativo">Negativo</option>
+                            <option value="Positivo">Positivo</option>
+                        </select>
+                    </td>
+                    <td class="text-muted">-</td>
+                    <td class="text-muted">CUALITATIVA</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- Subtítulo 3: Grupo Sanguíneo -->
+        <div class="section-title text-primary fw-bold border-bottom pb-1 mb-2 small" data-section-name="GRUPO SANGUÍNEO">
+            INMUNOHEMATOLOGÍA
+        </div>
+        <table class="table table-sm table-bordered align-middle mb-0 small">
+            <thead class="table-light text-muted">
+                <tr><th>EXAMEN</th><th>RESULTADO</th><th>UNIDAD</th><th>V. REFERENCIA</th></tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="fw-bold">GRUPO SANGUÍNEO Y FACTOR RH</td>
+                    <td>
+                        <select class="form-select form-select-sm form-control-editable" id="resGrupoSanguineo">
+                            <option value="" selected disabled>Seleccione Grupo...</option>
+                            <option value="A Positivo (A+)">A Positivo (A+)</option>
+                            <option value="A Negativo (A-)">A Negativo (A-)</option>
+                            <option value="B Positivo (B+)">B Positivo (B+)</option>
+                            <option value="B Negativo (B-)">B Negativo (B-)</option>
+                            <option value="AB Positivo (AB+)">AB Positivo (AB+)</option>
+                            <option value="AB Negativo (AB-)">AB Negativo (AB-)</option>
+                            <option value="O Positivo (O+)">O Positivo (O+)</option>
+                            <option value="O Negativo (O-)">O Negativo (O-)</option>
+                        </select>
+                    </td>
+                    <td class="text-muted">-</td>
+                    <td class="text-muted">Rh</td>
+                </tr>
+            </tbody>
+        </table>
+
+    </div>
+</div>
 
                 <!-- 11. Vitaminas -->
                 <div class="tab-pane fade" id="vitaminasContent" role="tabpanel">
