@@ -508,7 +508,8 @@ body {
             <td style="width: 50%;">
                 <div class="d-flex align-items-center">
                     <label class="fw-bold me-1 text-nowrap">Cédula:</label>
-                    <input type="text" id="cedulaPaciente" class="form-control form-control-editable" placeholder="Buscar por cédula" onblur="buscarPacientePorCedulaDB()">
+                    <!-- Cambiar el nombre de la función en el evento onblur -->                    
+                    <input type="text" id="cedulaPaciente" class="form-control form-control-editable" placeholder="Buscar por cédula" onblur="buscarPacientePorCedulaDB(this.value)">
                 </div>
             </td>
             <td style="width: 50%;">
