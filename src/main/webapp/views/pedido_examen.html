@@ -1174,11 +1174,11 @@ function guardarPacienteBD() {
     }
 
     const params = new URLSearchParams();
-    params.append('accion', 'guardar');
-    params.append('cedula', cedula);
-    params.append('nombre', nombreCompleto);
-    params.append('edad', edad);
-    params.append('telefono', telefono);
+    // Ajuste de claves para hacer coincidir con lo que recibe el Backend
+    params.append('patCedula', cedula);
+    params.append('patNombre', nombreCompleto);
+    params.append('patEdad', edad);
+    params.append('patTelefono', telefono);
     params.append('numHistoria', numHistoria);
 
     fetch('/ControladorPacientes', {
@@ -1190,16 +1190,16 @@ function guardarPacienteBD() {
     })
     .then(response => {
         if (response.ok) {
-            alert("Paciente guardado exitosamente.");
+            alert("¡Paciente guardado exitosamente!");
         } else {
-            alert("Error al intentar guardar el paciente.");
+            alert("Error 400/500: El servidor rechazó la solicitud.");
         }
     })
     .catch(error => {
         console.error("Error en la red:", error);
         alert("Ocurrió un error al conectar con el servidor.");
     });
-}          
+}        
         </script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     </body>
