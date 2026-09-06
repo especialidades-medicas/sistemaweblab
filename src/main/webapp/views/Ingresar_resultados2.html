@@ -135,7 +135,7 @@
             <!-- Contenido de Pestañas (Paneles de edición en pantalla) -->
             <div class="tab-content no-print" id="mainTabContent">
                 <!-- 1. Hematología -->
-                <div class="tab-pane fade show active"  id="hematologiaContent" role="tabpanel">
+                <div class="tab-pane fade show active" id="hematologiaContent" role="tabpanel">
                     <div class="border p-2 rounded bg-white">
                         
                         <!-- Sub-pestañas internas para Hematología -->
@@ -153,13 +153,11 @@
 
                         <div class="tab-content" id="hematologiaSubContent">
                             
-                            <div class="tab-content" id="hematologiaSubContent">
-    
-    <!-- 1.1 Biometría Automatizada (Activa por defecto) -->
-    <div class="tab-pane fade show active text-center" id="autoContent" role="tabpanel">
-        <div class="section-title text-primary fw-bold border-bottom pb-1 mb-2 small" data-section-name="BIOMETRÍA HEMÁTICA COMPLETA">BIOMETRÍA HEMÁTICA AUTOMATIZADA (DIRUI)</div>
-        <table class="table table-sm table-bordered align-middle mb-0 small text-center">
-            <thead class="table-light text-muted"><tr><th>EXAMEN</th><th>RESULTADO</th><th>UNIDAD</th><th>V. REFERENCIA</th></tr></thead>
+                            <!-- 1.1 Biometría Automatizada -->
+                            <div class="tab-pane fade show active" id="autoContent" role="tabpanel">
+                                <div class="section-title text-primary fw-bold border-bottom pb-1 mb-2 small" data-section-name="BIOMETRÍA HEMÁTICA COMPLETA">BIOMETRÍA HEMÁTICA COMPLETA (DIRUI)</div>
+                                <table class="table table-sm table-bordered align-middle mb-0 small">
+                                    <thead class="table-light text-muted"><tr><th>EXAMEN</th><th>RESULTADO</th><th>UNIDAD</th><th>V. REFERENCIA</th></tr></thead>
             <tbody>
                 <tr><td class="fw-bold text-start">Leucocitos (WBC)</td><td><input type="text" class="form-control form-control-sm form-control-editable"></td><td>10^9/L</td><td class="text-muted">4.50 – 11.00</td></tr>
                 <tr><td class="fw-bold text-start">Linfocitos # (LYM#)</td><td><input type="text" class="form-control form-control-sm form-control-editable"></td><td>10^9/L</td><td class="text-muted">0.80 – 4.00</td></tr>
