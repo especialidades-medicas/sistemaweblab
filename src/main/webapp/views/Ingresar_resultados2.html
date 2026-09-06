@@ -2636,7 +2636,6 @@
                         </select>
                     </td>
                 </tr>
-                
 
                 <!-- Fila Principal de Resultado -->
                 <tr class="fila-resultado" data-examen="ANTÍGENO SARS-CoV-2 (COVID-19)">
@@ -2650,19 +2649,11 @@
                         </select>
                     </td>
                     <td class="text-muted">Cualitativo</td>
-                    <td class="text-muted">NEGATIVO</td>
-                </tr>
-                <tr>                       
-                    <td colspan="4" class="fw-bold" style="font-size: 11px;">NOTA:</td>
-                    <td class="py-1" colspan="2"></td>
-                </tr>
-                <tr>                       
-                    <td colspan="4" class="fw-bold" style="font-size: 11px;">Esta prueba debe solicitarse para la detección del virus de SARS-CoV-2 en individuos que cumplen con criterios clínicos y/o epidemiológicos.</td>
-                    <td class="py-1" colspan="2"></td>
+                    <td class="text-muted">NEGATIVO /POSITIVO</td>
                 </tr>
 
-                <!-- Fila de Interpretación (ID corregido) -->
-                <tr id="filaInterpretacionCovid" class="table-light fila-extra-covid d-none">
+                <!-- Fila de Interpretación (Se muestra al seleccionar RESULTADO) -->
+                <tr id="filaInterpretacionCovid" class="table-light d-none">
                     <td colspan="4" class="p-2">
                         <div class="fw-bold text-secondary mb-1" style="font-size: 11px;">INTERPRETACIÓN DE RESULTADOS:</div>
                         <div class="text-dark" style="font-size: 10.5px; line-height: 1.4;">
@@ -2672,9 +2663,8 @@
                     </td>
                 </tr>
 
-                <!-- Fila de Nota Final -->                
-
-                <tr id="filaNotaCovid" class="table-light fila-extra-covid d-none">
+                <!-- Fila de Nota (Se muestra al seleccionar MUESTRA o TÉCNICA) -->
+                <tr id="filaNotaCovid" class="table-light d-none">
                     <td colspan="4" class="p-2">
                         <div class="fw-bold text-secondary mb-1" style="font-size: 11px;">NOTA:</div>
                         <div class="text-muted" style="font-size: 10.5px; line-height: 1.3;">
