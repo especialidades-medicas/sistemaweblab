@@ -2579,18 +2579,113 @@
 </div>
 
                 <!-- 16. Covid -->
-                <div class="tab-pane fade" id="covidContent" role="tabpanel">
-                    <div class="border p-2 rounded bg-white">
-                        <div class="section-title text-primary fw-bold border-bottom pb-1 mb-2 small" data-section-name="PRUEBAS COVID-19">PRUEBAS COVID-19</div>
-                        <table class="table table-sm table-bordered align-middle mb-0 small">
-                            <thead class="table-light text-muted"><tr><th>EXAMEN</th><th>RESULTADO</th><th>UNIDAD</th><th>V. REFERENCIA</th></tr></thead>
-                            <tbody>
-                                <tr><td class="fw-bold">ANTÍGENO COVID-19</td><td><input type="text" class="form-control form-control-sm form-control-editable"></td><td>-</td><td class="text-muted">Negativo</td></tr>
-                                <tr><td class="fw-bold">PCR COVID-19 (TR-qPCR)</td><td><input type="text" class="form-control form-control-sm form-control-editable"></td><td>-</td><td class="text-muted">No Detectado</td></tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+<div class="tab-pane fade" id="covidContent" role="tabpanel">
+    <div class="border p-2 rounded bg-white">
+        <!-- Título principal de la sección -->
+        <div class="section-title text-primary fw-bold border-bottom pb-1 mb-2 small" data-section-name="INMUNOLOGIA - CORONAVIRUS AG RAPID TEST">
+            INMUNOLOGIA / Coronavirus Ag Rapid Test - GCCOV-502a
+        </div>
+
+        <div class="fw-bold mb-2 small text-secondary">DETECCIÓN DE SARS CoV-2</div>
+
+        <!-- Encabezado de Fechas, Muestra y Técnica -->
+        <table class="table table-sm table-borderless align-middle mb-3 small" style="font-size: 11px;">
+            <tbody>
+                <tr>
+                    <td class="fw-bold py-1" style="width: 25%;">Fecha de Muestra</td>
+                    <td class="py-1" style="width: 25%;">
+                        <input type="date" class="form-control form-control-sm form-control-editable" value="2026-09-06">
+                    </td>
+                    <td class="py-1" style="width: 50%;">
+                        <input type="time" class="form-control form-control-sm form-control-editable" value="16:03">
+                    </td>
+                </tr>
+                <tr>
+                    <td class="fw-bold py-1">Fecha de Impresión</td>
+                    <td class="py-1">
+                        <input type="date" class="form-control form-control-sm form-control-editable" value="2026-09-06">
+                    </td>
+                    <td class="py-1">
+                        <input type="time" class="form-control form-control-sm form-control-editable" value="17:11">
+                    </td>
+                </tr>
+                <tr>
+                    <td class="fw-bold py-1">Muestra</td>
+                    <td class="py-1" colspan="2">
+                        <input type="text" class="form-control form-control-sm form-control-editable" value="HISOPADO NASOFARINGEO">
+                    </td>
+                </tr>
+                <tr>
+                    <td class="fw-bold py-1">Técnica</td>
+                    <td class="py-1" colspan="2">
+                        <input type="text" class="form-control form-control-sm form-control-editable" value="INMUNOCROMATOGRAFIA">
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- Tabla de Pruebas y Resultados (incluye Antígeno y PCR previos) -->
+        <table class="table table-sm table-bordered align-middle mb-3 small">
+            <thead class="table-light text-muted">
+                <tr>
+                    <th>PRUEBA</th>
+                    <th>RESULTADO</th>
+                    <th>UNIDAD</th>
+                    <th>V. REFERENCIA</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="fw-bold">SARS COV-2 (Ag Rapid Test)</td>
+                    <td>
+                        <select class="form-select form-select-sm form-control-editable fw-bold text-danger">
+                            <option value="">-</option>
+                            <option value="NEGATIVO">NEGATIVO</option>
+                            <option value="POSITIVO" selected>POSITIVO</option>
+                        </select>
+                    </td>
+                    <td>-</td>
+                    <td class="text-muted">NEGATIVO</td>
+                </tr>
+                <tr>
+                    <td class="fw-bold">ANTÍGENO COVID-19</td>
+                    <td>
+                        <input type="text" class="form-control form-control-sm form-control-editable">
+                    </td>
+                    <td>-</td>
+                    <td class="text-muted">Negativo</td>
+                </tr>
+                <tr>
+                    <td class="fw-bold">PCR COVID-19 (TR-qPCR)</td>
+                    <td>
+                        <input type="text" class="form-control form-control-sm form-control-editable">
+                    </td>
+                    <td>-</td>
+                    <td class="text-muted">No Detectado</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- Interpretación de Resultados -->
+        <div class="border-top pt-2 mb-3 small" style="font-size: 11px;">
+            <div class="fw-bold mb-1 text-dark">INTERPRETACION RESULTADOS</div>
+            <div class="d-flex mb-1">
+                <span class="fw-bold me-3" style="width: 90px;">NEGATIVO</span>
+                <span class="text-muted">Indica ausencia del Antigeno SARCOV-2</span>
+            </div>
+            <div class="d-flex">
+                <span class="fw-bold me-3" style="width: 90px;">POSITIVO</span>
+                <span class="text-muted">Indica la presencia del Antigeno SARCOV-2</span>
+            </div>
+        </div>
+
+        <!-- Nota Informativa -->
+        <div class="border-top pt-2 small text-muted" style="font-size: 10px;">
+            <span class="fw-bold text-dark">NOTA.</span><br>
+            Esta prueba debe solicitarse para la detección del virus de SARSCoV2 en individuos que cumplen con criterios clínicos y/o Epidemiologicos
+        </div>
+    </div>
+</div>
 
                 <!-- 17. Comentario -->
                 <div class="tab-pane fade" id="comentarioContent" role="tabpanel">
