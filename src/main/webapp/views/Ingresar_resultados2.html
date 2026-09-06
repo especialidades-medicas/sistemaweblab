@@ -17,10 +17,7 @@
     <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
     
     <style>
-       .bloque-interpretacion-covid {
-    background-color: #f8f9fa !important;
-    border: 1px solid #dee2e6 !important;
-}
+       
     </style>
 </head>
 <body>  
@@ -2639,6 +2636,7 @@
                         </select>
                     </td>
                 </tr>
+                
 
                 <!-- Fila Principal de Resultado -->
                 <tr class="fila-resultado" data-examen="ANTÍGENO SARS-CoV-2 (COVID-19)">
@@ -2654,6 +2652,14 @@
                     <td class="text-muted">Cualitativo</td>
                     <td class="text-muted">NEGATIVO</td>
                 </tr>
+                <tr>                       
+                    <td colspan="4" class="fw-bold" style="font-size: 11px;">NOTA:</td>
+                    <td class="py-1" colspan="2"></td>
+                </tr>
+                <tr>                       
+                    <td colspan="4" class="fw-bold" style="font-size: 11px;">Esta prueba debe solicitarse para la detección del virus de SARS-CoV-2 en individuos que cumplen con criterios clínicos y/o epidemiológicos.</td>
+                    <td class="py-1" colspan="2"></td>
+                </tr>
 
                 <!-- Fila de Interpretación (ID corregido) -->
                 <tr id="filaInterpretacionCovid" class="table-light fila-extra-covid d-none">
@@ -2666,7 +2672,8 @@
                     </td>
                 </tr>
 
-                <!-- Fila de Nota Final -->
+                <!-- Fila de Nota Final -->                
+
                 <tr id="filaNotaCovid" class="table-light fila-extra-covid d-none">
                     <td colspan="4" class="p-2">
                         <div class="fw-bold text-secondary mb-1" style="font-size: 11px;">NOTA:</div>
@@ -4448,74 +4455,7 @@ function limpiarSecrecionVaginal() {
     });
 });    
 
-    document.addEventListener("DOMContentLoaded", function () {
-    const selectCovid = document.getElementById("resCovidAntigeno");
-    const filasExtra = document.querySelectorAll(".fila-covid-extra");
-    const tabCovid = document.getElementById("covidContent");
-
-    // Activa u oculta las filas de notas/interpretación dentro de la tabla
-    function actualizarVisibilidadCovid() {
-        if (!selectCovid) return;
-
-        const valor = selectCovid.value ? selectCovid.value.trim() : "";
-        const tieneResultado = valor !== "" && valor !== "Seleccione...";
-
-        filasExtra.forEach(fila => {
-            if (tieneResultado) {
-                fila.classList.remove("d-none");
-            } else {
-                fila.classList.add("d-none");
-            }
-        });
-    }
-
-    if (selectCovid) {
-        selectCovid.addEventListener("change", actualizarVisibilidadCovid);
-        selectCovid.addEventListener("input", actualizarVisibilidadCovid);
-        actualizarVisibilidadCovid(); // Evalúa al cargar
-    }
-
-    // Control de impresión: Incluye todo si hay resultado, oculta la sección si está vacía
-    window.addEventListener("beforeprint", function () {
-        if (!selectCovid || !tabCovid) return;
-        const valor = selectCovid.value ? selectCovid.value.trim() : "";
-        
-        if (!valor || valor === "Seleccione...") {
-            tabCovid.classList.add("d-none-print");
-        } else {
-            tabCovid.classList.remove("d-none-print");
-        }
-    });
-
-    window.addEventListener("afterprint", function () {
-        if (tabCovid) {
-            tabCovid.classList.remove("d-none-print");
-        }
-    });
-});
-
-// Función exportable por si usas un recolector global de JSON/Resultados registrados
-function obtenerResultadosCovid() {
-    const selectCovid = document.getElementById("resCovidAntigeno");
-    const valor = selectCovid ? selectCovid.value : "";
-
-    if (!valor || valor === "Seleccione...") return null;
-
-    return {
-        seccion: "DETECCIÓN DE ANTÍGENO SARS-CoV-2",
-        examen: "ANTÍGENO SARS-CoV-2 (COVID-19)",
-        resultado: valor,
-        unidad: "Cualitativo",
-        referencia: "NEGATIVO",
-        muestra: document.getElementById("covidTipoMuestra")?.value || "",
-        tecnica: document.getElementById("covidTecnica")?.value || "",
-        interpretacion: [
-            "NEGATIVO: Indica ausencia del Antígeno SARS-CoV-2.",
-            "POSITIVO: Indica la presencia del Antígeno SARS-CoV-2."
-        ],
-        nota: "Esta prueba debe solicitarse para la detección del virus de SARS-CoV-2 en individuos que cumplen con criterios clínicos y/o epidemiológicos."
-    };
-}
+    
         
         
     </script>
