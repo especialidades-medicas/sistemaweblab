@@ -17,7 +17,10 @@
     <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
     
     <style>
-       
+       .bloque-interpretacion-covid {
+    background-color: #f8f9fa !important;
+    border: 1px solid #dee2e6 !important;
+}
     </style>
 </head>
 <body>  
@@ -2581,82 +2584,101 @@
                 <!-- 16. Covid -->
 <div class="tab-pane fade" id="covidContent" role="tabpanel">
     <div class="border p-3 rounded bg-white shadow-sm">
-        <div class="section-title text-primary fw-bold border-bottom pb-1 mb-2 small" data-section-name="DETECCIÓN DE ANTÍGENO SARS-CoV-2">
-            DETECCIÓN DE ANTÍGENO SARS-CoV-2
+        
+        <!-- Encabezado con función de Contraer / Expandir -->
+        <div class="section-title text-primary fw-bold border-bottom pb-1 mb-2 small d-flex justify-content-between align-items-center style-cursor-pointer" 
+             data-section-name="DETECCIÓN DE ANTÍGENO SARS-CoV-2" 
+             data-bs-toggle="collapse" 
+             data-bs-target="#bodyCovid" 
+             aria-expanded="true" 
+             aria-controls="bodyCovid"
+             style="cursor: pointer;">
+            <span>DETECCIÓN DE ANTÍGENO SARS-CoV-2</span>
+            <i class="fas font-chevron-down ms-2"></i>
         </div>
 
-        <!-- Tabla de Metadatos de la Muestra -->
-        <table class="table table-sm table-borderless align-middle mb-3 small bg-white">
-            <tbody>
-                <tr>
-                    <td class="fw-bold py-1" style="width: 25%;">Fecha de Muestra:</td>
-                    <td class="py-1" style="width: 37.5%;">
-                        <input type="date" class="form-control form-control-sm form-control-editable" value="2026-09-06">
-                    </td>
-                    <td class="py-1" style="width: 37.5%;">
-                        <input type="time" class="form-control form-control-sm form-control-editable" value="16:03">
-                    </td>
-                </tr>
-                <tr>
-                    <td class="fw-bold py-1">Fecha de Impresión:</td>
-                    <td class="py-1">
-                        <input type="date" class="form-control form-control-sm form-control-editable" value="2026-09-06">
-                    </td>
-                    <td class="py-1">
-                        <input type="time" class="form-control form-control-sm form-control-editable" value="17:11">
-                    </td>
-                </tr>
-                <tr>
-                    <td class="fw-bold py-1">Muestra:</td>
-                    <td class="py-1" colspan="2">
-                        <input type="text" class="form-control form-control-sm form-control-editable" value="HISOPADO NASOFARINGEO">
-                    </td>
-                </tr>
-                <tr>
-                    <td class="fw-bold py-1">Técnica:</td>
-                    <td class="py-1" colspan="2">
-                        <input type="text" class="form-control form-control-sm form-control-editable" value="INMUNOCROMATOGRAFIA">
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+        <!-- Cuerpo colapsable -->
+        <div id="bodyCovid" class="collapse show">
+            
+            <!-- Tabla de Metadatos de la Muestra -->
+            <table class="table table-sm table-borderless align-middle mb-3 small bg-white">
+                <tbody>
+                    <tr>
+                        <td class="fw-bold py-1" style="width: 25%;">Fecha de Muestra:</td>
+                        <td class="py-1" style="width: 37.5%;">
+                            <input type="date" class="form-control form-control-sm form-control-editable" value="2026-09-06">
+                        </td>
+                        <td class="py-1" style="width: 37.5%;">
+                            <input type="time" class="form-control form-control-sm form-control-editable" value="16:03">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="fw-bold py-1">Fecha de Impresión:</td>
+                        <td class="py-1">
+                            <input type="date" class="form-control form-control-sm form-control-editable" value="2026-09-06">
+                        </td>
+                        <td class="py-1">
+                            <input type="time" class="form-control form-control-sm form-control-editable" value="17:11">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="fw-bold py-1">Muestra:</td>
+                        <td class="py-1" colspan="2">
+                            <input type="text" class="form-control form-control-sm form-control-editable" value="HISOPADO NASOFARINGEO">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="fw-bold py-1">Técnica:</td>
+                        <td class="py-1" colspan="2">
+                            <input type="text" class="form-control form-control-sm form-control-editable" value="INMUNOCROMATOGRAFIA">
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
 
-        <!-- Tabla de Resultado del Examen -->
-        <table class="table table-sm table-bordered align-middle mb-2 small bg-white">
-            <thead class="table-light text-muted">
-                <tr>
-                    <th>EXAMEN</th>
-                    <th style="width: 25%;">RESULTADO</th>
-                    <th style="width: 15%;">UNIDAD</th>
-                    <th>V. REFERENCIA</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td class="fw-bold">ANTÍGENO SARS-CoV-2 (COVID-19)</td>
-                    <td>
-                        <select class="form-select form-select-sm form-control-editable" id="resCovidAntigeno">
-                            <option value="" disabled>Seleccione...</option>
-                            <option value="NEGATIVO" selected>NEGATIVO</option>
-                            <option value="POSITIVO">POSITIVO</option>
-                        </select>
-                    </td>
-                    <td class="text-muted">Cualitativo</td>
-                    <td class="text-muted">NEGATIVO</td>
-                </tr>
-            </tbody>
-        </table>
+            <!-- Tabla de Resultado del Examen -->
+            <table class="table table-sm table-bordered align-middle mb-2 small bg-white">
+                <thead class="table-light text-muted">
+                    <tr>
+                        <th>EXAMEN</th>
+                        <th style="width: 25%;">RESULTADO</th>
+                        <th style="width: 15%;">UNIDAD</th>
+                        <th>V. REFERENCIA</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="fw-bold">ANTÍGENO SARS-CoV-2 (COVID-19)</td>
+                        <td>
+                            <select class="form-select form-select-sm form-control-editable" id="resCovidAntigeno">
+                                <option value="" selected>Seleccione...</option>
+                                <option value="NEGATIVO">NEGATIVO</option>
+                                <option value="POSITIVO">POSITIVO</option>
+                            </select>
+                        </td>
+                        <td class="text-muted">Cualitativo</td>
+                        <td class="text-muted">NEGATIVO</td>
+                    </tr>
+                </tbody>
+            </table>
 
-        <!-- Interpretación y Nota explicativa -->
-        <div class="border rounded p-2 bg-light mt-2 style-interpretacion" style="font-size: 10px;">
-            <div class="fw-bold text-dark border-bottom pb-1 mb-1">INTERPRETACIÓN DE RESULTADOS:</div>
-            <div><strong>NEGATIVO:</strong> Indica ausencia del Antígeno SARS-CoV-2.</div>
-            <div><strong>POSITIVO:</strong> Indica la presencia del Antígeno SARS-CoV-2.</div>
-            <div class="mt-1 text-muted"><strong>NOTA:</strong> Esta prueba debe solicitarse para la detección del virus de SARS-CoV-2 en individuos que cumplen con criterios clínicos y/o epidemiológicos.</div>
+            <!-- Interpretación y Nota explicativa (Oculta por defecto) -->
+            <div id="bloqueInterpretacionCovid" class="bloque-interpretacion-covid mt-3 p-2 border rounded d-none">
+                <div class="fw-bold text-dark border-bottom pb-1 mb-1" style="font-size: 11px;">
+                    INTERPRETACIÓN DE RESULTADOS:
+                </div>
+                <div class="texto-interpretacion" style="font-size: 10px; line-height: 1.4;">
+                    <div><strong>NEGATIVO:</strong> Indica ausencia del Antígeno SARS-CoV-2.</div>
+                    <div><strong>POSITIVO:</strong> Indica la presencia del Antígeno SARS-CoV-2.</div>
+                    <div class="mt-1 text-muted">
+                        <strong>NOTA:</strong> Esta prueba debe solicitarse para la detección del virus de SARS-CoV-2 en individuos que cumplen con criterios clínicos y/o epidemiológicos.
+                    </div>
+                </div>
+            </div>
+
         </div>
     </div>
 </div>
-
                 <!-- 17. Comentario -->
                 <div class="tab-pane fade" id="comentarioContent" role="tabpanel">
                     <div class="border p-2 rounded bg-white">
@@ -4425,29 +4447,41 @@ function limpiarSecrecionVaginal() {
     });
 });    
 
-     function prepararVistaImpresion() {
-    document.querySelectorAll('.tab-pane').forEach(tab => {
-        let tieneResultado = false;
+    document.addEventListener("DOMContentLoaded", function () {
+    const selectCovid = document.getElementById("resCovidAntigeno");
+    const bloqueInterpretacion = document.getElementById("bloqueInterpretacionCovid");
 
-        // Verifica si los select o inputs de resultados principales tienen un valor seleccionado válido
-        tab.querySelectorAll('select.form-control-editable, input[type="text"].form-control-editable').forEach(campo => {
-            // Ignoramos campos de metadatos fijos si solo queremos validar la presencia del resultado
-            if (campo.id.startsWith('res') && campo.value && campo.value.trim() !== "") {
-                tieneResultado = true;
-            }
-        });
+    function gestionarVisibilidad() {
+        const valor = selectCovid.value;
+        const tieneResultado = valor && valor.trim() !== "" && valor !== "Seleccione...";
 
-        if (!tieneResultado) {
-            tab.classList.add('d-none');
-            tab.classList.remove('d-print-block');
+        // Mostrar u ocultar la interpretación en pantalla
+        if (tieneResultado) {
+            bloqueInterpretacion.classList.remove("d-none");
         } else {
-            tab.classList.remove('d-none');
-            tab.classList.add('d-print-block');
+            bloqueInterpretacion.classList.add("d-none");
         }
-    });
-}
+    }
 
-window.onbeforeprint = prepararVistaImpresion;   
+    if (selectCovid) {
+        selectCovid.addEventListener("change", gestionarVisibilidad);
+        gestionarVisibilidad(); // Evalúa el estado inicial
+    }
+});
+
+// Filtro global para impresión
+window.onbeforeprint = function () {
+    const selectCovid = document.getElementById("resCovidAntigeno");
+    const tabCovid = document.getElementById("covidContent");
+    const valor = selectCovid ? selectCovid.value : "";
+    
+    // Si no se ha elegido resultado, oculta la sección completa al imprimir
+    if (!valor || valor.trim() === "" || valor === "Seleccione...") {
+        tabCovid.classList.add("d-none");
+    } else {
+        tabCovid.classList.remove("d-none");
+    }
+};
         
     </script>
 </body>
