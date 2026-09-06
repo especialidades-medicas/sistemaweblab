@@ -2580,13 +2580,12 @@
         </div>
     </div>
 </div>
-
-                <!-- 16. Covid -->
+<!-- 16. COVID -->
 <div class="tab-pane fade" id="covidContent" role="tabpanel">
     <div class="border p-3 rounded bg-white shadow-sm">
         
-        <!-- Encabezado con función de Contraer / Expandir -->
-        <div class="section-title text-primary fw-bold border-bottom pb-1 mb-2 small d-flex justify-content-between align-items-center style-cursor-pointer" 
+        <!-- Encabezado Colapsable -->
+        <div class="section-title text-primary fw-bold border-bottom pb-1 mb-2 small d-flex justify-content-between align-items-center" 
              data-section-name="DETECCIÓN DE ANTÍGENO SARS-CoV-2" 
              data-bs-toggle="collapse" 
              data-bs-target="#bodyCovid" 
@@ -2594,13 +2593,13 @@
              aria-controls="bodyCovid"
              style="cursor: pointer;">
             <span>DETECCIÓN DE ANTÍGENO SARS-CoV-2</span>
-            <i class="fas font-chevron-down ms-2"></i>
+            <i class="fas fa-chevron-down ms-2"></i>
         </div>
 
-        <!-- Cuerpo colapsable -->
+        <!-- Cuerpo Colapsable -->
         <div id="bodyCovid" class="collapse show">
             
-            <!-- Tabla de Metadatos de la Muestra -->
+            <!-- Metadatos de la Muestra -->
             <table class="table table-sm table-borderless align-middle mb-3 small bg-white">
                 <tbody>
                     <tr>
@@ -2636,7 +2635,7 @@
                 </tbody>
             </table>
 
-            <!-- Tabla de Resultado del Examen -->
+            <!-- Tabla de Resultados -->
             <table class="table table-sm table-bordered align-middle mb-2 small bg-white">
                 <thead class="table-light text-muted">
                     <tr>
@@ -2650,8 +2649,8 @@
                     <tr>
                         <td class="fw-bold">ANTÍGENO SARS-CoV-2 (COVID-19)</td>
                         <td>
-                            <select class="form-select form-select-sm form-control-editable" id="resCovidAntigeno">
-                                <option value="" selected>Seleccione...</option>
+                            <select class="form-select form-select-sm form-control-editable" id="resCovidAntigeno" onchange="toggleInterpretacionCovid(this)">
+                                <option value="" selected disabled>Seleccione...</option>
                                 <option value="NEGATIVO">NEGATIVO</option>
                                 <option value="POSITIVO">POSITIVO</option>
                             </select>
@@ -2659,26 +2658,29 @@
                         <td class="text-muted">Cualitativo</td>
                         <td class="text-muted">NEGATIVO</td>
                     </tr>
+
+                    <!-- Bloque de Interpretación (Se muestra al seleccionar una opción) -->
+                    <tr id="filaInterpretacionCovid" class="d-none">
+                        <td colspan="4" class="p-2 bg-light text-start">
+                            <div class="fw-bold text-dark border-bottom pb-1 mb-1" style="font-size: 11px;">
+                                INTERPRETACIÓN DE RESULTADOS:
+                            </div>
+                            <div style="font-size: 10px; line-height: 1.4;" class="text-dark">
+                                <div><strong>NEGATIVO:</strong> Indica ausencia del Antígeno SARS-CoV-2.</div>
+                                <div><strong>POSITIVO:</strong> Indica la presencia del Antígeno SARS-CoV-2.</div>
+                                <div class="mt-1 text-muted">
+                                    <strong>NOTA:</strong> Esta prueba debe solicitarse para la detección del virus de SARS-CoV-2 en individuos que cumplen con criterios clínicos y/o epidemiológicos.
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
                 </tbody>
             </table>
-
-            <!-- Interpretación y Nota explicativa (Oculta por defecto) -->
-            <div id="bloqueInterpretacionCovid" class="bloque-interpretacion-covid mt-3 p-2 border rounded d-none">
-                <div class="fw-bold text-dark border-bottom pb-1 mb-1" style="font-size: 11px;">
-                    INTERPRETACIÓN DE RESULTADOS:
-                </div>
-                <div class="texto-interpretacion" style="font-size: 10px; line-height: 1.4;">
-                    <div><strong>NEGATIVO:</strong> Indica ausencia del Antígeno SARS-CoV-2.</div>
-                    <div><strong>POSITIVO:</strong> Indica la presencia del Antígeno SARS-CoV-2.</div>
-                    <div class="mt-1 text-muted">
-                        <strong>NOTA:</strong> Esta prueba debe solicitarse para la detección del virus de SARS-CoV-2 en individuos que cumplen con criterios clínicos y/o epidemiológicos.
-                    </div>
-                </div>
-            </div>
 
         </div>
     </div>
 </div>
+                
                 <!-- 17. Comentario -->
                 <div class="tab-pane fade" id="comentarioContent" role="tabpanel">
                     <div class="border p-2 rounded bg-white">
@@ -4449,13 +4451,16 @@ function limpiarSecrecionVaginal() {
 
     document.addEventListener("DOMContentLoaded", function () {
     const selectCovid = document.getElementById("resCovidAntigeno");
-    const bloqueInterpretacion = document.getElementById("bloqueInterpretacionCovid");
+    // ID corregido para coincidir con el HTML (filaInterpretacionCovid)
+    const bloqueInterpretacion = document.getElementById("filaInterpretacionCovid");
 
     function gestionarVisibilidad() {
+        if (!selectCovid || !bloqueInterpretacion) return;
+
         const valor = selectCovid.value;
         const tieneResultado = valor && valor.trim() !== "" && valor !== "Seleccione...";
 
-        // Mostrar u ocultar la interpretación en pantalla
+        // Muestra u oculta la fila de interpretación
         if (tieneResultado) {
             bloqueInterpretacion.classList.remove("d-none");
         } else {
@@ -4465,23 +4470,40 @@ function limpiarSecrecionVaginal() {
 
     if (selectCovid) {
         selectCovid.addEventListener("change", gestionarVisibilidad);
-        gestionarVisibilidad(); // Evalúa el estado inicial
+        selectCovid.addEventListener("input", gestionarVisibilidad);
+        gestionarVisibilidad(); // Evalúa el estado al cargar la página
     }
 });
 
 // Filtro global para impresión
-window.onbeforeprint = function () {
+// Oculta la sección COVID en la impresión si no tiene resultado seleccionado
+window.addEventListener('beforeprint', function () {
     const selectCovid = document.getElementById("resCovidAntigeno");
     const tabCovid = document.getElementById("covidContent");
-    const valor = selectCovid ? selectCovid.value : "";
-    
-    // Si no se ha elegido resultado, oculta la sección completa al imprimir
-    if (!valor || valor.trim() === "" || valor === "Seleccione...") {
-        tabCovid.classList.add("d-none");
-    } else {
-        tabCovid.classList.remove("d-none");
+    if (!selectCovid || !tabCovid) return;
+
+    const valor = selectCovid.value.trim();
+    if (!valor || valor === "Seleccione...") {
+        tabCovid.classList.add("d-none-print"); // Clase o regla para ocultar solo en impresión
     }
-};
+});
+
+// Restaura la visibilidad en pantalla después de imprimir o cancelar
+window.addEventListener('afterprint', function () {
+    const tabCovid = document.getElementById("covidContent");
+    if (tabCovid) {
+        tabCovid.classList.remove("d-none-print");
+    }
+});
+function toggleInterpretacionCovid(selectElement) {
+    const filaInterpretacion = document.getElementById('filaInterpretacionCovid');
+    if (selectElement.value !== "") {
+        filaInterpretacion.classList.remove('d-none');
+    } else {
+        filaInterpretacion.classList.add('d-none');
+    }
+}
+        
         
     </script>
 </body>
