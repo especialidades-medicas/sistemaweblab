@@ -564,7 +564,7 @@ body {
                         <!-- COLUMNA 1 -->
                         <td style="width: 33.3%;">
                             <div class="section-title">HEMATOLOGÍA</div>
-                            <div class="form-check"><input class="form-check-input examen-chk" type="checkbox" data-id="HEM01" data-nombre="Biometría Hemática" data-precio="6.00"><label class="form-check-label">Biometría Hemática /Hematíes / Leucocitos / Plaquetas / Hematocrito / Hemoglobina</label></div>
+                            <div class="form-check"><input class="form-check-input examen-chk" type="checkbox" data-id="HEM01" data-nombre="Biometría Hemática" data-precio="6.00"><label class="form-check-label">Biometría Hemática /GB / GR / Plaquetas / Hematocrito / Hemoglobina</label></div>
                             <div class="form-check"><input class="form-check-input examen-chk" type="checkbox" data-id="HEM02" data-nombre="Eritrosedimentación / Hematozoario" data-precio="3.00"><label class="form-check-label">Eritrosedimentación / Hematozoario</label></div>
                             <div class="form-check"><input class="form-check-input examen-chk" type="checkbox" data-id="HEM03" data-nombre="Coombs Directo" data-precio="12.00"><label class="form-check-label">Coombs Directo</label></div>
                             <div class="form-check"><input class="form-check-input examen-chk" type="checkbox" data-id="HEM04" data-nombre="Coombs Indirecto" data-precio="15.00"><label class="form-check-label">Coombs Indirecto</label></div>
@@ -606,7 +606,7 @@ body {
                             <div class="form-check"><input class="form-check-input examen-chk" type="checkbox" data-id="SER02" data-nombre="PCR" data-precio="5.00"><label class="form-check-label">PCR</label></div>
                             <div class="form-check"><input class="form-check-input examen-chk" type="checkbox" data-id="SER03" data-nombre="LÁTEX FR" data-precio="5.00"><label class="form-check-label">LÁTEX FR</label></div>
                             <div class="form-check"><input class="form-check-input examen-chk" type="checkbox" data-id="SER04" data-nombre="VDRL" data-precio="5.00"><label class="form-check-label">VDRL</label></div>
-                            <div class="form-check"><input class="form-check-input examen-chk" type="checkbox" data-id="SER05" data-nombre="Aglutinaciones febriles" data-precio="9.00"><label class="form-check-label">Aglutinaciones febriles</label></div>
+                            <div class="form-check"><input class="form-check-input examen-chk" type="checkbox" data-id="SER05" data-nombre="Aglutinaciones febriles" data-precio="8.00"><label class="form-check-label">Aglutinaciones febriles</label></div>
                             <div class="form-check"><input class="form-check-input examen-chk" type="checkbox" data-id="SER06" data-nombre="Hierro Serico" data-precio="5.00"><label class="form-check-label">Hierro Serico</label></div>
                             <div class="form-check"><input class="form-check-input examen-chk" type="checkbox" data-id="SER07" data-nombre="Procalcitonina" data-precio="30.00"><label class="form-check-label">Procalcitonina</label></div>
                             <div class="form-check"><input class="form-check-input examen-chk" type="checkbox" data-id="SER08" data-nombre="Insulina" data-precio="15.00"><label class="form-check-label">Insulina</label></div>
@@ -700,7 +700,7 @@ body {
 
                             
                             <div class="section-title">PRUEBAS ESPECIALES / MARCADORES</div>
-                            <div class="form-check"><input class="form-check-input examen-chk" type="checkbox" data-id="MAR01" data-nombre="PSA Total-Libre" data-precio="22.00"><label class="form-check-label">PSA Total-Libre</label></div>
+                            <div class="form-check"><input class="form-check-input examen-chk" type="checkbox" data-id="MAR01" data-nombre="PSA Total-Libre Promo" data-precio="23.00"><label class="form-check-label">PSA Total-Libre</label></div>
                             <div class="form-check"><input class="form-check-input examen-chk" type="checkbox" data-id="MAR02" data-nombre="PSA Libre" data-precio="15.00"><label class="form-check-label">PSA Libre</label></div>
                             <div class="form-check"><input class="form-check-input examen-chk" type="checkbox" data-id="MAR03" data-nombre="PSA Total" data-precio="15.00"><label class="form-check-label">PSA Total</label></div>
                             <div class="form-check"><input class="form-check-input examen-chk" type="checkbox" data-id="MAR04" data-nombre="CEA" data-precio="16.00"><label class="form-check-label">CEA</label></div>
@@ -1032,6 +1032,20 @@ body {
             
             //barra menu inferior
             document.addEventListener("DOMContentLoaded", () => {
+                / 1. Selección/deselección de exámenes al hacer clic en el recuadro
+    document.querySelectorAll('.form-check').forEach(container => {
+        container.style.cursor = 'pointer';
+        container.addEventListener('click', (e) => {
+            if (e.target.tagName === 'INPUT') return;
+
+            const checkbox = container.querySelector('.examen-chk');
+            if (checkbox) {
+                checkbox.checked = !checkbox.checked;
+                checkbox.dispatchEvent(new Event('change'));
+            }
+        });
+    });
+                
     const themeBtn = document.getElementById("theme-btn");
     const nav = document.getElementById("nav");
     const glare = document.getElementById("glare");
