@@ -1140,69 +1140,77 @@ function enviarWhatsAppResultado() {
 
   // Función para buscar paciente en el servidor Servlet por número de Cédula al perder el foco (blur)
 
-// Variable global para conservar la fecha de nacimiento recuperada de la BD
-let fechaNacimientoRegistradaBD = "";
+// ==========================================
+// 1. EVENTO PARA BÚSQUEDA AUTOMÁTICA AL DIGITAR CÉDULA
+// ==========================================
+document.addEventListener("DOMContentLoaded", () => {
+    const inputCedula = document.getElementById('cedulaPaciente');
+    if (inputCedula) {
+        // Busca automáticamente cuando escribe 10 dígitos o presiona Enter
+        inputCedula.addEventListener('keyup', function(e) {
+            const cedula = this.value.trim();
+            if (cedula.length === 10 || e.key === 'Enter') {
+                buscarPacientePorCedulaDB(cedula);
+            }
+        });
+    }
+});
 
-// 1. Buscar paciente por cédula en la BD y autocompletar la orden
-async function buscarPacientePorCedulaDB() {
-    const cedulaInput = document.getElementById('cedulaPaciente');
-    if (!cedulaInput) return;
-    
-    const cedula = cedulaInput.value.trim();
+// ==========================================
+// 2. BUSCAR PACIENTE EN LA BD
+// ==========================================
+function buscarPacientePorCedulaDB(cedula) {
     if (!cedula) return;
 
-    try {
-        const response = await fetch(`/ControladorPacientes?accion=buscar&cedula=${encodeURIComponent(cedula)}`);
-        if (!response.ok) return;
-
-        const data = await response.json();
-        
+    // Usamos ../ para salir de /views/ y llegar al Servlet en la raíz
+    fetch(`../ControladorPacientes?accion=buscar&cedula=${encodeURIComponent(cedula)}`, {
+        method: 'GET',
+        headers: {
+            'Accept': 'application/json'
+        }
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Paciente no encontrado');
+        }
+        return response.json();
+    })
+    .then(data => {
         if (data && (data.cedula || data.nombres)) {
-            // Asignar campos existentes en la orden de examen
+            // Asignación de datos a tus inputs HTML reales
             const inputNombre = document.getElementById('nombrePaciente');
             const inputTelefono = document.getElementById('telefonoPaciente');
-            
+            const inputEdad = document.getElementById('edadPaciente');
+
             if (inputNombre) inputNombre.value = data.nombres || '';
             if (inputTelefono) inputTelefono.value = data.telefono || '';
 
-            // Guardar fecha de nacimiento recibida
-            const fechaNac = data.fecha_nacimiento || data.fechaNacimiento || '';
-            fechaNacimientoRegistradaBD = fechaNac;
-
-            // Calcular edad exacta si existe fecha de nacimiento
+            // Lógica de cálculo o asignación de edad
+            const fechaNac = data.fecha_nacimiento || data.fechaNacimiento;
             if (fechaNac) {
-                const edadExacta = calcularEdadPrecisa(fechaNac);
-                const inputEdad = document.getElementById('edadPaciente');
-                if (inputEdad && edadExacta !== null) {
-                    inputEdad.value = `${edadExacta} años`;
-                }
+                const edadCalculada = calcularEdadPrecisa(fechaNac);
+                if (inputEdad) inputEdad.value = `${edadCalculada} años`;
+            } else if (data.edad && inputEdad) {
+                inputEdad.value = `${data.edad} años`;
             }
-
-            // Asignar campos opcionales del DOM en caso de existir
-            const inputCorreo = document.getElementById('correoPaciente');
-            if (inputCorreo) inputCorreo.value = data.correo || '';
-
-            const inputDireccion = document.getElementById('direccionPaciente');
-            if (inputDireccion) inputDireccion.value = data.direccion || '';
-        } else {
-            // Paciente nuevo
-            fechaNacimientoRegistradaBD = "";
         }
-    } catch (error) {
-        console.error("Error al consultar el paciente en la BD:", error);
-        fechaNacimientoRegistradaBD = "";
-    }
+    })
+    .catch(error => {
+        console.log("Información:", error.message);
+    });
 }
 
-// 2. Corrección para guardar (evita el Error 400)
+// ==========================================
+// 3. GUARDAR O ACTUALIZAR PACIENTE EN LA BD
+// ==========================================
 async function guardarPacienteBD() {
-    // 1. Obtener las referencias usando los IDs reales de tu HTML
+    // Referencias a tus inputs HTML reales
     const inputCedula = document.getElementById('cedulaPaciente');
     const inputPaciente = document.getElementById('nombrePaciente');
     const inputEdad = document.getElementById('edadPaciente');
     const inputTelefono = document.getElementById('telefonoPaciente');
 
-    // 2. Extraer y limpiar los valores evitando errores de nulos
+    // Obtener valores limpios
     const cedula = inputCedula ? inputCedula.value.trim() : '';
     const paciente = inputPaciente ? inputPaciente.value.trim() : '';
     const edadTexto = inputEdad ? inputEdad.value.replace(/\D/g, '').trim() : '';
@@ -1210,6 +1218,7 @@ async function guardarPacienteBD() {
 
     if (!cedula) {
         alert("Por favor, ingrese el número de cédula del paciente.");
+        if (inputCedula) inputCedula.focus();
         return;
     }
 
@@ -1217,76 +1226,83 @@ async function guardarPacienteBD() {
     let fechaNacimientoFinal = "";
 
     try {
-        // Consultar si el paciente ya existe para conservar su fecha de nacimiento        
-        const checkResponse = await fetch(`/ControladorPacientes?accion=buscar&cedula=${encodeURIComponent(cedula)}`);
+        // 1. Verificar si el paciente existe previamente para NO perder su fecha de nacimiento real
+        const checkResponse = await fetch(`../ControladorPacientes?accion=buscar&cedula=${encodeURIComponent(cedula)}`);
+        
         if (checkResponse.ok) {
             const datosExistentes = await checkResponse.json();
-            if (datosExistentes) {
-                fechaNacimientoFinal = datosExistentes.fecha_nacimiento || datosExistentes.fechaNacimiento || "";
+            if (datosExistentes && (datosExistentes.fecha_nacimiento || datosExistentes.fechaNacimiento)) {
+                fechaNacimientoFinal = datosExistentes.fecha_nacimiento || datosExistentes.fechaNacimiento;
             }
         }
+    } catch (e) {
+        console.log("Paciente nuevo o no registrado previamente.");
+    }
 
-        // Si es paciente nuevo y hay edad, estimar año de nacimiento
-        if (!fechaNacimientoFinal && edadTexto) {
-            const edadNum = parseInt(edadTexto, 10);
-            if (!isNaN(edadNum)) {
-                const anioActual = new Date().getFullYear();
-                fechaNacimientoFinal = `${anioActual - edadNum}-01-01`;
-            }
+    // 2. Si es paciente nuevo y no tiene fecha, estimar 'AÑO-01-01' según la edad digitada
+    if (!fechaNacimientoFinal && edadTexto) {
+        const edadNum = parseInt(edadTexto, 10);
+        if (!isNaN(edadNum)) {
+            const anioActual = new Date().getFullYear();
+            const anioNacimiento = anioActual - edadNum;
+            fechaNacimientoFinal = `${anioNacimiento}-01-01`;
         }
+    }
 
-        // Preparar parámetros para el Servlet
-        const params = new URLSearchParams();
-        params.append('accion', 'guardar');
-        params.append('cedula', cedula);
-        params.append('nombres', nombreEnvio);
-        params.append('nombre', nombreEnvio);
-        params.append('telefono', telefono);
-        params.append('edad', edadTexto);
-        params.append('fecha_nacimiento', fechaNacimientoFinal);
-        params.append('fechaNacimiento', fechaNacimientoFinal);
+    // 3. Construir parámetros para el Backend
+    const params = new URLSearchParams();
+    params.append('accion', 'guardar');
+    
+    // Parámetros estándar
+    params.append('cedula', cedula);
+    params.append('nombres', nombreEnvio);
+    params.append('telefono', telefono);
+    params.append('edad', edadTexto);
+    params.append('fecha_nacimiento', fechaNacimientoFinal);
 
-        // Enviar petición POST
-        const response = await fetch('/ControladorPacientes', {
-            
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
-            },
-            body: params.toString()
-        });
+    // Parámetros de compatibilidad alternativos
+    params.append('patCedula', cedula);
+    params.append('patNombre', nombreEnvio);
+    params.append('patTelefono', telefono);
+    params.append('patNacimiento', fechaNacimientoFinal);
 
+    // 4. Petición POST al Servlet
+    fetch('../ControladorPacientes', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
+        },
+        body: params.toString()
+    })
+    .then(async response => {
         if (response.ok) {
-            alert("¡Paciente guardado exitosamente!");
+            alert("¡Paciente guardado o actualizado exitosamente!");
         } else {
             const errorText = await response.text();
+            console.error("Detalle error servidor:", errorText);
             alert(`Error ${response.status}: ${errorText}`);
         }
-    } catch (error) {
+    })
+    .catch(error => {
         console.error("Error en la petición:", error);
         alert("Error de conexión al guardar el paciente.");
-    }
+    });
 }
 
-// Función auxiliar para calcular la edad exacta
+// Auxiliar para calcular la edad exacta en años
 function calcularEdadPrecisa(fechaNacStr) {
     const partes = fechaNacStr.split('-');
-    if (partes.length !== 3) return null;
+    if (partes.length !== 3) return 0;
     
-    const anio = parseInt(partes[0], 10);
-    const mes = parseInt(partes[1], 10) - 1;
-    const dia = parseInt(partes[2], 10);
-    
-    const nacimiento = new Date(anio, mes, dia);
+    const nacimiento = new Date(partes[0], partes[1] - 1, partes[2]);
     const hoy = new Date();
     
     let edad = hoy.getFullYear() - nacimiento.getFullYear();
-    const diferenciaMeses = hoy.getMonth() - nacimiento.getMonth();
+    const difMeses = hoy.getMonth() - nacimiento.getMonth();
     
-    if (diferenciaMeses < 0 || (diferenciaMeses === 0 && hoy.getDate() < nacimiento.getDate())) {
+    if (difMeses < 0 || (difMeses === 0 && hoy.getDate() < nacimiento.getDate())) {
         edad--;
     }
-    
     return edad >= 0 ? edad : 0;
 }
         </script>
