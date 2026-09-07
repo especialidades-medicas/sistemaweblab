@@ -1143,56 +1143,56 @@ function enviarWhatsAppResultado() {
 // Variable global para conservar la fecha de nacimiento recuperada de la BD
 let fechaNacimientoRegistradaBD = "";
 
-// 1. Buscar paciente por cédula en la BD
-// Función con el nombre EXACTO que invoca el HTML
-async function buscarPacienteCedula() {
-        const cedula = document.getElementById('inCedula').value.trim();
+// 1. Buscar paciente por cédula en la BD y autocompletar la orden
+async function buscarPacientePorCedulaDB() {
+    const cedulaInput = document.getElementById('cedulaPaciente');
+    if (!cedulaInput) return;
+    
+    const cedula = cedulaInput.value.trim();
+    if (!cedula) return;
 
-        if (!cedula) {
-            alert("Por favor, ingrese un número de cédula para buscar.");
-            return;
-        }
+    try {
+        const response = await fetch(`/ControladorPacientes?accion=buscar&cedula=${encodeURIComponent(cedula)}`);
+        if (!response.ok) return;
 
-        try {
-            // Petición GET al Servlet
-            const response = await fetch(`ControladorPacientes?accion=buscar&cedula=${encodeURIComponent(cedula)}`);
+        const data = await response.json();
+        
+        if (data && (data.cedula || data.nombres)) {
+            // Asignar campos existentes en la orden de examen
+            const inputNombre = document.getElementById('nombrePaciente');
+            const inputTelefono = document.getElementById('telefonoPaciente');
+            
+            if (inputNombre) inputNombre.value = data.nombres || '';
+            if (inputTelefono) inputTelefono.value = data.telefono || '';
 
-            if (!response.ok) {
-                if (response.status === 404) {
-                    alert("Paciente no encontrado. Complete los datos para registrarlo.");
-                } else {
-                    alert(`Error en la consulta: ${response.statusText}`);
+            // Guardar fecha de nacimiento recibida
+            const fechaNac = data.fecha_nacimiento || data.fechaNacimiento || '';
+            fechaNacimientoRegistradaBD = fechaNac;
+
+            // Calcular edad exacta si existe fecha de nacimiento
+            if (fechaNac) {
+                const edadExacta = calcularEdadPrecisa(fechaNac);
+                const inputEdad = document.getElementById('edadPaciente');
+                if (inputEdad && edadExacta !== null) {
+                    inputEdad.value = `${edadExacta} años`;
                 }
-                return;
             }
 
-            const data = await response.json();
+            // Asignar campos opcionales del DOM en caso de existir
+            const inputCorreo = document.getElementById('correoPaciente');
+            if (inputCorreo) inputCorreo.value = data.correo || '';
 
-            // Mapeo y llenado de campos en la interfaz
-            if (data && (data.nombres || data.nombre)) {
-                document.getElementById('inPaciente').value = data.nombres || data.nombre || "";
-                
-                // Formatear edad con la palabra "años" si viene solo el valor numérico
-                if (data.edad) {
-                    document.getElementById('inEdad').value = String(data.edad).includes("años") 
-                        ? data.edad 
-                        : `${data.edad} años`;
-                } else {
-                    document.getElementById('inEdad').value = "";
-                }
-
-                document.getElementById('inTelefono').value = data.telefono || "";
-                
-                console.log("Paciente cargado:", data);
-            } else {
-                alert("No se encontraron datos para la cédula ingresada.");
-            }
-
-        } catch (error) {
-            console.error("Error al buscar el paciente:", error);
-            alert("Ocurrió un error al conectar con el servidor para la búsqueda.");
+            const inputDireccion = document.getElementById('direccionPaciente');
+            if (inputDireccion) inputDireccion.value = data.direccion || '';
+        } else {
+            // Paciente nuevo
+            fechaNacimientoRegistradaBD = "";
         }
+    } catch (error) {
+        console.error("Error al consultar el paciente en la BD:", error);
+        fechaNacimientoRegistradaBD = "";
     }
+}
 
 // 2. Corrección para guardar (evita el Error 400)
 async function guardarPacienteBD() {
