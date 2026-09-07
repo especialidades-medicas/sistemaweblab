@@ -1031,20 +1031,19 @@ body {
             }
             
             //barra menu inferior
-            document.addEventListener("DOMContentLoaded", () => {
-                / 1. Selección/deselección de exámenes al hacer clic en el recuadro
-    document.querySelectorAll('.form-check').forEach(container => {
-        container.style.cursor = 'pointer';
-        container.addEventListener('click', (e) => {
-            if (e.target.tagName === 'INPUT') return;
-
-            const checkbox = container.querySelector('.examen-chk');
-            if (checkbox) {
-                checkbox.checked = !checkbox.checked;
-                checkbox.dispatchEvent(new Event('change'));
-            }
-        });
-    });
+            document.addEventListener("DOMContentLoaded", () => {                
+                document.querySelectorAll('.form-check').forEach(container => {
+                container.style.cursor = 'pointer';
+                container.addEventListener('click', (e) => {
+                    if (e.target.tagName === 'INPUT') return;
+        
+                    const checkbox = container.querySelector('.examen-chk');
+                    if (checkbox) {
+                        checkbox.checked = !checkbox.checked;
+                        checkbox.dispatchEvent(new Event('change'));
+                    }
+                });
+            });
                 
     const themeBtn = document.getElementById("theme-btn");
     const nav = document.getElementById("nav");
