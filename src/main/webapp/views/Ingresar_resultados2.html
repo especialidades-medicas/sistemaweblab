@@ -2598,7 +2598,17 @@
                     <th>V. REFERENCIA</th>
                 </tr>
             </thead>
-            <tbody>              
+            <tbody>
+                <tr>
+                    <td colspan="4" class="table-active fw-bold text-secondary" style="font-size: 9.5px;">
+                        <div>
+                            INTERPRETACIÓN DE RESULTADOS: <br>
+                            <strong>NEGATIVO:</strong> Indica ausencia del Antígeno SARS-CoV-2. <br>
+                            <strong>POSITIVO:</strong> Indica la presencia del Antígeno SARS-CoV-2. <br>
+                            NOTA: Esta prueba debe solicitarse para la detección del virus de SARS-CoV-2 en individuos que cumplen con criterios clínicos y/o epidemiológicos.
+                        </div>
+                    </td>                                     
+                </tr>
                 <!-- Metadatos de la Muestra -->
                 <tr>
                     <td class="fw-bold py-1" style="width: 25%;">Fecha de Muestra:</td>
@@ -2622,23 +2632,27 @@
                 </tr>
                 <tr>
                     <td class="fw-bold py-1">Muestra:</td>
-                    <td class="py-1" colspan="3"> 
+                    <td class="py-1"> 
                         <select class="form-select form-select-sm form-control-editable" id="covidTipoMuestra">
                             <option value="" selected disabled>Seleccione...</option>
                             <option value="-">-</option>
                             <option value="HISOPADO NASOFARINGEO">HISOPADO NASOFARINGEO</option>
                         </select>
                     </td>
+                    <td class="text-muted">-</td>
+                    <td class="text-muted">-</td>
                 </tr>
                 <tr>
                     <td class="fw-bold py-1">Técnica:</td>
-                    <td class="py-1" colspan="3">
+                    <td class="py-1">
                         <select class="form-select form-select-sm form-control-editable" id="covidTecnica">
                             <option value="" selected disabled>Seleccione...</option>
                             <option value="-">-</option>
                             <option value="INMUNOCROMATOGRAFIA">INMUNOCROMATOGRAFIA</option>
                         </select>
                     </td>
+                    <td class="text-muted">-</td>
+                    <td class="text-muted">-</td>
                 </tr>
 
                 <!-- Fila Principal de Resultado -->
@@ -2655,13 +2669,7 @@
                     <td class="text-muted">Cualitativo</td>
                     <td class="text-muted">NEGATIVO /POSITIVO</td>                     
                 </tr>
-                <tr><td colspan="4" class="table-active fw-bold text-secondary" style="font-size: 9.5px;"><div>INTERPRETACIÓN DE RESULTADOS: <br>
-                      <strong>NEGATIVO:</strong> Indica ausencia del Antígeno SARS-CoV-2. <br>
-                      <strong>POSITIVO:</strong> Indica la presencia del Antígeno SARS-CoV-2. <br>
-                      NOTA: Esta prueba debe solicitarse para la detección del virus de SARS-CoV-2 en individuos que cumplen con criterios clínicos y/o epidemiológicos.
-                    </div>
-                </td>                                      
-                </tr>
+                
             </tbody> 
         </table> 
     </div> 
