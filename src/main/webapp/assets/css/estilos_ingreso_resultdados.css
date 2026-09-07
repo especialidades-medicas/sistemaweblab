@@ -555,7 +555,7 @@ body {
         position: absolute;
         left: 0;
         top: 0;
-        width: 100% !important;
+        width: 99% !important;
         margin: 0 !important;
         padding: 10px !important;
         background: #ffffff !important;
@@ -591,8 +591,8 @@ body {
 
    ========================================================================== */
  #pedidoContainer {
-    width: 100% !important;
-    max-width: 100% !important;
+    width: 98% !important;
+    max-width: 99% !important;
     margin: 0 auto !important;
     background-color: #ffffff !important;
     }
@@ -603,7 +603,7 @@ body {
 /* Tarjetas e Ingresos con Textura Platinada */
 .pedido-box, 
 #pedidoContainer .card {
-    background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%) !important;
+    background: #ffffff !important;
     border: 1px solid #94a3b8 !important;
     border-radius: 10px !important;
     padding: 16px !important;
