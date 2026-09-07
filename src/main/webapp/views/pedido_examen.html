@@ -1217,8 +1217,8 @@ async function guardarPacienteBD() {
     let fechaNacimientoFinal = "";
 
     try {
-        // Consultar si el paciente ya existe para conservar su fecha de nacimiento
-        const checkResponse = await fetch(`ControladorPacientes?accion=buscar&cedula=${encodeURIComponent(cedula)}`);
+        // Consultar si el paciente ya existe para conservar su fecha de nacimiento        
+        const checkResponse = await fetch(`/ControladorPacientes?accion=buscar&cedula=${encodeURIComponent(cedula)}`);
         if (checkResponse.ok) {
             const datosExistentes = await checkResponse.json();
             if (datosExistentes) {
