@@ -1247,7 +1247,8 @@ async function guardarPacienteBD() {
         params.append('fechaNacimiento', fechaNacimientoFinal);
 
         // Enviar petición POST
-        const response = await fetch('ControladorPacientes', {
+        const response = await fetch('/ControladorPacientes', {
+            
             method: 'POST',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
