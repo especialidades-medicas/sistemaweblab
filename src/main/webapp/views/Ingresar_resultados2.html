@@ -122,7 +122,7 @@
                 <li class="nav-item" role="presentation"><button class="nav-link py-1 px-3 small fw-bold" id="coagulacion-tab" data-bs-toggle="tab" data-bs-target="#coagulacionContent" type="button" role="tab">Coagulación</button></li>
                 <li class="nav-item" role="presentation"><button class="nav-link py-1 px-3 small fw-bold" id="oncologicos-tab" data-bs-toggle="tab" data-bs-target="#oncologicosContent" type="button" role="tab">Oncológicos</button></li>
                 <li class="nav-item" role="presentation"><button class="nav-link py-1 px-3 small fw-bold" id="reumatologico-tab" data-bs-toggle="tab" data-bs-target="#reumatologicoContent" type="button" role="tab">Reumatológico</button></li>
-                <li class="nav-item" role="presentation"><button class="nav-link py-1 px-3 small fw-bold" id="otros-tab" data-bs-toggle="tab" data-bs-target="#otrosContent" type="button" role="tab">Otros(BHCG-G&F))</button></li>
+                <li class="nav-item" role="presentation"><button class="nav-link py-1 px-3 small fw-bold" id="otros-tab" data-bs-toggle="tab" data-bs-target="#otrosContent" type="button" role="tab">Otros(BHCG-GyF)</button></li>
                 <li class="nav-item" role="presentation"><button class="nav-link py-1 px-3 small fw-bold" id="vitaminas-tab" data-bs-toggle="tab" data-bs-target="#vitaminasContent" type="button" role="tab">Vitaminas</button></li>
                 <li class="nav-item" role="presentation"><button class="nav-link py-1 px-3 small fw-bold" id="orina-tab" data-bs-toggle="tab" data-bs-target="#orinaContent" type="button" role="tab">Orina</button></li>
                 <li class="nav-item" role="presentation"><button class="nav-link py-1 px-3 small fw-bold" id="heces-tab" data-bs-toggle="tab" data-bs-target="#hecesContent" type="button" role="tab">Heces</button></li>
@@ -138,18 +138,21 @@
                 <div class="tab-pane fade show active" id="hematologiaContent" role="tabpanel">
                     <div class="border p-2 rounded bg-white">
                         
-                        <!-- Sub-pestañas internas para Hematología -->
+                        <!-- Sub-pestañas internas para Hematología -->                       
                         <ul class="nav lab-sub-tabs justify-content-center no-print" id="hematologiaSubTabs" role="tablist">
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link active btn-sm fw-bold py-1 px-3" id="auto-tab" data-bs-toggle="pill" data-bs-target="#autoContent" type="button" role="tab">Automatizada (Dirui)</button>
-                    </li>
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link btn-sm fw-bold py-1 px-3" id="manual-tab" data-bs-toggle="pill" data-bs-target="#manualContent" type="button" role="tab">Manual</button>
-                    </li>
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link btn-sm fw-bold py-1 px-3" id="ves-tab" data-bs-toggle="pill" data-bs-target="#vesContent" type="button" role="tab">VES</button>
-                    </li>
-                </ul>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active btn-sm fw-bold py-1 px-3" id="auto-tab" data-bs-toggle="pill" data-bs-target="#autoContent" type="button" role="tab">Automatizada (Dirui)</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link btn-sm fw-bold py-1 px-3" id="pediatrico-tab" data-bs-toggle="pill" data-bs-target="#pediatricoContent" type="button" role="tab">Pediátrica (Dirui)</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link btn-sm fw-bold py-1 px-3" id="manual-tab" data-bs-toggle="pill" data-bs-target="#manualContent" type="button" role="tab">Manual</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link btn-sm fw-bold py-1 px-3" id="ves-tab" data-bs-toggle="pill" data-bs-target="#vesContent" type="button" role="tab">VES</button>
+                            </li>
+                        </ul>                        
 
                         <div class="tab-content" id="hematologiaSubContent">
                             
@@ -2595,16 +2598,7 @@
                     <th>V. REFERENCIA</th>
                 </tr>
             </thead>
-            <tbody>
-                <tr><td colspan="4" class="table-active fw-bold text-secondary" style="font-size: 9.5px;"><div>INTERPRETACIÓN DE RESULTADOS: <br>
-                      <strong>NEGATIVO:</strong> Indica ausencia del Antígeno SARS-CoV-2. <br>
-                      <strong>POSITIVO:</strong> Indica la presencia del Antígeno SARS-CoV-2. <br>
-                      NOTA: Esta prueba debe solicitarse para la detección del virus de SARS-CoV-2 en individuos que cumplen con criterios clínicos y/o epidemiológicos.
-                    </div>
-                </td>                                      
-                </tr>
-                
-               
+            <tbody>              
                 <!-- Metadatos de la Muestra -->
                 <tr>
                     <td class="fw-bold py-1" style="width: 25%;">Fecha de Muestra:</td>
@@ -2660,6 +2654,13 @@
                     </td>
                     <td class="text-muted">Cualitativo</td>
                     <td class="text-muted">NEGATIVO /POSITIVO</td>                     
+                </tr>
+                <tr><td colspan="4" class="table-active fw-bold text-secondary" style="font-size: 9.5px;"><div>INTERPRETACIÓN DE RESULTADOS: <br>
+                      <strong>NEGATIVO:</strong> Indica ausencia del Antígeno SARS-CoV-2. <br>
+                      <strong>POSITIVO:</strong> Indica la presencia del Antígeno SARS-CoV-2. <br>
+                      NOTA: Esta prueba debe solicitarse para la detección del virus de SARS-CoV-2 en individuos que cumplen con criterios clínicos y/o epidemiológicos.
+                    </div>
+                </td>                                      
                 </tr>
             </tbody> 
         </table> 
