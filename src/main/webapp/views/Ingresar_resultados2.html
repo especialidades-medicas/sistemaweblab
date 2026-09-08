@@ -17,7 +17,13 @@
     <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
     
     <style>
-       
+       /* Color de fondo verde azulado suave para resaltar los campos con datos */
+.bg-verde-azulado {
+    background-color: #e0f2f1 !important;
+    border-color: #26a69a !important;
+    color: #004d40 !important;
+    font-weight: bold;
+}
     </style>
 </head>
 <body>  
@@ -4455,7 +4461,39 @@ function limpiarSecrecionVaginal() {
 });    
 
     
-        
+       
+document.addEventListener("DOMContentLoaded", function () {
+    // Selecciona todos los inputs y selects dentro del contenedor principal
+    const camposEditable = document.querySelectorAll("#mainTabContent input, #mainTabContent select");
+
+    // Función para evaluar y aplicar/quitar la clase de resaltado
+    function actualizarColorResaltado(elemento) {
+        const valor = elemento.value ? elemento.value.trim() : "";
+
+        // Verifica si tiene contenido válido (ignorando los espacios o la opción vacía por defecto)
+        if (valor !== "" && valor !== "-" && valor !== " ") {
+            elemento.classList.add("bg-verde-azulado");
+        } else {
+            elemento.classList.remove("bg-verde-azulado");
+        }
+    }
+
+    // Recorre cada elemento para escuchar cuando el usuario escribe o selecciona algo
+    camposEditable.forEach(function (elemento) {
+        // Ejecutar al cargar por si la vista trae datos previos
+        actualizarColorResaltado(elemento);
+
+        // Escuchar eventos de cambio de texto o de opción seleccionada
+        elemento.addEventListener("input", function () {
+            actualizarColorResaltado(this);
+        });
+
+        elemento.addEventListener("change", function () {
+            actualizarColorResaltado(this);
+        });
+    });
+});
+
         
     </script>
 </body>
