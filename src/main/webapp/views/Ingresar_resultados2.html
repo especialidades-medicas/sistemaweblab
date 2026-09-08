@@ -668,13 +668,13 @@
                                 </thead>
                                 <tbody>
                                     <tr>
-                                        <td class="fw-bold">Glucosa (Ayunas) para HOMA</td>
+                                        <td class="fw-bold">Glucosa (Ayunas) para CALCULO</td>
                                         <td><input type="text" class="form-control form-control-sm" id="resGlucosaHoma" placeholder="Glucosa"></td>
                                         <td class="text-muted">mg/dL</td>
                                         <td class="text-muted">70 - 110</td>
                                     </tr>
                                     <tr>
-                                        <td class="fw-bold">Insulina (Ayunas) para HOMA</td>
+                                        <td class="fw-bold">Insulina (Ayunas) para CALCULO</td>
                                         <td><input type="text" class="form-control form-control-sm" id="resInsulinaHoma" placeholder="Insulina"></td>
                                         <td class="text-muted">uIU/mL</td>
                                         <td class="text-muted">2.6 - 24.9</td>
@@ -704,7 +704,7 @@
                                     <td><input type="text" class="form-control form-control-sm form-control-editable" id="resInsulina"></td>
                                     <td class="text-muted">uIU/mL</td>
                                     <td><input type="text" class="form-control form-control-sm text-muted" id="refInsulina" value="2.6 - 24.9"></td>
-                                    <td></td>
+                                    
                                 </tr>
                                 </tbody>
                             </table>
@@ -1625,12 +1625,37 @@
     <div class="border p-3 rounded bg-white shadow-sm">
         
         <!-- TÍTULO PRINCIPAL OBLIGATORIO PARA QUE EL SCRIPT DETECTE LA SECCIÓN -->
-        <div class="section-title text-primary fw-bold border-bottom pb-1 mb-2 small" data-section-name="EXAMEN COPROPARASITARIO / ESPECIAL EN HECES">EXAMEN COPROPARASITARIO / ESPECIAL EN HECES</div>        
-        <table class="table table-sm table-bordered align-middle mb-0 small bg-white">
-            <thead class="table-light text-muted">
-                <tr><th>EXÁMEN / ELEMENTO</th><th style="width: 25%;">RESULTADO</th><th style="width: 15%;">UNIDAD</th><th>V. REFERENCIA</th></tr>
-            </thead>
-            <tbody>                
+        <div class="section-title text-primary fw-bold border-bottom pb-1 mb-2 small" data-section-name="EXAMEN COPROPARASITARIO / ESPECIAL EN HECES">
+            EXAMEN COPROPARASITARIO / ESPECIAL EN HECES
+        </div>        
+
+        <!-- Navegación de Sub-pestañas Internas (ocultas en impresión) -->
+        <ul class="nav nav-pills mb-3 no-print" id="subTabsHeces" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active btn-sm py-1 px-3" id="copro-rutina-tab" data-bs-toggle="pill" data-bs-target="#copro-rutina" type="button" role="tab" aria-controls="copro-rutina" aria-selected="true">
+                    <i class="bi bi-card-checklist me-1"></i> COPROPARASITARIO EN HECES
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link btn-sm py-1 px-3" id="copro-especiales-tab" data-bs-toggle="pill" data-bs-target="#copro-especiales" type="button" role="tab" aria-controls="copro-especiales" aria-selected="false">
+                    <i class="bi bi-star-fill me-1"></i> EXÁMENES ESPECIALES DE HECES
+                </button>
+            </li>
+        </ul>
+
+        <!-- Contenido de las Sub-pestañas -->
+        <div class="tab-content" id="subTabsHecesContent">
+            
+            <!-- SUB-PESTAÑA 1: COPROPARASITARIO DE RUTINA -->
+            <div class="tab-pane fade show active" id="copro-rutina" role="tabpanel" aria-labelledby="copro-rutina-tab">
+                <table class="table table-sm table-bordered align-middle mb-0 small bg-white">
+                    <thead class="table-light text-muted">
+                        <tr>
+                            <th>EXÁMEN / ELEMENTO</th><th style="width: 25%;">RESULTADO</th><th style="width: 15%;">UNIDAD</th><th>V. REFERENCIA</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            
                 <tr><td colspan="4" class="table-active fw-bold text-secondary" style="font-size: 9.5px;">EXAMEN MACROSCÓPICO</td></tr>
                 <tr>
                     <td class="fw-bold ps-3">COLOR</td>
@@ -1937,9 +1962,24 @@
                     <td><input type="text" class="form-control form-control-sm text-muted" value="Flora Bacteriana">
                     </td>
                 </tr>
-                <!-- EXÁMENES ESPECIALES DE HECES -->
-                <tr><td colspan="4" class="table-active fw-bold text-secondary" style="font-size: 9.5px;">EXÁMENES ESPECIALES DE HECES</td>
-                </tr>
+                    </tbody>
+                </table>
+            </div>
+
+
+<!-- SUB-PESTAÑA 2: EXÁMENES ESPECIALES DE HECES -->
+            <div class="tab-pane fade" id="copro-especiales" role="tabpanel" aria-labelledby="copro-especiales-tab">
+                <table class="table table-sm table-bordered align-middle mb-0 small bg-white">
+                    <thead class="table-light text-muted">
+                        <tr>
+                            <th>EXÁMEN / PRUEBA ESPECIAL</th>                            
+                            <th style="width: 25%;">RESULTADO</th>
+                            <th style="width: 15%;">UNIDAD</th>
+                            <th>V. REFERENCIA</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+			<tr><td colspan="4" class="table-active fw-bold text-secondary" style="font-size: 9.5px;">EXÁMENES ESPECIALES DE HECES</td></tr>                        
                 <tr>
                     <td class="fw-bold ps-3">POLIMORFONUCLEARES </td>
                     <td><input type="text" class="form-control form-control-sm form-control-editable" id="hecespolimorfonucleares"></td>
@@ -1983,8 +2023,11 @@
                     <td class="text-muted">-</td>
                     <td class="text-muted">Cualitativa</td>
                 </tr>
-            </tbody>
-        </table>
+                    </tbody>
+                </table>
+            </div>
+
+        </div> <!-- Fin tab-content -->
     </div>
 </div>
 
