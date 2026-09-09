@@ -840,8 +840,7 @@ patients = JSON.parse(localStorage.getItem("lab_pacientes")) || [];
 let laboratorio_resultados = JSON.parse(localStorage.getItem("laboratorio_resultados")) || [];
 
 // Ejecutar al cargar la página
-window.onload = function() {
-    renderPatients();
+window.onload = function() {    
     updateDashboardStats();
 };
 
