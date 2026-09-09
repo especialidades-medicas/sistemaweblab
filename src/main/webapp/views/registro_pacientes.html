@@ -1402,7 +1402,30 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
+    
+async function consultarResultadosPorOrden() {
+    const inputOrden = document.getElementById('buscarIdOrden');
+    if (!inputOrden) return;
+    
+    const idOrden = inputOrden.value.trim();
+    if (!idOrden) {
+        alert("Por favor ingrese un N° de Orden válido.");
+        return;
+    }
 
+    try {
+        // Aquí puedes realizar la llamada fetch a tu Servlet cuando lo implementes, 
+        // o manejar la lógica de búsqueda de la orden.
+        console.log("Buscando orden:", idOrden);
+        
+        // Ejemplo temporal para evitar el error en consola:
+        alert("Función activada para la orden: " + idOrden);
+        
+    } catch (error) {
+        console.error("Error al consultar la orden:", error);
+        alert("Error de conexión al buscar la orden.");
+    }
+}
 </script>
 </body>
 </html>
