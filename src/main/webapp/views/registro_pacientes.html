@@ -716,13 +716,30 @@
             <!-- VISTA 4: RESULTADOS DE EXÁMENES -->
 <div id="resultados-view" class="section-view">
     
-    <!-- Tarjeta 1: Formulario de Ingreso y Edición -->
+    <!-- Consulta por N° de Orden requerida por el Servlet -->
     <div class="content-card">
-        <h2 id="resultadoFormTitle">Carga e Ingreso de Resultados de Exámenes</h2>
-        <!-- El id="formResultados" permitirá capturar el evento en JS -->
-        <form id="formResultados" onsubmit="saveResultado(event)">
-            <!-- Input oculto para manejar el ID (Primary Key) al editar -->
-            <input type="hidden" id="res_id" value="">
+        <h2>Buscar Resultados por N° de Orden</h2>
+        <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
+            <input type="text" id="buscarIdOrden" placeholder="Ingrese N° de Orden (Ej. ORD-2026-001)" style="flex: 1; min-width: 220px; padding: 10px; border-radius: 8px; border: 1px solid #cbd5e1;">
+            <button type="button" class="btn-action" onclick="consultarResultadosPorOrden()" style="padding: 10px 20px;">🔍 Buscar Orden</button>
+        </div>
+        
+        <!-- Cabecera con datos del paciente obtenidos del Servlet -->
+        <div id="infoPacienteOrden" style="display: none; background: #f8fafc; padding: 12px; border-radius: 8px; border-left: 4px solid var(--primary); margin-top: 15px;">
+            <p style="margin: 0; font-size: 0.95rem;">
+                <strong>Paciente:</strong> <span id="lblPaciente">-</span> | 
+                <strong>Cédula/Doc:</strong> <span id="lblCodDoc">-</span> | 
+                <strong>Edad:</strong> <span id="lblEdad">-</span> | 
+                <strong>Fecha Registro:</strong> <span id="lblFecha">-</span>
+            </p>
+        </div>
+    </div>
+
+    <!-- Formulario de Ingreso y Edición -->
+    <div class="content-card">
+        <h2 id="resultadoFormTitle">Carga e Ingreso de Resultados</h2>
+        <form id="formResultados" onsubmit="event.preventDefault(); guardarResultado();">
+            <input type="hidden" id="res_index" value="-1">
             
             <div class="form-grid">
                 <div class="form-group">
@@ -730,18 +747,9 @@
                     <input type="text" id="res_id_orden" placeholder="Ej. ORD-2026-001" required>
                 </div>
                 <div class="form-group">
-                    <label>Cédula / Documento</label>
-                    <input type="text" id="res_cod_doc" placeholder="Ej. 1712345678" required>
-                </div>
-                <div class="form-group full-width">
-                    <label>Nombre del Paciente</label>
-                    <input type="text" id="res_nombre_paciente" placeholder="Apellidos y Nombres completos" required>
-                </div>
-                
-                <div class="form-group">
                     <label>Categoría / Área</label>
                     <select id="res_categoria" required>
-                        <option value="">Seleccione un área...</option>
+                        <option value="">Seleccione área...</option>
                         <option value="Hematología">Hematología</option>
                         <option value="Química Sanguínea">Química Sanguínea</option>
                         <option value="Uroanálisis / Coprología">Uroanálisis / Coprología</option>
@@ -752,7 +760,6 @@
                     <label>Nombre del Examen</label>
                     <input type="text" id="res_nombre_examen" placeholder="Ej. Glucosa Basal" required>
                 </div>
-
                 <div class="form-group">
                     <label>Resultado Obtenido</label>
                     <input type="text" id="res_resultado" placeholder="Ej. 95" required>
@@ -769,40 +776,29 @@
 
             <div style="display: flex; gap: 10px; margin-top: 15px;">
                 <button type="submit" id="btnSaveResultado" class="btn-action" style="padding: 0.7rem 1.5rem; font-size: 0.95rem;">Guardar Resultado</button>
-                <button type="button" id="btnCancelResultado" onclick="resetResultadoForm()" class="btn-delete" style="display: none; padding: 0.7rem 1.5rem; font-size: 0.95rem;">Cancelar Edición</button>
+                <button type="button" id="btnCancelResultado" onclick="resetFormResultado()" class="btn-delete" style="display: none; padding: 0.7rem 1.5rem; font-size: 0.95rem;">Cancelar</button>
             </div>
         </form>
     </div>
 
-    <!-- Tarjeta 2: Tabla de Gestión (Visualizar, Editar, Eliminar) -->
+    <!-- Tabla de Resultados devueltos por el Servlet -->
     <div class="content-card">
-        <h2>Listado de Resultados Registrados</h2>
+        <h2>Detalle de Exámenes de la Orden</h2>
         <div style="overflow-x: auto;">
             <table>
                 <thead>
                     <tr>
                         <th>N° Orden</th>
-                        <th>Cédula</th>
-                        <th>Paciente</th>
-                        <th>Área / Examen</th>
+                        <th>Categoría</th>
+                        <th>Examen</th>
                         <th>Resultado</th>
-                        <th>Ref.</th>
+                        <th>Valores de Referencia</th>
                         <th>Acciones</th>
                     </tr>
                 </thead>
                 <tbody id="resultadosTableBody">
-                    <!-- Ejemplo visual estático (A reemplazar por JS dinámico luego) -->
                     <tr>
-                        <td><span class="badge-id">ORD-2026-001</span></td>
-                        <td>1719876543</td>
-                        <td>Valeria Mendoza</td>
-                        <td>Química Sanguínea<br><small style="color: var(--gray);">Glucosa</small></td>
-                        <td><strong>95</strong> <small>mg/dL</small></td>
-                        <td><small>70 - 100</small></td>
-                        <td>
-                            <button class="btn-edit" onclick="editResultado(1)">Editar</button>
-                            <button class="btn-delete" onclick="deleteResultado(1)">Eliminar</button>
-                        </td>
+                        <td colspan="6" style="text-align: center; color: var(--gray);">Ingrese un N° de Orden arriba y haga clic en "Buscar Orden".</td>
                     </tr>
                 </tbody>
             </table>
