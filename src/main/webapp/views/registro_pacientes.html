@@ -1414,17 +1414,62 @@ async function consultarResultadosPorOrden() {
     }
 
     try {
-        // Aquí puedes realizar la llamada fetch a tu Servlet cuando lo implementes, 
-        // o manejar la lógica de búsqueda de la orden.
-        console.log("Buscando orden:", idOrden);
+        // Realiza la petición asíncrona al Servlet correspondiente en tu backend
+        const response = await fetch(`../ControladorResultados?accion=buscar&orden=${encodeURIComponent(idOrden)}`);
         
-        // Ejemplo temporal para evitar el error en consola:
-        alert("Función activada para la orden: " + idOrden);
+        if (!response.ok) {
+            throw new Error("Error en la respuesta del servidor.");
+        }
+        
+        const data = await response.json();
+        
+        if (data && data.encontrado) {
+            // Rellenar la cabecera con los datos del paciente encontrados
+            const infoContainer = document.getElementById('infoPacienteOrden');
+            if (infoContainer) {
+                infoContainer.innerHTML = `
+                    <p style="margin: 0; font-size: 14px;"><strong>Paciente:</strong> ${data.nombrePaciente}</p>
+                    <p style="margin: 0; font-size: 14px;"><strong>Cédula/Doc:</strong> ${data.cedulaPaciente}</p>
+                `;
+            }
+            
+            // Autocompletar el campo de orden en el formulario inferior de resultados si existe
+            const campoOrdenForm = document.querySelector('input[placeholder*="ORD-2026"]');
+            if (campoOrdenForm) {
+                campoOrdenForm.value = idOrden;
+            }
+        } else {
+            alert("No se encontró ninguna orden registrada con ese número.");
+        }
         
     } catch (error) {
-        console.error("Error al consultar la orden:", error);
-        alert("Error de conexión al buscar la orden.");
+        console.error("Error al buscar la orden:", error);
+        alert("Ocurrió un error al intentar conectar con el servidor.");
     }
+}
+    function cargarResultadoForm(index) {
+    const item = listaResultadosCache[index];
+    if (!item) return;
+
+    document.getElementById("res_index").value = index;
+    document.getElementById("res_id_orden").value = item.id_orden || '';
+    document.getElementById("res_categoria").value = item.categoria || '';
+    document.getElementById("res_nombre_examen").value = item.nombre_examen || '';
+    document.getElementById("res_resultado").value = item.resultado || '';
+    document.getElementById("res_unidad").value = item.unidad || '';
+    document.getElementById("res_valores_referencia").value = item.valores_referencia || '';
+
+    document.getElementById("resultadoFormTitle").innerText = "Editar Resultado";
+    document.getElementById("btnSaveResultado").innerText = "Actualizar Resultado";
+    document.getElementById("btnCancelResultado").style.display = "inline-block";
+}
+
+function resetFormResultado() {
+    document.getElementById("res_index").value = "-1";
+    document.getElementById("formResultados").reset();
+    document.getElementById("resultadoFormTitle").innerText = "Carga e Ingreso de Resultados";
+    document.getElementById("btnSaveResultado").innerText = "Guardar Resultado";
+    document.getElementById("btnCancelResultado").style.display = "none";
 }
 </script>
 </body>
