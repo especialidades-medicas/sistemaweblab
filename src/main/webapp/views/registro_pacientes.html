@@ -739,7 +739,9 @@
     <div class="content-card">
         <h2 id="resultadoFormTitle">Carga e Ingreso de Resultados</h2>
         <form id="formResultados" onsubmit="event.preventDefault(); guardarResultado();">
-            <input type="hidden" id="res_index" value="-1">
+            <!-- CAMPOS OCULTOS DE CONTROL -->
+        <input type="hidden" id="res_index" value="-1">
+        <input type="hidden" id="res_nombre_examen_original" value="">
             
             <div class="form-grid">
                 <div class="form-group">
@@ -1277,90 +1279,67 @@ function importFromExcel(event) {
     reader.readAsArrayBuffer(file);
 }
 
-// --- RESULTADOS MODULE & SERVLET INTERACTION ---
+// 1. Consultar resultados y renderizar en la tabla
 function consultarResultadosPorOrden() {
     const idOrden = document.getElementById("buscarIdOrden").value.trim();
     if (!idOrden) {
-        alert("Por favor ingrese un N° de Orden para buscar.");
+        alert("Ingrese un N° de orden válido.");
         return;
     }
 
     fetch(`../BuscarResultadosServlet?id_orden=${encodeURIComponent(idOrden)}`)
-        .then(response => {
-            if (!response.ok) throw new Error("No se pudo obtener respuesta del servidor.");
-            return response.json();
-        })
+        .then(res => res.json())
         .then(data => {
-            renderResultadosTabla(data, idOrden);
+            if (Array.isArray(data)) {
+                listaResultadosCache = data;
+                renderizarTablaResultados(listaResultadosCache);
+
+                if (data.length > 0) {
+                    const p = data[0];
+                    document.getElementById("lblPaciente").innerText = p.nombre_paciente || '-';
+                    document.getElementById("lblCodDoc").innerText = p.cod_doc || '-';
+                    document.getElementById("lblEdad").innerText = p.edad || '-';
+                    document.getElementById("lblFecha").innerText = p.fecha_registro || '-';
+                    document.getElementById("infoPacienteOrden").style.display = "block";
+                    document.getElementById("res_id_orden").value = p.id_orden;
+                } else {
+                    document.getElementById("infoPacienteOrden").style.display = "none";
+                }
+            } else {
+                alert("Error: " + (data.message || "No se encontraron resultados."));
+            }
         })
-        .catch(error => {
-            console.error("Error al consultar:", error);
-            alert("Ocurrió un error al consultar la orden desde el servidor.");
-        });
+        .catch(err => console.error("Error al consultar:", err));
 }
 
-function renderResultadosTabla(data, idOrden) {
+// 2. Renderizar la tabla de exámenes
+function renderizarTablaResultados(lista) {
     const tbody = document.getElementById("resultadosTableBody");
     tbody.innerHTML = "";
 
-    if (!Array.isArray(data) || data.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--gray);">No hay exámenes registrados para la orden ${idOrden}.</td></tr>`;
-        document.getElementById("infoPacienteOrden").style.display = "none";
+    if (lista.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--gray);">No existen exámenes registrados para esta orden.</td></tr>`;
         return;
     }
 
-    listaResultadosCache = data;
-    const pacienteInfo = data[0];
-    document.getElementById("lblPaciente").innerText = pacienteInfo.nombre_paciente || 'N/A';
-    document.getElementById("lblCodDoc").innerText = pacienteInfo.cod_doc || 'N/A';
-    document.getElementById("lblEdad").innerText = pacienteInfo.edad || 'N/A';
-    document.getElementById("lblFecha").innerText = pacienteInfo.fecha_registro || 'N/A';
-    document.getElementById("infoPacienteOrden").style.display = "block";
-    document.getElementById("res_id_orden").value = idOrden;
-
-    data.forEach((item, index) => {
-        const row = tbody.insertRow();
+    lista.forEach((item, index) => {
+        const row = document.createElement("tr");
         row.innerHTML = `
-            <td><span class="badge-id">${item.id_orden}</span></td>
-            <td>${item.categoria || '-'}</td>
-            <td><strong>${item.nombre_examen || '-'}</strong></td>
-            <td><strong>${item.resultado || '-'}</strong> <small>${item.unidad || ''}</small></td>
-            <td><small>${item.valores_referencia || '-'}</small></td>
+            <td>${item.id_orden}</td>
+            <td>${item.categoria}</td>
+            <td>${item.nombre_examen}</td>
+            <td><strong>${item.resultado}</strong> ${item.unidad || ''}</td>
+            <td>${item.valores_referencia || '-'}</td>
             <td>
-                <button class="btn-edit" onclick="cargarResultadoForm(${index})">Editar</button>
-                <button class="btn-delete" onclick="eliminarResultadoMemoria(${index})">Eliminar</button>
+                <button type="button" class="btn-action" style="padding: 4px 8px; font-size: 0.8rem;" onclick="cargarResultadoForm(${index})">✏️ Editar</button>
+                <button type="button" class="btn-delete" style="padding: 4px 8px; font-size: 0.8rem;" onclick="eliminarResultadoMemoria(${index})">🗑️ Eliminar</button>
             </td>
         `;
+        tbody.appendChild(row);
     });
 }
 
-function guardarResultado() {
-    const index = parseInt(document.getElementById("res_index").value);
-    const id_orden = document.getElementById("res_id_orden").value.trim();
-    const categoria = document.getElementById("res_categoria").value;
-    const nombre_examen = document.getElementById("res_nombre_examen").value.trim();
-    const resultado = document.getElementById("res_resultado").value.trim();
-    const unidad = document.getElementById("res_unidad").value.trim();
-    const valores_referencia = document.getElementById("res_valores_referencia").value.trim();
-
-    if (!id_orden || !categoria || !nombre_examen || !resultado) {
-        alert("Complete los campos obligatorios para el resultado.");
-        return;
-    }
-
-    const nuevoResultado = { id_orden, categoria, nombre_examen, resultado, unidad, valores_referencia };
-
-    if (index !== -1 && listaResultadosCache[index]) {
-        listaResultadosCache[index] = { ...listaResultadosCache[index], ...nuevoResultado };
-    } else {
-        listaResultadosCache.push(nuevoResultado);
-    }
-
-    renderResultadosTabla(listaResultadosCache, id_orden);
-    resetFormResultado();
-    alert("Resultado guardado correctamente.");
-}
-
+// 3. Cargar datos seleccionados en el formulario para editar
 function cargarResultadoForm(index) {
     const item = listaResultadosCache[index];
     if (!item) return;
@@ -1369,6 +1348,7 @@ function cargarResultadoForm(index) {
     document.getElementById("res_id_orden").value = item.id_orden || '';
     document.getElementById("res_categoria").value = item.categoria || '';
     document.getElementById("res_nombre_examen").value = item.nombre_examen || '';
+    document.getElementById("res_nombre_examen_original").value = item.nombre_examen || '';
     document.getElementById("res_resultado").value = item.resultado || '';
     document.getElementById("res_unidad").value = item.unidad || '';
     document.getElementById("res_valores_referencia").value = item.valores_referencia || '';
@@ -1378,22 +1358,92 @@ function cargarResultadoForm(index) {
     document.getElementById("btnCancelResultado").style.display = "inline-block";
 }
 
+// 4. Guardar cambios en MySQL via POST
+function guardarResultado() {
+    const id_orden = document.getElementById("res_id_orden").value.trim();
+    const categoria = document.getElementById("res_categoria").value;
+    const nombre_examen = document.getElementById("res_nombre_examen").value.trim();
+    const nombre_examen_original = document.getElementById("res_nombre_examen_original").value.trim();
+    const resultado = document.getElementById("res_resultado").value.trim();
+    const unidad = document.getElementById("res_unidad").value.trim();
+    const valores_referencia = document.getElementById("res_valores_referencia").value.trim();
+
+    const p = listaResultadosCache.length > 0 ? listaResultadosCache[0] : {};
+
+    const params = new URLSearchParams({
+        id_orden: id_orden,
+        cod_doc: p.cod_doc || "",
+        nombre_paciente: p.nombre_paciente || "",
+        fecha_nacimiento: p.fecha_nacimiento || "",
+        edad: p.edad || "",
+        fecha_registro: p.fecha_registro || "",
+        sexo: p.sexo || "",
+        telefono: p.telefono || "",
+        categoria: categoria,
+        nombre_examen: nombre_examen,
+        nombre_examen_original: nombre_examen_original,
+        resultado: resultado,
+        unidad: unidad,
+        valores_referencia: valores_referencia
+    });
+
+    fetch('../GuardarResultadoServlet', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
+        body: params.toString()
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.status === 'success') {
+            alert(data.message);
+            document.getElementById("buscarIdOrden").value = id_orden;
+            consultarResultadosPorOrden();
+            resetFormResultado();
+        } else {
+            alert("Error: " + data.message);
+        }
+    })
+    .catch(err => console.error("Error al guardar:", err));
+}
+
+// 5. Eliminar un examen de MySQL
 function eliminarResultadoMemoria(index) {
-    if (confirm("¿Desea eliminar este examen del listado actual?")) {
-        const idOrden = document.getElementById("res_id_orden").value;
-        listaResultadosCache.splice(index, 1);
-        renderResultadosTabla(listaResultadosCache, idOrden);
+    const item = listaResultadosCache[index];
+    if (!item) return;
+
+    if (confirm(`¿Desea eliminar el examen "${item.nombre_examen}" de la base de datos?`)) {
+        const params = new URLSearchParams({
+            id_orden: item.id_orden,
+            nombre_examen: item.nombre_examen
+        });
+
+        fetch('../EliminarResultadoServlet', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
+            body: params.toString()
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.status === 'success') {
+                alert(data.message);
+                consultarResultadosPorOrden();
+            } else {
+                alert("Error al eliminar: " + data.message);
+            }
+        })
+        .catch(err => console.error("Error al eliminar:", err));
     }
 }
 
+// 6. Limpiar formulario
 function resetFormResultado() {
     document.getElementById("res_index").value = "-1";
+    document.getElementById("res_nombre_examen_original").value = "";
     document.getElementById("formResultados").reset();
     document.getElementById("resultadoFormTitle").innerText = "Carga e Ingreso de Resultados";
     document.getElementById("btnSaveResultado").innerText = "Guardar Resultado";
     document.getElementById("btnCancelResultado").style.display = "none";
 }
-        
         
     </script>
 </body>
