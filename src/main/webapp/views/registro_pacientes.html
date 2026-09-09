@@ -714,37 +714,101 @@
             </div>
 
             <!-- VISTA 4: RESULTADOS DE EXÁMENES -->
-            <div id="resultados-view" class="section-view">
-                <div class="content-card">
-                    <h2>Carga e Ingreso de Resultados de Exámenes</h2>
-                    <form onsubmit="event.preventDefault(); alert('Resultados guardados y listos');">
-                        <div class="form-grid">
-                            <div class="form-group">
-                                <label>N° de Orden / Cédula Paciente</label>
-                                <input type="text" placeholder="Ej. ORD-2026-001" required>
-                            </div>
-                            <div class="form-group">
-                                <label>Área de Laboratorio</label>
-                                <select>
-                                    <option>Hematología</option>
-                                    <option>Química Sanguínea</option>
-                                    <option>Uroanálisis / Coprología</option>
-                                    <option>Inmunología / Serología</option>
-                                </select>
-                            </div>
-                            <div class="form-group full-width">
-                                <label>Valores y Observaciones del Examen</label>
-                                <textarea rows="4" placeholder="Ingrese los parámetros cuantitativos y cualitativos..."></textarea>
-                            </div>
-                            <div class="form-group">
-                                <label>Adjuntar Archivo (PDF)</label>
-                                <input type="file">
-                            </div>
-                        </div>
-                        <button type="submit" class="btn-action" style="padding: 0.7rem 1.5rem; font-size: 0.95rem;">Subir y Publicar Resultados</button>
-                    </form>
+<div id="resultados-view" class="section-view">
+    
+    <!-- Tarjeta 1: Formulario de Ingreso y Edición -->
+    <div class="content-card">
+        <h2 id="resultadoFormTitle">Carga e Ingreso de Resultados de Exámenes</h2>
+        <!-- El id="formResultados" permitirá capturar el evento en JS -->
+        <form id="formResultados" onsubmit="saveResultado(event)">
+            <!-- Input oculto para manejar el ID (Primary Key) al editar -->
+            <input type="hidden" id="res_id" value="">
+            
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>N° de Orden</label>
+                    <input type="text" id="res_id_orden" placeholder="Ej. ORD-2026-001" required>
+                </div>
+                <div class="form-group">
+                    <label>Cédula / Documento</label>
+                    <input type="text" id="res_cod_doc" placeholder="Ej. 1712345678" required>
+                </div>
+                <div class="form-group full-width">
+                    <label>Nombre del Paciente</label>
+                    <input type="text" id="res_nombre_paciente" placeholder="Apellidos y Nombres completos" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>Categoría / Área</label>
+                    <select id="res_categoria" required>
+                        <option value="">Seleccione un área...</option>
+                        <option value="Hematología">Hematología</option>
+                        <option value="Química Sanguínea">Química Sanguínea</option>
+                        <option value="Uroanálisis / Coprología">Uroanálisis / Coprología</option>
+                        <option value="Inmunología / Serología">Inmunología / Serología</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Nombre del Examen</label>
+                    <input type="text" id="res_nombre_examen" placeholder="Ej. Glucosa Basal" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Resultado Obtenido</label>
+                    <input type="text" id="res_resultado" placeholder="Ej. 95" required>
+                </div>
+                <div class="form-group">
+                    <label>Unidad de Medida</label>
+                    <input type="text" id="res_unidad" placeholder="Ej. mg/dL">
+                </div>
+                <div class="form-group full-width">
+                    <label>Valores de Referencia</label>
+                    <input type="text" id="res_valores_referencia" placeholder="Ej. 70 - 100 mg/dL">
                 </div>
             </div>
+
+            <div style="display: flex; gap: 10px; margin-top: 15px;">
+                <button type="submit" id="btnSaveResultado" class="btn-action" style="padding: 0.7rem 1.5rem; font-size: 0.95rem;">Guardar Resultado</button>
+                <button type="button" id="btnCancelResultado" onclick="resetResultadoForm()" class="btn-delete" style="display: none; padding: 0.7rem 1.5rem; font-size: 0.95rem;">Cancelar Edición</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Tarjeta 2: Tabla de Gestión (Visualizar, Editar, Eliminar) -->
+    <div class="content-card">
+        <h2>Listado de Resultados Registrados</h2>
+        <div style="overflow-x: auto;">
+            <table>
+                <thead>
+                    <tr>
+                        <th>N° Orden</th>
+                        <th>Cédula</th>
+                        <th>Paciente</th>
+                        <th>Área / Examen</th>
+                        <th>Resultado</th>
+                        <th>Ref.</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="resultadosTableBody">
+                    <!-- Ejemplo visual estático (A reemplazar por JS dinámico luego) -->
+                    <tr>
+                        <td><span class="badge-id">ORD-2026-001</span></td>
+                        <td>1719876543</td>
+                        <td>Valeria Mendoza</td>
+                        <td>Química Sanguínea<br><small style="color: var(--gray);">Glucosa</small></td>
+                        <td><strong>95</strong> <small>mg/dL</small></td>
+                        <td><small>70 - 100</small></td>
+                        <td>
+                            <button class="btn-edit" onclick="editResultado(1)">Editar</button>
+                            <button class="btn-delete" onclick="deleteResultado(1)">Eliminar</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
 
             <!-- VISTA 5: CERTIFICADOS -->
             <div id="certificados-view" class="section-view">
