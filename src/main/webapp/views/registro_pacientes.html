@@ -1403,73 +1403,122 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
     
-async function consultarResultadosPorOrden() {
-    const inputOrden = document.getElementById('buscarIdOrden');
-    if (!inputOrden) return;
+let listaResultadosCache = [];
+
+function consultarResultadosPorOrden() {
+    const idOrden = document.getElementById("buscarIdOrden").value.trim();
     
-    const idOrden = inputOrden.value.trim();
     if (!idOrden) {
-        alert("Por favor ingrese un N° de Orden válido.");
+        alert("Por favor ingrese un N° de Orden para buscar.");
         return;
     }
 
-    try {
-        // Realiza la petición asíncrona al Servlet correspondiente en tu backend
-        const response = await fetch(`../ControladorResultados?accion=buscar&orden=${encodeURIComponent(idOrden)}`);
-        
-        if (!response.ok) {
-            throw new Error("Error en la respuesta del servidor.");
-        }
-        
-        const data = await response.json();
-        
-        if (data && data.encontrado) {
-            // Rellenar la cabecera con los datos del paciente encontrados
-            const infoContainer = document.getElementById('infoPacienteOrden');
-            if (infoContainer) {
-                infoContainer.innerHTML = `
-                    <p style="margin: 0; font-size: 14px;"><strong>Paciente:</strong> ${data.nombrePaciente}</p>
-                    <p style="margin: 0; font-size: 14px;"><strong>Cédula/Doc:</strong> ${data.cedulaPaciente}</p>
-                `;
+    // Petición al Servlet con el parámetro id_orden
+    fetch(`../BuscarResultadosServlet?id_orden=${encodeURIComponent(idOrden)}`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error("No se pudo obtener respuesta del servidor.");
             }
+            return response.json();
+        })
+        .then(data => {
+            const tbody = document.getElementById("resultadosTableBody");
+            if (!tbody) return; // Validación por si la tabla no existe en el DOM actual
             
-            // Autocompletar el campo de orden en el formulario inferior de resultados si existe
-            const campoOrdenForm = document.querySelector('input[placeholder*="ORD-2026"]');
-            if (campoOrdenForm) {
-                campoOrdenForm.value = idOrden;
+            tbody.innerHTML = "";
+
+            if (!Array.isArray(data) || data.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--gray);">No hay exámenes registrados para la orden ${idOrden}.</td></tr>`;
+                const infoPaciente = document.getElementById("infoPacienteOrden");
+                if (infoPaciente) infoPaciente.style.display = "none";
+                return;
             }
-        } else {
-            alert("No se encontró ninguna orden registrada con ese número.");
-        }
-        
-    } catch (error) {
-        console.error("Error al buscar la orden:", error);
-        alert("Ocurrió un error al intentar conectar con el servidor.");
-    }
+
+            listaResultadosCache = data;
+
+            // Mostrar información del paciente utilizando el primer registro del JSON de forma segura
+            const pacienteInfo = data[0];
+            const lblPaciente = document.getElementById("lblPaciente");
+            const lblCodDoc = document.getElementById("lblCodDoc");
+            const lblEdad = document.getElementById("lblEdad");
+            const lblFecha = document.getElementById("lblFecha");
+            const infoPacienteOrden = document.getElementById("infoPacienteOrden");
+
+            if (lblPaciente) lblPaciente.innerText = pacienteInfo.nombre_paciente || 'N/A';
+            if (lblCodDoc) lblCodDoc.innerText = pacienteInfo.cod_doc || 'N/A';
+            if (lblEdad) lblEdad.innerText = pacienteInfo.edad || 'N/A';
+            if (lblFecha) lblFecha.innerText = pacienteInfo.fecha_registro || 'N/A';
+            if (infoPacienteOrden) infoPacienteOrden.style.display = "block";
+
+            // Asignar el N° de orden al formulario de manera segura
+            const resIdOrdenInput = document.getElementById("res_id_orden");
+            if (resIdOrdenInput) {
+                resIdOrdenInput.value = idOrden;
+            }
+
+            // Poblar la tabla
+            data.forEach((item, index) => {
+                const row = tbody.insertRow();
+                row.innerHTML = `
+                    <td><span class="badge-id">${item.id_orden || idOrden}</span></td>
+                    <td>${item.categoria || '-'}</td>
+                    <td><strong>${item.nombre_examen || '-'}</strong></td>
+                    <td><strong>${item.resultado || '-'}</strong> <small>${item.unidad || ''}</small></td>
+                    <td><small>${item.valores_referencia || '-'}</small></td>
+                    <td>
+                        <button class="btn-edit" onclick="cargarResultadoForm(${index})">Editar</button>
+                        <button class="btn-delete" onclick="eliminarResultadoMemoria(${index})">Eliminar</button>
+                    </td>
+                `;
+            });
+        })
+        .catch(error => {
+            console.error("Error al consultar:", error);
+            alert("Ocurrió un error al consultar la orden.");
+        });
 }
-    function cargarResultadoForm(index) {
+
+function cargarResultadoForm(index) {
     const item = listaResultadosCache[index];
     if (!item) return;
 
-    document.getElementById("res_index").value = index;
-    document.getElementById("res_id_orden").value = item.id_orden || '';
-    document.getElementById("res_categoria").value = item.categoria || '';
-    document.getElementById("res_nombre_examen").value = item.nombre_examen || '';
-    document.getElementById("res_resultado").value = item.resultado || '';
-    document.getElementById("res_unidad").value = item.unidad || '';
-    document.getElementById("res_valores_referencia").value = item.valores_referencia || '';
+    const resIndex = document.getElementById("res_index");
+    const resIdOrden = document.getElementById("res_id_orden");
+    const resCategoria = document.getElementById("res_categoria");
+    const resNombreExamen = document.getElementById("res_nombre_examen");
+    const resResultado = document.getElementById("res_resultado");
+    const resUnidad = document.getElementById("res_unidad");
+    const resValoresReferencia = document.getElementById("res_valores_referencia");
 
-    document.getElementById("resultadoFormTitle").innerText = "Editar Resultado";
-    document.getElementById("btnSaveResultado").innerText = "Actualizar Resultado";
-    document.getElementById("btnCancelResultado").style.display = "inline-block";
+    if (resIndex) resIndex.value = index;
+    if (resIdOrden) resIdOrden.value = item.id_orden || '';
+    if (resCategoria) resCategoria.value = item.categoria || '';
+    if (resNombreExamen) resNombreExamen.value = item.nombre_examen || '';
+    if (resResultado) resResultado.value = item.resultado || '';
+    if (resUnidad) resUnidad.value = item.unidad || '';
+    if (resValoresReferencia) resValoresReferencia.value = item.valores_referencia || '';
+
+    const formTitle = document.getElementById("resultadoFormTitle");
+    const btnSave = document.getElementById("btnSaveResultado");
+    const btnCancel = document.getElementById("btnCancelResultado");
+
+    if (formTitle) formTitle.innerText = "Editar Resultado";
+    if (btnSave) btnSave.innerText = "Actualizar Resultado";
+    if (btnCancel) btnCancel.style.display = "inline-block";
 }
 
 function resetFormResultado() {
-    document.getElementById("res_index").value = "-1";
-    document.getElementById("formResultados").reset();
-    document.getElementById("resultadoFormTitle").innerText = "Carga e Ingreso de Resultados";
-    document.getElementById("btnSaveResultado").innerText = "Guardar Resultado";
-    document.getElementById("btnCancelResultado").style.display = "none";
+    const resIndex = document.getElementById("res_index");
+    const formResultados = document.getElementById("formResultados");
+    const formTitle = document.getElementById("resultadoFormTitle");
+    const btnSave = document.getElementById("btnSaveResultado");
+    const btnCancel = document.getElementById("btnCancelResultado");
+
+    if (resIndex) resIndex.value = "-1";
+    if (formResultados) formResultados.reset();
+    if (formTitle) formTitle.innerText = "Carga e Ingreso de Resultados";
+    if (btnSave) btnSave.innerText = "Guardar Resultado";
+    if (btnCancel) btnCancel.style.display = "none";
 }
 </script>
 </body>
