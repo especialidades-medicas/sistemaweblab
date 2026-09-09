@@ -506,19 +506,31 @@ body {
     }
 
     function descargarPDF() {
-        const elemento = document.getElementById('documento-imprimir');
-        const paciente = document.getElementById('inPaciente').value || 'Paciente';
-        
-        const opciones = {
-            margin:       10,
-            filename:     `Turno_Cita_${paciente.replace(/\s+/g, '_')}.pdf`,
-            image:        { type: 'jpeg', quality: 0.98 },
-            html2canvas:  { scale: 2 },
-            jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
-        };
+    const elemento = document.getElementById('documento-imprimir');
+    const pacienteRaw = document.getElementById('inPaciente').value || 'Paciente';
+    // Limpia caracteres especiales para evitar nombres de archivo corruptos
+    const pacienteLimpio = pacienteRaw.trim().replace(/[^a-zA-Z0-9_-]/g, '_');
 
-        html2pdf().set(opciones).from(elemento).save();
-    }
+    // Mueve la pantalla al inicio antes de capturar el elemento
+    window.scrollTo(0, 0);
+
+    const opciones = {
+        margin:       [5, 5, 5, 5], // Márgenes estrechos (en mm) para aprovechar la hoja A4
+        filename:     `Turno_Cita_${pacienteLimpio}.pdf`,
+        image:        { type: 'jpeg', quality: 0.98 },
+        html2canvas:  { 
+            scale: 2,               // Alta resolución
+            useCORS: true,          // Permite cargar imágenes/logos correctamente
+            scrollX: 0,
+            scrollY: 0,             // Previene saltos o recortes por desplazamieto
+            windowWidth: document.documentElement.offsetWidth
+        },
+        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
+        pagebreak:    { mode: ['avoid-all', 'css', 'legacy'] }
+    };
+
+    html2pdf().set(opciones).from(elemento).save();
+}
 
     // Función para enviar los datos por WhatsApp
     function enviarWhatsApp() {
