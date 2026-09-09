@@ -894,9 +894,10 @@
     <script>        
        
 // --- INITIALIZATION & GLOBAL VARIABLES ---
-let patients = JSON.parse(localStorage.getItem("lab_pacientes")) || [];
-let entries = JSON.parse(localStorage.getItem("lab_cotizaciones")) || [];
-let laboratorio_resultados = JSON.parse(localStorage.getItem("laboratorio_resultados")) || [];
+// --- INITIALIZATION & GLOBAL VARIABLES ---
+patients = JSON.parse(localStorage.getItem("lab_pacientes")) || [];
+entries = JSON.parse(localStorage.getItem("lab_cotizaciones")) || [];
+laboratorio_resultados = JSON.parse(localStorage.getItem("laboratorio_resultados")) || [];
 let listaResultadosCache = [];
 
 window.onload = function() {
