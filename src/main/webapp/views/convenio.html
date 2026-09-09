@@ -7,6 +7,8 @@
     <link rel="icon" type="image/png" href="../img/logFisio2.png">   
     <!-- Librería para generar PDF -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <!-- Librería html2canvas para descargar la imagen PNG -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
     <style>
         * {
@@ -304,6 +306,10 @@ body {
         margin: 0 auto !important;
     }
 }
+        /* ==========================================
+   REGLAS DE descargar imagen
+   ========================================== */
+        .btn-png { background-color: #0dcaf0; color: #212529; }
     </style>
 </head>
 <body>
@@ -375,6 +381,7 @@ body {
             <button class="btn btn-print" onclick="window.print()">🖨️ Imprimir Documento</button>
             <button class="btn btn-pdf" onclick="descargarPDF()">📄 Descargar PDF</button>
             <button class="btn btn-wsp" onclick="enviarWhatsApp()">📱 Enviar WhatsApp</button>
+            <button class="btn btn-png" onclick="descargarPNG()">🖼️ Descargar PNG</button>
         </div>
     </div>
 
@@ -530,6 +537,29 @@ body {
     };
 
     html2pdf().set(opciones).from(elemento).save();
+}
+
+    // Función para descargar la imagen PNG ajustada exactamente al contorno
+function descargarPNG() {
+    const elemento = document.getElementById('documento-imprimir');
+    const pacienteRaw = document.getElementById('inPaciente').value || 'Paciente';
+    const pacienteLimpio = pacienteRaw.trim().replace(/[^a-zA-Z0-9_-]/g, '_');
+
+    // Mueve el scroll al inicio para evitar desplazamientos en la imagen
+    window.scrollTo(0, 0);
+
+    html2canvas(elemento, {
+        scale: 3,                  // Calidad de resolución (3x HD)
+        useCORS: true,             // Carga imágenes y logos locales/externos sin errores
+        scrollX: 0,
+        scrollY: 0,
+        backgroundColor: "#ffffff" // Fondo blanco exactamente al contorno
+    }).then(canvas => {
+        const enlace = document.createElement('a');
+        enlace.download = `Turno_Cita_${pacienteLimpio}.png`;
+        enlace.href = canvas.toDataURL('image/png', 1.0);
+        enlace.click();
+    });
 }
 
     // Función para enviar los datos por WhatsApp
