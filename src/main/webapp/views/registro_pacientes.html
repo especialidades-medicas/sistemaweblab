@@ -895,7 +895,6 @@
     
     <script>        
        
-// --- INITIALIZATION & GLOBAL VARIABLES ---
 
     let entries = JSON.parse(localStorage.getItem("lab_cotizaciones")) || [];
     let patients = JSON.parse(localStorage.getItem("lab_pacientes")) || [];
@@ -936,6 +935,9 @@
         }
     }
 
+    // ==========================================
+    // MÓDULO DE RESULTADOS DE EXÁMENES (JAVA/MYSQL)
+    // ==========================================
     function consultarResultadosPorOrden() {
         const idOrdenInput = document.getElementById("buscarIdOrden");
         if (!idOrdenInput) return;
@@ -1104,6 +1106,9 @@
         document.getElementById("btnCancelResultado").style.display = "none";
     }
 
+    // ==========================================
+    // MÓDULO DE GESTIÓN DE PACIENTES
+    // ==========================================
     function savePatient(event) {
         event.preventDefault();
 
@@ -1258,6 +1263,9 @@
         XLSX.writeFile(workbook, "pacientes_lab.xlsx");
     }
 
+    // ==========================================
+    // MÓDULO DE COTIZACIÓN DE EXÁMENES
+    // ==========================================
     function generateInitialsId(name) {
         const cleanName = name.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ ]/g, "").trim();
         const words = cleanName.split(/\s+/);
