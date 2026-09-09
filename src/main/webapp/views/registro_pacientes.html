@@ -892,17 +892,14 @@
     </div>
     
 <script src="../controllers/ingresoPacientes.js?v=2.0"></script>
-    
-    <script>        
-       
-
+<script>
     let entries = JSON.parse(localStorage.getItem("lab_cotizaciones")) || [];
-    let patients = JSON.parse(localStorage.getItem("lab_pacientes")) || [];
+    let patients = [];
     let listaResultadosCache = [];
 
     window.addEventListener('DOMContentLoaded', () => {
         renderTable();
-        renderPatients();
+        cargarPacientesBackend();
     });
 
     function switchTab(event, viewId) {
@@ -929,9 +926,19 @@
     function buscarPaciente() {
         const query = document.getElementById('searchInput').value.trim();
         if(query) {
-            alert("Buscando en LabControl.st por cédula o apellidos: " + query);
+            fetch(`../BuscarPacienteServlet?query=${encodeURIComponent(query)}`)
+                .then(res => res.json())
+                .then(data => {
+                    if (Array.isArray(data)) {
+                        patients = data;
+                        renderPatients();
+                    } else {
+                        alert("No se encontraron pacientes.");
+                    }
+                })
+                .catch(err => console.error("Error al buscar paciente:", err));
         } else {
-            alert("Por favor ingrese un número de cédula o apellido para buscar.");
+            cargarPacientesBackend();
         }
     }
 
@@ -1107,44 +1114,64 @@
     }
 
     // ==========================================
-    // MÓDULO DE GESTIÓN DE PACIENTES
+    // MÓDULO DE GESTIÓN DE PACIENTES (MYSQL)
     // ==========================================
+    function cargarPacientesBackend() {
+        fetch('../ListarPacientesServlet')
+            .then(res => res.json())
+            .then(data => {
+                if (Array.isArray(data)) {
+                    patients = data;
+                    renderPatients();
+                }
+            })
+            .catch(err => console.error("Error al cargar pacientes:", err));
+    }
+
     function savePatient(event) {
         event.preventDefault();
 
         const cedula = document.getElementById("patCedula").value.trim();
-        const nombre = document.getElementById("patNombre").value.trim();
-        const nacimiento = document.getElementById("patNacimiento").value || "";
+        const nombres = document.getElementById("patNombre").value.trim();
+        const fecha_nacimiento = document.getElementById("patNacimiento").value || "";
         const genero = document.getElementById("patGenero").value || "";
         const telefono = document.getElementById("patTelefono").value.trim() || "";
         const correo = document.getElementById("patCorreo").value.trim() || "";
         const direccion = document.getElementById("patDireccion").value.trim() || "";
-        const editIndex = parseInt(document.getElementById("editPatientIndex").value);
+        const id_paciente = document.getElementById("editPatientIndex").value;
 
-        if (!cedula || !nombre) {
-            alert("Por favor complete los campos obligatorios: Cédula y Apellidos/Nombres.");
+        if (!cedula || !nombres) {
+            alert("Por favor complete los campos obligatorios: Cédula y Nombres.");
             return;
         }
 
-        const nuevoPaciente = { cedula, nombre, nacimiento, genero, telefono, correo, direccion };
+        const params = new URLSearchParams({
+            id_paciente: id_paciente,
+            cedula: cedula,
+            nombres: nombres,
+            fecha_nacimiento: fecha_nacimiento,
+            genero: genero,
+            telefono: telefono,
+            correo: correo,
+            direccion: direccion
+        });
 
-        if (editIndex !== -1) {
-            patients[editIndex] = nuevoPaciente;
-            alert("Paciente actualizado exitosamente.");
-        } else {
-            const exists = patients.some(p => p.cedula === cedula);
-            if (exists) {
-                alert("Ya existe un paciente registrado con este número de cédula.");
-                return;
+        fetch('../GuardarPacienteServlet', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
+            body: params.toString()
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.status === 'success') {
+                alert(data.message);
+                cargarPacientesBackend();
+                resetPatientForm();
+            } else {
+                alert("Error: " + data.message);
             }
-            patients.push(nuevoPaciente);
-            alert("Paciente registrado exitosamente.");
-        }
-
-        persistPatients();
-        renderPatients();
-        autoExportToExcel();
-        resetPatientForm();
+        })
+        .catch(err => console.error("Error al guardar paciente:", err));
     }
 
     function renderPatients() {
@@ -1153,53 +1180,64 @@
         tbody.innerHTML = "";
 
         if (patients.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: var(--gray);">No hay pacientes registrados.</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: var(--gray);">No hay pacientes registrados en la base de datos.</td></tr>`;
             return;
         }
 
-        patients.forEach((patient, index) => {
+        patients.forEach((p) => {
             const row = tbody.insertRow();
             row.innerHTML = `
-                <td><span class="badge-id">${patient.cedula}</span></td>
-                <td>${patient.nombre}</td>
-                <td>${patient.nacimiento || 'N/A'}</td>
-                <td>${patient.genero || 'N/A'}</td>
-                <td>${patient.telefono || 'N/A'}</td>
-                <td>${patient.correo || 'N/A'}</td>
-                <td>${patient.direccion || 'N/A'}</td>
+                <td><span class="badge-id">${p.cedula}</span></td>
+                <td>${p.nombres}</td>
+                <td>${p.fecha_nacimiento || 'N/A'}</td>
+                <td>${p.genero || 'N/A'}</td>
+                <td>${p.telefono || 'N/A'}</td>
+                <td>${p.correo || 'N/A'}</td>
+                <td>${p.direccion || 'N/A'}</td>
                 <td>
-                    <button class="btn-edit" onclick="editPatient(${index})">Editar</button>
-                    <button class="btn-delete" onclick="deletePatient(${index})">Eliminar</button>
+                    <button class="btn-edit" onclick="editPatient(${p.id_paciente}, '${p.cedula}', '${p.nombres}', '${p.fecha_nacimiento || ''}', '${p.genero || ''}', '${p.telefono || ''}', '${p.correo || ''}', '${p.direccion || ''}')">Editar</button>
+                    <button class="btn-delete" onclick="deletePatient(${p.id_paciente})">Eliminar</button>
                 </td>
             `;
         });
     }
 
-    function editPatient(index) {
-        const p = patients[index];
-        document.getElementById("patCedula").value = p.cedula;
-        document.getElementById("patNombre").value = p.nombre;
-        document.getElementById("patNacimiento").value = p.nacimiento;
-        document.getElementById("patGenero").value = p.genero;
-        document.getElementById("patTelefono").value = p.telefono;
-        document.getElementById("patCorreo").value = p.correo;
-        document.getElementById("patDireccion").value = p.direccion;
+    function editPatient(id, cedula, nombres, nacimiento, genero, telefono, correo, direccion) {
+        document.getElementById("patCedula").value = cedula;
+        document.getElementById("patNombre").value = nombres;
+        document.getElementById("patNacimiento").value = nacimiento;
+        document.getElementById("patGenero").value = genero;
+        document.getElementById("patTelefono").value = telefono;
+        document.getElementById("patCorreo").value = correo;
+        document.getElementById("patDireccion").value = direccion;
 
-        document.getElementById("editPatientIndex").value = index;
+        document.getElementById("editPatientIndex").value = id;
         document.getElementById("patientFormTitle").innerText = "Actualizar Datos del Paciente";
-        document.getElementById("btnSavePatient").innerText = "Actualizar y Guardar Excel";
+        document.getElementById("btnSavePatient").innerText = "Actualizar en Base de Datos";
         document.getElementById("btnCancelPatient").style.display = "inline-block";
 
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
-    function deletePatient(index) {
-        if (confirm("¿Está seguro de eliminar este paciente del registro?")) {
-            patients.splice(index, 1);
-            persistPatients();
-            renderPatients();
-            autoExportToExcel();
-            resetPatientForm();
+    function deletePatient(id) {
+        if (confirm("¿Está seguro de eliminar este paciente de la base de datos?")) {
+            const params = new URLSearchParams({ id_paciente: id });
+
+            fetch('../EliminarPacienteServlet', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
+                body: params.toString()
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    alert(data.message);
+                    cargarPacientesBackend();
+                } else {
+                    alert("Error al eliminar: " + data.message);
+                }
+            })
+            .catch(err => console.error("Error al eliminar paciente:", err));
         }
     }
 
@@ -1207,60 +1245,14 @@
         document.getElementById("patCedula").value = "";
         document.getElementById("patNombre").value = "";
         document.getElementById("patNacimiento").value = "";
+        document.getElementById("patGenero").value = "";
         document.getElementById("patTelefono").value = "";
         document.getElementById("patCorreo").value = "";
         document.getElementById("patDireccion").value = "";
         document.getElementById("editPatientIndex").value = "-1";
         document.getElementById("patientFormTitle").innerText = "Nuevo Registro de Paciente";
-        document.getElementById("btnSavePatient").innerText = "Guardar y Actualizar Excel";
+        document.getElementById("btnSavePatient").innerText = "Guardar Paciente";
         document.getElementById("btnCancelPatient").style.display = "none";
-    }
-
-    function persistPatients() {
-        localStorage.setItem("lab_pacientes", JSON.stringify(patients));
-    }
-
-    async function autoExportToExcel() {
-        if (patients.length === 0) return;
-
-        const dataToExport = patients.map(p => ({
-            "Cédula": p.cedula,
-            "Apellidos y Nombres": p.nombre,
-            "Fecha de Nacimiento": p.nacimiento,
-            "Género": p.genero,
-            "Teléfono": p.telefono,
-            "Correo": p.correo,
-            "Dirección": p.direccion
-        }));
-
-        const worksheet = XLSX.utils.json_to_sheet(dataToExport);
-        const workbook = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(workbook, worksheet, "Pacientes");
-
-        const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
-        const blob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-
-        if ('showSaveFilePicker' in window) {
-            try {
-                const options = {
-                    suggestedName: 'pacientes_lab.xlsx',
-                    types: [{
-                        description: 'Archivos Excel',
-                        accept: { 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': ['.xlsx'] }
-                    }]
-                };
-                if (!window.fileHandle) {
-                    window.fileHandle = await window.showSaveFilePicker(options);
-                }
-                const writableStream = await window.fileHandle.createWritable();
-                await writableStream.write(blob);
-                await writableStream.close();
-                return;
-            } catch (err) {
-                console.log("Exportación estándar fallback active.");
-            }
-        }
-        XLSX.writeFile(workbook, "pacientes_lab.xlsx");
     }
 
     // ==========================================
@@ -1443,8 +1435,6 @@
         };
         reader.readAsArrayBuffer(file);
     }
-
-        
-    </script>
+</script>
 </body>
 </html>
