@@ -1521,7 +1521,7 @@ function resetFormResultado() {
     if (btnCancel) btnCancel.style.display = "none";
 }
 
-    function eliminarResultadoMemoria(index) {
+    async function eliminarResultadoMemoria(index) {
     const item = listaResultadosCache[index];
     if (!item) return;
 
@@ -1529,81 +1529,33 @@ function resetFormResultado() {
         return;
     }
 
-    // Si tu backend requiere eliminar mediante una petición fetch al Servlet, hazlo aquí:
-    // fetch(`../EliminarResultadoServlet?id_orden=${encodeURIComponent(item.id_orden)}&examen=${encodeURIComponent(item.nombre_examen)}`, { method: 'DELETE' })
-    
-    // Eliminar localmente del arreglo en memoria y refrescar la tabla
-    listaResultadosCache.splice(index, 1);
-    
-    const tbody = document.getElementById("resultadosTableBody");
-    if (!tbody) return;
+    try {
+        // El servlet EliminarResultadoServlet está configurado con doPost y espera parámetros en la URL
+        const response = await fetch(`../EliminarResultadoServlet?id_orden=${encodeURIComponent(item.id_orden)}&nombre_examen=${encodeURIComponent(item.nombre_examen)}`, {
+            method: 'POST'
+        });
 
-    tbody.innerHTML = "";
+        const data = await response.json();
 
-    if (listaResultadosCache.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--gray);">No hay exámenes registrados para esta orden.</td></tr>`;
-        resetFormResultado();
-        return;
-    }
+        if (!response.ok || data.status === 'error') {
+            throw new Error(data.message || "No se pudo eliminar en el servidor.");
+        }
 
-    // Volver a renderizar la tabla con los elementos restantes
-    listaResultadosCache.forEach((elem, newIndex) => {
-        const row = tbody.insertRow();
-        row.innerHTML = `
-            <td><span class="badge-id">${elem.id_orden || ''}</span></td>
-            <td>${elem.categoria || '-'}</td>
-            <td><strong>${elem.nombre_examen || '-'}</strong></td>
-            <td><strong>${elem.resultado || '-'}</strong> <small>${elem.unidad || ''}</small></td>
-            <td><small>${elem.valores_referencia || '-'}</small></td>
-            <td>
-                <button class="btn-edit" onclick="cargarResultadoForm(${newIndex})">Editar</button>
-                <button class="btn-delete" onclick="eliminarResultadoMemoria(${newIndex})">Eliminar</button>
-            </td>
-        `;
-    });
+        // Eliminar localmente del arreglo en memoria
+        listaResultadosCache.splice(index, 1);
+        
+        const tbody = document.getElementById("resultadosTableBody");
+        if (!tbody) return;
 
-    resetFormResultado();
-}
-
-function guardarResultado() {
-    const index = parseInt(document.getElementById("res_index").value, 10);
-    const idOrden = document.getElementById("res_id_orden").value.trim();
-    const categoria = document.getElementById("res_categoria").value.trim();
-    const nombreExamen = document.getElementById("res_nombre_examen").value.trim();
-    const resultado = document.getElementById("res_resultado").value.trim();
-    const unidad = document.getElementById("res_unidad").value.trim();
-    const valoresReferencia = document.getElementById("res_valores_referencia").value.trim();
-
-    if (!idOrden || !nombreExamen || !resultado) {
-        alert("Por favor complete los campos obligatorios (N° de Orden, Nombre del Examen y Resultado).");
-        return;
-    }
-
-    const nuevoObjetoResultado = {
-        id_orden: idOrden,
-        categoria: categoria,
-        nombre_examen: nombreExamen,
-        resultado: resultado,
-        unidad: unidad,
-        valores_referencia: valoresReferencia,
-        nombre_paciente: document.getElementById("lblPaciente")?.innerText || '',
-        cod_doc: document.getElementById("lblCodDoc")?.innerText || '',
-        edad: document.getElementById("lblEdad")?.innerText || '',
-        fecha_registro: document.getElementById("lblFecha")?.innerText || ''
-    };
-
-    if (index >= 0 && index < listaResultadosCache.length) {
-        // Actualizar registro existente en memoria
-        listaResultadosCache[index] = nuevoObjetoResultado;
-    } else {
-        // Agregar nuevo registro a la memoria
-        listaResultadosCache.push(nuevoObjetoResultado);
-    }
-
-    // Refrescar la tabla en pantalla
-    const tbody = document.getElementById("resultadosTableBody");
-    if (tbody) {
         tbody.innerHTML = "";
+
+        if (listaResultadosCache.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--gray);">No hay exámenes registrados para esta orden.</td></tr>`;
+            resetFormResultado();
+            return;
+        }
+
+        // Volver a renderizar la tabla con los elementos restantes
         listaResultadosCache.forEach((elem, newIndex) => {
             const row = tbody.insertRow();
             row.innerHTML = `
@@ -1618,10 +1570,93 @@ function guardarResultado() {
                 </td>
             `;
         });
+
+        resetFormResultado();
+        alert("Resultado eliminado correctamente de la base de datos.");
+
+    } catch (error) {
+        console.error("Error al eliminar:", error);
+        alert("Ocurrió un error al intentar eliminar: " + error.message);
+    }
+}
+
+async function guardarResultado() {
+    const index = parseInt(document.getElementById("res_index").value, 10);
+    const idOrden = document.getElementById("res_id_orden").value.trim();
+    const categoria = document.getElementById("res_categoria").value.trim();
+    const nombreExamen = document.getElementById("res_nombre_examen").value.trim();
+    const resultado = document.getElementById("res_resultado").value.trim();
+    const unidad = document.getElementById("res_unidad").value.trim();
+    const valoresReferencia = document.getElementById("res_valores_referencia").value.trim();
+
+    if (!idOrden || !nombreExamen || !resultado) {
+        alert("Por favor complete los campos obligatorios (N° de Orden, Nombre del Examen y Resultado).");
+        return;
     }
 
-    alert(index >= 0 ? "Resultado actualizado correctamente." : "Resultado guardado correctamente.");
-    resetFormResultado();
+    const objetoResultado = {
+        id_orden: idOrden,
+        categoria: categoria,
+        nombre_examen: nombreExamen,
+        resultado: resultado,
+        unidad: unidad,
+        valores_referencia: valoresReferencia,
+        cod_doc: document.getElementById("lblCodDoc")?.innerText !== 'N/A' ? document.getElementById("lblCodDoc")?.innerText : null,
+        nombre_paciente: document.getElementById("lblPaciente")?.innerText !== 'N/A' ? document.getElementById("lblPaciente")?.innerText : null,
+        edad: document.getElementById("lblEdad")?.innerText !== 'N/A' ? document.getElementById("lblEdad")?.innerText : null,
+        fecha_registro: document.getElementById("lblFecha")?.innerText !== 'N/A' ? document.getElementById("lblFecha")?.innerText : null
+    };
+
+    // Actualizar o insertar en el arreglo local de caché
+    if (index >= 0 && index < listaResultadosCache.length) {
+        listaResultadosCache[index] = objetoResultado;
+    } else {
+        listaResultadosCache.push(objetoResultado);
+    }
+
+    try {
+        // GuardarResultadosServlet procesa toda la lista en formato JSON para actualizar la base de datos en lote
+        const response = await fetch('../GuardarResultadosServlet', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(listaResultadosCache)
+        });
+
+        const data = await response.json();
+
+        if (!response.ok || data.status === 'error') {
+            throw new Error(data.message || "Error al guardar en el servidor.");
+        }
+
+        // Refrescar la tabla en pantalla
+        const tbody = document.getElementById("resultadosTableBody");
+        if (tbody) {
+            tbody.innerHTML = "";
+            listaResultadosCache.forEach((elem, newIndex) => {
+                const row = tbody.insertRow();
+                row.innerHTML = `
+                    <td><span class="badge-id">${elem.id_orden || ''}</span></td>
+                    <td>${elem.categoria || '-'}</td>
+                    <td><strong>${elem.nombre_examen || '-'}</strong></td>
+                    <td><strong>${elem.resultado || '-'}</strong> <small>${elem.unidad || ''}</small></td>
+                    <td><small>${elem.valores_referencia || '-'}</small></td>
+                    <td>
+                        <button class="btn-edit" onclick="cargarResultadoForm(${newIndex})">Editar</button>
+                        <button class="btn-delete" onclick="eliminarResultadoMemoria(${newIndex})">Eliminar</button>
+                    </td>
+                `;
+            });
+        }
+
+        alert(index >= 0 ? "Resultado actualizado correctamente en la base de datos." : "Resultado guardado correctamente en la base de datos.");
+        resetFormResultado();
+
+    } catch (error) {
+        console.error("Error al guardar:", error);
+        alert("Ocurrió un error al intentar guardar: " + error.message);
+    }
 }
 </script>
 </body>
