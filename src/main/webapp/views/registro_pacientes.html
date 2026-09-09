@@ -893,312 +893,68 @@
     <script>
         
        
-
-        // Carga de arrays desde localStorage o base de datos
-
-patients = JSON.parse(localStorage.getItem("lab_pacientes")) || [];
+// --- INITIALIZATION & GLOBAL VARIABLES ---
+let patients = JSON.parse(localStorage.getItem("lab_pacientes")) || [];
+let entries = JSON.parse(localStorage.getItem("lab_cotizaciones")) || [];
 let laboratorio_resultados = JSON.parse(localStorage.getItem("laboratorio_resultados")) || [];
+let listaResultadosCache = [];
 
-// Ejecutar al cargar la página
-window.onload = function() {    
+window.onload = function() {
+    renderTable();
+    renderPatients();
     updateDashboardStats();
 };
 
+// --- DASHBOARD STATS ---
 function updateDashboardStats() {
-    // 1. Total de Pacientes Registrados en la base de datos 'pacientes'
     const statPacientes = document.getElementById("statPacientes");
-    if (statPacientes) {
-        statPacientes.innerText = patients.length;
-    }
+    if (statPacientes) statPacientes.innerText = patients.length;
 
-    // 2. Total de Resultados Enviados / Listos por PACIENTE (Únicos)
-    const statResultados = document.getElementById("statResultadosPacientes");
+    const statResultados = document.getElementById("statResultados");
     if (statResultados) {
-        // Extrae el identificador único (cod_doc, cédula o ID de orden) por paciente
         const pacientesConResultados = new Set(
             laboratorio_resultados
-                .filter(res => !res.estado || res.estado === 'Listo') // Filtra solo exámenes completados
-                .map(res => res.cod_doc || res.cedula || res.resOrden || res.nombre_paciente) // Obtiene la cédula o documento
-                .filter(id => id != null && id !== "") // Descarta valores vacíos
+                .filter(res => !res.estado || res.estado === 'Listo')
+                .map(res => res.cod_doc || res.cedula || res.resOrden || res.nombre_paciente)
+                .filter(id => id != null && id !== "")
         );
-
-        // .size devuelve la cantidad de PACIENTES ÚNICOS, no de exámenes individuales
         statResultados.innerText = pacientesConResultados.size;
     }
 
-    // 3. Cotizaciones cargadas
     const statCotizaciones = document.getElementById("statCotizaciones");
-    if (statCotizaciones) {
-        statCotizaciones.innerText = entries.length;
-    }
+    if (statCotizaciones) statCotizaciones.innerText = entries.length;
 }
 
-// Llama a updateDashboardStats() cada vez que guardes, edites o elimines registros
-function renderPatients() {
-    const tbody = document.getElementById("patientTableBody");
-    if (!tbody) return;
-    tbody.innerHTML = "";
+// --- NAVIGATION & SIDEBAR ---
+function switchTab(event, viewId) {
+    event.preventDefault();
+    document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+    event.currentTarget.classList.add('active');
+    document.querySelectorAll('.section-view').forEach(view => view.classList.remove('active'));
+    document.getElementById(viewId).classList.add('active');
+}
 
-    if (patients.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: var(--gray);">No hay pacientes registrados.</td></tr>`;
+function toggleSidebar() {
+    document.getElementById('sidebar').classList.toggle('open');
+    document.getElementById('sidebarOverlay').classList.toggle('active');
+}
+
+function toggleSidebarMobile() {
+    if (window.innerWidth <= 992) toggleSidebar();
+}
+
+function buscarPaciente() {
+    const query = document.getElementById('searchInput').value.trim();
+    if (query) {
+        alert("Buscando en LabControl.st por cédula o apellidos: " + query);
     } else {
-        patients.forEach((patient, index) => {
-            const row = tbody.insertRow();
-            row.innerHTML = `
-                <td><span class="badge-id">${patient.cedula}</span></td>
-                <td>${patient.nombre}</td>
-                <td>${patient.nacimiento || 'N/A'}</td>
-                <td>${patient.genero || 'N/A'}</td>
-                <td>${patient.telefono || 'N/A'}</td>
-                <td>${patient.correo || 'N/A'}</td>
-                <td>${patient.direccion || 'N/A'}</td>
-                <td>
-                    <button class="btn-edit" onclick="editPatient(${index})">Editar</button>
-                    <button class="btn-delete" onclick="deletePatient(${index})">Eliminar</button>
-                </td>
-            `;
-        });
+        alert("Por favor ingrese un número de cédula o apellido para buscar.");
     }
-
-    updateDashboardStats();
 }
-        
-        
-        function switchTab(event, viewId) {
-            event.preventDefault();
-            document.querySelectorAll('.nav-item').forEach(item => {
-                item.classList.remove('active');
-            });
-            event.currentTarget.classList.add('active');
-            document.querySelectorAll('.section-view').forEach(view => {
-                view.classList.remove('active');
-            });
-            document.getElementById(viewId).classList.add('active');
-        }
 
-        function toggleSidebar() {
-            const sidebar = document.getElementById('sidebar');
-            const overlay = document.getElementById('sidebarOverlay');
-            sidebar.classList.toggle('open');
-            overlay.classList.toggle('active');
-        }
-
-        function toggleSidebarMobile() {
-            if (window.innerWidth <= 992) {
-                toggleSidebar();
-            }
-        }
-
-        function buscarPaciente() {
-            const query = document.getElementById('searchInput').value.trim();
-            if(query) {
-                alert("Buscando en LabControl.st por cédula o apellidos: " + query);
-            } else {
-                alert("Por favor ingrese un número de cédula o apellido para buscar.");
-            }
-        }
-
-        // Función para generar iniciales automáticas (Ej: "Glucosa en Ayunas" -> "GEA")
-        function generateInitialsId(name) {
-            const cleanName = name.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ ]/g, "").trim();
-            const words = cleanName.split(/\s+/);
-            let initials = words.map(w => w.charAt(0).toUpperCase()).join('');
-            if (!initials) initials = "EX";
-            
-            // Si las iniciales ya existen en otro examen diferente, agregar un sufijo numérico
-            let baseId = initials;
-            let counter = 1;
-            while (entries.some(e => e.id === initials)) {
-                counter++;
-                initials = baseId + counter;
-            }
-            return initials;
-        }
-
-        function saveEntry() {
-            const itemName = document.getElementById("item").value.trim();
-            const qty = parseInt(document.getElementById("qty").value);
-            const price = parseFloat(document.getElementById("price").value);
-            const editIndex = parseInt(document.getElementById("editIndex").value);
-
-            if (!itemName || isNaN(qty) || isNaN(price) || qty <= 0 || price < 0) {
-                alert("Por favor complete todos los campos correctamente.");
-                return;
-            }
-
-            if (editIndex !== -1) {
-                // Al editar, mantenemos su ID original o recalculamos si cambió el nombre drásticamente
-                entries[editIndex].item = itemName;
-                entries[editIndex].qty = qty;
-                entries[editIndex].price = price;
-                entries[editIndex].total = qty * price;
-                document.getElementById("editIndex").value = "-1";
-                document.getElementById("saveBtn").innerText = "Agregar Examen";
-            } else {
-                // Validar duplicado por nombre
-                const existingIndex = entries.findIndex(e => e.item.toLowerCase() === itemName.toLowerCase());
-
-                if (existingIndex !== -1) {
-                    entries[existingIndex].qty += qty;
-                    entries[existingIndex].price = price;
-                    entries[existingIndex].total = entries[existingIndex].qty * price;
-                    alert(`El examen "${itemName}" ya estaba en la lista. Se ha actualizado sumando la cantidad.`);
-                } else {
-                    const generatedId = generateInitialsId(itemName);
-                    entries.push({ id: generatedId, item: itemName, qty, price, total: qty * price });
-                }
-            }
-
-            persistData();
-            renderTable();
-            clearForm();
-        }
-
-        function renderTable() {
-            const tbody = document.getElementById("entryList");
-            tbody.innerHTML = "";
-            let grandTotal = 0;
-
-            entries.forEach((entry, index) => {
-                grandTotal += entry.total;
-                // Si un registro antiguo no tiene ID, lo generamos al vuelo
-                if (!entry.id) {
-                    entry.id = generateInitialsId(entry.item);
-                }
-
-                const row = tbody.insertRow();
-                row.innerHTML = `
-                    <td><span class="badge-id">${entry.id}</span></td>
-                    <td>${entry.item}</td>
-                    <td>${entry.qty}</td>
-                    <td>$${entry.price.toFixed(2)}</td>
-                    <td>$${entry.total.toFixed(2)}</td>
-                    <td>
-                        <button class="btn-edit" onclick="editEntry(${index})">Editar</button>
-                        <button class="btn-delete" onclick="deleteEntry(${index})">Eliminar</button>
-                    </td>
-                `;
-            });
-
-            document.getElementById("grandTotal").innerText = "$" + grandTotal.toFixed(2);
-        }
-
-        function editEntry(index) {
-            const entry = entries[index];
-            document.getElementById("item").value = entry.item;
-            document.getElementById("qty").value = entry.qty;
-            document.getElementById("price").value = entry.price;
-            document.getElementById("editIndex").value = index;
-            document.getElementById("saveBtn").innerText = "Actualizar Examen";
-        }
-
-        function deleteEntry(index) {
-            entries.splice(index, 1);
-            persistData();
-            renderTable();
-        }
-
-        function clearAllData() {
-            if(confirm("¿Está seguro de borrar todas las cotizaciones guardadas?")) {
-                entries = [];
-                localStorage.removeItem("lab_cotizaciones");
-                renderTable();
-            }
-        }
-
-        function persistData() {
-            localStorage.setItem("lab_cotizaciones", JSON.stringify(entries));
-        }
-
-        function clearForm() {
-            document.getElementById("item").value = "";
-            document.getElementById("qty").value = "1";
-            document.getElementById("price").value = "";
-            document.getElementById("editIndex").value = "-1";
-            document.getElementById("saveBtn").innerText = "Agregar Examen";
-        }
-
-        // EXCEL
-        function exportToExcel() {
-            if (entries.length === 0) {
-                alert("No hay exámenes en la cotización para exportar.");
-                return;
-            }
-
-            const dataToExport = entries.map(e => ({
-                "ID": e.id,
-                "Examen / Perfil": e.item,
-                "Cantidad": e.qty,
-                "Precio Unitario ($)": e.price,
-                "Total Parcial ($)": e.total
-            }));
-
-            const worksheet = XLSX.utils.json_to_sheet(dataToExport);
-            const workbook = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(workbook, worksheet, "Cotizacion_Laboratorio");
-            XLSX.writeFile(workbook, "Cotizacion_Examenes_LabControl.xlsx");
-        }
-
-        function importFromExcel(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    const data = new Uint8Array(e.target.result);
-                    const workbook = XLSX.read(data, { type: 'array' });
-                    const firstSheetName = workbook.SheetNames[0];
-                    const worksheet = workbook.Sheets[firstSheetName];
-                    const jsonSheet = XLSX.utils.sheet_to_json(worksheet);
-
-                    if (jsonSheet.length === 0) {
-                        alert("El archivo Excel está vacío.");
-                        return;
-                    }
-
-                    jsonSheet.map(row => {
-                        const itemName = String(row["Examen / Perfil"] || row["Item"] || row["item"] || "Examen sin nombre").trim();
-                        const qty = parseInt(row["Cantidad"] || row["Qty"] || row["qty"]) || 1;
-                        const price = parseFloat(row["Precio Unitario ($)"] || row["Price"] || row["price"]) || 0;
-                        const total = qty * price;
-
-                        const existingIndex = entries.findIndex(e => e.item.toLowerCase() === itemName.toLowerCase());
-                        if (existingIndex !== -1) {
-                            entries[existingIndex].qty += qty;
-                            entries[existingIndex].price = price;
-                            entries[existingIndex].total = entries[existingIndex].qty * price;
-                        } else {
-                            const generatedId = generateInitialsId(itemName);
-                            entries.push({ id: generatedId, item: itemName, qty, price, total });
-                        }
-                    });
-
-                    persistData();
-                    renderTable();
-                    alert("¡Exámenes importados con éxito!");
-                } catch (error) {
-                    alert("Error al leer el archivo Excel.");
-                    console.error(error);
-                } finally {
-                    event.target.value = ""; 
-                }
-            };
-            reader.readAsArrayBuffer(file);
-        }
-        
- // REGISTRO DE PACIENTES    
- // 1. Inicialización de datos
-let patients = JSON.parse(localStorage.getItem("lab_pacientes")) || [];
-
-window.onload = function() {
-    renderTable();       // Carga tu cotizador existente si lo tienes
-    renderPatients();    // Carga la tabla de pacientes al iniciar
-};
-
+// --- PACIENTES MODULE ---
 function savePatient(event) {
     event.preventDefault();
-
     const cedula = document.getElementById("patCedula").value.trim();
     const nombre = document.getElementById("patNombre").value.trim();
     const nacimiento = document.getElementById("patNacimiento").value || "";
@@ -1208,7 +964,6 @@ function savePatient(event) {
     const direccion = document.getElementById("patDireccion").value.trim() || "";
     const editIndex = parseInt(document.getElementById("editPatientIndex").value);
 
-    // ÚNICAMENTE LA CÉDULA Y EL NOMBRE SON OBLIGATORIOS
     if (!cedula || !nombre) {
         alert("Por favor complete los campos obligatorios: Cédula y Apellidos/Nombres.");
         return;
@@ -1220,8 +975,7 @@ function savePatient(event) {
         patients[editIndex] = nuevoPaciente;
         alert("Paciente actualizado exitosamente.");
     } else {
-        const exists = patients.some(p => p.cedula === cedula);
-        if (exists) {
+        if (patients.some(p => p.cedula === cedula)) {
             alert("Ya existe un paciente registrado con este número de cédula.");
             return;
         }
@@ -1237,10 +991,11 @@ function savePatient(event) {
 
 function renderPatients() {
     const tbody = document.getElementById("patientTableBody");
+    if (!tbody) return;
     tbody.innerHTML = "";
 
     if (patients.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--gray);">No hay pacientes registrados.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: var(--gray);">No hay pacientes registrados.</td></tr>`;
         return;
     }
 
@@ -1249,14 +1004,19 @@ function renderPatients() {
         row.innerHTML = `
             <td><span class="badge-id">${patient.cedula}</span></td>
             <td>${patient.nombre}</td>
+            <td>${patient.nacimiento || 'N/A'}</td>
+            <td>${patient.genero || 'N/A'}</td>
             <td>${patient.telefono || 'N/A'}</td>
             <td>${patient.correo || 'N/A'}</td>
+            <td>${patient.direccion || 'N/A'}</td>
             <td>
                 <button class="btn-edit" onclick="editPatient(${index})">Editar</button>
                 <button class="btn-delete" onclick="deletePatient(${index})">Eliminar</button>
             </td>
         `;
     });
+
+    updateDashboardStats();
 }
 
 function editPatient(index) {
@@ -1268,8 +1028,8 @@ function editPatient(index) {
     document.getElementById("patTelefono").value = p.telefono;
     document.getElementById("patCorreo").value = p.correo;
     document.getElementById("patDireccion").value = p.direccion;
-
     document.getElementById("editPatientIndex").value = index;
+
     document.getElementById("patientFormTitle").innerText = "Actualizar Datos del Paciente";
     document.getElementById("btnSavePatient").innerText = "Actualizar y Guardar Excel";
     document.getElementById("btnCancelPatient").style.display = "inline-block";
@@ -1282,7 +1042,7 @@ function deletePatient(index) {
         patients.splice(index, 1);
         persistPatients();
         renderPatients();
-        autoExportToExcel(); // Actualiza el Excel tras eliminar
+        autoExportToExcel();
         resetPatientForm();
     }
 }
@@ -1295,6 +1055,7 @@ function resetPatientForm() {
     document.getElementById("patCorreo").value = "";
     document.getElementById("patDireccion").value = "";
     document.getElementById("editPatientIndex").value = "-1";
+
     document.getElementById("patientFormTitle").innerText = "Nuevo Registro de Paciente";
     document.getElementById("btnSavePatient").innerText = "Guardar y Actualizar Excel";
     document.getElementById("btnCancelPatient").style.display = "none";
@@ -1306,7 +1067,6 @@ function persistPatients() {
 
 async function autoExportToExcel() {
     if (patients.length === 0) return;
-
     const dataToExport = patients.map(p => ({
         "Cédula": p.cedula,
         "Apellidos y Nombres": p.nombre,
@@ -1320,105 +1080,284 @@ async function autoExportToExcel() {
     const worksheet = XLSX.utils.json_to_sheet(dataToExport);
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, "Pacientes");
-    
-    // Generar el archivo en formato binario (ArrayBuffer)
-    const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
-    const blob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
 
-    // Verificar si el navegador soporta la API moderna para sobrescribir archivos directamente
     if ('showSaveFilePicker' in window) {
         try {
-            const options = {
-                suggestedName: 'pacientes_lab.xlsx',
-                types: [{
-                    description: 'Archivos Excel',
-                    accept: { 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': ['.xlsx'] }
-                }]
-            };
-            
-            // Si ya guardaste la referencia del archivo antes, la usamos; si no, la pedimos una vez
+            const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+            const blob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
             if (!window.fileHandle) {
-                window.fileHandle = await window.showSaveFilePicker(options);
+                window.fileHandle = await window.showSaveFilePicker({
+                    suggestedName: 'pacientes_lab.xlsx',
+                    types: [{ description: 'Archivos Excel', accept: { 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': ['.xlsx'] } }]
+                });
             }
-            
-            // Escribir directamente sobre el archivo seleccionado sin crear duplicados
             const writableStream = await window.fileHandle.createWritable();
             await writableStream.write(blob);
             await writableStream.close();
-            console.log("Archivo actualizado exitosamente en la misma ruta.");
             return;
         } catch (err) {
-            console.log("El usuario canceló el selector o el navegador restringió la acción. Usando método tradicional...", err);
+            console.log("Fallback a descarga tradicional por interactividad requerida.", err);
         }
     }
-
-    // Método alternativo (si el navegador no soporta la API o se cancela el selector)
     XLSX.writeFile(workbook, "pacientes_lab.xlsx");
 }
 
- // kista resultados
-        
-        let listaResultadosCache = [];
+// --- COTIZADOR MODULE ---
+function generateInitialsId(name) {
+    const cleanName = name.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ ]/g, "").trim();
+    const words = cleanName.split(/\s+/);
+    let initials = words.map(w => w.charAt(0).toUpperCase()).join('');
+    if (!initials) initials = "EX";
+    
+    let baseId = initials;
+    let counter = 1;
+    while (entries.some(e => e.id === initials)) {
+        counter++;
+        initials = baseId + counter;
+    }
+    return initials;
+}
 
+function saveEntry() {
+    const itemName = document.getElementById("item").value.trim();
+    const qty = parseInt(document.getElementById("qty").value);
+    const price = parseFloat(document.getElementById("price").value);
+    const editIndex = parseInt(document.getElementById("editIndex").value);
+
+    if (!itemName || isNaN(qty) || isNaN(price) || qty <= 0 || price < 0) {
+        alert("Por favor complete todos los campos correctamente.");
+        return;
+    }
+
+    if (editIndex !== -1) {
+        entries[editIndex].item = itemName;
+        entries[editIndex].qty = qty;
+        entries[editIndex].price = price;
+        entries[editIndex].total = qty * price;
+        document.getElementById("editIndex").value = "-1";
+        document.getElementById("saveBtn").innerText = "Agregar Examen";
+    } else {
+        const existingIndex = entries.findIndex(e => e.item.toLowerCase() === itemName.toLowerCase());
+        if (existingIndex !== -1) {
+            entries[existingIndex].qty += qty;
+            entries[existingIndex].price = price;
+            entries[existingIndex].total = entries[existingIndex].qty * price;
+            alert(`El examen "${itemName}" ya estaba en la lista. Se actualizó la cantidad.`);
+        } else {
+            const generatedId = generateInitialsId(itemName);
+            entries.push({ id: generatedId, item: itemName, qty, price, total: qty * price });
+        }
+    }
+
+    persistData();
+    renderTable();
+    clearForm();
+}
+
+function renderTable() {
+    const tbody = document.getElementById("entryList");
+    if (!tbody) return;
+    tbody.innerHTML = "";
+    let grandTotal = 0;
+
+    entries.forEach((entry, index) => {
+        grandTotal += entry.total;
+        if (!entry.id) entry.id = generateInitialsId(entry.item);
+
+        const row = tbody.insertRow();
+        row.innerHTML = `
+            <td><span class="badge-id">${entry.id}</span></td>
+            <td>${entry.item}</td>
+            <td>${entry.qty}</td>
+            <td>$${entry.price.toFixed(2)}</td>
+            <td>$${entry.total.toFixed(2)}</td>
+            <td>
+                <button class="btn-edit" onclick="editEntry(${index})">Editar</button>
+                <button class="btn-delete" onclick="deleteEntry(${index})">Eliminar</button>
+            </td>
+        `;
+    });
+
+    document.getElementById("grandTotal").innerText = "$" + grandTotal.toFixed(2);
+    updateDashboardStats();
+}
+
+function editEntry(index) {
+    const entry = entries[index];
+    document.getElementById("item").value = entry.item;
+    document.getElementById("qty").value = entry.qty;
+    document.getElementById("price").value = entry.price;
+    document.getElementById("editIndex").value = index;
+    document.getElementById("saveBtn").innerText = "Actualizar Examen";
+}
+
+function deleteEntry(index) {
+    entries.splice(index, 1);
+    persistData();
+    renderTable();
+}
+
+function clearAllData() {
+    if (confirm("¿Está seguro de borrar todas las cotizaciones guardadas?")) {
+        entries = [];
+        localStorage.removeItem("lab_cotizaciones");
+        renderTable();
+    }
+}
+
+function persistData() {
+    localStorage.setItem("lab_cotizaciones", JSON.stringify(entries));
+}
+
+function clearForm() {
+    document.getElementById("item").value = "";
+    document.getElementById("qty").value = "1";
+    document.getElementById("price").value = "";
+    document.getElementById("editIndex").value = "-1";
+    document.getElementById("saveBtn").innerText = "Agregar Examen";
+}
+
+function exportToExcel() {
+    if (entries.length === 0) {
+        alert("No hay exámenes en la cotización para exportar.");
+        return;
+    }
+    const dataToExport = entries.map(e => ({
+        "ID": e.id,
+        "Examen / Perfil": e.item,
+        "Cantidad": e.qty,
+        "Precio Unitario ($)": e.price,
+        "Total Parcial ($)": e.total
+    }));
+
+    const worksheet = XLSX.utils.json_to_sheet(dataToExport);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Cotizacion_Laboratorio");
+    XLSX.writeFile(workbook, "Cotizacion_Examenes_LabControl.xlsx");
+}
+
+function importFromExcel(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        try {
+            const data = new Uint8Array(e.target.result);
+            const workbook = XLSX.read(data, { type: 'array' });
+            const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+            const jsonSheet = XLSX.utils.sheet_to_json(worksheet);
+
+            jsonSheet.forEach(row => {
+                const itemName = String(row["Examen / Perfil"] || row["Item"] || "Examen sin nombre").trim();
+                const qty = parseInt(row["Cantidad"] || row["Qty"]) || 1;
+                const price = parseFloat(row["Precio Unitario ($)"] || row["Price"]) || 0;
+
+                const existingIndex = entries.findIndex(e => e.item.toLowerCase() === itemName.toLowerCase());
+                if (existingIndex !== -1) {
+                    entries[existingIndex].qty += qty;
+                    entries[existingIndex].price = price;
+                    entries[existingIndex].total = entries[existingIndex].qty * price;
+                } else {
+                    const generatedId = generateInitialsId(itemName);
+                    entries.push({ id: generatedId, item: itemName, qty, price, total: qty * price });
+                }
+            });
+
+            persistData();
+            renderTable();
+            alert("¡Exámenes importados con éxito!");
+        } catch (error) {
+            alert("Error al leer el archivo Excel.");
+        } finally {
+            event.target.value = "";
+        }
+    };
+    reader.readAsArrayBuffer(file);
+}
+
+// --- RESULTADOS MODULE & SERVLET INTERACTION ---
 function consultarResultadosPorOrden() {
     const idOrden = document.getElementById("buscarIdOrden").value.trim();
-    
     if (!idOrden) {
         alert("Por favor ingrese un N° de Orden para buscar.");
         return;
     }
 
-    // Petición al Servlet con el parámetro id_orden
     fetch(`../BuscarResultadosServlet?id_orden=${encodeURIComponent(idOrden)}`)
         .then(response => {
-            if (!response.ok) {
-                throw new Error("No se pudo obtener respuesta del servidor.");
-            }
+            if (!response.ok) throw new Error("No se pudo obtener respuesta del servidor.");
             return response.json();
         })
         .then(data => {
-            const tbody = document.getElementById("resultadosTableBody");
-            tbody.innerHTML = "";
-
-            if (!Array.isArray(data) || data.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--gray);">No hay exámenes registrados para la orden ${idOrden}.</td></tr>`;
-                document.getElementById("infoPacienteOrden").style.display = "none";
-                return;
-            }
-
-            listaResultadosCache = data;
-
-            // Mostrar información del paciente utilizando el primer registro del JSON
-            const pacienteInfo = data[0];
-            document.getElementById("lblPaciente").innerText = pacienteInfo.nombre_paciente || 'N/A';
-            document.getElementById("lblCodDoc").innerText = pacienteInfo.cod_doc || 'N/A';
-            document.getElementById("lblEdad").innerText = pacienteInfo.edad || 'N/A';
-            document.getElementById("lblFecha").innerText = pacienteInfo.fecha_registro || 'N/A';
-            document.getElementById("infoPacienteOrden").style.display = "block";
-
-            // Asignar el N° de orden al formulario
-            document.getElementById("res_id_orden").value = idOrden;
-
-            // Poblar la tabla
-            data.forEach((item, index) => {
-                const row = tbody.insertRow();
-                row.innerHTML = `
-                    <td><span class="badge-id">${item.id_orden}</span></td>
-                    <td>${item.categoria || '-'}</td>
-                    <td><strong>${item.nombre_examen || '-'}</strong></td>
-                    <td><strong>${item.resultado || '-'}</strong> <small>${item.unidad || ''}</small></td>
-                    <td><small>${item.valores_referencia || '-'}</small></td>
-                    <td>
-                        <button class="btn-edit" onclick="cargarResultadoForm(${index})">Editar</button>
-                        <button class="btn-delete" onclick="eliminarResultadoMemoria(${index})">Eliminar</button>
-                    </td>
-                `;
-            });
+            renderResultadosTabla(data, idOrden);
         })
         .catch(error => {
             console.error("Error al consultar:", error);
-            alert("Ocurrió un error al consultar la orden.");
+            alert("Ocurrió un error al consultar la orden desde el servidor.");
         });
+}
+
+function renderResultadosTabla(data, idOrden) {
+    const tbody = document.getElementById("resultadosTableBody");
+    tbody.innerHTML = "";
+
+    if (!Array.isArray(data) || data.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--gray);">No hay exámenes registrados para la orden ${idOrden}.</td></tr>`;
+        document.getElementById("infoPacienteOrden").style.display = "none";
+        return;
+    }
+
+    listaResultadosCache = data;
+    const pacienteInfo = data[0];
+    document.getElementById("lblPaciente").innerText = pacienteInfo.nombre_paciente || 'N/A';
+    document.getElementById("lblCodDoc").innerText = pacienteInfo.cod_doc || 'N/A';
+    document.getElementById("lblEdad").innerText = pacienteInfo.edad || 'N/A';
+    document.getElementById("lblFecha").innerText = pacienteInfo.fecha_registro || 'N/A';
+    document.getElementById("infoPacienteOrden").style.display = "block";
+    document.getElementById("res_id_orden").value = idOrden;
+
+    data.forEach((item, index) => {
+        const row = tbody.insertRow();
+        row.innerHTML = `
+            <td><span class="badge-id">${item.id_orden}</span></td>
+            <td>${item.categoria || '-'}</td>
+            <td><strong>${item.nombre_examen || '-'}</strong></td>
+            <td><strong>${item.resultado || '-'}</strong> <small>${item.unidad || ''}</small></td>
+            <td><small>${item.valores_referencia || '-'}</small></td>
+            <td>
+                <button class="btn-edit" onclick="cargarResultadoForm(${index})">Editar</button>
+                <button class="btn-delete" onclick="eliminarResultadoMemoria(${index})">Eliminar</button>
+            </td>
+        `;
+    });
+}
+
+function guardarResultado() {
+    const index = parseInt(document.getElementById("res_index").value);
+    const id_orden = document.getElementById("res_id_orden").value.trim();
+    const categoria = document.getElementById("res_categoria").value;
+    const nombre_examen = document.getElementById("res_nombre_examen").value.trim();
+    const resultado = document.getElementById("res_resultado").value.trim();
+    const unidad = document.getElementById("res_unidad").value.trim();
+    const valores_referencia = document.getElementById("res_valores_referencia").value.trim();
+
+    if (!id_orden || !categoria || !nombre_examen || !resultado) {
+        alert("Complete los campos obligatorios para el resultado.");
+        return;
+    }
+
+    const nuevoResultado = { id_orden, categoria, nombre_examen, resultado, unidad, valores_referencia };
+
+    if (index !== -1 && listaResultadosCache[index]) {
+        listaResultadosCache[index] = { ...listaResultadosCache[index], ...nuevoResultado };
+    } else {
+        listaResultadosCache.push(nuevoResultado);
+    }
+
+    renderResultadosTabla(listaResultadosCache, id_orden);
+    resetFormResultado();
+    alert("Resultado guardado correctamente.");
 }
 
 function cargarResultadoForm(index) {
@@ -1436,6 +1375,14 @@ function cargarResultadoForm(index) {
     document.getElementById("resultadoFormTitle").innerText = "Editar Resultado";
     document.getElementById("btnSaveResultado").innerText = "Actualizar Resultado";
     document.getElementById("btnCancelResultado").style.display = "inline-block";
+}
+
+function eliminarResultadoMemoria(index) {
+    if (confirm("¿Desea eliminar este examen del listado actual?")) {
+        const idOrden = document.getElementById("res_id_orden").value;
+        listaResultadosCache.splice(index, 1);
+        renderResultadosTabla(listaResultadosCache, idOrden);
+    }
 }
 
 function resetFormResultado() {
