@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -15,16 +14,13 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
+@WebServlet("/EliminarResultadoServlet")
+public class EliminarResultadoServlet extends HttpServlet {
 
-@WebServlet("/BuscarResultadosServlet")
-public class BuscarResultadosServlet extends HttpServlet {
-
-    private static final Logger LOGGER = Logger.getLogger(BuscarResultadosServlet.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(EliminarResultadoServlet.class.getName());
 
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) 
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) 
             throws ServletException, IOException {
         
         request.setCharacterEncoding("UTF-8");
@@ -33,10 +29,11 @@ public class BuscarResultadosServlet extends HttpServlet {
         PrintWriter out = response.getWriter();
 
         String idOrden = request.getParameter("id_orden");
+        String nombreExamen = request.getParameter("nombre_examen");
 
-        if (idOrden == null || idOrden.trim().isEmpty()) {
+        if (idOrden == null || idOrden.trim().isEmpty() || nombreExamen == null || nombreExamen.trim().isEmpty()) {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            out.print("{\"status\":\"error\", \"message\":\"El id_orden es requerido.\"}");
+            out.print("{\"status\":\"error\", \"message\":\"id_orden y nombre_examen son requeridos para eliminar.\"}");
             return;
         }
 
@@ -47,37 +44,23 @@ public class BuscarResultadosServlet extends HttpServlet {
                 return;
             }
 
-            String sql = "SELECT * FROM laboratorio_resultados WHERE id_orden = ?";
+            String sql = "DELETE FROM laboratorio_resultados WHERE id_orden = ? AND nombre_examen = ?";
             try (PreparedStatement stmt = conn.prepareStatement(sql)) {
                 stmt.setString(1, idOrden);
-                ResultSet rs = stmt.executeQuery();
+                stmt.setString(2, nombreExamen);
+                int filasAfectadas = stmt.executeUpdate();
 
-                JSONArray resultados = new JSONArray();
-                while (rs.next()) {
-                    JSONObject item = new JSONObject();
-                    item.put("id_orden", rs.getString("id_orden"));
-                    item.put("cod_doc", rs.getString("cod_doc"));
-                    item.put("nombre_paciente", rs.getString("nombre_paciente"));
-                    item.put("fecha_nacimiento", rs.getString("fecha_nacimiento"));
-                    item.put("edad", rs.getString("edad"));
-                    item.put("fecha_registro", rs.getString("fecha_registro"));
-                    item.put("sexo", rs.getString("sexo"));
-                    item.put("telefono", rs.getString("telefono"));
-                    item.put("categoria", rs.getString("categoria"));
-                    item.put("nombre_examen", rs.getString("nombre_examen"));
-                    item.put("resultado", rs.getString("resultado"));
-                    item.put("unidad", rs.getString("unidad"));
-                    item.put("valores_referencia", rs.getString("valores_referencia"));
-
-                    resultados.put(item);
+                if (filasAfectadas > 0) {
+                    out.print("{\"status\":\"success\", \"message\":\"Examen eliminado exitosamente de la base de datos.\"}");
+                } else {
+                    response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                    out.print("{\"status\":\"error\", \"message\":\"No se encontró el examen especificado para esta orden.\"}");
                 }
-
-                out.print(resultados.toString());
             }
         } catch (SQLException e) {
-            LOGGER.log(Level.SEVERE, "Error al buscar orden: " + e.getMessage(), e);
+            LOGGER.log(Level.SEVERE, "Error al eliminar resultado: " + e.getMessage(), e);
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            out.print("{\"status\":\"error\", \"message\":\"" + e.getMessage() + "\"}");
+            out.print("{\"status\":\"error\", \"message\":\"" + e.getMessage().replace("\"", "'") + "\"}");
         }
     }
 }
