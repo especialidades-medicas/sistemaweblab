@@ -331,6 +331,19 @@ body {
 /* --------------------------------------------------------------------------
    4. SISTEMA DE NAVEGACIÓN POR PESTAÑAS (Categorías y Sub-pestañas)
    -------------------------------------------------------------------------- */
+/* Contenedor principal alineado */
+.tabs-wrapper {
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px;
+    width: 100%;
+}
+/* Permite que el contenedor de pestañas respete el espacio horizontal en Flexbox */
+#mainTabs.lab-main-tabs {
+    flex: 1 1 auto !important;
+    min-width: 0 !important; /* Evita que las flechas se desplacen arriba/abajo */
+    margin-bottom: 0 !important;
+}
 
 /* Contenedor principal que envuelve pestañas y flechas laterales */
 .tabs-wrapper {
@@ -341,21 +354,25 @@ body {
     width: 100%;
 }
 
-/* Botones / Flechas de desplazamiento lateral */
+/* Diseño de los botones de flecha */
 .tab-scroll-btn {
+    width: 34px;
+    height: 34px;
+    min-width: 34px;
+    border-radius: 50%;
     border: 1px solid var(--lab-border);
     background-color: #ffffff;
-    color: #64748b;
-    border-radius: 50%;
-    width: 32px;
-    height: 32px;
+    color: #475569;
+    font-size: 18px;
+    font-weight: bold;
+    line-height: 1;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    flex-shrink: 0;
-    transition: all 0.2s ease-in-out;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    user-select: none;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.06);
 }
 
 .tab-scroll-btn:hover {
