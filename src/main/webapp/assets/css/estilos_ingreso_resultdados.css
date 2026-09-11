@@ -639,11 +639,13 @@ body {
 
    ========================================================================== */
  #pedidoContainer {
-    width: 98% !important;
-    max-width: 99% !important;
+    width: 97% !important;
+    max-width: 98% !important;
     margin: 0 auto !important;
-    background-color: #ffffff !important;
-    }
+    background-color: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+}
     
 /* Contenedor Principal: Marco de Acero y Márgenes Externe/Internos */
 
