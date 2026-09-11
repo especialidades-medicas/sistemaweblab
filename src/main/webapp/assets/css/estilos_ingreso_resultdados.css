@@ -648,17 +648,15 @@ body {
 /* Contenedor Principal: Marco de Acero y Márgenes Externe/Internos */
 
 
-/* Tarjetas e Ingresos con Textura Platinada */
+/* Tarjeta / Marco del Reporte sin línea exterior */
 .pedido-box, 
 #pedidoContainer .card {
     background: #ffffff !important;
-    
-    border-radius: 10px !important;
+    border: none !important;            /* Elimina el borde gris/azul del contorno */
+    border-radius: 0 !important;        /* Quita las esquinas redondeadas externas */
     padding: 16px !important;
-    margin-bottom: 20px !important;
-    box-shadow: 
-        0 4px 6px -1px rgba(0, 0, 0, 0.05),
-        inset 0 1px 0 rgba(255, 255, 255, 0.8) !important;
+    margin-bottom: 0 !important;
+    box-shadow: none !important;         /* Elimina la sombra que rodea el documento */
 }
 
 /* Encabezados de Sección con Destello Metálico */
