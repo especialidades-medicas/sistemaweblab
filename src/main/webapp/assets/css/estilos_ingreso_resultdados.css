@@ -331,6 +331,39 @@ body {
 /* --------------------------------------------------------------------------
    4. SISTEMA DE NAVEGACIÓN POR PESTAÑAS (Categorías y Sub-pestañas)
    -------------------------------------------------------------------------- */
+
+/* Contenedor principal que envuelve pestañas y flechas laterales */
+.tabs-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    position: relative;
+    width: 100%;
+}
+
+/* Botones / Flechas de desplazamiento lateral */
+.tab-scroll-btn {
+    border: 1px solid var(--lab-border);
+    background-color: #ffffff;
+    color: #64748b;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: all 0.2s ease-in-out;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.tab-scroll-btn:hover {
+    background-color: var(--lab-primary);
+    color: #ffffff;
+    border-color: var(--lab-primary);
+}
+
 /* Menú Principal Fluido con Scroll Horizontal */
 #mainTabs, .lab-main-tabs {
     display: flex !important;
@@ -340,15 +373,30 @@ body {
     padding-bottom: 8px;
     gap: 6px;
     border-bottom: 2px solid var(--lab-border) !important;
+    flex-grow: 1; /* Permite ocupar todo el espacio entre las flechas */
+    scroll-behavior: smooth; /* Permite desplazamiento suave */
 }
 
+/* MODIFICADO: Grosor del Scrollbar (Aumentado de 5px a 10px) */
 #mainTabs::-webkit-scrollbar, .lab-main-tabs::-webkit-scrollbar {
-    height: 5px;
+    height: 10px !important;
 }
 
+/* NUEVO: Pista del Scrollbar (Fondo gris claro) */
+#mainTabs::-webkit-scrollbar-track, .lab-main-tabs::-webkit-scrollbar-track {
+    background: #f1f5f9;
+    border-radius: 6px;
+}
+
+/* MODIFICADO: Barra/Jalador de desplazamiento */
 #mainTabs::-webkit-scrollbar-thumb, .lab-main-tabs::-webkit-scrollbar-thumb {
-    background: var(--lab-border);
-    border-radius: 4px;
+    background: #cbd5e1 !important; /* Tono gris visible */
+    border-radius: 6px;
+}
+
+/* NUEVO: Cambio de color al pasar el cursor sobre la barra */
+#mainTabs::-webkit-scrollbar-thumb:hover, .lab-main-tabs::-webkit-scrollbar-thumb:hover {
+    background: var(--lab-primary) !important;
 }
 
 #mainTabs .nav-link, .lab-main-tabs .nav-link {
