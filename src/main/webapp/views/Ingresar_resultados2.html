@@ -4544,8 +4544,13 @@ document.addEventListener("DOMContentLoaded", function () {
     const btnRight = document.getElementById("btnScrollRight");
 
     if (mainTabs && btnLeft && btnRight) {
-        btnLeft.addEventListener("click", () => mainTabs.scrollBy({ left: -250, behavior: "smooth" }));
-        btnRight.addEventListener("click", () => mainTabs.scrollBy({ left: 250, behavior: "smooth" }));
+        btnLeft.addEventListener("click", function () {
+            mainTabs.scrollBy({ left: -250, behavior: "smooth" });
+        });
+
+        btnRight.addEventListener("click", function () {
+            mainTabs.scrollBy({ left: 250, behavior: "smooth" });
+        });
     }
 });
         
