@@ -706,3 +706,30 @@ body {
     color: #334155 !important;
     font-weight: 600 !important;
 }
+
+/* ==========================================================================
+   ELIMINAR MARCO DEL BLOQUE DE DATOS DEL PACIENTE Y CONTENEDORES
+   ========================================================================== */
+
+/* 1. Elimina el borde redondeado del recuadro del paciente */
+#pedidoContainer fieldset,
+#pedidoContainer .card,
+#pedidoContainer .border,
+#pedidoContainer .rounded,
+.datos-paciente,
+.info-paciente-box {
+    border: none !important;
+    box-shadow: none !important;
+    outline: none !important;
+    background: transparent !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+}
+
+/* 2. Quita bordes de los contenedores de pestañas y paneles inferiores */
+.tab-content,
+.tab-pane,
+.nav-tabs {
+    border: none !important;
+    box-shadow: none !important;
+}
