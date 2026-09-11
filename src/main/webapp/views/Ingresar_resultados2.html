@@ -117,9 +117,13 @@
     </div>
 </div>
 
-            <!-- Sistema de Pestañas con las 17 Categorías (Oculto al imprimir/exportar) -->            
-            <ul class="nav nav-tabs mb-2 flex-wrap no-print" id="mainTabs" role="tablist">
-                <li class="nav-item" role="presentation"><button class="nav-link active py-1 px-3 small fw-bold" id="hematologia-tab" data-bs-toggle="tab" data-bs-target="#hematologiaContent" type="button" role="tab">Hematología</button></li>
+            <!-- Sistema de Pestañas con las 17 Categorías (Oculto al imprimir/exportar) -->           
+			<div class="tabs-wrapper no-print mb-2">
+    			<button type="button" class="tab-scroll-btn no-print" id="btnScrollLeft" title="Anterior">‹</button>
+				
+            <ul class="nav nav-tabs lab-main-tabs flex-nowrap mb-0 mb-2 flex-wrap no-print" id="mainTabs" role="tablist">
+			
+        		<li class="nav-item" role="presentation"><button class="nav-link active py-1 px-3 small fw-bold" id="hematologia-tab" data-bs-toggle="tab" data-bs-target="#hematologiaContent" type="button" role="tab">Hematología</button></li>
                 <li class="nav-item" role="presentation"><button class="nav-link py-1 px-3 small fw-bold" id="qs-tab" data-bs-toggle="tab" data-bs-target="#qsContent" type="button" role="tab">Química Sanguínea</button></li>
                 <li class="nav-item" role="presentation"><button class="nav-link py-1 px-3 small fw-bold" id="hepaticas-tab" data-bs-toggle="tab" data-bs-target="#hepaticasContent" type="button" role="tab">Hepáticas</button></li>
                 <li class="nav-item" role="presentation"><button class="nav-link py-1 px-3 small fw-bold" id="electrolitos-tab" data-bs-toggle="tab" data-bs-target="#electrolitosContent" type="button" role="tab">Electrolitos</button></li>
@@ -137,6 +141,9 @@
                 <li class="nav-item" role="presentation"><button class="nav-link py-1 px-3 small fw-bold" id="covid-tab" data-bs-toggle="tab" data-bs-target="#covidContent" type="button" role="tab">Covid</button></li>
                 <li class="nav-item" role="presentation"><button class="nav-link py-1 px-3 small fw-bold" id="comentario-tab" data-bs-toggle="tab" data-bs-target="#comentarioContent" type="button" role="tab">Comentario</button></li>
             </ul>
+
+				<button type="button" class="tab-scroll-btn no-print" id="btnScrollRight" title="Siguiente">›</button>
+			</div>
 
             <!-- Contenido de Pestañas (Paneles de edición en pantalla) -->
             <div class="tab-content no-print" id="mainTabContent">
@@ -4529,6 +4536,18 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 });
 
+		
+		//flecha barra navergar nav examenes
+document.addEventListener("DOMContentLoaded", function () {
+    const mainTabs = document.getElementById("mainTabs");
+    const btnLeft = document.getElementById("btnScrollLeft");
+    const btnRight = document.getElementById("btnScrollRight");
+
+    if (mainTabs && btnLeft && btnRight) {
+        btnLeft.addEventListener("click", () => mainTabs.scrollBy({ left: -250, behavior: "smooth" }));
+        btnRight.addEventListener("click", () => mainTabs.scrollBy({ left: 250, behavior: "smooth" }));
+    }
+});
         
     </script>
 </body>
