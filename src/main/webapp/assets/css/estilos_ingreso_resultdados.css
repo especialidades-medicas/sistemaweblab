@@ -712,24 +712,27 @@ body {
    ========================================================================== */
 
 /* 1. Elimina el borde redondeado del recuadro del paciente */
+/* ==========================================================================
+   ELIMINACIÓN FORZADA DE MARCOS Y CONTENEDORES
+   ========================================================================== */
+
+/* Anula bordes de fieldsets, tarjetas y clases de Bootstrap dentro del contenedor */
 #pedidoContainer fieldset,
-#pedidoContainer .card,
 #pedidoContainer .border,
 #pedidoContainer .rounded,
-.datos-paciente,
-.info-paciente-box {
+#pedidoContainer .card,
+#pedidoContainer .card-body,
+#pedidoContainer div[class*="border"],
+#pedidoContainer div[class*="rounded"] {
     border: none !important;
+    border-width: 0 !important;
     box-shadow: none !important;
     outline: none !important;
-    background: transparent !important;
-    padding-left: 0 !important;
-    padding-right: 0 !important;
+    background-color: transparent !important;
 }
 
-/* 2. Quita bordes de los contenedores de pestañas y paneles inferiores */
-.tab-content,
-.tab-pane,
-.nav-tabs {
-    border: none !important;
-    box-shadow: none !important;
+/* Conserva únicamente el borde de las cajas de texto/selección */
+#pedidoContainer input.form-control,
+#pedidoContainer select.form-select {
+    border: 1px solid #94a3b8 !important;
 }
