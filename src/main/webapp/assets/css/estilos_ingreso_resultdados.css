@@ -173,34 +173,34 @@ body {
     z-index: 3;
 }
 
+/* 1. Botones de Acción Global / Barra Flotante Liquid Glass */
 .action-btn {
     position: relative;
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.25);
     border: 1px solid var(--glass-border);
-    width: 40px;
-    height: 40px;
+    width: 42px;
+    height: 42px;
     border-radius: 50%;
-    font-size: 16px;
+    font-size: 17px;
     color: var(--icon-active);
     cursor: pointer;
-    display: flex;
+    display: inline-flex;
     align-items: center;
     justify-content: center;
-    -webkit-tap-highlight-color: transparent;
-    transition: all 0.2s ease;
-    outline: none;
-    z-index: 3;
-    text-decoration: none;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+    backdrop-filter: blur(8px);
 }
 
 .action-btn:hover {
     background: var(--pill-bg);
-    box-shadow: var(--pill-shadow);
-    transform: translateY(-1px);
+    border-color: var(--lab-primary);
+    transform: translateY(-2px) scale(1.04);
+    box-shadow: 0 6px 16px rgba(2, 132, 199, 0.25);
 }
-
 .action-btn:active {
-    transform: scale(0.9);
+    transform: translateY(0) scale(0.95);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 /* Colores Dinámicos de Botones */
@@ -349,29 +349,22 @@ body {
 
 /* Diseño de los botones de flecha */
 .tab-scroll-btn {
-    width: 34px;
-    height: 34px;
-    min-width: 34px;
+    width: 32px;
+    height: 32px;
+    min-width: 32px;
     border-radius: 50%;
-    border: 1px solid var(--lab-border);
-    background-color: #ffffff;
-    color: #475569;
-    font-size: 18px;
-    font-weight: bold;
-    line-height: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    user-select: none;
+    border: 1px solid #cbd5e1;
+    background: #ffffff;
+    color: #0284c7;
     transition: all 0.2s ease;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.06);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 .tab-scroll-btn:hover {
-    background-color: var(--lab-primary);
+    background: #0284c7;
     color: #ffffff;
-    border-color: var(--lab-primary);
+    border-color: #0284c7;
+    box-shadow: 0 4px 8px rgba(2, 132, 199, 0.3);
 }
 
 /* Menú Principal Fluido con Scroll Horizontal */
