@@ -336,22 +336,15 @@ body {
     display: flex !important;
     align-items: center !important;
     gap: 8px;
+    position: relative;
     width: 100%;
 }
+
 /* Permite que el contenedor de pestañas respete el espacio horizontal en Flexbox */
 #mainTabs.lab-main-tabs {
     flex: 1 1 auto !important;
-    min-width: 0 !important; /* Evita que las flechas se desplacen arriba/abajo */
+    min-width: 0 !important;
     margin-bottom: 0 !important;
-}
-
-/* Contenedor principal que envuelve pestañas y flechas laterales */
-.tabs-wrapper {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    position: relative;
-    width: 100%;
 }
 
 /* Diseño de los botones de flecha */
@@ -390,28 +383,25 @@ body {
     padding-bottom: 8px;
     gap: 6px;
     border-bottom: 2px solid var(--lab-border) !important;
-    flex-grow: 1; /* Permite ocupar todo el espacio entre las flechas */
-    scroll-behavior: smooth; /* Permite desplazamiento suave */
+    flex-grow: 1;
+    scroll-behavior: smooth;
 }
 
-/* MODIFICADO: Grosor del Scrollbar (Aumentado de 5px a 10px) */
+/* Scrollbar personalizado */
 #mainTabs::-webkit-scrollbar, .lab-main-tabs::-webkit-scrollbar {
     height: 10px !important;
 }
 
-/* NUEVO: Pista del Scrollbar (Fondo gris claro) */
 #mainTabs::-webkit-scrollbar-track, .lab-main-tabs::-webkit-scrollbar-track {
     background: #f1f5f9;
     border-radius: 6px;
 }
 
-/* MODIFICADO: Barra/Jalador de desplazamiento */
 #mainTabs::-webkit-scrollbar-thumb, .lab-main-tabs::-webkit-scrollbar-thumb {
-    background: #cbd5e1 !important; /* Tono gris visible */
+    background: #cbd5e1 !important;
     border-radius: 6px;
 }
 
-/* NUEVO: Cambio de color al pasar el cursor sobre la barra */
 #mainTabs::-webkit-scrollbar-thumb:hover, .lab-main-tabs::-webkit-scrollbar-thumb:hover {
     background: var(--lab-primary) !important;
 }
