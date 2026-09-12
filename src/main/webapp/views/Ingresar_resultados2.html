@@ -2798,11 +2798,7 @@
 <button type="button" class="btn btn-primary btn-sm ms-2 no-print" onclick="guardarEnBaseDeDatos()">
     <i class="bi bi-cloud-arrow-up-fill me-1"></i> Guardar en la Nube
 </button>
-		<div class="row mt-2">
-             <div class="col-md-3">
-            <button type="button" class="btn btn-primary btn-sm w-100 no-print" onclick="imprimirSobres()">Sobres</button>
-            </div>
-        </div>
+		
             
             <!-- TABLA UNIFICADA DE RESULTADOS (Agrupa por categoría y oculta inputs al imprimir/PDF) -->
             <div class="mb-3">
@@ -2952,7 +2948,12 @@
                         </svg>
                     </span>
                 </button>
-            </nav>          
+            </nav>
+		<div class="row mt-2">
+             <div class="col-md-3">
+            <button type="button" class="btn btn-primary btn-sm w-100 no-print" id="modalSobre" onclick="imprimirSobres()">Sobres</button>
+            </div>
+        </div>
             
             <!-- Footer Horario -->
             <div class="footer-banner mt-2 text-center text-muted small border-top pt-1" style="font-size: 8px;">
@@ -4608,25 +4609,30 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 function imprimirSobres() {
+    const modal = document.getElementById('modalSobre');
+    if (!modal) {
+        alert("Falta agregar el código HTML del modal en tu archivo.");
+        return;
+    }
+
     const nombreInput = document.getElementById('nombrePaciente');
     const fechaInput = document.getElementById('fechaActual');
 
     const nombreVal = (nombreInput && nombreInput.value.trim() !== '') ? nombreInput.value.trim() : 'SIN NOMBRE';
     const fechaVal = (fechaInput && fechaInput.value.trim() !== '') ? fechaInput.value.trim() : 'SIN FECHA';
 
-    // Rellena los datos en las vistas previas visuales del modal
+    // Rellena la vista previa en el modal
     document.querySelectorAll('.preview-nombre').forEach(el => el.innerText = nombreVal);
     document.querySelectorAll('.preview-fecha').forEach(el => el.innerText = fechaVal);
 
-    // Rellena los datos en la plantilla que se enviará físicamente a la impresora
+    // Rellena la plantilla que se enviará físicamente al papel
     const sobreNombre = document.getElementById('sobreNombrePrint');
     const sobreFecha = document.getElementById('sobreFechaPrint');
     if (sobreNombre) sobreNombre.innerText = nombreVal;
     if (sobreFecha) sobreFecha.innerText = fechaVal;
 
-    // Muestra la ventana emergente en pantalla
-    const modal = document.getElementById('modalSobre');
-    if (modal) modal.style.display = 'flex';
+    // Muestra la ventana emergente
+    modal.style.display = 'flex';
 }
 
 function cerrarModalSobre() {
