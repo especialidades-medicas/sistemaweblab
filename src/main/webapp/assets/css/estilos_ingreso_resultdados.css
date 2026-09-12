@@ -736,3 +736,56 @@ body {
 #pedidoContainer select.form-select {
     border: 1px solid #94a3b8 !important;
 }
+
+
+/* ==========================================================================
+   ESTILOS PARA MODAL E IMPRESIÓN DE SOBRES (Añadir al final del archivo)
+   ========================================================================== */
+.modal-overlay-sobre {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(0, 0, 0, 0.45); backdrop-filter: blur(2px);
+  display: flex; justify-content: center; align-items: center; z-index: 99999;
+}
+.modal-card-sobre {
+  background: #fff; border-radius: 16px; padding: 25px;
+  max-width: 600px; width: 90%; text-align: center;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.25); font-family: sans-serif;
+}
+.opciones-sobre-container { display: flex; gap: 15px; margin: 20px 0; }
+.card-opcion-sobre {
+  border: 1.5px solid #e5e7eb; border-radius: 12px; padding: 12px;
+  width: 50%; cursor: pointer; transition: all 0.2s; background: #fff;
+}
+.card-opcion-sobre:hover { border-color: #0d3b66; transform: translateY(-2px); }
+.preview-box-sobre { height: 170px; display: flex; align-items: center; justify-content: center; background: #fff; }
+.envelope-shape { border: 2px solid #000; position: relative; background: #fff; }
+.envelope-shape.horizontal { width: 170px; height: 95px; }
+.solapa-h { border-bottom: 2px solid #000; height: 20px; border-radius: 0 0 50% 50%; }
+.envelope-text { font-size: 8px; text-align: left; padding: 5px; color: #000; }
+.envelope-shape.vertical { width: 95px; height: 155px; overflow: hidden; }
+.solapa-v { border-left: 2px solid #000; width: 20px; height: 100%; position: absolute; right: 0; border-radius: 50% 0 0 50%; }
+.envelope-text-v {
+  font-size: 8px; text-align: left; transform: rotate(90deg);
+  transform-origin: top left; position: absolute; left: 42px; top: 12px; white-space: nowrap; color: #000;
+}
+.titulo-opcion { font-size: 14px; font-weight: 600; color: #1f2937; margin: 10px 0; }
+.btn-confirmar-sobre { background: #0d3b66; color: #fff; border: none; padding: 8px; border-radius: 6px; width: 100%; font-weight: 600; font-size: 12px; cursor: pointer; }
+.btn-cancelar-sobre { background: #fff; color: #374151; border: 1px solid #d1d5db; padding: 8px 24px; border-radius: 6px; cursor: pointer; }
+
+#plantilla-sobre-print { display: none; }
+
+@media print {
+  body.imprimiendo-sobre * { visibility: hidden !important; }
+  body.imprimiendo-sobre #plantilla-sobre-print,
+  body.imprimiendo-sobre #plantilla-sobre-print * { visibility: visible !important; }
+  body.imprimiendo-sobre #plantilla-sobre-print {
+    display: block !important; position: absolute; left: 0; top: 0; width: 100%; height: 100%;
+  }
+  body.modo-sobre-horizontal { @page { size: landscape; margin: 0; } }
+  body.modo-sobre-horizontal .contenido-sobre-print { padding-top: 100px; padding-left: 80px; font-size: 18pt; font-family: Arial, sans-serif; }
+  body.modo-sobre-vertical { @page { size: portrait; margin: 0; } }
+  body.modo-sobre-vertical .contenido-sobre-print {
+    position: absolute; left: 260px; top: 90px; transform: rotate(90deg);
+    transform-origin: top left; font-size: 18pt; font-family: Arial, sans-serif; white-space: nowrap;
+  }
+}
