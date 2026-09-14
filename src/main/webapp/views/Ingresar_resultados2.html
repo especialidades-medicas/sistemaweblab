@@ -4612,41 +4612,92 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 		
-function imprimirSobreDirecto(orientacion) {
-    const nombreInput = document.getElementById('nombrePaciente');
-    const fechaInput = document.getElementById('fechaActual');
+function imprimirSobres() {
+        const modalElement = document.getElementById('modalSobre');
+        if (!modalElement) {
+            alert("Falta agregar el código HTML del modal en tu archivo.");
+            return;
+        }
 
-    const nombreVal = (nombreInput && nombreInput.value.trim() !== '') ? nombreInput.value.trim() : 'SIN NOMBRE';
-    const fechaVal = (fechaInput && fechaInput.value.trim() !== '') ? fechaInput.value.trim() : 'SIN FECHA';
+        const nombreInput = document.getElementById('nombrePaciente');
+        const fechaInput = document.getElementById('fechaActual');
 
-    // Rellena directamente la plantilla de impresión
-    const sobreNombre = document.getElementById('sobreNombrePrint');
-    const sobreFecha = document.getElementById('sobreFechaPrint');
-    
-    if (sobreNombre) sobreNombre.innerText = nombreVal;
-    if (sobreFecha) sobreFecha.innerText = fechaVal;
+        const nombreVal = (nombreInput && nombreInput.value.trim() !== '') ? nombreInput.value.trim() : 'SIN NOMBRE';
+        const fechaVal = (fechaInput && fechaInput.value.trim() !== '') ? fechaInput.value.trim() : 'SIN FECHA';
 
-    // Configura las clases del body para la orientación de impresión
-    document.body.classList.remove('modo-sobre-horizontal', 'modo-sobre-vertical');
-    document.body.classList.add('imprimiendo-sobre');
+        document.querySelectorAll('.preview-nombre').forEach(el => el.innerText = nombreVal);
+        document.querySelectorAll('.preview-fecha').forEach(el => el.innerText = fechaVal);
 
-    if (orientacion === 'vertical') {
-        document.body.classList.add('modo-sobre-vertical');
-    } else {
-        document.body.classList.add('modo-sobre-horizontal');
+        const sobreNombre = document.getElementById('sobreNombrePrint');
+        const sobreFecha = document.getElementById('sobreFechaPrint');
+        if (sobreNombre) sobreNombre.innerText = nombreVal;
+        if (sobreFecha) sobreFecha.innerText = fechaVal;
+
+        let modalSobre = bootstrap.Modal.getInstance(modalElement) || new bootstrap.Modal(modalElement);
+        modalSobre.show();
     }
 
-    // Dispara la impresión directamente sin pasar por el modal
-    setTimeout(() => {
-        window.print();
+    function cerrarModalSobre() {
+        const modalElement = document.getElementById('modalSobre');
+        if (modalElement) {
+            let modalSobre = bootstrap.Modal.getInstance(modalElement);
+            if (modalSobre) {
+                modalSobre.hide();
+            }
+        }
+    }
+
+    function ejecutarImpresionSobre(orientacion) {
+        document.body.classList.remove('modo-sobre-horizontal', 'modo-sobre-vertical');
+        document.body.classList.add('imprimiendo-sobre');
+
+        if (orientacion === 'vertical') {
+            document.body.classList.add('modo-sobre-vertical');
+        } else {
+            document.body.classList.add('modo-sobre-horizontal');
+        }
+
+        cerrarModalSobre();
+
         setTimeout(() => {
-            document.body.classList.remove('imprimiendo-sobre', 'modo-sobre-horizontal', 'modo-sobre-vertical');
-        }, 500);
-    }, 150);
-}
+            window.print();
+            setTimeout(() => {
+                document.body.classList.remove('imprimiendo-sobre', 'modo-sobre-horizontal', 'modo-sobre-vertical');
+            }, 500);
+        }, 150);
+    }
 		
 	
     </script>
+	<!-- Modal para Gestión e Impresión de Sobres -->
+<div class="modal fade" id="modalSobre" tabindex="-1" aria-labelledby="modalSobreLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-light py-2">
+                <h5 class="modal-title fs-6 fw-bold text-primary" id="modalSobreLabel">Vista Previa - Impresión de Sobre</h5>
+                <button type="button" class="btn-close btn-sm" data-bs-dismiss="modal" aria-label="Cerrar" onclick="cerrarModalSobre()"></button>
+            </div>
+            <div class="modal-body" style="font-size: 13px;">
+                <div class="mb-3 p-3 border rounded bg-light">
+                    <p class="mb-1"><strong>Paciente:</strong> <span class="preview-nombre text-dark fw-bold"></span></p>
+                    <p class="mb-0"><strong>Fecha:</strong> <span class="preview-fecha text-dark"></span></p>
+                </div>
+                <div class="text-muted small mb-3">
+                    Selecciona la orientación en la que deseas enviar el sobre a la impresora física:
+                </div>
+                <div class="d-none">
+                    <span id="sobreNombrePrint"></span>
+                    <span id="sobreFechaPrint"></span>
+                </div>
+            </div>
+            <div class="modal-footer py-2">
+                <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-dismiss="modal" onclick="cerrarModalSobre()">Cancelar</button>
+                <button type="button" class="btn btn-secondary btn-sm" onclick="ejecutarImpresionSobre('vertical')">Imprimir Vertical</button>
+                <button type="button" class="btn btn-primary btn-sm" onclick="ejecutarImpresionSobre('horizontal')">Imprimir Horizontal</button>
+            </div>
+        </div>
+    </div>
+</div>
 </body>
 
 
