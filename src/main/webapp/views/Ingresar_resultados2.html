@@ -4610,9 +4610,10 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 });
 
+		
 function imprimirSobres() {
-    const modal = document.getElementById('modalSobre');
-    if (!modal) {
+    const modalElement = document.getElementById('modalSobre');
+    if (!modalElement) {
         alert("Falta agregar el código HTML del modal en tu archivo.");
         return;
     }
@@ -4633,13 +4634,19 @@ function imprimirSobres() {
     if (sobreNombre) sobreNombre.innerText = nombreVal;
     if (sobreFecha) sobreFecha.innerText = fechaVal;
 
-    // Muestra la ventana emergente
-    modal.style.display = 'flex';
+    // Muestra la ventana emergente usando la API oficial de Bootstrap 5
+    let modalSobre = bootstrap.Modal.getInstance(modalElement) || new bootstrap.Modal(modalElement);
+    modalSobre.show();
 }
 
 function cerrarModalSobre() {
-    const modal = document.getElementById('modalSobre');
-    if (modal) modal.style.display = 'none';
+    const modalElement = document.getElementById('modalSobre');
+    if (modalElement) {
+        let modalSobre = bootstrap.Modal.getInstance(modalElement);
+        if (modalSobre) {
+            modalSobre.hide();
+        }
+    }
 }
 
 function ejecutarImpresionSobre(orientacion) {
