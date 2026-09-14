@@ -742,6 +742,37 @@ body {
    ESTILOS PARA MODAL E IMPRESIÓN DE SOBRES (Añadir al final del archivo)
    ========================================================================== */
 
+/* Estilo Moderno y Profesional para el Botón de Sobres */
+.btn-sobre-custom {
+    background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+    border: none;
+    color: #ffffff;
+    font-weight: 600;
+    font-size: 0.85rem;
+    padding: 8px 12px;
+    border-radius: 6px;
+    box-shadow: 0 4px 10px rgba(2, 132, 199, 0.25);
+    transition: all 0.25s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-sobre-custom:hover {
+    background: linear-gradient(135deg, #0369a1 0%, #075985 100%);
+    color: #ffffff;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 14px rgba(2, 132, 199, 0.35);
+}
+
+.btn-sobre-custom:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 5px rgba(2, 132, 199, 0.2);
+}
+
+		/* ==========================================================================
+   ESTILOS PARA MODAL E IMPRESIÓN DE SOBRES (Añadir al final del archivo)
+   ========================================================================== */
 .modal-overlay-sobre {
   position: fixed; top: 0; left: 0; width: 100%; height: 100%;
   background: rgba(0, 0, 0, 0.45); backdrop-filter: blur(2px);
