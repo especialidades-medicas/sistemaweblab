@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -4611,45 +4612,21 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 		
-function imprimirSobres() {
-    const modalElement = document.getElementById('modalSobre');
-    if (!modalElement) {
-        alert("Falta agregar el código HTML del modal en tu archivo.");
-        return;
-    }
-
+function imprimirSobreDirecto(orientacion) {
     const nombreInput = document.getElementById('nombrePaciente');
     const fechaInput = document.getElementById('fechaActual');
 
     const nombreVal = (nombreInput && nombreInput.value.trim() !== '') ? nombreInput.value.trim() : 'SIN NOMBRE';
     const fechaVal = (fechaInput && fechaInput.value.trim() !== '') ? fechaInput.value.trim() : 'SIN FECHA';
 
-    // Rellena la vista previa en el modal
-    document.querySelectorAll('.preview-nombre').forEach(el => el.innerText = nombreVal);
-    document.querySelectorAll('.preview-fecha').forEach(el => el.innerText = fechaVal);
-
-    // Rellena la plantilla que se enviará físicamente al papel
+    // Rellena directamente la plantilla de impresión
     const sobreNombre = document.getElementById('sobreNombrePrint');
     const sobreFecha = document.getElementById('sobreFechaPrint');
+    
     if (sobreNombre) sobreNombre.innerText = nombreVal;
     if (sobreFecha) sobreFecha.innerText = fechaVal;
 
-    // Muestra la ventana emergente usando la API oficial de Bootstrap 5
-    let modalSobre = bootstrap.Modal.getInstance(modalElement) || new bootstrap.Modal(modalElement);
-    modalSobre.show();
-}
-
-function cerrarModalSobre() {
-    const modalElement = document.getElementById('modalSobre');
-    if (modalElement) {
-        let modalSobre = bootstrap.Modal.getInstance(modalElement);
-        if (modalSobre) {
-            modalSobre.hide();
-        }
-    }
-}
-
-function ejecutarImpresionSobre(orientacion) {
+    // Configura las clases del body para la orientación de impresión
     document.body.classList.remove('modo-sobre-horizontal', 'modo-sobre-vertical');
     document.body.classList.add('imprimiendo-sobre');
 
@@ -4659,8 +4636,7 @@ function ejecutarImpresionSobre(orientacion) {
         document.body.classList.add('modo-sobre-horizontal');
     }
 
-    cerrarModalSobre();
-
+    // Dispara la impresión directamente sin pasar por el modal
     setTimeout(() => {
         window.print();
         setTimeout(() => {
@@ -4668,7 +4644,10 @@ function ejecutarImpresionSobre(orientacion) {
         }, 500);
     }, 150);
 }
+		
 	
     </script>
 </body>
+
+
 </html>
