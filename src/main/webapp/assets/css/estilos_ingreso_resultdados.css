@@ -739,8 +739,9 @@ body {
 
 
 
+
 /* ==========================================================================
-   ESTILOS PARA IMPRESIÓN DE SOBRES (210mm x 110mm)
+   ESTILOS PARA IMPRESIÓN DE SOBRES (210mm x 110mm) - TAMAÑO DE LETRA 12pt
    ========================================================================== */
 
 #plantilla-sobre-print { 
@@ -770,13 +771,15 @@ body {
     }
 
     #sobreNombrePrint {
+        font-size: 12pt !important; /* Tamaño fijado a 12pt */
         font-weight: bold;
         color: #000000 !important;
         text-transform: uppercase;
-        white-space: nowrap; /* Impide que el nombre se corte o baje de línea */
+        white-space: nowrap;
     }
 
     #sobreFechaPrint {
+        font-size: 10pt !important; /* Fecha en proporción ligeramente menor */
         color: #333333 !important;
         font-weight: normal;
         white-space: nowrap;
@@ -799,19 +802,14 @@ body {
     }
 
     body.modo-sobre-vertical .contenido-sobre-print { 
-        transform: rotate(-90deg); /* Rota el texto a lo largo del sobre alimentado por el centro */
+        transform: rotate(-90deg);
         transform-origin: center center;
         text-align: left;
         font-family: Arial, sans-serif;
     }
 
     body.modo-sobre-vertical #sobreNombrePrint {
-        font-size: 14pt;
-        margin-bottom: 6px;
-    }
-
-    body.modo-sobre-vertical #sobreFechaPrint {
-        font-size: 11pt;
+        margin-bottom: 4px;
     }
 
     /* ==========================================
@@ -826,9 +824,9 @@ body {
 
     body.modo-sobre-horizontal #plantilla-sobre-print {
         display: flex !important;
-        justify-content: center; /* Centrado a lo ancho del sobre */
-        align-items: flex-start;  /* Posicionado en la parte superior */
-        padding-top: 35mm;        /* Altura justa para la franja de datos */
+        justify-content: center;
+        align-items: flex-start;
+        padding-top: 35mm;
     }
 
     body.modo-sobre-horizontal .contenido-sobre-print { 
@@ -839,11 +837,6 @@ body {
     }
 
     body.modo-sobre-horizontal #sobreNombrePrint {
-        font-size: 15pt;
-        margin-bottom: 8px;
-    }
-
-    body.modo-sobre-horizontal #sobreFechaPrint {
-        font-size: 11pt;
+        margin-bottom: 6px;
     }
 }
