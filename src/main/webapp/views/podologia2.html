@@ -878,25 +878,33 @@
                 </section>
 
                 <section class="space-y-4">
-                    <div class="bg-slate-800 text-white text-xs font-bold uppercase px-3 py-1.5 rounded tracking-wider flex justify-between items-center">
-                        <span>Esquemas Anatómicos e Interactivos con Imagen de Fondo</span>
-                        <button type="button" onclick="clearCanvas()" class="no-print bg-slate-700 hover:bg-slate-600 text-white px-2 py-0.5 rounded text-[11px] transition-all">Limpiar Lienzo</button>
-                    </div>
-                    
-                    <div class="flex flex-col sm:flex-row items-center justify-between gap-4 bg-slate-50 p-3 rounded-xl border border-slate-200 no-print">
-                        <div class="text-xs text-slate-600">
-                            <span class="font-bold">Cargar imagen de fondo para marcar encima:</span> Puede seleccionar un archivo de imagen (esquema de pies, radiografía, etc.) para que se muestre como fondo transparente en el lienzo de dibujo.
-                        </div>
-                        <input type="file" id="bg-image-input" accept="image/*" onchange="loadCustomBackground(event)" class="text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-teal-50 file:text-teal-700 hover:file:bg-teal-100 cursor-pointer">
-                    </div>
+                <div class="bg-slate-800 text-white text-xs font-bold uppercase px-3 py-1.5 rounded tracking-wider flex justify-between items-center">
+                    <span>Esquemas Anatómicos e Interactivos</span>
+                    <button type="button" onclick="clearCanvas()" class="no-print bg-slate-700 hover:bg-slate-600 text-white px-2 py-0.5 rounded text-[11px] transition-all">Limpiar Lienzo</button>
+                </div>
 
-                    <p class="text-xs text-slate-500 italic">Utilice el ratón o el dedo para dibujar lesiones, puntos de dolor o marcas sobre la imagen de fondo en el área del pie a continuación.</p>
-
-                    <div id="canvas-container" class="relative bg-white border border-slate-300 rounded-2xl p-4 flex flex-col items-center justify-center overflow-hidden shadow-sm min-h-[320px]">
-                        <!-- HTML5 Drawing Canvas -->
-                        <canvas id="foot-canvas" class="w-full h-[320px] sm:h-[380px] cursor-crosshair z-10 touch-none"></canvas>
+                <!-- Controles de color y grosor de pincel -->
+                <div class="flex items-center justify-between bg-slate-100 p-2 rounded-lg border border-slate-200 text-xs no-print">
+                    <div class="flex items-center space-x-2">
+                        <span class="font-bold text-slate-600">Color de trazo:</span>
+                        <input type="color" id="brush-color" value="#0d9488" class="w-7 h-7 rounded border-none cursor-pointer">
+                        <button type="button" onclick="setBrushColor('#e11d48')" class="w-5 h-5 rounded-full bg-rose-600 border border-slate-300"></button>
+                        <button type="button" onclick="setBrushColor('#0d9488')" class="w-5 h-5 rounded-full bg-teal-600 border border-slate-300"></button>
+                        <button type="button" onclick="setBrushColor('#2563eb')" class="w-5 h-5 rounded-full bg-blue-600 border border-slate-300"></button>
                     </div>
-                </section>
+                    <div class="flex items-center space-x-2">
+                        <span class="font-bold text-slate-600">Grosor:</span>
+                        <input type="range" id="brush-size" min="1" max="10" value="3" class="w-20 accent-teal-600">
+                    </div>
+                </div>
+            
+                <p class="text-xs text-slate-500 italic">Utilice el ratón o el dedo para dibujar lesiones, puntos de dolor o marcas sobre la plantilla anatómica.</p>
+            
+                <div id="canvas-container" class="relative bg-white border border-slate-300 rounded-2xl p-4 flex flex-col items-center justify-center overflow-hidden shadow-sm min-h-[320px]">
+                    <!-- HTML5 Drawing Canvas -->
+                    <canvas id="foot-canvas" class="w-full h-[320px] sm:h-[380px] cursor-crosshair z-10 touch-none"></canvas>
+                </div>
+            </section>
 
                 <section class="space-y-4">
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -1880,41 +1888,40 @@ function initLesionsTable() {
 }
 
 // --- INTERACTIVE DRAWING CANVAS WITH BACKGROUND IMAGE SUPPORT ---
+// --- INTERACTIVE DRAWING CANVAS WITH FIXED BACKGROUND IMAGE ---
 const canvas = document.getElementById('foot-canvas');
 const ctx = canvas.getContext('2d');
 let isDrawing = false;
 let lastX = 0;
 let lastY = 0;
-let bgImageObj = null;
+
+// Carga automática de la plantilla fixa
+const bgImageObj = new Image();
+bgImageObj.src = '../img/EsquemasAnatómicos.jpg';
+bgImageObj.onload = function() {
+    redrawCanvas();
+};
+
+let currentPath = null;
+let strokeHistory = [];
+
+function setBrushColor(color) {
+    document.getElementById('brush-color').value = color;
+}
 
 function resizeCanvas() {
     const container = document.getElementById('canvas-container');
-    if (!container) return;
     const rect = container.getBoundingClientRect();
-    canvas.width = rect.width - 32; // accounting for container padding
-    canvas.height = 340;
+    canvas.width = rect.width - 32;
+    canvas.height = 380;
     redrawCanvas();
-}
-
-function loadCustomBackground(event) {
-    const file = event.target.files[0];
-    if (file) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            bgImageObj = new Image();
-            bgImageObj.onload = function() {
-                redrawCanvas();
-            }
-            bgImageObj.src = e.target.result;
-        }
-        reader.readAsDataURL(file);
-    }
 }
 
 function redrawCanvas() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    // Draw background image if loaded, maintaining aspect ratio
-    if (bgImageObj) {
+    
+    // Dibujar imagen fija si ya terminó de cargar
+    if (bgImageObj.complete && bgImageObj.naturalWidth !== 0) {
         const hRatio = canvas.width / bgImageObj.width;
         const vRatio = canvas.height / bgImageObj.height;
         const ratio = Math.min(hRatio, vRatio);
@@ -1922,14 +1929,34 @@ function redrawCanvas() {
         const centerShiftY = (canvas.height - bgImageObj.height * ratio) / 2;
         ctx.drawImage(bgImageObj, 0, 0, bgImageObj.width, bgImageObj.height, centerShiftX, centerShiftY, bgImageObj.width * ratio, bgImageObj.height * ratio);
     }
+
+    // Redibujar marcas del usuario
+    strokeHistory.forEach(stroke => {
+        if (stroke.points.length < 2) return;
+        ctx.beginPath();
+        ctx.strokeStyle = stroke.color;
+        ctx.lineWidth = stroke.size;
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+
+        const startX = stroke.points[0].x * canvas.width;
+        const startY = stroke.points[0].y * canvas.height;
+        ctx.moveTo(startX, startY);
+
+        for (let i = 1; i < stroke.points.length; i++) {
+            const pX = stroke.points[i].x * canvas.width;
+            const pY = stroke.points[i].y * canvas.height;
+            ctx.lineTo(pX, pY);
+        }
+        ctx.stroke();
+    });
 }
 
 window.addEventListener('resize', resizeCanvas);
 window.addEventListener('load', () => {
     resizeCanvas();
     initLesionsTable();
-    const hcFecha = document.getElementById('hcFecha');
-    if (hcFecha) hcFecha.valueAsDate = new Date();
+    document.getElementById('fecha-historia').valueAsDate = new Date();
 });
 
 function startDrawing(e) {
@@ -1939,19 +1966,33 @@ function startDrawing(e) {
     const clientY = e.touches ? e.touches[0].clientY : e.clientY;
     lastX = clientX - rect.left;
     lastY = clientY - rect.top;
+
+    const color = document.getElementById('brush-color').value;
+    const size = document.getElementById('brush-size').value;
+
+    currentPath = {
+        color: color,
+        size: size,
+        points: [{ x: lastX / canvas.width, y: lastY / canvas.height }]
+    };
+    strokeHistory.push(currentPath);
 }
 
 function draw(e) {
     if (!isDrawing) return;
-    e.preventDefault();
+    if (e.cancelable) e.preventDefault();
+
     const rect = canvas.getBoundingClientRect();
     const clientX = e.touches ? e.touches[0].clientX : e.clientX;
     const clientY = e.touches ? e.touches[0].clientY : e.clientY;
     const currentX = clientX - rect.left;
     const currentY = clientY - rect.top;
 
-    ctx.strokeStyle = '#0d9488'; // Teal brush
-    ctx.lineWidth = 3;
+    const color = document.getElementById('brush-color').value;
+    const size = document.getElementById('brush-size').value;
+
+    ctx.strokeStyle = color;
+    ctx.lineWidth = size;
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
 
@@ -1962,28 +2003,36 @@ function draw(e) {
 
     lastX = currentX;
     lastY = currentY;
+
+    if (currentPath) {
+        currentPath.points.push({ x: currentX / canvas.width, y: currentY / canvas.height });
+    }
 }
 
 function stopDrawing() {
     isDrawing = false;
+    currentPath = null;
 }
 
 function clearCanvas() {
-    bgImageObj = null;
-    const bgInput = document.getElementById('bg-image-input');
-    if (bgInput) bgInput.value = '';
+    strokeHistory = [];
     redrawCanvas();
 }
 
-// Event listeners for mouse & touch on canvas
+// Listeners de interacción
 canvas.addEventListener('mousedown', startDrawing);
 canvas.addEventListener('mousemove', draw);
 canvas.addEventListener('mouseup', stopDrawing);
 canvas.addEventListener('mouseout', stopDrawing);
 
-canvas.addEventListener('touchstart', startDrawing);
-canvas.addEventListener('touchmove', draw);
+canvas.addEventListener('touchstart', (e) => {
+    if (e.cancelable) e.preventDefault();
+    startDrawing(e);
+}, { passive: false });
+canvas.addEventListener('touchmove', draw, { passive: false });
 canvas.addEventListener('touchend', stopDrawing);
+
+        
 
 // --- PDF DOWNLOAD / PRINT ROUTINE ---
 function descargarPDF() {
