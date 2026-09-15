@@ -348,7 +348,7 @@
         <div class="sidebar" id="sidebar">
             <div class="logo">
                 Medipie.st
-                <button class="close-sidebar-btn" onclick="toggleSidebar()">✕</button>
+                <button class="close-sidebar-btn no-print" onclick="toggleSidebar()">✕</button>
             </div>
             <nav>
                 <a href="#" class="nav-item active" onclick="switchTab(event, 'dashboard-view'); toggleSidebarMobile();">📊 Panel Principal</a>
@@ -369,16 +369,16 @@
             <div class="header">
                 <div class="header-left">
                     <!-- Botón Hamburguesa para desplegar el menú lateral en pantallas pequeñas -->
-                    <button class="menu-toggle" onclick="toggleSidebar()" title="Abrir Menú">☰</button>
+                    <button class="menu-toggle no-print" onclick="toggleSidebar()" title="Abrir Menú">☰</button>
                     <h1 id="header-title">Bienvenid@, Sistema Podología</h1>
                 </div>
                 <div style="display: flex; align-items: center; gap: 1rem;">
-                    <div class="search-container">
+                    <div class="search-container no-print">
                         <input type="text" id="searchInput" placeholder="Cédula o apellidos...">
                         <button onclick="buscarPaciente()">Buscar</button>
                     </div>
                     <!-- Icono pequeño para regresar al menú principal -->
-                    <a href="dashboard.html" class="btn-back-icon" title="Volver al Menú Principal">↩</a>
+                    <a href="dashboard.html" class="btn-back-icon no-print" title="Volver al Menú Principal">↩</a>
                 </div>
             </div>
 
@@ -877,34 +877,35 @@
                     </div>
                 </section>
 
-                <section class="space-y-4">
-                <div class="bg-slate-800 text-white text-xs font-bold uppercase px-3 py-1.5 rounded tracking-wider flex justify-between items-center">
-                    <span>Esquemas Anatómicos e Interactivos</span>
-                    <button type="button" onclick="clearCanvas()" class="no-print bg-slate-700 hover:bg-slate-600 text-white px-2 py-0.5 rounded text-[11px] transition-all">Limpiar Lienzo</button>
-                </div>
+                <section class="space-y-3">
+    <div class="bg-slate-800 text-white text-xs font-bold uppercase px-3 py-1.5 rounded tracking-wider flex justify-between items-center">
+        <span>Esquemas Anatómicos e Interactivos</span>
+        <button type="button" onclick="clearCanvas()" class="no-print bg-slate-700 hover:bg-slate-600 text-white px-2 py-0.5 rounded text-[11px] transition-all">Limpiar Lienzo</button>
+    </div>
 
-                <!-- Controles de color y grosor de pincel -->
-                <div class="flex items-center justify-between bg-slate-100 p-2 rounded-lg border border-slate-200 text-xs no-print">
-                    <div class="flex items-center space-x-2">
-                        <span class="font-bold text-slate-600">Color de trazo:</span>
-                        <input type="color" id="brush-color" value="#0d9488" class="w-7 h-7 rounded border-none cursor-pointer">
-                        <button type="button" onclick="setBrushColor('#e11d48')" class="w-5 h-5 rounded-full bg-rose-600 border border-slate-300"></button>
-                        <button type="button" onclick="setBrushColor('#0d9488')" class="w-5 h-5 rounded-full bg-teal-600 border border-slate-300"></button>
-                        <button type="button" onclick="setBrushColor('#2563eb')" class="w-5 h-5 rounded-full bg-blue-600 border border-slate-300"></button>
-                    </div>
-                    <div class="flex items-center space-x-2">
-                        <span class="font-bold text-slate-600">Grosor:</span>
-                        <input type="range" id="brush-size" min="1" max="10" value="3" class="w-20 accent-teal-600">
-                    </div>
-                </div>
-            
-                <p class="text-xs text-slate-500 italic">Utilice el ratón o el dedo para dibujar lesiones, puntos de dolor o marcas sobre la plantilla anatómica.</p>
-            
-                <div id="canvas-container" class="relative bg-white border border-slate-300 rounded-2xl p-4 flex flex-col items-center justify-center overflow-hidden shadow-sm min-h-[320px]">
-                    <!-- HTML5 Drawing Canvas -->
-                    <canvas id="foot-canvas" class="w-full h-[320px] sm:h-[380px] cursor-crosshair z-10 touch-none"></canvas>
-                </div>
-            </section>
+    <!-- Controles de color y grosor de pincel -->
+    <div class="flex items-center justify-between bg-slate-100 p-2 rounded-lg border border-slate-200 text-xs no-print">
+        <div class="flex items-center space-x-2">
+            <span class="font-bold text-slate-600">Color de trazo:</span>
+            <input type="color" id="brush-color" value="#0d9488" class="w-7 h-7 rounded border-none cursor-pointer">
+            <button type="button" onclick="setBrushColor('#e11d48')" class="w-5 h-5 rounded-full bg-rose-600 border border-slate-300"></button>
+            <button type="button" onclick="setBrushColor('#0d9488')" class="w-5 h-5 rounded-full bg-teal-600 border border-slate-300"></button>
+            <button type="button" onclick="setBrushColor('#2563eb')" class="w-5 h-5 rounded-full bg-blue-600 border border-slate-300"></button>
+        </div>
+        <div class="flex items-center space-x-2">
+            <span class="font-bold text-slate-600">Grosor:</span>
+            <input type="range" id="brush-size" min="1" max="10" value="3" class="w-20 accent-teal-600">
+        </div>
+    </div>
+
+    <p class="text-xs text-slate-500 italic">Utilice el ratón o el dedo para dibujar lesiones, puntos de dolor o marcas sobre la plantilla anatómica.</p>
+
+    <!-- Contenedor rectangular compacto -->
+    <div id="canvas-container" class="relative bg-white border border-slate-300 rounded-xl p-2 flex flex-col items-center justify-center overflow-hidden shadow-sm min-h-[220px]">
+        <!-- HTML5 Drawing Canvas ajustado a 220px de alto -->
+        <canvas id="foot-canvas" class="w-full h-[220px] cursor-crosshair z-10 touch-none"></canvas>
+    </div>
+</section>
 
                 <section class="space-y-4">
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -1912,8 +1913,8 @@ function setBrushColor(color) {
 function resizeCanvas() {
     const container = document.getElementById('canvas-container');
     const rect = container.getBoundingClientRect();
-    canvas.width = rect.width - 32;
-    canvas.height = 380;
+    canvas.width = rect.width - 16; // Ajustado según el nuevo padding p-2
+    canvas.height = 220;            // Nueva altura rectangular compacta
     redrawCanvas();
 }
 
