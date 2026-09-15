@@ -7,6 +7,8 @@
     <!-- Google Fonts para mejor estética -->
     <!-- Tailwind CSS for modern, professional clinical UI -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Carga de html2canvas desde CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
      <link rel="icon" type="image/png" href="../img/medipielogop.png">   
@@ -975,18 +977,18 @@
                     </div>
                 </section>
 
-                <section class="space-y-4">
+                <section class="space-y-3 max-w-xl mx-auto">
                     <div class="bg-teal-600 text-white text-xs font-bold uppercase px-3 py-1.5 rounded tracking-wider">
                         Tabla de Lesiones Plantares (Zona Plantar)
                     </div>
                     
-                    <div class="overflow-x-auto border border-slate-200 rounded-xl">
-                        <table class="w-full text-left border-collapse text-sm">
+                    <div class="border border-slate-200 rounded-xl overflow-hidden bg-white shadow-sm">
+                        <table class="w-full text-left border-collapse text-xs">
                             <thead>
-                                <tr class="bg-slate-100 border-b border-slate-200 text-xs text-slate-700 uppercase font-semibold">
-                                    <th class="p-3">Condición / Patología</th>
-                                    <th class="p-3 text-center w-24">Derecho (D)</th>
-                                    <th class="p-3 text-center w-24">Izquierdo (I)</th>
+                                <tr class="bg-slate-100 border-b border-slate-200 text-slate-700 uppercase font-semibold">
+                                    <th class="px-3 py-2 w-1/2">Condición / Patología</th>
+                                    <th class="px-3 py-2 text-center w-1/4">Derecho (D)</th>
+                                    <th class="px-3 py-2 text-center w-1/4">Izquierdo (I)</th>
                                 </tr>
                             </thead>
                             <tbody id="lesiones-table-body" class="divide-y divide-slate-200">
@@ -1561,9 +1563,9 @@ function generarPDFCertificado(cert) {
 
 // --- AGE CALCULATION ---
 function calcularEdad() {
-    const fnacInput = document.getElementById('hcNacimiento').value;
-    if (!fnacInput) return;
-    const fnac = new Date(fnacInput);
+    const hcNacimiento = document.getElementById('hcNacimiento').value;
+    if (!hcNacimiento) return;
+    const fnac = new Date(hcNacimiento);
     const hoy = new Date();
     let edad = hoy.getFullYear() - fnac.getFullYear();
     const m = hoy.getMonth() - fnac.getMonth();
@@ -1610,6 +1612,7 @@ function previewSelectedImage(event, imgId, placeholderId) {
 }
 
 // --- LESIONS TABLE SETUP ---
+
 const condiciones = [
     "Heloma Plantar",
     "Fasciitis Plantar",
@@ -1624,17 +1627,18 @@ const condiciones = [
 function initLesionsTable() {
     const tbody = document.getElementById('lesiones-table-body');
     if (!tbody) return;
+    
     tbody.innerHTML = "";
     condiciones.forEach((cond, index) => {
         const tr = document.createElement('tr');
         tr.className = "hover:bg-slate-50 transition-colors";
         tr.innerHTML = `
-            <td class="p-3 font-medium text-slate-700">${cond}</td>
-            <td class="p-3 text-center">
-                <input type="checkbox" id="derecho-${index}" class="w-4 h-4 text-teal-600 rounded border-slate-300 focus:ring-teal-500">
+            <td class="px-3 py-1.5 font-medium text-slate-700">${cond}</td>
+            <td class="px-3 py-1.5 text-center">
+                <input type="checkbox" id="derecho-${index}" class="w-4 h-4 text-teal-600 rounded border-slate-300 focus:ring-teal-500 cursor-pointer align-middle">
             </td>
-            <td class="p-3 text-center">
-                <input type="checkbox" id="izquierdo-${index}" class="w-4 h-4 text-teal-600 rounded border-slate-300 focus:ring-teal-500">
+            <td class="px-3 py-1.5 text-center">
+                <input type="checkbox" id="izquierdo-${index}" class="w-4 h-4 text-teal-600 rounded border-slate-300 focus:ring-teal-500 cursor-pointer align-middle">
             </td>
         `;
         tbody.appendChild(tr);
