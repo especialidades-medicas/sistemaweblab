@@ -2964,6 +2964,44 @@
         
     </div>
 
+
+
+<!-- MODAL PARA ELEGIR LA ORIENTACIÓN DEL SOBRE -->
+<div class="modal fade no-print" id="modalOrientacionSobre" tabindex="-1" aria-labelledby="modalSobreLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title fs-6" id="modalSobreLabel"><i class="bi bi-envelope-paper me-2"></i>Imprimir Sobre de Paciente</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body text-center py-4">
+        <p class="fw-bold mb-3 text-secondary">Seleccione la orientación de impresión para la impresora:</p>
+        <div class="d-flex justify-content-center gap-3">
+            <button type="button" class="btn btn-outline-primary btn-lg px-4" onclick="procesarEImprimirSobre('horizontal')">
+                <i class="bi bi-file-post text-primary d-block fs-2 mb-1"></i>
+                Horizontal
+            </button>
+            <button type="button" class="btn btn-outline-primary btn-lg px-4" onclick="procesarEImprimirSobre('vertical')">
+                <i class="bi bi-file-earmark-text text-primary d-block fs-2 mb-1"></i>
+                Vertical
+            </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CONTENEDOR OCULTO QUE RECIBE LOS DATOS DINÁMICOS Y SE MUESTRA SOLO EN IMPRESIÓN -->
+<div id="plantilla-sobre-print">
+    <div class="contenido-sobre-print">
+        <div style="font-weight: bold; font-size: 22pt; margin-bottom: 8px;" id="sobreNombreImpresion"></div>
+        <div style="font-size: 16pt;" id="sobreFechaImpresion"></div>
+    </div>
+</div>
+
+
+	
+
     <!-- Scripts de Librerías y Lógica -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
@@ -4608,94 +4646,53 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 });
+				
+	/**
+ * Pasa los datos del formulario al contenedor del sobre y desencadena la impresión
+ * @param {string} orientacion - 'horizontal' o 'vertical'
+ */
+function procesarEImprimirSobre(orientacion) {
+    // 1. Obtener valores de los inputs en tiempo real
+    const nombre = document.getElementById('nombrePaciente').value.trim();
+    const fecha = document.getElementById('fechaActual').value.trim();
+    
+    // 2. Formatear la información para el sobre
+    const txtNombre = nombre !== "" ? nombre.toUpperCase() : "PACIENTE SIN NOMBRE";
+    const txtFecha = fecha !== "" ? "FECHA: " + fecha : "FECHA: " + new Date().toLocaleDateString('es-EC');
 
-		
-function imprimirSobres() {
-        const modalElement = document.getElementById('modalSobre');
-        if (!modalElement) {
-            alert("Falta agregar el código HTML del modal en tu archivo.");
-            return;
-        }
+    // 3. Inyectar dinámicamente los datos al DOM que se va a imprimir
+    document.getElementById('sobreNombreImpresion').innerText = txtNombre;
+    document.getElementById('sobreFechaImpresion').innerText = txtFecha;
 
-        const nombreInput = document.getElementById('nombrePaciente');
-        const fechaInput = document.getElementById('fechaActual');
-
-        const nombreVal = (nombreInput && nombreInput.value.trim() !== '') ? nombreInput.value.trim() : 'SIN NOMBRE';
-        const fechaVal = (fechaInput && fechaInput.value.trim() !== '') ? fechaInput.value.trim() : 'SIN FECHA';
-
-        document.querySelectorAll('.preview-nombre').forEach(el => el.innerText = nombreVal);
-        document.querySelectorAll('.preview-fecha').forEach(el => el.innerText = fechaVal);
-
-        const sobreNombre = document.getElementById('sobreNombrePrint');
-        const sobreFecha = document.getElementById('sobreFechaPrint');
-        if (sobreNombre) sobreNombre.innerText = nombreVal;
-        if (sobreFecha) sobreFecha.innerText = fechaVal;
-
-        let modalSobre = bootstrap.Modal.getInstance(modalElement) || new bootstrap.Modal(modalElement);
-        modalSobre.show();
+    // 4. Cerrar el Modal de Bootstrap si está abierto
+    const modalElement = document.getElementById('modalOrientacionSobre');
+    if (modalElement) {
+        const modalInstance = bootstrap.Modal.getInstance(modalElement);
+        if (modalInstance) modalInstance.hide();
     }
 
-    function cerrarModalSobre() {
-        const modalElement = document.getElementById('modalSobre');
-        if (modalElement) {
-            let modalSobre = bootstrap.Modal.getInstance(modalElement);
-            if (modalSobre) {
-                modalSobre.hide();
-            }
-        }
+    // 5. Asignar clases de impresión al <body>
+    document.body.classList.remove('modo-sobre-horizontal', 'modo-sobre-vertical');
+    document.body.classList.add('imprimiendo-sobre');
+    
+    if (orientacion === 'vertical') {
+        document.body.classList.add('modo-sobre-vertical');
+    } else {
+        document.body.classList.add('modo-sobre-horizontal');
     }
 
-    function ejecutarImpresionSobre(orientacion) {
-        document.body.classList.remove('modo-sobre-horizontal', 'modo-sobre-vertical');
-        document.body.classList.add('imprimiendo-sobre');
+    // 6. Pequeña pausa de 150ms para permitir la renderización visual previa a la impresión
+    setTimeout(() => {
+        window.print();
 
-        if (orientacion === 'vertical') {
-            document.body.classList.add('modo-sobre-vertical');
-        } else {
-            document.body.classList.add('modo-sobre-horizontal');
-        }
-
-        cerrarModalSobre();
-
+        // 7. Limpiar clases del body al cerrar la ventana de impresión
         setTimeout(() => {
-            window.print();
-            setTimeout(() => {
-                document.body.classList.remove('imprimiendo-sobre', 'modo-sobre-horizontal', 'modo-sobre-vertical');
-            }, 500);
-        }, 150);
-    }
-		
-	
+            document.body.classList.remove('imprimiendo-sobre', 'modo-sobre-horizontal', 'modo-sobre-vertical');
+        }, 500);
+    }, 150);
+}
     </script>
-	<!-- Modal para Gestión e Impresión de Sobres -->
-<div class="modal fade" id="modalSobre" tabindex="-1" aria-labelledby="modalSobreLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header bg-light py-2">
-                <h5 class="modal-title fs-6 fw-bold text-primary" id="modalSobreLabel">Vista Previa - Impresión de Sobre</h5>
-                <button type="button" class="btn-close btn-sm" data-bs-dismiss="modal" aria-label="Cerrar" onclick="cerrarModalSobre()"></button>
-            </div>
-            <div class="modal-body" style="font-size: 13px;">
-                <div class="mb-3 p-3 border rounded bg-light">
-                    <p class="mb-1"><strong>Paciente:</strong> <span class="preview-nombre text-dark fw-bold"></span></p>
-                    <p class="mb-0"><strong>Fecha:</strong> <span class="preview-fecha text-dark"></span></p>
-                </div>
-                <div class="text-muted small mb-3">
-                    Selecciona la orientación en la que deseas enviar el sobre a la impresora física:
-                </div>
-                <div class="d-none">
-                    <span id="sobreNombrePrint"></span>
-                    <span id="sobreFechaPrint"></span>
-                </div>
-            </div>
-            <div class="modal-footer py-2">
-                <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-dismiss="modal" onclick="cerrarModalSobre()">Cancelar</button>
-                <button type="button" class="btn btn-secondary btn-sm" onclick="ejecutarImpresionSobre('vertical')">Imprimir Vertical</button>
-                <button type="button" class="btn btn-primary btn-sm" onclick="ejecutarImpresionSobre('horizontal')">Imprimir Horizontal</button>
-            </div>
-        </div>
-    </div>
-</div>
+	
 </body>
 
 
