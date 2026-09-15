@@ -740,31 +740,26 @@ body {
 
 
 /* ==========================================================================
-   ESTILOS PARA IMPRESIÓN DE SOBRES
+   ESTILOS PARA IMPRESIÓN DE SOBRES (210mm x 110mm)
    ========================================================================== */
 
-/* Estado normal en pantalla (oculto) */
 #plantilla-sobre-print { 
     display: none; 
 }
 
 @media print {
-    /* 1. Ocultar el resto del sitio web */
+    /* Ocultar el resto del sitio durante la impresión del sobre */
     body.imprimiendo-sobre * { 
         visibility: hidden !important; 
     }
     
-    /* 2. Mostrar únicamente la plantilla de sobre */
     body.imprimiendo-sobre #plantilla-sobre-print,
     body.imprimiendo-sobre #plantilla-sobre-print * { 
         visibility: visible !important; 
     }
     
-    /* 3. Contenedor principal alineado al centro de la hoja */
     body.imprimiendo-sobre #plantilla-sobre-print {
-        display: flex !important; 
-        justify-content: center;
-        align-items: center;
+        display: block !important; 
         position: absolute; 
         left: 0; 
         top: 0; 
@@ -772,24 +767,23 @@ body {
         height: 100vh;
         margin: 0;
         padding: 0;
-        box-sizing: border-box;
     }
 
-    /* 4. Estilos de los textos */
     #sobreNombrePrint {
         font-weight: bold;
         color: #000000 !important;
-        word-wrap: break-word;
         text-transform: uppercase;
+        white-space: nowrap; /* Impide que el nombre se corte o baje de línea */
     }
 
     #sobreFechaPrint {
         color: #333333 !important;
         font-weight: normal;
+        white-space: nowrap;
     }
 
     /* ==========================================
-       CONFIGURACIÓN: ORIENTACIÓN VERTICAL
+       1. IMPRESIÓN VERTICAL (Rotación de 90°)
        ========================================== */
     body.modo-sobre-vertical {
         @page {
@@ -798,28 +792,30 @@ body {
         }
     }
 
+    body.modo-sobre-vertical #plantilla-sobre-print {
+        display: flex !important;
+        justify-content: center;
+        align-items: center;
+    }
+
     body.modo-sobre-vertical .contenido-sobre-print { 
-        width: 100%;
-        max-width: 105mm; /* Ancho estándar de alimentador de sobre */
-        padding: 10mm;
-        text-align: center;
+        transform: rotate(-90deg); /* Rota el texto a lo largo del sobre alimentado por el centro */
+        transform-origin: center center;
+        text-align: left;
         font-family: Arial, sans-serif;
-        box-sizing: border-box;
     }
 
     body.modo-sobre-vertical #sobreNombrePrint {
-        font-size: 13pt; /* Tamaño reducido para encajar en ancho de sobre */
-        line-height: 1.3;
+        font-size: 14pt;
         margin-bottom: 6px;
     }
 
     body.modo-sobre-vertical #sobreFechaPrint {
-        font-size: 9.5pt;
+        font-size: 11pt;
     }
 
-
     /* ==========================================
-       CONFIGURACIÓN: ORIENTACIÓN HORIZONTAL
+       2. IMPRESIÓN HORIZONTAL (Parte superior/centrada)
        ========================================== */
     body.modo-sobre-horizontal {
         @page {
@@ -828,22 +824,26 @@ body {
         }
     }
 
+    body.modo-sobre-horizontal #plantilla-sobre-print {
+        display: flex !important;
+        justify-content: center; /* Centrado a lo ancho del sobre */
+        align-items: flex-start;  /* Posicionado en la parte superior */
+        padding-top: 35mm;        /* Altura justa para la franja de datos */
+    }
+
     body.modo-sobre-horizontal .contenido-sobre-print { 
         width: 100%;
-        max-width: 210mm;
-        padding: 15mm;
+        max-width: 180mm;
         text-align: center;
         font-family: Arial, sans-serif;
-        box-sizing: border-box;
     }
 
     body.modo-sobre-horizontal #sobreNombrePrint {
         font-size: 15pt;
-        line-height: 1.4;
         margin-bottom: 8px;
     }
 
     body.modo-sobre-horizontal #sobreFechaPrint {
-        font-size: 10.5pt;
+        font-size: 11pt;
     }
 }
