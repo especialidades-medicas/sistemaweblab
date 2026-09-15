@@ -2952,9 +2952,25 @@
                     </span>
                 </button>
             </nav>
-		<div class="row mt-2">   
-			<button type="button" class="btn btn-success" onclick="imprimirSobres()"><i class="bi bi-printer"></i> Imprimir Sobres</button>
-        </div>
+		<div class="row mt-2">
+    <div class="col-auto">
+        <button type="button" 
+                class="btn btn-success" 
+                data-bs-toggle="modal" 
+                data-bs-target="#modalSobre" 
+                onclick="abrirModalSobre()">
+            <i class="bi bi-printer me-1"></i> Imprimir Sobre
+        </button>
+    </div>
+</div>
+			<div class="row mt-2">
+    <div class="col-auto">
+        <button type="button" class="btn btn-success" onclick="abrirModalSobre()">
+            <i class="bi bi-printer me-1"></i> Imprimir Sobre
+        </button>
+    </div>
+</div>
+			
             
             <!-- Footer Horario -->
             <div class="footer-banner mt-2 text-center text-muted small border-top pt-1" style="font-size: 8px;">
@@ -2966,38 +2982,7 @@
 
 
 
-<!-- MODAL PARA ELEGIR LA ORIENTACIÓN DEL SOBRE -->
-<div class="modal fade no-print" id="modalOrientacionSobre" tabindex="-1" aria-labelledby="modalSobreLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content">
-      <div class="modal-header bg-primary text-white">
-        <h5 class="modal-title fs-6" id="modalSobreLabel"><i class="bi bi-envelope-paper me-2"></i>Imprimir Sobre de Paciente</h5>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body text-center py-4">
-        <p class="fw-bold mb-3 text-secondary">Seleccione la orientación de impresión para la impresora:</p>
-        <div class="d-flex justify-content-center gap-3">
-            <button type="button" class="btn btn-outline-primary btn-lg px-4" onclick="procesarEImprimirSobre('horizontal')">
-                <i class="bi bi-file-post text-primary d-block fs-2 mb-1"></i>
-                Horizontal
-            </button>
-            <button type="button" class="btn btn-outline-primary btn-lg px-4" onclick="procesarEImprimirSobre('vertical')">
-                <i class="bi bi-file-earmark-text text-primary d-block fs-2 mb-1"></i>
-                Vertical
-            </button>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
 
-<!-- CONTENEDOR OCULTO QUE RECIBE LOS DATOS DINÁMICOS Y SE MUESTRA SOLO EN IMPRESIÓN -->
-<div id="plantilla-sobre-print">
-    <div class="contenido-sobre-print">
-        <div style="font-weight: bold; font-size: 22pt; margin-bottom: 8px;" id="sobreNombreImpresion"></div>
-        <div style="font-size: 16pt;" id="sobreFechaImpresion"></div>
-    </div>
-</div>
 
 
 	
@@ -4648,50 +4633,102 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 				
 	/**
- * Pasa los datos del formulario al contenedor del sobre y desencadena la impresión
- * @param {string} orientacion - 'horizontal' o 'vertical'
+ * Abre el modal y llena tanto la vista previa como los datos de impresión
  */
-function procesarEImprimirSobre(orientacion) {
-    // 1. Obtener valores de los inputs en tiempo real
-    const nombre = document.getElementById('nombrePaciente').value.trim();
-    const fecha = document.getElementById('fechaActual').value.trim();
-    
-    // 2. Formatear la información para el sobre
+function abrirModalSobre() {
+    // 1. Capturar datos de los inputs principales
+    const nombre = document.getElementById('nombrePaciente') ? document.getElementById('nombrePaciente').value.trim() : '';
+    const fecha = document.getElementById('fechaActual') ? document.getElementById('fechaActual').value.trim() : '';
+
     const txtNombre = nombre !== "" ? nombre.toUpperCase() : "PACIENTE SIN NOMBRE";
     const txtFecha = fecha !== "" ? "FECHA: " + fecha : "FECHA: " + new Date().toLocaleDateString('es-EC');
 
-    // 3. Inyectar dinámicamente los datos al DOM que se va a imprimir
-    document.getElementById('sobreNombreImpresion').innerText = txtNombre;
-    document.getElementById('sobreFechaImpresion').innerText = txtFecha;
+    // 2. Inyectar datos en la vista previa del Modal
+    document.querySelectorAll('.preview-nombre').forEach(el => el.innerText = txtNombre);
+    document.querySelectorAll('.preview-fecha').forEach(el => el.innerText = txtFecha);
 
-    // 4. Cerrar el Modal de Bootstrap si está abierto
-    const modalElement = document.getElementById('modalOrientacionSobre');
+    // 3. Inyectar datos en el contenedor de impresión física
+    document.getElementById('sobreNombrePrint').innerText = txtNombre;
+    document.getElementById('sobreFechaPrint').innerText = txtFecha;
+
+    // 4. Mostrar el modal con Bootstrap
+    const modalSobre = new bootstrap.Modal(document.getElementById('modalSobre'));
+    modalSobre.show();
+}
+
+/**
+ * Ejecuta el proceso de impresión según la orientación elegida
+ */
+function ejecutarImpresionSobre(orientacion) {
+    // Cerrar el modal antes de imprimir
+    const modalElement = document.getElementById('modalSobre');
     if (modalElement) {
-        const modalInstance = bootstrap.Modal.getInstance(modalElement);
-        if (modalInstance) modalInstance.hide();
+        const instance = bootstrap.Modal.getInstance(modalElement);
+        if (instance) instance.hide();
     }
 
-    // 5. Asignar clases de impresión al <body>
+    // Configurar clases de orientación en el <body>
     document.body.classList.remove('modo-sobre-horizontal', 'modo-sobre-vertical');
     document.body.classList.add('imprimiendo-sobre');
-    
+
     if (orientacion === 'vertical') {
         document.body.classList.add('modo-sobre-vertical');
     } else {
         document.body.classList.add('modo-sobre-horizontal');
     }
 
-    // 6. Pequeña pausa de 150ms para permitir la renderización visual previa a la impresión
+    // Retardo mínimo para asegurar que el DOM actualice los textos e imprima correctamente
     setTimeout(() => {
         window.print();
 
-        // 7. Limpiar clases del body al cerrar la ventana de impresión
+        // Limpiar clases después de enviar a impresión
         setTimeout(() => {
             document.body.classList.remove('imprimiendo-sobre', 'modo-sobre-horizontal', 'modo-sobre-vertical');
         }, 500);
     }, 150);
 }
+
+function cerrarModalSobre() {
+    const modalElement = document.getElementById('modalSobre');
+    if (modalElement) {
+        const instance = bootstrap.Modal.getInstance(modalElement);
+        if (instance) instance.hide();
+    }
+}
     </script>
+	<!-- Modal para Gestión e Impresión de Sobres (Tu modal original) -->
+<div class="modal fade" id="modalSobre" tabindex="-1" aria-labelledby="modalSobreLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-light py-2">
+                <h5 class="modal-title fs-6 fw-bold text-primary" id="modalSobreLabel">Vista Previa - Impresión de Sobre</h5>
+                <button type="button" class="btn-close btn-sm" data-bs-dismiss="modal" aria-label="Cerrar" onclick="cerrarModalSobre()"></button>
+            </div>
+            <div class="modal-body" style="font-size: 13px;">
+                <div class="mb-3 p-3 border rounded bg-light">
+                    <p class="mb-1"><strong>Paciente:</strong> <span class="preview-nombre text-dark fw-bold"></span></p>
+                    <p class="mb-0"><strong>Fecha:</strong> <span class="preview-fecha text-dark"></span></p>
+                </div>
+                <div class="text-muted small mb-3">
+                    Selecciona la orientación en la que deseas enviar el sobre a la impresora física:
+                </div>
+            </div>
+            <div class="modal-footer py-2">
+                <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-dismiss="modal" onclick="cerrarModalSobre()">Cancelar</button>
+                <button type="button" class="btn btn-secondary btn-sm" onclick="ejecutarImpresionSobre('vertical')">Imprimir Vertical</button>
+                <button type="button" class="btn btn-primary btn-sm" onclick="ejecutarImpresionSobre('horizontal')">Imprimir Horizontal</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Plantilla de Impresión (Fuera del modal, al final del body) -->
+<div id="plantilla-sobre-print">
+    <div class="contenido-sobre-print">
+        <div style="font-weight: bold; font-size: 22pt; margin-bottom: 8px;" id="sobreNombrePrint"></div>
+        <div style="font-size: 16pt;" id="sobreFechaPrint"></div>
+    </div>
+</div>
 	
 </body>
 
