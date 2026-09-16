@@ -1,222 +1,148 @@
-// --- CONTROLLER: HISTORIA CLÍNICA Y MAPA DE DOLOR ---
+// --- GESTIÓN DE TURNOS DE PODOLOGÍA (RAILWAY / MYSQL) ---
 
-document.addEventListener('DOMContentLoaded', () => {
-    // Inicializar fecha actual en el formulario de historia clínica si existe
-    const hcFecha = document.getElementById('hcFecha');
-    if (hcFecha && !hcFecha.value) {
-        hcFecha.value = new Date().toISOString().split('T')[0];
-    }
-});
-
-// Evento para capturar el maniquí en imagen y mostrarlo debajo del texto
-document.addEventListener('click', (e) => {
-    if (e.target && e.target.id === 'btnCapturarMapa') {
-        const elementoAHTML = document.getElementById('bodyContainerToCapture');
-        if (!elementoAHTML) {
-            alert("No se encontró el contenedor del mapa de dolor.");
-            return;
+// 1. Cargar/Consultar turnos desde la base de datos
+async function cargarTurnosDB() {
+    try {
+        const response = await fetch('/ControladorTurnos');
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
         }
+
+        const turnosDB = await response.json();
         
-        if (typeof html2canvas === 'undefined') {
-            alert("La librería html2canvas no está cargada.");
-            return;
-        }
+        // Mapeamos los datos de MySQL al formato que utiliza el calendario en frontend
+        turnos = turnosDB.map(t => ({
+            id: t.id ? t.id.toString() : '',
+            cedula: t.cedula || '',
+            nombres: t.nombres || '',
+            celular: t.celular || '',
+            email: t.email || '',
+            motivo: t.motivo || '',
+            fecha: t.fecha || '',
+            hora: t.hora_inicio || t.hora || '',
+            duracion: t.duracion_minutos || t.duracion || '40'
+        }));
 
-        html2canvas(elementoAHTML).then(canvas => {
-            const imgData = canvas.toDataURL('image/png');
-            const container = document.getElementById('previewCapturaContainer');
-            if (container) {
-                container.innerHTML = `
-                    <p style="font-size: 0.85rem; color: #2b9348; font-weight: 600; margin-bottom: 5px;">¡Captura generada con éxito!</p>
-                    <img src="${imgData}" alt="Captura Mapa de Dolor" style="max-width: 100%; height: auto; max-height: 200px; border-radius: 6px; border: 1px solid #dee2e6; box-shadow: 0 2px 6px rgba(0,0,0,0.1);">
-                `;
-            }
-        }).catch(err => {
-            console.error("Error al generar la captura:", err);
-        });
+        renderizarCalendario();
+
+    } catch (error) {
+        console.error("Error al obtener los turnos desde Railway:", error);
     }
-});
+}
 
-// Función completa para incluir todos los campos y la imagen capturada en el PDF de Historia Clínica
-function guardarYGenerarPDF(event) {
-    event.preventDefault();
-    
-    if (!window.jspdf) {
-        alert("La librería jsPDF no está cargada.");
+// 2. Guardar o Actualizar Turno en la BD
+async function guardarTurno(e) {
+    e.preventDefault();
+
+    const id = document.getElementById('turno-id')?.value || '';
+    const fecha = document.getElementById('fecha-agenda')?.value || '';
+    const hora = document.getElementById('hora-inicio')?.value || '';
+    const cedula = document.getElementById('turnCedula')?.value.trim();
+
+    if (!cedula) {
+        alert("La cédula es un campo obligatorio.");
         return;
     }
 
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF();
-
-    // 1. Recopilar datos de todos los campos del formulario de Fisiolab
-    const numHC = document.getElementById('hcNum')?.value || '';
-    const fecha = document.getElementById('hcFecha')?.value || '';
-    const cedula = document.getElementById('hcCedula')?.value || '';
-    const nombres = document.getElementById('hcNombres')?.value || '';
-    const nacimiento = document.getElementById('hcNacimiento')?.value || '';
-    const edad = document.getElementById('hcEdad')?.value || '';
-    const sexo = document.getElementById('hcSexo')?.value || '';
-    const celular = document.getElementById('hcCelular')?.value || '';
-    const email = document.getElementById('hcEmail')?.value || '';
-    const direccion = document.getElementById('hcDireccion')?.value || '';
-    const emergenciaContacto = document.getElementById('hcEmergenciaContacto')?.value || '';
-    const emergenciaTelefono = document.getElementById('hcEmergenciaTelefono')?.value || '';
-    
-    const antecedentes = Array.from(document.querySelectorAll('.ant:checked')).map(el => el.value).join(', ');
-    const otrosAnt = document.getElementById('hcOtrosAnt')?.value || '';
-    const publicidad = document.getElementById('hcPublicidad')?.value || '';
-
-    const motivo = document.getElementById('hcMotivo')?.value || '';
-    const profesion = document.getElementById('hcProfesion')?.value || '';
-    const tipoTrabajo = document.getElementById('hcTipoTrabajo')?.value || '';
-    const sedestacion = document.getElementById('hcSedestacion')?.value || '';
-    const esfuerzo = document.getElementById('hcEsfuerzo')?.value || '';
-
-    const asimetria = document.getElementById('hcAsimetria')?.value || '';
-    const atrofias = document.getElementById('hcAtrofias')?.value || '';
-    const inflamacion = document.getElementById('hcInflamacion')?.value || '';
-    const contracturas = document.getElementById('hcContracturas')?.value || '';
-    const irradiacion = document.getElementById('hcIrradiacion')?.value || '';
-    const haciaDonde = document.getElementById('hcHaciaDonde')?.value || '';
-    const puntoDolorTexto = document.getElementById('hcPuntoDolor')?.value || '';
-
-    const eva = document.getElementById('hcEva')?.value || '';
-    const sesion = document.getElementById('hcSesion')?.value || '';
-    const terapeuta = document.getElementById('hcTerapeuta')?.value || '';
-    const tratamientos = Array.from(document.querySelectorAll('.trat:checked')).map(el => el.value).join(', ');
-    const diagnostico = document.getElementById('hcDiagnostico')?.value || '';
-
-    let y = 15;
-
-    function verificarEspacio(espacioNecesario = 10) {
-        if (y > 275 - espacioNecesario) {
-            doc.addPage();
-            y = 15;
-        }
+    // Validar límite de máximo 3 pacientes por intervalo en el cliente
+    const turnosExistentes = turnos.filter(t => t.fecha === fecha && t.hora === hora && t.id !== id);
+    if (turnosExistentes.length >= 3) {
+        alert('No se pueden agendar más de 3 pacientes en el mismo bloque horario.');
+        return;
     }
 
-    const imgLogo = new Image();
-    imgLogo.crossOrigin = "Anonymous";
-    imgLogo.src = '../img/logFisior.png'; // Asegúrate que el nombre de la imagen sea correcto
-    
-    imgLogo.onload = function() {
-        try { doc.addImage(imgLogo, 'PNG', 14, 10, 22, 22); } catch(e){}
-        generarContenidoPDF();
-    };
+    try {
+        const formData = new URLSearchParams();
+        if (id) formData.append("id", id);
+        formData.append("turnCedula", cedula);
+        formData.append("turnNombres", document.getElementById('turnNombres')?.value.trim() || "");
+        formData.append("turnCelular", document.getElementById('turnCelular')?.value.trim() || "");
+        formData.append("turnEmail", document.getElementById('turnEmail')?.value.trim().toLowerCase() || "");
+        formData.append("turnMotivo", document.getElementById('turnMotivo')?.value.trim() || "");
+        formData.append("fechaAgenda", fecha);
+        formData.append("horaInicio", hora);
+        formData.append("duracionMinutos", document.getElementById('duracion-minutos')?.value || "40");
 
-    imgLogo.onerror = function() {
-        generarContenidoPDF();
-    };
+        const response = await fetch('/ControladorTurnos', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: formData.toString()
+        });
 
-    if (imgLogo.complete) {
-        try { doc.addImage(imgLogo, 'PNG', 14, 10, 22, 22); } catch(e){}
-        generarContenidoPDF();
-    }
+        const data = await response.json();
 
-    function generarContenidoPDF() {
-        doc.setFont("helvetica", "bold");
-        doc.setFontSize(14);
-        doc.setTextColor(40, 40, 40);
-        doc.text("CENTRO DE REHABILITACIÓN FÍSICA - FISIOLAB.ST", 42, 16);
-
-        doc.setFontSize(10.5);
-        doc.setFont("helvetica", "normal");
-        doc.setTextColor(100, 100, 100);
-        doc.text("HISTORIA CLÍNICA FISIOTERAPÉUTICA", 42, 22);
-
-        doc.setLineWidth(0.6);
-        doc.setDrawColor(67, 97, 238);
-        doc.line(14, 33, 196, 33);
-
-        y = 38;
-
-        function agregarSeccionTitulo(titulo) {
-            verificarEspacio(12);
-            doc.setFillColor(241, 243, 245);
-            doc.rect(14, y - 4, 182, 6, 'F');
-            doc.setFont("helvetica", "bold");
-            doc.setFontSize(10);
-            doc.setTextColor(58, 12, 163);
-            doc.text(titulo, 16, y);
-            y += 6;
-            doc.setFont("helvetica", "normal");
-            doc.setTextColor(40, 40, 40);
-            doc.setFontSize(9);
+        if (response.ok) {
+            alert("¡Cita guardada correctamente!");
+            cerrarModal();
+            cargarTurnosDB(); // Recarga la lista desde Railway
+        } else {
+            alert("Atención: " + (data.error || "No se pudo agendar la cita."));
         }
 
-        agregarSeccionTitulo("1. Datos Personales");
-        doc.text(`N° HC: ${numHC || 'N/D'}`, 14, y);
-        doc.text(`Fecha: ${fecha || 'N/D'}`, 110, y);
-        y += 5;
-        doc.text(`Cédula: ${cedula || 'N/D'}`, 14, y);
-        doc.text(`Edad: ${edad || 'N/D'} años  |  Sexo: ${sexo || 'N/D'}`, 110, y);
-        y += 5;
-        doc.text(`Paciente: ${nombres || 'N/D'}`, 14, y);
-        y += 5;
-        doc.text(`Celular: ${celular || 'N/D'}`, 14, y);
-        doc.text(`Email: ${email || 'N/D'}`, 110, y);
-        y += 5;
-        doc.text(`Dirección: ${direccion || 'N/D'}`, 14, y, { maxWidth: 180 });
-        y += 5;
-        doc.text(`Emergencia: ${emergenciaContacto || 'N/D'} (${emergenciaTelefono || 'N/D'})`, 14, y);
-        y += 8;
-
-        agregarSeccionTitulo("2. Antecedentes Personales del Paciente");
-        doc.text(`Patologías / Condiciones: ${antecedentes || "Ninguna marcada"}`, 14, y, { maxWidth: 180 });
-        y += 5;
-        if (otrosAnt) {
-            doc.text(`Otros antecedentes: ${otrosAnt}`, 14, y, { maxWidth: 180 });
-            y += 5;
-        }
-        doc.text(`Publicidad / Medio: ${publicidad || "No especificado"}`, 14, y);
-        y += 8;
-
-        agregarSeccionTitulo("3. Motivo de Consulta y Factores Ocupacionales");
-        doc.text(`Descripción del problema: ${motivo || "No especificado"}`, 14, y, { maxWidth: 180 });
-        y += 5;
-        doc.text(`Profesión: ${profesion || 'N/D'}`, 14, y);
-        doc.text(`Tipo de Trabajo: ${tipoTrabajo || 'N/D'}`, 110, y);
-        y += 5;
-        doc.text(`Sedestación Prolongada: ${sedestacion}  |  Esfuerzo Físico: ${esfuerzo}`, 14, y);
-        y += 8;
-
-        agregarSeccionTitulo("4. Evaluación Fisioterapéutica (Inspección y Palpación)");
-        doc.text(`Asimetría: ${asimetria || 'N/D'}`, 14, y);
-        doc.text(`Atrofias: ${atrofias || 'N/D'}`, 110, y);
-        y += 5;
-        doc.text(`Inflamación / Edema: ${inflamacion || 'N/D'}`, 14, y);
-        doc.text(`Contracturas: ${contracturas || 'N/D'}`, 110, y);
-        y += 5;
-        doc.text(`Irradiación del Dolor: ${irradiacion} (Hacia: ${haciaDonde || "N/A"})`, 14, y);
-        y += 5;
-        doc.text(`Zonas de Dolor Seleccionadas: ${puntoDolorTexto || "Ninguna zona especificada"}`, 14, y, { maxWidth: 180 });
-        y += 8;
-
-        agregarSeccionTitulo("5. Planificación y Seguimiento del Tratamiento");
-        doc.text(`Escala EVA (Dolor): ${eva ? eva + '/10' : 'N/D'}`, 14, y);
-        doc.text(`N° de Sesión: ${sesion || '1'}`, 110, y);
-        y += 5;
-        doc.text(`Terapeuta a Cargo: ${terapeuta || 'N/D'}`, 14, y);
-        y += 5;
-        doc.text(`Modalidades Aplicadas: ${tratamientos || "Ninguna seleccionada"}`, 14, y, { maxWidth: 180 });
-        y += 5;
-        doc.text(`Diagnóstico Fisioterapéutico: ${diagnostico || "No especificado"}`, 14, y, { maxWidth: 180 });
-        y += 10;
-
-        const previewImg = document.querySelector('#previewCapturaContainer img');
-        if (previewImg) {
-            verificarEspacio(65);
-            agregarSeccionTitulo("6. Mapa de Dolor Corporal (Captura)");
-            try {
-                doc.addImage(previewImg.src, 'PNG', 35, y, 130, 60);
-                y += 65;
-            } catch (e) {
-                console.error("Error al incrustar la imagen del mapa corporal", e);
-            }
-        }
-
-        doc.save(`HistoriaClinica_${cedula || 'paciente'}.pdf`);
-        alert("¡Historia Clínica profesional generada con éxito!");
+    } catch (error) {
+        console.error("Error al conectar con el servidor para guardar el turno:", error);
+        alert("Error de conexión al procesar el turno.");
     }
 }
+
+// 3. Cancelar / Eliminar Turno en la BD
+async function cancelarTurno(id) {
+    if (!confirm('¿Está seguro de que desea cancelar este turno?')) return;
+
+    try {
+        const formData = new URLSearchParams();
+        formData.append("accion", "eliminar");
+        formData.append("id", id);
+
+        const response = await fetch('/ControladorTurnos', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: formData.toString()
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            alert("Turno cancelado correctamente.");
+            cargarTurnosDB(); // Recarga la lista desde Railway
+        } else {
+            alert("Atención: " + (data.error || "No se pudo cancelar el turno."));
+        }
+    } catch (error) {
+        console.error("Error al eliminar el turno:", error);
+        alert("Error de conexión al intentar cancelar el turno.");
+    }
+}
+
+
+// Función para autocompletar el modal de turnos al escribir la cédula
+async function buscarPacienteParaTurno(cedula) {
+    if (!cedula || cedula.length < 5) return;
+    
+    try {
+        const response = await fetch(`/ControladorPacientes?accion=buscar&cedula=${encodeURIComponent(cedula)}`);
+        if (response.ok) {
+            const paciente = await response.json();
+            if (paciente) {
+                if (document.getElementById('turnNombres')) document.getElementById('turnNombres').value = paciente.nombres || '';
+                if (document.getElementById('turnCelular')) document.getElementById('turnCelular').value = paciente.telefono || '';
+                if (document.getElementById('turnEmail')) document.getElementById('turnEmail').value = paciente.correo || '';
+            }
+        }
+    } catch (error) {
+        console.error("Error al buscar paciente para el turno:", error);
+    }
+}
+
+// Escuchador de evento en el input de Cédula del Turno
+document.addEventListener('DOMContentLoaded', () => {
+    const inputTurnCedula = document.getElementById('turnCedula');
+    if (inputTurnCedula) {
+        inputTurnCedula.addEventListener('blur', (e) => buscarPacienteParaTurno(e.target.value.trim()));
+    }
+});
+
+// 4. Inicializar carga al cargar el DOM
+document.addEventListener('DOMContentLoaded', () => {
+    cargarTurnosDB();
+});
