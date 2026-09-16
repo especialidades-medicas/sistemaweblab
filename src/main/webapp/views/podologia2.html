@@ -16,8 +16,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <!-- Librería jsPDF para la exportación de la historia clínica en PDF -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-
-    
+    <!-- Librería html2pdf.js para exportar la historia clínica a PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+        
     <style>
         * {
             margin: 0;
@@ -394,6 +395,53 @@ canvas {
     touch-action: none; 
     cursor: crosshair; 
 }
+
+
+        /* Estilos del Calendario y Modal */
+    .calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+    .calendar-controls { margin-bottom: 20px; }
+    .calendar-controls input[type="date"] { padding: 6px 10px; border: 1px solid #ccc; border-radius: 4px; }
+    .table-responsive { overflow-x: auto; }
+    .calendar-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+    .calendar-table th, .calendar-table td { border: 1px solid #e0e0e0; padding: 10px; text-align: left; vertical-align: top; }
+    .calendar-table th { background-color: #f5f7fa; }
+
+    /* Tarjetas de pacientes */
+    .paciente-card {
+        background-color: #e3f2fd;
+        border-left: 4px solid #1976d2;
+        padding: 8px 12px;
+        margin-bottom: 6px;
+        border-radius: 4px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 10px;
+    }
+    .paciente-card.sobreocupado { border-left-color: #f57c00; background-color: #fff3e0; }
+
+    .paciente-info { font-size: 13px; line-height: 1.4; }
+    .paciente-info small { color: #555; display: block; }
+    
+    /* Botones de acción */
+    .actions-group { display: flex; gap: 5px; align-items: center; flex-wrap: wrap; }
+    .btn-sm { padding: 4px 8px; font-size: 12px; border: none; border-radius: 3px; cursor: pointer; }
+    .btn-ws { background-color: #25D366; color: white; text-decoration: none; border-radius: 3px; padding: 4px 8px; font-size: 12px; display: inline-flex; align-items: center; }
+    .btn-email { background-color: #0078d4; color: white; text-decoration: none; border-radius: 3px; padding: 4px 8px; font-size: 12px; display: inline-flex; align-items: center; }
+    .btn-edit { background-color: #ffb74d; color: black; }
+    .btn-danger { background-color: #e57373; color: white; }
+    .btn-primary { background-color: #1976d2; color: white; padding: 8px 16px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; }
+    .btn-secondary { background-color: #9e9e9e; color: white; padding: 8px 16px; border: none; border-radius: 4px; cursor: pointer; }
+
+    .alerta-cupo { color: #d32f2f; font-size: 12px; font-weight: bold; margin-top: 5px; }
+
+    /* Modal */
+    .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 1000; }
+    .modal-content { background: white; padding: 20px; border-radius: 8px; width: 420px; max-width: 90%; box-shadow: 0 4px 10px rgba(0,0,0,0.15); }
+    .form-group { margin-bottom: 12px; display: flex; flex-direction: column; }
+    .form-group label { font-size: 13px; font-weight: bold; margin-bottom: 3px; }
+    .form-group input, .form-group select { padding: 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px; }
+    .modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 15px; }
         
     </style>
 </head>
@@ -1079,7 +1127,7 @@ canvas {
                             <div class="border-t border-slate-400 pt-2 text-center">
                                 <input type="text" placeholder="Firma del Paciente / C.I." class="w-full text-center bg-transparent text-sm focus:outline-none font-medium text-slate-700">
                                 <span class="block text-[11px] font-bold text-slate-500 uppercase mt-1">Paciente / Representante</span>
-                                <input type="text" id="hcCedula" placeholder="C.I.: 000000000-0" class="w-full text-center bg-transparent text-xs text-slate-500 focus:outline-none mt-1">                                
+                                <input type="text" id="hcCedulaFirma" placeholder="C.I.: 000000000-0" class="w-full text-center bg-transparent text-xs text-slate-500 focus:outline-none mt-1">                                
                             </div>
                             <div class="border-t border-slate-400 pt-2 text-center">
                                 <span class="block text-sm font-bold text-slate-800">Tnlga. Gabriela Estrella</span>
@@ -1102,26 +1150,55 @@ canvas {
 
 
 
+            <!-- 3--SECCIÓN CALENDARIO DE CITAS PODOLÓGICAS -->
             <div id="citas-view" class="section-view">
                 <div class="content-card">
-                    <h2>Calendario de Citas Podológicas</h2>
-                    <p style="color: var(--gray);">Módulo de programación de quiropodias, estudios de marcha y revisiones periódicas.</p>
+                    <div class="calendar-header">
+                        <div>
+                            <h2>Calendario de Citas Podológicas</h2>
+                            <p style="color: var(--gray, #666);">Módulo de programación de quiropodias, estudios de marcha y revisiones periódicas.</p>
+                        </div>
+                        <button type="button" class="btn-primary" onclick="abrirModalNuevoTurno()">+ Agendar Cita</button>
+                    </div>
+            
+                    <!-- Filtro de fecha -->
+                    <div class="calendar-controls">
+                        <label for="fecha-agenda"><strong>Fecha de Agenda:</strong></label>
+                        <input type="date" id="fecha-agenda" onchange="renderizarCalendario()">
+                    </div>
+            
+                    <!-- Tabla de Agenda Horaria (08:00 a 21:00) -->
+                    <div class="table-responsive">
+                        <table class="calendar-table">
+                            <thead>
+                                <tr>
+                                    <th style="width: 110px;">Horario</th>
+                                    <th>Pacientes Agendados (Máx. 3 por bloque)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="cuerpo-calendario">
+                                <!-- Filas generadas dinámicamente con JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
 
-            <div id="recetas-view" class="section-view">
-                <div class="content-card">
-                    <h2>Tratamientos y Prescripciones Tópicas</h2>
-                    <p style="color: var(--gray);">Recetas de antimicóticos, ortesis plantares y recomendaciones de calzado.</p>
-                </div>
-            </div>
+<!-- SECCIÓN RECETAS -->
+<div id="recetas-view" class="section-view">
+    <div class="content-card">
+        <h2>Tratamientos y Prescripciones Tópicas</h2>
+        <p style="color: var(--gray, #666);">Recetas de antimicóticos, ortesis plantares y recomendaciones de calzado.</p>
+    </div>
+</div>
 
-            <div id="informes-view" class="section-view">
-                <div class="content-card">
-                    <h2>Informes Clínicos y Podológicos</h2>
-                    <p style="color: var(--gray);">Estadísticas generales de evolución de pacientes y reportes de atención del centro podológico.</p>
-                </div>
-            </div>
+<!-- SECCIÓN INFORMES -->
+<div id="informes-view" class="section-view">
+    <div class="content-card">
+        <h2>Informes Clínicos y Podológicos</h2>
+        <p style="color: var(--gray, #666);">Estadísticas generales de evolución de pacientes y reportes de atención del centro podológico.</p>
+    </div>
+</div>
             
             <!-- VISTA 4: RECETARIO / PRESCRIPCIÓN MÉDICA -->
             <div id="recetario-view" class="section-view">
@@ -1892,37 +1969,249 @@ function resetForm() {
 }
 
         function descargarPDFH() {
-    // 1. Obtener valores de los campos
-    const cedula = document.getElementById('hcCedula')?.value.trim() || 'SIN_CEDULA';
-    
-    // Extraer apellidos (o el nombre completo) y limpiar espacios
-    const nombreCompleto = document.getElementById('hcNombres')?.value.trim() || 'SIN_NOMBRE';
-    const nombreFormateado = nombreCompleto.replace(/\s+/g, '_').toUpperCase();
-    
-    // Obtener fecha actual en formato YYYY-MM-DD
-    const hoy = new Date();
-    const fecha = hoy.toISOString().split('T')[0];
-    
-    // 2. Construir el nombre del archivo: CEDULA_APELLIDOS_FECHA.pdf
-    const nombreArchivo = `${cedula}_${nombreFormateado}_${fecha}.pdf`;
+    const elemento = document.getElementById('clinical-form');
+    if (!elemento) return;
 
-    // 3. Configuración de html2pdf
-    const elemento = document.getElementById('clinical-form'); // ID de tu contenedor principal
-    const opciones = {
-        margin:       [10, 10, 10, 10], // arriba, izquierda, abajo, derecha en mm
-        filename:     nombreArchivo,
-        image:        { type: 'jpeg', quality: 0.98 },
-        html2canvas:  { scale: 2, useCORS: true, logging: false },
-        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
-    };
+    // Verificar si html2pdf está disponible
+    if (typeof html2pdf !== 'undefined') {
+        const cedula = document.getElementById('hcCedula')?.value.trim() || 'SIN_CEDULA';
+        const nombreCompleto = document.getElementById('hcNombres')?.value.trim() || 'SIN_NOMBRE';
+        const nombreFormateado = nombreCompleto.replace(/\s+/g, '_').toUpperCase();
+        const fecha = new Date().toISOString().split('T')[0];
+        const nombreArchivo = `${cedula}_${nombreFormateado}_${fecha}.pdf`;
 
-    // 4. Generar el PDF, abrirlo en una nueva pestaña y descargarlo
-    html2pdf().set(opciones).from(elemento).toPdf().get('pdf').then(function(pdf) {
-        // Abre el PDF en una nueva pestaña para su revisión previa
-        window.open(pdf.output('bloburl'), '_blank');
-    }).save(); // Inicia la descarga automática con el nuevo nombre
+        const opciones = {
+            margin:       [10, 10, 10, 10],
+            filename:     nombreArchivo,
+            image:        { type: 'jpeg', quality: 0.98 },
+            html2canvas:  { scale: 2, useCORS: true, logging: false },
+            jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+        };
+
+        html2pdf().set(opciones).from(elemento).save();
+    } else {
+        // Respaldo de impresión nativa si falla la librería
+        window.print();
+    }
 }
+
+// turnos agendados
+        // Memoria para guardar los turnos agendados
+    let turnos = [];
+
+    document.addEventListener("DOMContentLoaded", () => {
+        // Inicializar con la fecha de hoy
+        const hoy = new Date().toISOString().split('T')[0];
+        document.getElementById('fecha-agenda').value = hoy;
+        
+        cargarOpcionesHorario();
+        renderizarCalendario();
+    });
+
+    // Cargar horas desde 08:00 hasta 21:00
+    function cargarOpcionesHorario() {
+        const select = document.getElementById('hora-inicio');
+        select.innerHTML = '';
+        for (let h = 8; h <= 21; h++) {
+            const horaStr = h < 10 ? `0${h}:00` : `${h}:00`;
+            select.innerHTML += `<option value="${horaStr}">${horaStr}</option>`;
+        }
+    }
+
+    // Dibujar el calendario en pantalla
+    function renderizarCalendario() {
+        const fechaSeleccionada = document.getElementById('fecha-agenda').value;
+        const cuerpo = document.getElementById('cuerpo-calendario');
+        cuerpo.innerHTML = '';
+
+        for (let h = 8; h <= 21; h++) {
+            const horaStr = h < 10 ? `0${h}:00` : `${h}:00`;
+            const turnosEnHora = turnos.filter(t => t.fecha === fechaSeleccionada && t.hora === horaStr);
+            const numPacientes = turnosEnHora.length;
+
+            let alertaHtml = '';
+            if (numPacientes >= 2) {
+                alertaHtml = `<div class="alerta-cupo">⚠️ Notificación: Hay ${numPacientes} pacientes agendados al mismo tiempo.</div>`;
+            }
+
+            let tarjetasPacientes = turnosEnHora.map(t => {
+                const mensajeTexto = `Saludos Sr/a ${t.nombres}, Recuerdo de Cita Medica en Podología a las ${t.hora} el dia ${t.fecha} debe acudir 10 minutos antes para la preparación y evaluación`;
+                
+                // Botón WhatsApp
+                const enlaceWS = `https://wa.me/${t.celular}?text=${encodeURIComponent(mensajeTexto)}`;
+
+                // Botón Email (solo si se ingresó un correo)
+                let botonEmail = '';
+                if (t.email && t.email.trim() !== '') {
+                    const asuntoEmail = encodeURIComponent("Recordatorio de Cita Médica - Podología");
+                    const enlaceEmail = `mailto:${t.email}?subject=${asuntoEmail}&body=${encodeURIComponent(mensajeTexto)}`;
+                    botonEmail = `<a href="${enlaceEmail}" class="btn-email" title="Enviar Correo">✉️ Email</a>`;
+                }
+
+                return `
+                    <div class="paciente-card ${numPacientes > 1 ? 'sobreocupado' : ''}">
+                        <div class="paciente-info">
+                            <strong>${t.nombres}</strong> <small>(CI: ${t.cedula})</small>
+                            <small><strong>Motivo:</strong> ${t.motivo}</small>
+                            <small><strong>Duración:</strong> ${t.duracion} min | <strong>Tel:</strong> ${t.celular}</small>
+                        </div>
+                        <div class="actions-group">
+                            <a href="${enlaceWS}" target="_blank" class="btn-ws" title="Enviar WhatsApp">📲 WhatsApp</a>
+                            ${botonEmail}
+                            <button type="button" class="btn-sm btn-edit" onclick="editarTurno('${t.id}')">✏️ Editar</button>
+                            <button type="button" class="btn-sm btn-danger" onclick="cancelarTurno('${t.id}')">❌ Cancelar</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            cuerpo.innerHTML += `
+                <tr>
+                    <td><strong>${horaStr}</strong></td>
+                    <td>
+                        ${tarjetasPacientes}
+                        ${alertaHtml}
+                        ${numPacientes >= 3 ? '<span style="color:#d32f2f; font-size:11px; font-weight:bold;">(Límite de 3 pacientes alcanzado en esta hora)</span>' : ''}
+                    </td>
+                </tr>
+            `;
+        }
+    }
+
+    function abrirModalNuevoTurno() {
+        document.getElementById('modal-titulo').innerText = "Agendar Nueva Cita";
+        document.getElementById('turno-id').value = '';
+        document.getElementById('form-turno').reset();
+        document.getElementById('modal-turno').style.display = 'flex';
+    }
+
+    function cerrarModal() {
+        document.getElementById('modal-turno').style.display = 'none';
+    }
+
+    function guardarTurno(e) {
+        e.preventDefault();
+        const id = document.getElementById('turno-id').value || Date.now().toString();
+        const fecha = document.getElementById('fecha-agenda').value;
+        const hora = document.getElementById('hora-inicio').value;
+
+        // Validar que no superen los 3 pacientes
+        const turnosExistentes = turnos.filter(t => t.fecha === fecha && t.hora === hora && t.id !== id);
+        if (turnosExistentes.length >= 3) {
+            alert('No se pueden agendar más de 3 pacientes en el mismo bloque horario.');
+            return;
+        }
+
+        const nuevoTurno = {
+            id: id,
+            cedula: document.getElementById('hcCedula').value,
+            nombres: document.getElementById('hcNombres').value,
+            celular: document.getElementById('hcCelular').value,
+            email: document.getElementById('hcEmail').value,
+            motivo: document.getElementById('hcMotivo').value,
+            fecha: fecha,
+            hora: hora,
+            duracion: document.getElementById('duracion-minutos').value
+        };
+
+        const index = turnos.findIndex(t => t.id === id);
+        if (index > -1) {
+            turnos[index] = nuevoTurno;
+        } else {
+            turnos.push(nuevoTurno);
+        }
+
+        cerrarModal();
+        renderizarCalendario();
+    }
+
+    function editarTurno(id) {
+        const turno = turnos.find(t => t.id === id);
+        if (!turno) return;
+
+        document.getElementById('modal-titulo').innerText = "Editar Cita";
+        document.getElementById('turno-id').value = turno.id;
+        document.getElementById('hcCedula').value = turno.cedula;
+        document.getElementById('hcNombres').value = turno.nombres;
+        document.getElementById('hcCelular').value = turno.celular;
+        document.getElementById('hcEmail').value = turno.email || '';
+        document.getElementById('hcMotivo').value = turno.motivo;
+        document.getElementById('hora-inicio').value = turno.hora;
+        document.getElementById('duracion-minutos').value = turno.duracion;
+
+        document.getElementById('modal-turno').style.display = 'flex';
+    }
+
+    function cancelarTurno(id) {
+        if (confirm('¿Está seguro de que desea cancelar este turno?')) {
+            turnos = turnos.filter(t => t.id !== id);
+            renderizarCalendario();
+        }
+    }
         
     </script>
+
+    
+<!-- MODAL PARA AGENDAR / EDITAR TURNO -->
+<div id="modal-turno" class="modal" style="display: none;">
+    <div class="modal-content">
+        <h3 id="modal-titulo">Agendar Nueva Cita</h3>
+        <form id="form-turno" onsubmit="guardarTurno(event)">
+            <input type="hidden" id="turno-id">
+            
+            <!-- 1. Cédula -->
+            <div class="form-group">
+                <label for="hcCedula">Cédula / Identificación:</label>
+                <input type="text" id="hcCedula" placeholder="Ej: 1712345678" required>
+            </div>
+
+            <!-- 2. Apellidos y Nombres -->
+            <div class="form-group">
+                <label for="hcNombres">Apellidos y Nombres:</label>
+                <input type="text" id="hcNombres" placeholder="Ej: Pérez Juan" required>
+            </div>
+
+            <!-- 3. Teléfono / Celular -->
+            <div class="form-group">
+                <label for="hcCelular">Teléfono (WhatsApp):</label>
+                <input type="tel" id="hcCelular" placeholder="Ej: 593991234567" required>
+            </div>
+
+            <!-- 4. Correo Electrónico (Opcional) -->
+            <div class="form-group">
+                <label for="hcEmail">Correo Electrónico (Opcional):</label>
+                <input type="email" id="hcEmail" placeholder="Ej: paciente@email.com">
+            </div>
+
+            <!-- 5. Motivo de Consulta -->
+            <div class="form-group">
+                <label for="hcMotivo">Motivo de Consulta:</label>
+                <input type="text" id="hcMotivo" placeholder="Ej: Quiropodia, Uñero, Estudio de marcha" required>
+            </div>
+
+            <!-- 6. Hora de Inicio -->
+            <div class="form-group">
+                <label for="hora-inicio">Hora de Inicio:</label>
+                <select id="hora-inicio" required></select>
+            </div>
+
+            <!-- 7. Duración del Turno -->
+            <div class="form-group">
+                <label for="duracion-minutos">Duración del Turno:</label>
+                <select id="duracion-minutos" required>
+                    <option value="40">40 Minutos</option>
+                    <option value="50">50 Minutos</option>
+                    <option value="60">60 Minutos</option>
+                </select>
+            </div>
+
+            <div class="modal-actions">
+                <button type="button" class="btn-secondary" onclick="cerrarModal()">Cancelar</button>
+                <button type="submit" class="btn-primary">Guardar Cita</button>
+            </div>
+        </form>
+    </div>
+</div>
+    
 </body>
 </html>
