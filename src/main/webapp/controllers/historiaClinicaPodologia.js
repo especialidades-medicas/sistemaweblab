@@ -3,12 +3,10 @@
 // 1. Cargar/Consultar turnos desde la base de datos
 async function cargarTurnosDB() {
     try {
-        // Apuntamos al Servlet existente en el backend Java
-        const response = await fetch('/PacienteServlet?accion=listarTurnos');
-        
+        // Usamos el mismo endpoint /ControladorPacientes registrado en PacienteServlet.java
+        const response = await fetch('/ControladorPacientes');
         if (!response.ok) {
-            console.warn(`El Servlet respondió con estado: ${response.status}. Se mantiene la lista local.`);
-            return;
+            throw new Error(`HTTP error! status: ${response.status}`);
         }
 
         const turnosDB = await response.json();
@@ -18,18 +16,21 @@ async function cargarTurnosDB() {
                 id: t.id ? t.id.toString() : '',
                 cedula: t.cedula || '',
                 nombres: t.nombres || '',
-                celular: t.celular || t.telefono || '',
-                email: t.email || t.correo || '',
+                celular: t.telefono || '',
+                email: t.correo || '',
                 motivo: t.motivo || '',
-                fecha: t.fecha || '',
+                fecha: t.fechaNacimiento || t.fecha || '',
                 hora: t.hora_inicio || t.hora || '',
                 duracion: t.duracion_minutos || t.duracion || '40'
             }));
-            renderizarCalendario();
+
+            if (typeof renderizarCalendario === 'function') {
+                renderizarCalendario();
+            }
         }
 
     } catch (error) {
-        console.error("Error al obtener los turnos desde el servidor:", error);
+        console.error("Error al obtener los datos desde Railway:", error);
     }
 }
 
@@ -47,72 +48,63 @@ async function guardarTurno(e) {
         return;
     }
 
-    // Validar límite de máximo 3 pacientes por intervalo
-    const turnosExistentes = turnos.filter(t => t.fecha === fecha && t.hora === hora && t.id !== id);
-    if (turnosExistentes.length >= 3) {
-        alert('No se pueden agendar más de 3 pacientes en el mismo bloque horario.');
-        return;
-    }
-
     try {
         const formData = new URLSearchParams();
-        formData.append("accion", "guardarTurno");
-        if (id) formData.append("id", id);
-        formData.append("turnCedula", cedula);
-        formData.append("turnNombres", document.getElementById('turnNombres')?.value.trim() || "");
-        formData.append("turnCelular", document.getElementById('turnCelular')?.value.trim() || "");
-        formData.append("turnEmail", document.getElementById('turnEmail')?.value.trim().toLowerCase() || "");
-        formData.append("turnMotivo", document.getElementById('turnMotivo')?.value.trim() || "");
-        formData.append("fechaAgenda", fecha);
-        formData.append("horaInicio", hora);
-        formData.append("duracionMinutos", document.getElementById('duracion-minutos')?.value || "40");
+        formData.append("patCedula", cedula);
+        formData.append("patNombre", document.getElementById('turnNombres')?.value.trim().toUpperCase() || "");
+        formData.append("patTelefono", document.getElementById('turnCelular')?.value.trim() || "");
+        formData.append("patCorreo", document.getElementById('turnEmail')?.value.trim().toLowerCase() || "");
 
-        const response = await fetch('/PacienteServlet', {
+        const response = await fetch('/ControladorPacientes', {
             method: 'POST',
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
             body: formData.toString()
         });
 
+        const data = await response.json();
+
         if (response.ok) {
-            alert("¡Cita agendada con éxito!");
-            cerrarModal();
+            alert("¡Turno guardado con éxito!");
+            if (typeof cerrarModal === 'function') cerrarModal();
             cargarTurnosDB();
         } else {
-            alert("Error al procesar el turno en la base de datos.");
+            alert("Atención: " + (data.error || "No se pudo guardar la información."));
         }
 
     } catch (error) {
-        console.error("Error de conexión al guardar el turno:", error);
-        alert("Error de red al intentar guardar la cita.");
+        console.error("Error al conectar con el servidor:", error);
+        alert("Error de conexión al procesar el guardado.");
     }
 }
 
 // 3. Cancelar / Eliminar Turno en la BD
-async function cancelarTurno(id) {
+async function cancelarTurno(cedula) {
     if (!confirm('¿Está seguro de que desea cancelar este turno?')) return;
 
     try {
         const formData = new URLSearchParams();
-        formData.append("accion", "eliminarTurno");
-        formData.append("id", id);
+        formData.append("accion", "eliminar");
+        formData.append("cedula", cedula);
 
-        const response = await fetch('/PacienteServlet', {
+        const response = await fetch('/ControladorPacientes', {
             method: 'POST',
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
             body: formData.toString()
         });
+
+        const data = await response.json();
 
         if (response.ok) {
             alert("Turno cancelado correctamente.");
             cargarTurnosDB();
         } else {
-            alert("No se pudo eliminar el turno.");
+            alert("Atención: " + (data.error || "No se pudo eliminar el registro."));
         }
     } catch (error) {
-        console.error("Error al eliminar turno:", error);
+        console.error("Error al cancelar el turno:", error);
+        alert("Error de conexión al intentar cancelar.");
     }
 }
-
 
 // Función para autocompletar el modal de turnos al escribir la cédula
 async function buscarPacienteParaTurno(cedula) {
