@@ -5,6 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Medipie.st - Panel de Podología</title>
     <!-- Google Fonts para mejor estética -->
+    <!-- Tailwind CSS for modern, professional clinical UI -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Carga de html2canvas desde CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
      <link rel="icon" type="image/png" href="../img/medipielogop.png">   
     <!-- Librería SheetJS (XLSX) para la exportación e importación de archivos Excel -->
@@ -12,6 +17,7 @@
     <!-- Librería jsPDF para la exportación de la historia clínica en PDF -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
+    
     <style>
         * {
             margin: 0;
@@ -321,9 +327,21 @@
                 margin-top: 0.5rem;
             }
         }
+
+        body { font-family: 'Inter', sans-serif; }
+        @media print {
+            .no-print { display: none !important; }
+            body { background: white !important; padding: 0 !important; }
+            .print-container { box-shadow: none !important; border: none !important; margin: 0 !important; width: 100% !important; max-width: none !important; }
+            input, textarea, select { border: none !important; background: transparent !important; resize: none !important; padding: 0 !important; }
+            input[type="checkbox"] { accent-color: black; }
+        }
+        /* Custom canvas cursor */
+        canvas { touch-action: none; cursor: crosshair; }
+        
     </style>
 </head>
-<body>
+<body class="bg-slate-100 text-slate-800 antialiased min-h-screen py-8 px-4 sm:px-6 lg:px-8">
     <!-- Capa oscura de fondo cuando el menú móvil está abierto -->
     <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
 
@@ -332,7 +350,7 @@
         <div class="sidebar" id="sidebar">
             <div class="logo">
                 Medipie.st
-                <button class="close-sidebar-btn" onclick="toggleSidebar()">✕</button>
+                <button class="close-sidebar-btn no-print" onclick="toggleSidebar()">✕</button>
             </div>
             <nav>
                 <a href="#" class="nav-item active" onclick="switchTab(event, 'dashboard-view'); toggleSidebarMobile();">📊 Panel Principal</a>
@@ -348,21 +366,21 @@
         </div>
 
         <!-- Main Content -->
-        <div class="main-content">
+        <div class="main-content ">
             <!-- Header con Botón Hamburguesa, Buscador y Botón de Regresar -->
-            <div class="header">
-                <div class="header-left">
+            <div class="header no-print">
+                <div class="header-left no-print">
                     <!-- Botón Hamburguesa para desplegar el menú lateral en pantallas pequeñas -->
-                    <button class="menu-toggle" onclick="toggleSidebar()" title="Abrir Menú">☰</button>
+                    <button class="menu-toggle no-print" onclick="toggleSidebar()" title="Abrir Menú">☰</button>
                     <h1 id="header-title">Bienvenid@, Sistema Podología</h1>
                 </div>
                 <div style="display: flex; align-items: center; gap: 1rem;">
-                    <div class="search-container">
+                    <div class="search-container no-print">
                         <input type="text" id="searchInput" placeholder="Cédula o apellidos...">
                         <button onclick="buscarPaciente()">Buscar</button>
                     </div>
                     <!-- Icono pequeño para regresar al menú principal -->
-                    <a href="dashboard.html" class="btn-back-icon" title="Volver al Menú Principal">↩</a>
+                    <a href="dashboard.html" class="btn-back-icon no-print" title="Volver al Menú Principal">↩</a>
                 </div>
             </div>
 
@@ -585,7 +603,6 @@
 
                         <div style="display: flex; gap: 10px; margin-top: 15px; flex-wrap: wrap;">
                             <button type="submit" class="btn-action" style="padding: 0.7rem 1.5rem; font-size: 0.95rem;">Guardar e Imprimir Certificado (PDF)</button>
-                            <button type="button" onclick="exportCertificadosToExcel()" class="btn-action" style="background: #2b9348; padding: 0.7rem 1.5rem; font-size: 0.95rem;">📊 Descargar / Actualizar Excel Único</button>
                         </div>
                     </form>
                 </div>
@@ -681,115 +698,353 @@
             </div>
             
             <!-- VISTA: HISTORIA CLÍNICA PODOLÓGICA -->
-            <div id="historia-clinica-view" class="section-view">
-                <div class="content-card">
-                    <h2>Historia Clínica Podológica - Medipie.st</h2>
-                    <form id="formHistoriaClinica" onsubmit="generarPDFHistoria(event)">
-                        <!-- Datos Administrativos (Únicos Obligatorios) -->
-                        <div class="form-grid">
-                            <div class="form-group">
-                                <label>Cédula del Paciente (N° Historia): *</label>
-                                <input type="text" id="hcCedula" placeholder="Ej. 1712345678" required>
-                            </div>
-                            <div class="form-group">
-                                <label>Fecha de Evaluación: *</label>
-                                <input type="date" id="hcFecha" required>
-                            </div>
-                            <div class="form-group full-width">
-                                <label>Nombres y Apellidos del Paciente: *</label>
-                                <input type="text" id="hcNombres" placeholder="Apellidos y Nombres completos" required>
-                            </div>
-                            <div class="form-group">
-                            <label>Fecha de Nacimiento:</label>
-                            <input type="date" id="hcNacimiento" onchange="actualizarEdadHC()">
-                        </div>
-                        <div class="form-group">
-                            <label>Edad:</label>
-                            <input type="text" id="hcEdad" placeholder="Años" readonly>
-                        </div>
-                        <div class="form-group">
-                            <label>Sexo:</label>
-                            <select id="hcSexo">
-                                <option value="Masculino">Masculino</option>
-                                <option value="Femenino">Femenino</option>
-                                <option value="Otro">Otro</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label>Celular / Teléfono:</label>
-                            <input type="tel" id="hcCelular" placeholder="099xxxxxxx">
-                        </div>
-
-                        <div class="form-group full-width">
-                            <label>Correo Electrónico (Email):</label>
-                            <input type="email" id="hcEmail" placeholder="correo@ejemplo.com">
-                        </div>
-
-                        <div class="form-group full-width">
-                            <label>Dirección Domiciliaria:</label>
-                            <input type="text" id="hcDireccion" placeholder="Calle principal y secundaria, sector">
-                        </div>
-
-                        <div class="form-group">
-                            <label>En caso de emergencia llamar a:</label>
-                            <input type="text" id="hcContactoEmergencia" placeholder="Nombre de familiar">
-                        </div>
-                        <div class="form-group">
-                            <label>Teléf. Emergencia:</label>
-                            <input type="tel" id="hcTelefonoEmergencia" placeholder="Teléfono">
-                        </div>
-                            
-                        </div>
-
-                        <!-- Antecedentes Personales (Opcionales) -->
-                        <h3 style="margin: 1.5rem 0 1rem; color: var(--primary-dark);">Antecedentes Personales</h3>
-                        <div class="form-grid" style="grid-template-columns: repeat(3, 1fr);">
-                            <div class="form-group"><label><input type="checkbox" class="hc-ant" value="Diabetes"> Diabetes</label></div>
-                            <div class="form-group"><label><input type="checkbox" class="hc-ant" value="Hipertensión"> Hipertensión</label></div>
-                            <div class="form-group"><label><input type="checkbox" class="hc-ant" value="Problemas Circulatorios"> Problemas Circulatorios</label></div>
-                            <div class="form-group"><label><input type="checkbox" class="hc-ant" value="Alteración Sensibilidad"> Alteración Sensibilidad</label></div>
-                            <div class="form-group"><label><input type="checkbox" class="hc-ant" value="Implantes Metálicos"> Implantes Metálicos</label></div>
-                            <div class="form-group"><label><input type="checkbox" class="hc-ant" value="Micosis/Hongos"> Micosis/Hongos</label></div>
-                            <div class="form-group"><label><input type="checkbox" class="hc-ant" value="Embarazo"> Embarazo</label></div>
-                        </div>
-                        
-                        <!-- Campo Otros para Antecedentes (Opcional) -->
-                        <div class="form-grid" style="margin-top: 1rem;">
-                            <div class="form-group full-width" style="display: flex; flex-direction: row; align-items: center; gap: 10px;">
-                                <label style="display: flex; align-items: center; gap: 5px; cursor: pointer;">
-                                    <input type="checkbox" id="checkOtros" onclick="toggleOtroInput()"> Otros:
-                                </label>
-                                <input type="text" id="inputOtroAntecedente" placeholder="Especifique otro antecedente..." style="flex: 1;" disabled>
-                            </div>
-                        </div>
-
-                        <!-- Body Test / Zona de Dolor (Opcional) -->
-                        <div style="margin: 2rem 0; background: #f8f9fa; padding: 1.2rem; border-radius: 10px;">
-                            <h3 style="margin-bottom: 0.8rem; font-size: 1rem; color: var(--dark);">7.- SEÑALE EL PUNTO DEL DOLOR EN EL BODY TEST:</h3>
-                            <div class="form-group full-width">
-                                <input type="text" id="hcPuntoDolor" placeholder="Ej. Hallux izquierdo, zona plantar metatarsiana, talón...">
-                            </div>
-                        </div>
-
-                        <!-- Motivo y Evaluaciones (Opcionales) -->
-                        <div class="form-grid">
-                            <div class="form-group full-width">
-                                <label>Motivo de Consulta:</label>
-                                <textarea id="hcMotivo" rows="2" placeholder="Describa malestar, tratamiento,..."></textarea>
-                            </div>
-                            <div class="form-group full-width">
-                                <label>Evaluación Fisioterapéutica / Podológica:</label>
-                                <textarea id="hcEvaluacion" rows="3" placeholder="Describa inspección, durezas, onicocriptosis..."></textarea>
-                            </div>
-                            <div class="form-group full-width">
-                                <label>Diagnóstico y Plan de Tratamiento:</label>
-                                <textarea id="hcDiagnostico" rows="3" placeholder="Detalle quiropodia, ortesis o recomendaciones..."></textarea>
-                            </div>
-                        </div>
-                        <button type="submit" class="btn-action" style="padding: 0.7rem 1.5rem; font-size: 0.95rem;">Guardar Historia Clínica (Generar PDF)</button>
-                    </form>
-                </div>
+<div id="historia-clinica-view" class="section-view">
+    <div class="content-card">
+        <div class="max-w-4xl mx-auto mb-6 flex justify-between items-center no-print">
+            <div class="flex items-center space-x-3">
+                <span class="px-3 py-1 bg-teal-600 text-white text-xs font-semibold rounded-full uppercase tracking-wider">Módulo Clínico</span>
+                <span class="text-sm text-slate-500">Sistema de Historias Clínicas Digitales</span>
             </div>
+            <div class="flex space-x-3">
+                <button onclick="descargarPDF()" class="inline-flex items-center px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white text-sm font-medium rounded-lg shadow-sm transition-all focus:ring-2 focus:ring-teal-500 focus:outline-none">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
+                    Descargar / Imprimir PDF
+                </button>
+                <button onclick="resetForm()" class="inline-flex items-center px-3 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 text-sm font-medium rounded-lg transition-all">
+                    Limpiar Formulario
+                </button>
+            </div>
+        </div>
+        <div id="clinical-form" class="print-container max-w-4xl mx-auto bg-white shadow-xl rounded-2xl border border-slate-200 overflow-hidden p-6 sm:p-10 space-y-8">
+            <form id="formHistoriaClinica">
+                <!-- HEADER / LOGO SECTION -->
+                <div class="flex flex-col sm:flex-row justify-between items-center border-b-2 border-teal-600 pb-6 gap-4">
+                    <div class="flex items-center space-x-4">
+                        <!-- Medipie Logo Badge -->
+                        <div class="w-16 h-16 rounded-full bg-teal-50 border-2 border-teal-500 flex items-center justify-center shadow-inner overflow-hidden">
+                            <img src="../img/medipielogop.png" alt="Medipie Logo" class="w-10 h-10 object-contain">
+                        </div>
+                        <div>
+                            <h1 class="text-2xl sm:text-3xl font-black text-slate-800 tracking-tight">Medipie.st</h1>
+                            <p class="text-xs font-bold uppercase tracking-widest text-teal-600">Podología Clínica</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Date & Expedition inputs -->
+                    <div class="flex space-x-4 bg-slate-50 p-3 rounded-xl border border-slate-200">
+                        <div>
+                            <label class="block text-[10px] font-bold uppercase text-slate-500">Fecha</label>
+                            <input type="date" id="hcFecha" class="bg-transparent text-sm font-semibold text-slate-800 focus:outline-none w-32">
+                        </div>
+                        <div class="border-l border-slate-300 pl-4">
+                            <label class="block text-[10px] font-bold uppercase text-slate-500">Expediente N°</label>
+                            <input type="text" id="expediente-num" placeholder="Ej. 0042" class="bg-transparent text-sm font-semibold text-slate-800 focus:outline-none w-24">
+                        </div>
+                    </div>
+                </div>
+
+                <section class="space-y-4">
+                    <div class="bg-slate-800 text-white text-xs font-bold uppercase px-3 py-1.5 rounded tracking-wider">
+                        Datos Generales
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 text-sm">
+                        <div class="md:col-span-2">
+                            <label class="block text-xs font-semibold text-slate-500">CEDULA:</label>
+                            <input type="text" id="hcCedula" class="w-full border-b border-slate-300 focus:border-teal-600 py-1 px-1 focus:outline-none" placeholder="Documento de Identidad">
+                        </div>
+                        <div class="md:col-span-2">
+                            <label class="block text-xs font-semibold text-slate-500">NOMBRE:</label>
+                            <input type="text" id="hcNombres" class="w-full border-b border-slate-300 focus:border-teal-600 py-1 px-1 focus:outline-none" placeholder="Nombre completo del paciente">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-500">GÉNERO:</label>
+                            <div class="flex items-center space-x-4 pt-1" id="hcSexo">
+                                <label class="inline-flex items-center"><input type="radio" name="genero" value="M" class="text-teal-600 focus:ring-teal-500"> <span class="ml-1 text-sm">M</span></label>
+                                <label class="inline-flex items-center"><input type="radio" name="genero" value="F" class="text-teal-600 focus:ring-teal-500"> <span class="ml-1 text-sm">F</span></label>
+                                <label class="inline-flex items-center"><input type="radio" name="genero" value="Otro" class="text-teal-600 focus:ring-teal-500"> <span class="ml-1 text-sm">Otro</span></label>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-500">TELÉFONO:</label>
+                            <input type="tel" id="hcCelular" class="w-full border-b border-slate-300 focus:border-teal-600 py-1 px-1 focus:outline-none" placeholder="Teléfono de contacto">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-500">FECHA DE NACIMIENTO:</label>
+                            <input type="date" id="hcNacimiento" onchange="calcularEdad()" class="w-full border-b border-slate-300 focus:border-teal-600 py-1 px-1 focus:outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-500">EDAD:</label>
+                            <input type="text" id="hcEdad" readonly class="w-full border-b border-slate-300 bg-slate-50 py-1 px-1 focus:outline-none text-slate-600" placeholder="Automática">
+                        </div>
+                        <div class="md:col-span-2">
+                            <label class="block text-xs font-semibold text-slate-500">DOMICILIO:</label>
+                            <input type="text" id="hcDireccion" class="w-full border-b border-slate-300 focus:border-teal-600 py-1 px-1 focus:outline-none" placeholder="Dirección domiciliaria">
+                        </div>
+                        <div class="md:col-span-3">
+                            <label class="block text-xs font-semibold text-slate-500">CORREO:</label>
+                            <input type="email" id="hcEmail" class="w-full border-b border-slate-300 focus:border-teal-600 py-1 px-1 focus:outline-none" placeholder="correo@ejemplo.com">
+                        </div>
+                    </div>
+                </section>
+
+                <section class="space-y-4">
+                    <div class="bg-amber-500 text-white text-xs font-bold uppercase px-3 py-1.5 rounded tracking-wider">
+                        Signos Vitales
+                    </div>
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 text-sm bg-amber-50/50 p-4 rounded-xl border border-amber-100">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600">PESO (kg):</label>
+                            <input type="number" step="0.1" id="signos-peso" oninput="calcularIMC()" class="w-full bg-white border border-slate-300 rounded-lg p-2 focus:ring-2 focus:ring-amber-500 focus:outline-none" placeholder="Ej. 65">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600">TALLA (m):</label>
+                            <input type="number" step="0.01" id="signos-talla" oninput="calcularIMC()" class="w-full bg-white border border-slate-300 rounded-lg p-2 focus:ring-2 focus:ring-amber-500 focus:outline-none" placeholder="Ej. 1.70">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600">I.M.C:</label>
+                            <input type="text" id="signos-imc" readonly class="w-full bg-slate-100 border border-slate-300 rounded-lg p-2 font-bold text-slate-700" placeholder="Calculado">
+                        </div>
+                        <div class="col-span-2 sm:col-span-4">
+                            <label class="block text-xs font-semibold text-slate-600">OBSERVACIONES DE SIGNOS VITALES:</label>
+                            <input type="text" id="signos-obs" class="w-full bg-white border border-slate-300 rounded-lg p-2 focus:ring-2 focus:ring-amber-500 focus:outline-none" placeholder="Observaciones adicionales...">
+                        </div>
+                    </div>
+                </section>
+
+                <section class="space-y-4">
+                    <div class="bg-sky-600 text-white text-xs font-bold uppercase px-3 py-1.5 rounded tracking-wider">
+                        Antecedentes Clínicos
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
+                        <div class="space-y-3 bg-slate-50 p-4 rounded-xl border border-slate-200">
+                            <div class="flex items-center justify-between">
+                                <label class="font-medium text-slate-700">Diabetes</label>
+                                <input type="text" id="ant-diabetes" placeholder="Detalle / No" class="border-b border-slate-300 bg-transparent text-sm px-1 w-48 focus:outline-none focus:border-sky-600">
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <label class="font-medium text-slate-700">HTA (Hipertensión)</label>
+                                <input type="text" id="ant-hta" placeholder="Detalle / No" class="border-b border-slate-300 bg-transparent text-sm px-1 w-48 focus:outline-none focus:border-sky-600">
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <label class="font-medium text-slate-700">Parkinson</label>
+                                <input type="text" id="ant-parkinson" placeholder="Detalle / No" class="border-b border-slate-300 bg-transparent text-sm px-1 w-48 focus:outline-none focus:border-sky-600">
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <label class="font-medium text-slate-700">Cirugías</label>
+                                <input type="text" id="ant-cirugias" placeholder="Detalle / No" class="border-b border-slate-300 bg-transparent text-sm px-1 w-48 focus:outline-none focus:border-sky-600">
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <label class="font-medium text-slate-700">Embarazo</label>
+                                <input type="text" id="ant-embarazo" placeholder="Detalle / No" class="border-b border-slate-300 bg-transparent text-sm px-1 w-48 focus:outline-none focus:border-sky-600">
+                            </div>
+                        </div>
+                        <div class="space-y-3 bg-slate-50 p-4 rounded-xl border border-slate-200">
+                            <div class="flex items-center justify-between">
+                                <label class="font-medium text-slate-700">Alergias</label>
+                                <input type="text" id="ant-alergias" placeholder="Detalle / No" class="border-b border-slate-300 bg-transparent text-sm px-1 w-48 focus:outline-none focus:border-sky-600">
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <label class="font-medium text-slate-700">Fracturas</label>
+                                <input type="text" id="ant-fracturas" placeholder="Detalle / No" class="border-b border-slate-300 bg-transparent text-sm px-1 w-48 focus:outline-none focus:border-sky-600">
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <label class="font-medium text-slate-700">Medicación Actual</label>
+                                <input type="text" id="ant-medicacion" placeholder="Detalle / Ninguna" class="border-b border-slate-300 bg-transparent text-sm px-1 w-48 focus:outline-none focus:border-sky-600">
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <label class="font-medium text-slate-700">Problemas Circulatorios</label>
+                                <input type="text" id="ant-circulatorios" placeholder="Detalle / No" class="border-b border-slate-300 bg-transparent text-sm px-1 w-48 focus:outline-none focus:border-sky-600">
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <label class="font-medium text-slate-700">Otros</label>
+                                <input type="text" id="ant-otros" placeholder="Detalle / No" class="border-b border-slate-300 bg-transparent text-sm px-1 w-48 focus:outline-none focus:border-sky-600">
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="space-y-4">
+                    <div>
+                        <div class="bg-teal-600 text-white text-xs font-bold uppercase px-3 py-1.5 rounded tracking-wider mb-2">
+                            Motivo de la Consulta
+                        </div>
+                        <textarea id="motivo-consulta" rows="3" class="w-full border border-slate-300 rounded-xl p-3 text-sm focus:ring-2 focus:ring-teal-500 focus:outline-none" placeholder="Describa el motivo de la consulta, dolor, molestias, tiempo de evolución..."></textarea>
+                    </div>
+                    <div>
+                        <div class="bg-teal-700 text-white text-xs font-bold uppercase px-3 py-1.5 rounded tracking-wider mb-2">
+                            Diagnóstico Podológico
+                        </div>
+                        <textarea id="hcEvaluacion" rows="3" class="w-full border border-slate-300 rounded-xl p-3 text-sm focus:ring-2 focus:ring-teal-500 focus:outline-none" placeholder="Ingrese el diagnóstico clínico podológico, grados, afectaciones..."></textarea>
+                    </div>
+                </section>
+
+                <section class="space-y-3">
+    <div class="bg-slate-800 text-white text-xs font-bold uppercase px-3 py-1.5 rounded tracking-wider flex justify-between items-center">
+        <span>Esquemas Anatómicos e Interactivos</span>
+        <button type="button" onclick="clearCanvas()" class="no-print bg-slate-700 hover:bg-slate-600 text-white px-2 py-0.5 rounded text-[11px] transition-all">Limpiar Lienzo</button>
+    </div>
+
+    <!-- Controles de color y grosor de pincel -->
+    <div class="flex items-center justify-between bg-slate-100 p-2 rounded-lg border border-slate-200 text-xs no-print">
+        <div class="flex items-center space-x-2">
+            <span class="font-bold text-slate-600">Color de trazo:</span>
+            <input type="color" id="brush-color" value="#0d9488" class="w-7 h-7 rounded border-none cursor-pointer">
+            <button type="button" onclick="setBrushColor('#e11d48')" class="w-5 h-5 rounded-full bg-rose-600 border border-slate-300"></button>
+            <button type="button" onclick="setBrushColor('#0d9488')" class="w-5 h-5 rounded-full bg-teal-600 border border-slate-300"></button>
+            <button type="button" onclick="setBrushColor('#2563eb')" class="w-5 h-5 rounded-full bg-blue-600 border border-slate-300"></button>
+        </div>
+        <div class="flex items-center space-x-2">
+            <span class="font-bold text-slate-600">Grosor:</span>
+            <input type="range" id="brush-size" min="1" max="10" value="3" class="w-20 accent-teal-600">
+        </div>
+    </div>
+
+    <p class="text-xs text-slate-500 italic">Utilice el ratón o el dedo para dibujar lesiones, puntos de dolor o marcas sobre la plantilla anatómica.</p>
+
+    <!-- Contenedor rectangular compacto -->
+    <div id="canvas-container" class="relative bg-white border border-slate-300 rounded-xl p-2 flex flex-col items-center justify-center overflow-hidden shadow-sm min-h-[220px]">
+        <!-- HTML5 Drawing Canvas ajustado a 220px de alto -->
+        <canvas id="foot-canvas" class="w-full h-[220px] cursor-crosshair z-10 touch-none"></canvas>
+    </div>
+</section>
+
+                <section class="space-y-4">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <!-- Tipo de Pie with Image Selector -->
+                        <div class="border border-slate-200 rounded-xl p-4 bg-slate-50 space-y-3">
+                            <div class="flex justify-between items-center">
+                                <h4 class="text-xs font-bold uppercase text-slate-700">Referencia: Tipo de Pie</h4>
+                                <input type="file" id="pie-image-input" accept="image/*" onchange="previewSelectedImage(event, 'pie-preview-img', 'pie-placeholder')" class="hidden">
+                                <label for="pie-image-input" class="no-print bg-teal-600 hover:bg-teal-700 text-white text-[10px] font-semibold px-2.5 py-1 rounded cursor-pointer transition-all">
+                                    Subir Imagen
+                                </label>
+                            </div>
+                            
+                            <!-- Image Preview Box -->
+                            <div id="pie-preview-container" class="w-full h-36 bg-white border-2 border-dashed border-slate-300 rounded-lg flex items-center justify-center overflow-hidden relative">
+                                <span id="pie-placeholder" class="text-xs text-slate-400 text-center px-4">Ninguna imagen seleccionada. Haga clic en "Subir Imagen" para colocar la referencia gráfica.</span>
+                                <img id="pie-preview-img" src="" alt="Tipo de Pie" class="w-full h-full object-contain hidden">
+                            </div>
+
+                            <div class="flex justify-around items-center text-center text-xs text-slate-600 pt-1">
+                                <div class="p-1.5 bg-white rounded border border-slate-200 shadow-xs flex-1 mx-1">
+                                    <span class="block font-bold">Egipcio</span>
+                                    <span class="text-[9px] text-slate-400">1er dedo largo</span>
+                                </div>
+                                <div class="p-1.5 bg-white rounded border border-slate-200 shadow-xs flex-1 mx-1">
+                                    <span class="block font-bold">Romano</span>
+                                    <span class="text-[9px] text-slate-400">Dedos iguales</span>
+                                </div>
+                                <div class="p-1.5 bg-white rounded border border-slate-200 shadow-xs flex-1 mx-1">
+                                    <span class="block font-bold">Griego</span>
+                                    <span class="text-[9px] text-slate-400">2do dedo largo</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Tipo de Pisada with Image Selector -->
+                        <div class="border border-slate-200 rounded-xl p-4 bg-slate-50 space-y-3">
+                            <div class="flex justify-between items-center">
+                                <h4 class="text-xs font-bold uppercase text-slate-700">Referencia: Tipo de Pisada</h4>
+                                <input type="file" id="pisada-image-input" accept="image/*" onchange="previewSelectedImage(event, 'pisada-preview-img', 'pisada-placeholder')" class="hidden">
+                                <label for="pisada-image-input" class="no-print bg-teal-600 hover:bg-teal-700 text-white text-[10px] font-semibold px-2.5 py-1 rounded cursor-pointer transition-all">
+                                    Subir Imagen
+                                </label>
+                            </div>
+
+                            <!-- Image Preview Box -->
+                            <div id="pisada-preview-container" class="w-full h-36 bg-white border-2 border-dashed border-slate-300 rounded-lg flex items-center justify-center overflow-hidden relative">
+                                <span id="pisada-placeholder" class="text-xs text-slate-400 text-center px-4">Ninguna imagen seleccionada. Haga clic en "Subir Imagen" para colocar la referencia gráfica.</span>
+                                <img id="pisada-preview-img" src="" alt="Tipo de Pisada" class="w-full h-full object-contain hidden">
+                            </div>
+
+                            <div class="flex justify-around items-center text-center text-xs text-slate-600 pt-1">
+                                <div class="p-1.5 bg-white rounded border border-slate-200 shadow-xs flex-1 mx-1">
+                                    <span class="block font-bold">Pronador</span>
+                                    <span class="text-[9px] text-slate-400">Apoyo interno</span>
+                                </div>
+                                <div class="p-1.5 bg-white rounded border border-slate-200 shadow-xs flex-1 mx-1">
+                                    <span class="block font-bold">Neutro</span>
+                                    <span class="text-[9px] text-slate-400">Balanceado</span>
+                                </div>
+                                <div class="p-1.5 bg-white rounded border border-slate-200 shadow-xs flex-1 mx-1">
+                                    <span class="block font-bold">Supinador</span>
+                                    <span class="text-[9px] text-slate-400">Apoyo externo</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="space-y-3 max-w-xl mx-auto">
+                    <div class="bg-teal-600 text-white text-xs font-bold uppercase px-3 py-1.5 rounded tracking-wider">
+                        Tabla de Lesiones Plantares (Zona Plantar)
+                    </div>
+                    
+                    <div class="border border-slate-200 rounded-xl overflow-hidden bg-white shadow-sm">
+                        <table class="w-full text-left border-collapse text-xs">
+                            <thead>
+                                <tr class="bg-slate-100 border-b border-slate-200 text-slate-700 uppercase font-semibold">
+                                    <th class="px-3 py-2 w-1/2">Condición / Patología</th>
+                                    <th class="px-3 py-2 text-center w-1/4">Derecho (D)</th>
+                                    <th class="px-3 py-2 text-center w-1/4">Izquierdo (I)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="lesiones-table-body" class="divide-y divide-slate-200">
+                                <!-- Populated dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <section class="space-y-4">
+                    <div>
+                        <div class="bg-amber-500 text-white text-xs font-bold uppercase px-3 py-1.5 rounded tracking-wider mb-2">
+                            Tratamiento - Procedimientos
+                        </div>
+                        <textarea id="hcDiagnostico" rows="3" class="w-full border border-slate-300 rounded-xl p-3 text-sm focus:ring-2 focus:ring-amber-500 focus:outline-none" placeholder="Detallar procedimientos realizados, quiropodología, cura, etc..."></textarea>
+                    </div>
+
+                    <div>
+                        <div class="bg-amber-600 text-white text-xs font-bold uppercase px-3 py-1.5 rounded tracking-wider mb-2">
+                            Recomendaciones
+                        </div>
+                        <textarea id="recomendaciones" rows="3" class="w-full border border-slate-300 rounded-xl p-3 text-sm focus:ring-2 focus:ring-amber-500 focus:outline-none" placeholder="Ej. No usar zapatos apretados, controles mensuales, medicación tópica..."></textarea>
+                    </div>
+
+                    <!-- CONSENTIMIENTO INFORMADO -->
+                    <div class="border border-slate-300 bg-slate-50/50 p-5 rounded-2xl space-y-4">
+                        <h3 class="text-xs font-bold uppercase text-slate-700 tracking-wider">Consentimiento Informado</h3>
+                        <p class="text-xs text-slate-600 leading-relaxed text-justify">
+                            Yo, en libre voluntad autorizo que se me realice el tratamiento o procedimiento señalado en este documento, después de recibir una información completa sobre las patologías que presento, la cual fue realizada de manera amplia, precisa, satisfactoria, en un lenguaje claro y sencillo. Informándome sobre los posibles riesgos, complicaciones, secuelas, de igual forma de los beneficios. Me comprometo a proporcionar información completa, y veraz, así como de acudir a los controles y siguientes las indicaciones podológicas señaladas por el profesional.
+                        </p>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-8 pt-6">
+                            <div class="border-t border-slate-400 pt-2 text-center">
+                                <input type="text" placeholder="Firma del Paciente / C.I." class="w-full text-center bg-transparent text-sm focus:outline-none font-medium text-slate-700">
+                                <span class="block text-[11px] font-bold text-slate-500 uppercase mt-1">Paciente / Representante</span>
+                                <input type="text" id="hcCedula" placeholder="C.I.: 000000000-0" class="w-full text-center bg-transparent text-xs text-slate-500 focus:outline-none mt-1">                                
+                            </div>
+                            <div class="border-t border-slate-400 pt-2 text-center">
+                                <span class="block text-sm font-bold text-slate-800">Tnlga. Gabriela Estrella</span>
+                                <span class="block text-[11px] font-bold text-teal-600 uppercase mt-0.5">Especialista en Podología</span>
+                                <span class="block text-[10px] text-slate-500 mt-0.5">Reg. MSP: 2023-2852162</span>
+                                <span class="block text-[10px] text-slate-500">C.I.: 1720615218-7</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Legal note at bottom -->
+                    <div class="text-[10px] text-slate-400 italic text-center pt-2">
+                        NOTA: En caso de que el paciente esté incapacitado en poder firmar el documento, firmará el representante.
+                    </div>
+                </section>                
+            </form>
+        </div>
+    </div>
+</div>
+
+
 
             <div id="citas-view" class="section-view">
                 <div class="content-card">
@@ -873,254 +1128,11 @@
         </div>
     </div>
     
-    <script src="../controllers/ingresoPacientes.js?v=2.0"></script>
-    
-    <script src="../controllers/recetas.js"></script>
-    
+    <script src="../controllers/ingresoPacientes.js?v=2.0"></script>    
+    <script src="../controllers/recetas.js"></script>    
 
-    <script>
-        
-    // Control del campo "Otros" en antecedentes
-        function toggleOtroInput() {
-            const checkbox = document.getElementById('checkOtros');
-            const input = document.getElementById('inputOtroAntecedente');
-            input.disabled = !checkbox.checked;
-            if (checkbox.checked) {
-                input.focus();
-            } else {
-                input.value = '';
-            }
-        }
-    
-    // Funciones de control de pestañas y menú móvil
-        function generarPDFHistoria(event) {
-    event.preventDefault();
-    
-    // Obtener valores del formulario
-    const cedula = document.getElementById('hcCedula')?.value.trim() || '';
-    const fecha = document.getElementById('hcFecha')?.value.trim() || '';
-    const nombresInput = document.getElementById('hcNombres')?.value.trim() || '';
-    const nombres = nombresInput.replace(/\s+/g, '_');
-
-    // --- NUEVOS CAMPOS ---
-    const fechaNac = document.getElementById('hcFechaNac')?.value || '';
-    const edad = document.getElementById('hcEdad')?.value.trim() || '';
-    const sexo = document.getElementById('hcSexo')?.value || '';
-    const telefono = document.getElementById('hcTelefono')?.value.trim() || '';
-    const email = document.getElementById('hcEmail')?.value.trim() || '';
-    const direccion = document.getElementById('hcDireccion')?.value.trim() || '';
-    const contactoEmergencia = document.getElementById('hcContactoEmergencia')?.value.trim() || '';
-    const telefEmergencia = document.getElementById('hcTelefonoEmergencia')?.value.trim() || '';
-
-    // Campos clínicos
-    const puntoDolor = document.getElementById('hcPuntoDolor')?.value || '';
-    const motivo = document.getElementById('hcMotivo')?.value || '';
-    const evaluacion = document.getElementById('hcEvaluacion')?.value || '';
-    const diagnostico = document.getElementById('hcDiagnostico')?.value || '';
-
-    // Antecedentes
-    let antecedentes = [];
-    document.querySelectorAll('.hc-ant:checked').forEach(cb => antecedentes.push(cb.value));
-    
-    const checkOtros = document.getElementById('checkOtros');
-    const inputOtro = document.getElementById('inputOtroAntecedente');
-    if (checkOtros && checkOtros.checked && inputOtro?.value.trim() !== '') {
-        antecedentes.push("Otros: " + inputOtro.value.trim());
-    }
-
-    if (!window.jspdf) {
-        alert("Error: La librería jsPDF no se ha cargado correctamente.");
-        return;
-    }
-
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF();
-
-    // Colores corporativos
-    const primaryColor = [14, 165, 233];   
-    const darkColor = [33, 37, 41];       
-    const grayBg = [248, 249, 250];       
-    const borderColor = [222, 226, 230];  
-
-    const imgPath = '../img/medipielogop.png'; 
-    const img = new Image();
-    img.src = imgPath;
-
-    let pdfConstruido = false;
-
-    function ejecutarConstruccion() {
-        if (!pdfConstruido) {
-            pdfConstruido = true;
-            construirCuerpoPDF();
-        }
-    }
-
-    img.onload = function() {
-        try { doc.addImage(img, 'PNG', 15, 10, 20, 20); } catch (e) {}
-        ejecutarConstruccion();
-    };
-
-    img.onerror = function() {
-        ejecutarConstruccion();
-    };
-
-    if (img.complete) {
-        try { doc.addImage(img, 'PNG', 15, 10, 20, 20); } catch(e){}
-        ejecutarConstruccion();
-    }
-
-    function construirCuerpoPDF() {
-        // Encabezado
-        doc.setFont("helvetica", "bold");
-        doc.setFontSize(14);
-        doc.setTextColor(...primaryColor);
-        doc.text("MEDIPIE.ST", 40, 18);
-
-        doc.setFontSize(9);
-        doc.setTextColor(...darkColor);
-        doc.text("CENTRO ESPECIALIZADO DE PODOLOGÍA CLÍNICA", 40, 23);
-
-        doc.setFont("helvetica", "normal");
-        doc.setFontSize(8);
-        doc.setTextColor(100);
-        doc.text(`Fecha de Emisión: ${fecha}`, 40, 28);
-
-        doc.setLineWidth(0.4);
-        doc.setDrawColor(...borderColor);
-        doc.line(15, 32, 195, 32);
-
-        let y = 36;
-
-        // --- SECCIÓN AMPLIADA: DATOS DEL PACIENTE ---
-        doc.setFillColor(...grayBg);
-        doc.roundedRect(15, y, 180, 42, 2, 2, 'F');
-        
-        doc.setFont("helvetica", "bold");
-        doc.setFontSize(9);
-        doc.setTextColor(...primaryColor);
-        doc.text("DATOS DEL PACIENTE", 20, y + 6);
-
-        doc.setFont("helvetica", "normal");
-        doc.setFontSize(8.5);
-        doc.setTextColor(...darkColor);
-
-        // Fila 1: Nombres y Cédula
-        doc.text(`Paciente: ${nombresInput}`, 20, y + 13);
-        doc.text(`Cédula/HC: ${cedula}`, 130, y + 13);
-
-        // Fila 2: Fecha Nac, Edad, Sexo
-        doc.text(`F. Nacimiento: ${fechaNac}`, 20, y + 20);
-        doc.text(`Edad: ${edad} años`, 85, y + 20);
-        doc.text(`Sexo: ${sexo}`, 130, y + 20);
-
-        // Fila 3: Teléfono y Email
-        doc.text(`Teléfono: ${telefono}`, 20, y + 27);
-        doc.text(`Email: ${email}`, 85, y + 27);
-
-        // Fila 4: Dirección
-        doc.text(`Dirección: ${direccion}`, 20, y + 34);
-
-        // Fila 5: Contacto de Emergencia
-        if (contactoEmergencia || telefEmergencia) {
-            doc.text(`Emergencia: ${contactoEmergencia} (${telefEmergencia})`, 20, y + 40);
-        }
-
-        y += 48; // Espaciado para la siguiente sección
-
-        // Sección: Antecedentes
-        doc.setFont("helvetica", "bold");
-        doc.setFontSize(9.5);
-        doc.setTextColor(...primaryColor);
-        doc.text("ANTECEDENTES PERSONALES", 15, y);
-        y += 5;
-
-        doc.setFont("helvetica", "normal");
-        doc.setFontSize(8.5);
-        doc.setTextColor(...darkColor);
-        const textoAntecedentes = antecedentes.length > 0 ? antecedentes.join(", ") : "Ninguno registrado / Sin patologías de relevancia";
-        const splitAntecedentes = doc.splitTextToSize(textoAntecedentes, 180);
-        doc.text(splitAntecedentes, 15, y);
-        y += (splitAntecedentes.length * 4.5) + 5;
-
-        // Sección: Punto de Dolor
-        doc.setFont("helvetica", "bold");
-        doc.setFontSize(9.5);
-        doc.setTextColor(...primaryColor);
-        doc.text("PUNTO DE DOLOR (BODY TEST)", 15, y);
-        y += 5;
-
-        doc.setFont("helvetica", "normal");
-        doc.setFontSize(8.5);
-        doc.setTextColor(...darkColor);
-        const splitDolor = doc.splitTextToSize(puntoDolor || "No especificado", 180);
-        doc.text(splitDolor, 15, y);
-        y += (splitDolor.length * 4.5) + 5;
-
-        // Sección: Motivo
-        doc.setFont("helvetica", "bold");
-        doc.setFontSize(9.5);
-        doc.setTextColor(...primaryColor);
-        doc.text("MOTIVO DE CONSULTA", 15, y);
-        y += 5;
-
-        doc.setFont("helvetica", "normal");
-        doc.setFontSize(8.5);
-        doc.setTextColor(...darkColor);
-        const splitMotivo = doc.splitTextToSize(motivo || "Sin observaciones registradas", 180);
-        doc.text(splitMotivo, 15, y);
-        y += (splitMotivo.length * 4.5) + 5;
-
-        // Sección: Evaluación
-        doc.setFont("helvetica", "bold");
-        doc.setFontSize(9.5);
-        doc.setTextColor(...primaryColor);
-        doc.text("EVALUACIÓN FISIOTERAPÉUTICA / PODOLÓGICA", 15, y);
-        y += 5;
-
-        doc.setFont("helvetica", "normal");
-        doc.setFontSize(8.5);
-        doc.setTextColor(...darkColor);
-        const splitEvaluacion = doc.splitTextToSize(evaluacion || "Sin observaciones registradas", 180);
-        doc.text(splitEvaluacion, 15, y);
-        y += (splitEvaluacion.length * 4.5) + 5;
-
-        // Sección: Diagnóstico
-        doc.setFont("helvetica", "bold");
-        doc.setFontSize(9.5);
-        doc.setTextColor(...primaryColor);
-        doc.text("DIAGNÓSTICO Y PLAN DE TRATAMIENTO", 15, y);
-        y += 5;
-
-        doc.setFont("helvetica", "normal");
-        doc.setFontSize(8.5);
-        doc.setTextColor(...darkColor);
-        const splitDiagnostico = doc.splitTextToSize(diagnostico || "Sin observaciones registradas", 180);
-        doc.text(splitDiagnostico, 15, y);
-
-        // Pie de Página
-        let footerY = 270;
-        doc.setLineWidth(0.3);
-        doc.setDrawColor(...borderColor);
-        doc.line(70, footerY, 140, footerY);
-
-        doc.setFont("helvetica", "bold");
-        doc.setFontSize(8.5);
-        doc.setTextColor(...darkColor);
-        doc.text("Firma del Profesional / Especialista", 105, footerY + 4, { align: "center" });
-
-        doc.setFont("helvetica", "italic");
-        doc.setFontSize(7.5);
-        doc.setTextColor(150);
-        doc.text("Medipie.st - Sistema de Gestión Podológica", 105, 285, { align: "center" });
-
-        // Guardar archivo PDF
-        const nombreArchivo = `${cedula || 'HC'}_${nombres || 'paciente'}_${fecha || 'fecha'}.pdf`;
-        doc.save(nombreArchivo);
-        
-        alert("¡Historia clínica guardada y PDF generado con éxito!");
-    }
-}
-        
+    <script>       
+           
         
         function toggleSidebar() {
             const sidebar = document.getElementById('sidebar');
@@ -1542,6 +1554,265 @@ function generarPDFCertificado(cert) {
         ejecutar();
     } else {
         setTimeout(ejecutar, 250);
+    }
+}
+
+
+// --- AGE CALCULATION ---
+function calcularEdad() {
+    const hcNacimiento = document.getElementById('hcFecha').value;
+    if (!hcFecha) return;
+    const fnac = new Date(hcFecha);
+    const hoy = new Date();
+    let edad = hoy.getFullYear() - fnac.getFullYear();
+    const m = hoy.getMonth() - fnac.getMonth();
+    if (m < 0 || (m === 0 && hoy.getDate() < fnac.getDate())) {
+        edad--;
+    }
+    document.getElementById('hcEdad').value = edad >= 0 ? edad + " años" : "";
+}
+
+// --- IMC CALCULATION ---
+function calcularIMC() {
+    const peso = parseFloat(document.getElementById('signos-peso').value);
+    const talla = parseFloat(document.getElementById('signos-talla').value);
+    const imcInput = document.getElementById('signos-imc');
+    
+    if (peso > 0 && talla > 0) {
+        const imc = peso / (talla * talla);
+        let categoria = "";
+        if (imc < 18.5) categoria = " (Bajo peso)";
+        else if (imc < 25) categoria = " (Normal)";
+        else if (imc < 30) categoria = " (Sobrepeso)";
+        else categoria = " (Obesidad)";
+        
+        imcInput.value = imc.toFixed(1) + categoria;
+    } else {
+        imcInput.value = "";
+    }
+}
+
+// --- DYNAMIC IMAGE PREVIEW FOR FOOT/GAIT REFERENCES ---
+function previewSelectedImage(event, imgId, placeholderId) {
+    const file = event.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const img = document.getElementById(imgId);
+            const placeholder = document.getElementById(placeholderId);
+            img.src = e.target.result;
+            img.classList.remove('hidden');
+            placeholder.classList.add('hidden');
+        }
+        reader.readAsDataURL(file);
+    }
+}
+
+// --- LESIONS TABLE SETUP ---
+
+const condiciones = [
+    "Heloma Plantar",
+    "Fasciitis Plantar",
+    "Metatarsalgia",
+    "Hiperqueratosis",
+    "Verruga Plantar",
+    "Úlcera",
+    "Uña Encarnada",
+    "Lesión Plantar"
+];
+
+function initLesionsTable() {
+    const tbody = document.getElementById('lesiones-table-body');
+    if (!tbody) return;
+    
+    tbody.innerHTML = "";
+    condiciones.forEach((cond, index) => {
+        const tr = document.createElement('tr');
+        tr.className = "hover:bg-slate-50 transition-colors";
+        tr.innerHTML = `
+            <td class="px-3 py-1.5 font-medium text-slate-700">${cond}</td>
+            <td class="px-3 py-1.5 text-center">
+                <input type="checkbox" id="derecho-${index}" class="w-4 h-4 text-teal-600 rounded border-slate-300 focus:ring-teal-500 cursor-pointer align-middle">
+            </td>
+            <td class="px-3 py-1.5 text-center">
+                <input type="checkbox" id="izquierdo-${index}" class="w-4 h-4 text-teal-600 rounded border-slate-300 focus:ring-teal-500 cursor-pointer align-middle">
+            </td>
+        `;
+        tbody.appendChild(tr);
+    });
+}
+
+// --- INTERACTIVE DRAWING CANVAS WITH BACKGROUND IMAGE SUPPORT ---
+// --- INTERACTIVE DRAWING CANVAS WITH FIXED BACKGROUND IMAGE ---
+const canvas = document.getElementById('foot-canvas');
+const ctx = canvas.getContext('2d');
+let isDrawing = false;
+let lastX = 0;
+let lastY = 0;
+
+// Carga automática de la plantilla fixa
+const bgImageObj = new Image();
+bgImageObj.src = '../img/EsquemasAnatómicos.jpg';
+bgImageObj.onload = function() {
+    redrawCanvas();
+};
+
+let currentPath = null;
+let strokeHistory = [];
+
+function setBrushColor(color) {
+    document.getElementById('brush-color').value = color;
+}
+
+function resizeCanvas() {
+    const container = document.getElementById('canvas-container');
+    const rect = container.getBoundingClientRect();
+    canvas.width = rect.width - 16; // Ajustado según el nuevo padding p-2
+    canvas.height = 220;            // Nueva altura rectangular compacta
+    redrawCanvas();
+}
+
+function redrawCanvas() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
+    // Dibujar imagen fija si ya terminó de cargar
+    if (bgImageObj.complete && bgImageObj.naturalWidth !== 0) {
+        const hRatio = canvas.width / bgImageObj.width;
+        const vRatio = canvas.height / bgImageObj.height;
+        const ratio = Math.min(hRatio, vRatio);
+        const centerShiftX = (canvas.width - bgImageObj.width * ratio) / 2;
+        const centerShiftY = (canvas.height - bgImageObj.height * ratio) / 2;
+        ctx.drawImage(bgImageObj, 0, 0, bgImageObj.width, bgImageObj.height, centerShiftX, centerShiftY, bgImageObj.width * ratio, bgImageObj.height * ratio);
+    }
+
+    // Redibujar marcas del usuario
+    strokeHistory.forEach(stroke => {
+        if (stroke.points.length < 2) return;
+        ctx.beginPath();
+        ctx.strokeStyle = stroke.color;
+        ctx.lineWidth = stroke.size;
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+
+        const startX = stroke.points[0].x * canvas.width;
+        const startY = stroke.points[0].y * canvas.height;
+        ctx.moveTo(startX, startY);
+
+        for (let i = 1; i < stroke.points.length; i++) {
+            const pX = stroke.points[i].x * canvas.width;
+            const pY = stroke.points[i].y * canvas.height;
+            ctx.lineTo(pX, pY);
+        }
+        ctx.stroke();
+    });
+}
+
+window.addEventListener('resize', resizeCanvas);
+window.addEventListener('load', () => {
+    resizeCanvas();
+    initLesionsTable();
+    document.getElementById('hcFecha').valueAsDate = new Date();
+});
+
+function startDrawing(e) {
+    isDrawing = true;
+    const rect = canvas.getBoundingClientRect();
+    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+    lastX = clientX - rect.left;
+    lastY = clientY - rect.top;
+
+    const color = document.getElementById('brush-color').value;
+    const size = document.getElementById('brush-size').value;
+
+    currentPath = {
+        color: color,
+        size: size,
+        points: [{ x: lastX / canvas.width, y: lastY / canvas.height }]
+    };
+    strokeHistory.push(currentPath);
+}
+
+function draw(e) {
+    if (!isDrawing) return;
+    if (e.cancelable) e.preventDefault();
+
+    const rect = canvas.getBoundingClientRect();
+    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+    const currentX = clientX - rect.left;
+    const currentY = clientY - rect.top;
+
+    const color = document.getElementById('brush-color').value;
+    const size = document.getElementById('brush-size').value;
+
+    ctx.strokeStyle = color;
+    ctx.lineWidth = size;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+
+    ctx.beginPath();
+    ctx.moveTo(lastX, lastY);
+    ctx.lineTo(currentX, currentY);
+    ctx.stroke();
+
+    lastX = currentX;
+    lastY = currentY;
+
+    if (currentPath) {
+        currentPath.points.push({ x: currentX / canvas.width, y: currentY / canvas.height });
+    }
+}
+
+function stopDrawing() {
+    isDrawing = false;
+    currentPath = null;
+}
+
+function clearCanvas() {
+    strokeHistory = [];
+    redrawCanvas();
+}
+
+// Listeners de interacción
+canvas.addEventListener('mousedown', startDrawing);
+canvas.addEventListener('mousemove', draw);
+canvas.addEventListener('mouseup', stopDrawing);
+canvas.addEventListener('mouseout', stopDrawing);
+
+canvas.addEventListener('touchstart', (e) => {
+    if (e.cancelable) e.preventDefault();
+    startDrawing(e);
+}, { passive: false });
+canvas.addEventListener('touchmove', draw, { passive: false });
+canvas.addEventListener('touchend', stopDrawing);
+
+        
+
+// --- PDF DOWNLOAD / PRINT ROUTINE ---
+function descargarPDF() {
+    window.print();
+}
+
+// --- RESET FORM ---
+function resetForm() {
+    if (window.confirm("¿Desea limpiar todos los campos del formulario y el lienzo?")) {
+        const formContainer = document.getElementById('clinical-form');
+        formContainer.querySelectorAll('input[type="text"], input[type="tel"], input[type="email"], input[type="number"], input[type="date"], textarea').forEach(input => input.value = '');
+        formContainer.querySelectorAll('input[type="checkbox"], input[type="radio"]').forEach(input => input.checked = false);
+        
+        const hcFecha = document.getElementById('hcFecha');
+        if (hcFecha) hcFecha.valueAsDate = new Date();
+        
+        // Reset previews
+        document.getElementById('pie-preview-img').classList.add('hidden');
+        document.getElementById('pie-placeholder').classList.remove('hidden');
+        document.getElementById('pisada-preview-img').classList.add('hidden');
+        document.getElementById('pisada-placeholder').classList.remove('hidden');
+        document.getElementById('pie-image-input').value = '';
+        document.getElementById('pisada-image-input').value = '';
+        
+        clearCanvas();
     }
 }
     </script>
