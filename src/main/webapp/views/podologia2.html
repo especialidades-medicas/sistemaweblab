@@ -698,25 +698,25 @@
             </div>
             
             <!-- VISTA: HISTORIA CLÍNICA PODOLÓGICA -->
-<div id="historia-clinica-view" class="section-view">
-    <div class="content-card">
-        <div class="max-w-4xl mx-auto mb-6 flex justify-between items-center no-print">
-            <div class="flex items-center space-x-3">
-                <span class="px-3 py-1 bg-teal-600 text-white text-xs font-semibold rounded-full uppercase tracking-wider">Módulo Clínico</span>
-                <span class="text-sm text-slate-500">Sistema de Historias Clínicas Digitales</span>
-            </div>
-            <div class="flex space-x-3">
-                <button onclick="descargarPDF()" class="inline-flex items-center px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white text-sm font-medium rounded-lg shadow-sm transition-all focus:ring-2 focus:ring-teal-500 focus:outline-none">
-                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
-                    Descargar / Imprimir PDF
-                </button>
-                <button onclick="resetForm()" class="inline-flex items-center px-3 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 text-sm font-medium rounded-lg transition-all">
-                    Limpiar Formulario
-                </button>
-            </div>
-        </div>
-        <div id="clinical-form" class="print-container max-w-4xl mx-auto bg-white shadow-xl rounded-2xl border border-slate-200 overflow-hidden p-6 sm:p-10 space-y-8">
-            
+            <!-- VISTA: HISTORIA CLÍNICA PODOLÓGICA -->
+        <div id="historia-clinica-view" class="section-view">
+            <div class="content-card">
+                <div class="max-w-4xl mx-auto mb-6 flex justify-between items-center no-print">
+                    <div class="flex items-center space-x-3">
+                        <span class="px-3 py-1 bg-teal-600 text-white text-xs font-semibold rounded-full uppercase tracking-wider">Módulo Clínico</span>
+                        <span class="text-sm text-slate-500">Sistema de Historias Clínicas Digitales</span>
+                    </div>
+                    <div class="flex space-x-3">
+                        <button onclick="descargarPDF()" class="inline-flex items-center px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white text-sm font-medium rounded-lg shadow-sm transition-all focus:ring-2 focus:ring-teal-500 focus:outline-none">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
+                            Descargar / Imprimir PDF
+                        </button>
+                        <button onclick="resetForm()" class="inline-flex items-center px-3 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 text-sm font-medium rounded-lg transition-all">
+                            Limpiar Formulario
+                        </button>
+                    </div>
+                </div>                
+                <div id="clinical-form" class="print-container max-w-4xl mx-auto bg-white rounded-2xl overflow-hidden p-6 sm:p-10 space-y-8">    
                 <!-- HEADER / LOGO SECTION -->
                 <div class="flex flex-col sm:flex-row justify-between items-center border-b-2 border-teal-600 pb-6 gap-4">
                     <div class="flex items-center space-x-4">
@@ -1561,30 +1561,34 @@ function generarPDFCertificado(cert) {
 // --- AGE CALCULATION ---
 
         function calcularEdad() {
-    // 1. Obtenemos el valor directamente del campo de Fecha de Nacimiento
     const fechaNacimientoValue = document.getElementById('hcNacimiento').value;
     
-    // 2. Si el usuario no ha ingresado fecha, limpiamos el campo de edad y salimos
     if (!fechaNacimientoValue) {
         document.getElementById('hcEdad').value = "";
         return;
     }
     
-    // 3. Convertimos el string a Date (agregamos 'T00:00:00' para evitar desajustes por zona horaria)
-    const fnac = new Date(fechaNacimientoValue + 'T00:00:00');
-    const hoy = new Date();
+    let fnac;
+    // Si la fecha contiene barras (formato DD/MM/YYYY)
+    if (fechaNacimientoValue.includes('/')) {
+        const partes = fechaNacimientoValue.split('/');
+        // partes[0] = día, partes[1] = mes (restamos 1 porque en JS enero es 0), partes[2] = año
+        fnac = new Date(partes[2], partes[1] - 1, partes[0]);
+    } else {
+        // Formato estándar YYYY-MM-DD
+        fnac = new Date(fechaNacimientoValue + 'T00:00:00');
+    }
     
-    // 4. Calculamos los años
+    const hoy = new Date();
     let edad = hoy.getFullYear() - fnac.getFullYear();
     const mes = hoy.getMonth() - fnac.getMonth();
     
-    // Si no ha cumplido años en el mes actual o está en el mismo mes pero no llega al día
     if (mes < 0 || (mes === 0 && hoy.getDate() < fnac.getDate())) {
         edad--;
     }
     
-    // 5. Asignamos el resultado al campo de Edad
-    document.getElementById('hcEdad').value = edad >= 0 ? edad + " años" : "";
+    document.getElementById('hcEdad').value = (!isNaN(edad) && edad >= 0) ? edad + " años" : "";
+
 }
 
 // --- IMC CALCULATION ---
