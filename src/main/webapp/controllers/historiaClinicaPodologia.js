@@ -3,35 +3,39 @@
 // 1. Cargar/Consultar turnos desde la base de datos
 async function cargarTurnosDB() {
     try {
-        const response = await fetch('/ControladorTurnos');
+        // Apuntamos al Servlet existente en el backend Java
+        const response = await fetch('/PacienteServlet?accion=listarTurnos');
+        
         if (!response.ok) {
-            console.warn(`El endpoint /ControladorTurnos devolvió estado ${response.status}. Se cargarán turnos locales temporalmente.`);
+            console.warn(`El Servlet respondió con estado: ${response.status}. Se mantiene la lista local.`);
             return;
         }
 
         const turnosDB = await response.json();
-        turnos = turnosDB.map(t => ({
-            id: t.id ? t.id.toString() : '',
-            cedula: t.cedula || '',
-            nombres: t.nombres || '',
-            celular: t.celular || '',
-            email: t.email || '',
-            motivo: t.motivo || '',
-            fecha: t.fecha || '',
-            hora: t.hora_inicio || t.hora || '',
-            duracion: t.duracion_minutos || t.duracion || '40'
-        }));
-
-        renderizarCalendario();
+        
+        if (Array.isArray(turnosDB)) {
+            turnos = turnosDB.map(t => ({
+                id: t.id ? t.id.toString() : '',
+                cedula: t.cedula || '',
+                nombres: t.nombres || '',
+                celular: t.celular || t.telefono || '',
+                email: t.email || t.correo || '',
+                motivo: t.motivo || '',
+                fecha: t.fecha || '',
+                hora: t.hora_inicio || t.hora || '',
+                duracion: t.duracion_minutos || t.duracion || '40'
+            }));
+            renderizarCalendario();
+        }
 
     } catch (error) {
-        console.error("Error al obtener los turnos desde Railway:", error);
+        console.error("Error al obtener los turnos desde el servidor:", error);
     }
 }
 
 // 2. Guardar o Actualizar Turno en la BD
 async function guardarTurno(e) {
-    e.preventDefault();
+    if (e) e.preventDefault();
 
     const id = document.getElementById('turno-id')?.value || '';
     const fecha = document.getElementById('fecha-agenda')?.value || '';
@@ -43,7 +47,7 @@ async function guardarTurno(e) {
         return;
     }
 
-    // Validar límite de máximo 3 pacientes por intervalo en el cliente
+    // Validar límite de máximo 3 pacientes por intervalo
     const turnosExistentes = turnos.filter(t => t.fecha === fecha && t.hora === hora && t.id !== id);
     if (turnosExistentes.length >= 3) {
         alert('No se pueden agendar más de 3 pacientes en el mismo bloque horario.');
@@ -52,6 +56,7 @@ async function guardarTurno(e) {
 
     try {
         const formData = new URLSearchParams();
+        formData.append("accion", "guardarTurno");
         if (id) formData.append("id", id);
         formData.append("turnCedula", cedula);
         formData.append("turnNombres", document.getElementById('turnNombres')?.value.trim() || "");
@@ -62,25 +67,23 @@ async function guardarTurno(e) {
         formData.append("horaInicio", hora);
         formData.append("duracionMinutos", document.getElementById('duracion-minutos')?.value || "40");
 
-        const response = await fetch('/ControladorTurnos', {
+        const response = await fetch('/PacienteServlet', {
             method: 'POST',
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
             body: formData.toString()
         });
 
-        const data = await response.json();
-
         if (response.ok) {
-            alert("¡Cita guardada correctamente!");
+            alert("¡Cita agendada con éxito!");
             cerrarModal();
-            cargarTurnosDB(); // Recarga la lista desde Railway
+            cargarTurnosDB();
         } else {
-            alert("Atención: " + (data.error || "No se pudo agendar la cita."));
+            alert("Error al procesar el turno en la base de datos.");
         }
 
     } catch (error) {
-        console.error("Error al conectar con el servidor para guardar el turno:", error);
-        alert("Error de conexión al procesar el turno.");
+        console.error("Error de conexión al guardar el turno:", error);
+        alert("Error de red al intentar guardar la cita.");
     }
 }
 
@@ -90,26 +93,23 @@ async function cancelarTurno(id) {
 
     try {
         const formData = new URLSearchParams();
-        formData.append("accion", "eliminar");
+        formData.append("accion", "eliminarTurno");
         formData.append("id", id);
 
-        const response = await fetch('/ControladorTurnos', {
+        const response = await fetch('/PacienteServlet', {
             method: 'POST',
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
             body: formData.toString()
         });
 
-        const data = await response.json();
-
         if (response.ok) {
             alert("Turno cancelado correctamente.");
-            cargarTurnosDB(); // Recarga la lista desde Railway
+            cargarTurnosDB();
         } else {
-            alert("Atención: " + (data.error || "No se pudo cancelar el turno."));
+            alert("No se pudo eliminar el turno.");
         }
     } catch (error) {
-        console.error("Error al eliminar el turno:", error);
-        alert("Error de conexión al intentar cancelar el turno.");
+        console.error("Error al eliminar turno:", error);
     }
 }
 
