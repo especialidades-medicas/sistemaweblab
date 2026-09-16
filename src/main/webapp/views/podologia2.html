@@ -397,15 +397,21 @@ canvas {
 }
 
         /* Asegura que todos los elementos se mantengan dentro del ancho fijo al exportar */
-#clinical-form * {
+/* Reseteo seguro de cajas sin romper layouts flexibles o tablas */
+#clinical-form, #clinical-form * {
     box-sizing: border-box !important;
-    max-width: 100% !important;
 }
 
-/* Evita cortes horizontales o fragmentación de secciones */
+/* Evita que los bloques/tablas se dividan por la mitad entre páginas */
 .avoid-break {
     page-break-inside: avoid !important;
     break-inside: avoid !important;
+}
+
+/* Forzar saltos de página limpios en secciones grandes si se requiere */
+.page-break {
+    page-break-before: always !important;
+    break-before: page !important;
 }
         
         /* Estilos del Calendario y Modal */
@@ -755,7 +761,7 @@ canvas {
                         </div>
 
                         <div style="display: flex; gap: 10px; margin-top: 15px; flex-wrap: wrap;">
-                            <button type="submit" class="btn-action" style="padding: 0.7rem 1.5rem; font-size: 0.95rem;">Guardar e Imprimir Certificado (PDF)</button>
+                            <button type="submit" class="btn-action" style="padding: 0.7rem 1.5rem; font-size: 0.95rem;">Guardar e Imprimir (PDF)</button>
                         </div>
                     </form>
                 </div>
@@ -860,9 +866,11 @@ canvas {
                         <span class="text-sm text-slate-500">Sistema de Historias Clínicas Digitales</span>
                     </div>
                     <div class="flex space-x-3">
+                        <button onclick="descargarPDF()" class="inline-flex items-center px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white text-sm font-medium rounded-lg shadow-sm transition-all focus:ring-2 focus:ring-teal-500 focus:outline-none">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>Imprimir</button>
                         <button onclick="descargarPDFH()" class="no-print inline-flex items-center px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white text-sm font-medium rounded-lg shadow-sm transition-all focus:ring-2 focus:ring-teal-500 focus:outline-none">
                             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
-                            Descargar / Imprimir PDF
+                            Descargar PDF
                         </button>
                         <button onclick="resetForm()" class="inline-flex items-center px-3 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 text-sm font-medium rounded-lg transition-all">
                             Limpiar Formulario
@@ -1766,36 +1774,41 @@ function generarPDFCertificado(cert) {
 // --- AGE CALCULATION ---
 
         function calcularEdad() {
-    const fechaInput = document.getElementById('hcNacimiento').value;
+    const input = document.getElementById('hcNacimiento');
     const campoEdad = document.getElementById('hcEdad');
 
-    if (!fechaInput) {
-        campoEdad.value = "";
+    if (!input || !input.value) {
+        if (campoEdad) campoEdad.value = "";
         return;
     }
 
-    let fnac;
+    const valor = input.value.trim();
+    let anio, mes, dia;
 
-    // Manejo de formato con barra DD/MM/YYYY o guión YYYY-MM-DD
-    if (fechaInput.includes('/')) {
-        const partes = fechaInput.split('/');
-        fnac = new Date(partes[2], partes[1] - 1, partes[0]);
-    } else if (fechaInput.includes('-')) {
-        const partes = fechaInput.split('-');
-        // Se pasa año, mes (base 0) y día directamente como enteros para evitar desfasaje de zona horaria UTC
-        fnac = new Date(partes[0], partes[1] - 1, partes[2]);
+    if (valor.includes('-')) {
+        // Formato ISO: YYYY-MM-DD
+        const partes = valor.split('-');
+        anio = parseInt(partes[0], 10);
+        mes = parseInt(partes[1], 10) - 1;
+        dia = parseInt(partes[2], 10);
+    } else if (valor.includes('/')) {
+        // Formato Latino: DD/MM/YYYY
+        const partes = valor.split('/');
+        dia = parseInt(partes[0], 10);
+        mes = parseInt(partes[1], 10) - 1;
+        anio = parseInt(partes[2], 10);
     } else {
         campoEdad.value = "";
         return;
     }
 
-    const hoy = new Date();
-    
-    // Validar que sea una fecha real antes de calcular
-    if (isNaN(fnac.getTime())) {
+    if (isNaN(anio) || isNaN(mes) || isNaN(dia)) {
         campoEdad.value = "";
         return;
     }
+
+    const fnac = new Date(anio, mes, dia);
+    const hoy = new Date();
 
     let edad = hoy.getFullYear() - fnac.getFullYear();
     const diferenciaMeses = hoy.getMonth() - fnac.getMonth();
@@ -1804,49 +1817,28 @@ function generarPDFCertificado(cert) {
         edad--;
     }
 
-    campoEdad.value = (edad >= 0) ? edad + " años" : "";
+    campoEdad.value = (!isNaN(edad) && edad >= 0) ? edad : "";
 }
 
-// --- IMC CALCULATION ---
-function calcularEdad() {
-    const fechaInput = document.getElementById('hcNacimiento').value;
-    const campoEdad = document.getElementById('hcEdad');
-
-    if (!fechaInput) {
-        campoEdad.value = "";
-        return;
-    }
-
-    let fnac;
-
-    if (fechaInput.includes('/')) {
-        const partes = fechaInput.split('/');
-        fnac = new Date(partes[2], partes[1] - 1, partes[0]);
-    } else if (fechaInput.includes('-')) {
-        const partes = fechaInput.split('-');
-        fnac = new Date(partes[0], partes[1] - 1, partes[2]);
-    } else {
-        campoEdad.value = "";
-        return;
-    }
-
-    const hoy = new Date();
-    
-    if (isNaN(fnac.getTime())) {
-        campoEdad.value = "";
-        return;
-    }
-
-    let edad = hoy.getFullYear() - fnac.getFullYear();
-    const diferenciaMeses = hoy.getMonth() - fnac.getMonth();
-
-    if (diferenciaMeses < 0 || (diferenciaMeses === 0 && hoy.getDate() < fnac.getDate())) {
-        edad--;
-    }
-
-    // Devuelve solo el número o cadena vacía si es menor a 0
-    campoEdad.value = (edad >= 0) ? edad : "";
-}
+// --- IMC CALCULATION masa corporal ---
+function calcularIMC() {
+            const peso = parseFloat(document.getElementById('signos-peso').value);
+            const talla = parseFloat(document.getElementById('signos-talla').value);
+            const imcInput = document.getElementById('signos-imc');
+            
+            if (peso > 0 && talla > 0) {
+                const imc = peso / (talla * talla);
+                let categoria = "";
+                if (imc < 18.5) categoria = " (Bajo peso)";
+                else if (imc < 25) categoria = " (Normal)";
+                else if (imc < 30) categoria = " (Sobrepeso)";
+                else categoria = " (Obesidad)";
+                
+                imcInput.value = imc.toFixed(1) + categoria;
+            } else {
+                imcInput.value = "";
+            }
+        }
 
 // --- DYNAMIC IMAGE PREVIEW FOR FOOT/GAIT REFERENCES ---
 
@@ -2091,37 +2083,49 @@ function resetForm() {
         const fecha = new Date().toISOString().split('T')[0];
         const nombreArchivo = `${cedula}_${nombreFormateado}_${fecha}.pdf`;
 
-        // 1. Guardar estilos originales para no romper la pantalla del usuario
-        const estiloOriginalWidth = elemento.style.width;
-        const estiloOriginalMaxWidth = elemento.style.maxWidth;
+        // 1. Crear un contenedor temporal aislado para renderizar exactamente el ancho A4
+        const wrapper = document.createElement('div');
+        wrapper.style.position = 'absolute';
+        wrapper.style.left = '-9999px';
+        wrapper.style.top = '0';
+        wrapper.style.width = '800px';
+        wrapper.style.backgroundColor = '#ffffff';
+        wrapper.style.padding = '0px';
+        wrapper.style.margin = '0px';
 
-        // 2. Forzar ancho A4 estándar en píxeles antes de capturar
-        elemento.style.width = '794px'; // Ancho A4 exacto a 96 DPI
-        elemento.style.maxWidth = '794px';
+        // 2. Clonar el formulario al contenedor aislado
+        const clon = elemento.cloneNode(true);
+        clon.style.width = '800px';
+        clon.style.margin = '0 auto';
+        clon.style.boxSizing = 'border-box';
+        
+        wrapper.appendChild(clon);
+        document.body.appendChild(wrapper);
 
         const opciones = {
-            margin:       [8, 8, 8, 8], // Márgenes uniformes en mm
+            margin:       [6, 6, 6, 6], // Márgenes estrechos en mm
             filename:     nombreArchivo,
             image:        { type: 'jpeg', quality: 0.98 },
             html2canvas:  { 
                 scale: 2, 
                 useCORS: true, 
-                scrollY: 0,
+                x: 0,
+                y: 0,
                 scrollX: 0,
-                width: 794,
-                windowWidth: 794
+                scrollY: 0,
+                width: 800,
+                windowWidth: 800
             },
             jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
             pagebreak:    { mode: ['avoid-all', 'css', 'legacy'] }
         };
 
         try {
-            // 3. Generar y descargar el PDF
-            await html2pdf().set(opciones).from(elemento).save();
+            // 3. Generar el PDF desde el clon limpio
+            await html2pdf().set(opciones).from(clon).save();
         } finally {
-            // 4. Restaurar el diseño web original del usuario
-            elemento.style.width = estiloOriginalWidth;
-            elemento.style.maxWidth = estiloOriginalMaxWidth;
+            // 4. Limpiar el clon del DOM
+            document.body.removeChild(wrapper);
         }
     } else {
         window.print();
