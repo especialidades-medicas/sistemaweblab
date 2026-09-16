@@ -1271,9 +1271,23 @@
                         <table class="table table-sm table-bordered align-middle mb-0 small">
                             <thead class="table-light text-muted"><tr><th>EXAMEN</th><th>RESULTADO</th><th>UNIDAD</th><th>V. REFERENCIA</th></tr></thead>
                             <tbody>
-                                <tr><td class="fw-bold">VITAMINA D (25-OH)</td><td><input type="text" class="form-control form-control-sm form-control-editable"></td><td>ng/mL</td><td class="text-muted">30 - 100</td></tr>
+                                <tr><td class="fw-bold">VITAMINA D (25-OH)</td>
+									<td><input type="text" class="form-control form-control-sm form-control-editable"></td><td>ng/mL</td><td class="text-muted">30 - 100</td></tr>
                                 <tr><td class="fw-bold">VITAMINA B12</td><td><input type="text" class="form-control form-control-sm form-control-editable"></td><td>pg/mL</td><td class="text-muted">200 - 900</td></tr>
-                            </tbody>
+                            	<tr>
+                                    <td class="fw-bold">VITAMINA D, 25 HIDROXI, TOTAL ( D2-D3 )<select class="form-select form-select-sm mt-1" style="font-size: 10px;">
+                                            <option value="" selected disabled>Método Analítico...</option>
+                                            <option value=""></option>
+											<option value="Espectrofotometría">Metódo: ELFA (Ensayo de fluorescencia ligado a enzimas)</option>
+                                            <option value="Espectrofotometría">Espectrofotometría</option>
+											
+                                        </select>
+                                    </td>
+                                    <td><input type="text" class="form-control form-control-sm form-control-editable" id="vitaD"></td>
+                                    <td><input type="text" class="form-control form-control-sm text-muted" value="ng/ml"></td>
+                                    <td><input type="text" class="form-control form-control-sm text-muted" value="DEFICIENTE: < a 20.0 / INSUFICIENTE: Desde 20.0 hasta 29.0 / SUFICIENTE: Desde 30.0 a 100.0 / TOXICIDAD: > a 100.0"></td>
+                                </tr>
+							</tbody>
                         </table>
                     </div>
                 </div>
