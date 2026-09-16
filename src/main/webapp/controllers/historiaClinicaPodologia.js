@@ -304,65 +304,7 @@ function resetForm() {
     }
 }
 
-async function descargarPDFH() {
-    const elemento = document.getElementById('clinical-form');
-    if (!elemento) return;
 
-    if (typeof html2pdf !== 'undefined') {
-        const cedula = document.getElementById('hcCedula')?.value.trim() || 'SIN_CEDULA';
-        const nombreCompleto = document.getElementById('hcNombres')?.value.trim() || 'SIN_NOMBRE';
-        const nombreFormateado = nombreCompleto.replace(/\s+/g, '_').toUpperCase();
-        const fecha = new Date().toISOString().split('T')[0];
-        const nombreArchivo = `${cedula}_${nombreFormateado}_${fecha}.pdf`;
-
-        // 1. Crear un contenedor temporal aislado
-        const wrapper = document.createElement('div');
-        wrapper.style.position = 'absolute';
-        wrapper.style.left = '-9999px';
-        wrapper.style.top = '0';
-        wrapper.style.width = '800px';
-        wrapper.style.backgroundColor = '#ffffff';
-        wrapper.style.padding = '0px';
-        wrapper.style.margin = '0px';
-
-        // 2. Clonar el formulario
-        const clon = elemento.cloneNode(true);
-        clon.style.width = '800px';
-        clon.style.margin = '0 auto';
-        clon.style.boxSizing = 'border-box';
-        
-        wrapper.appendChild(clon);
-        document.body.appendChild(wrapper);
-
-        const opciones = {
-            margin:       [6, 6, 6, 6],
-            filename:     nombreArchivo,
-            image:        { type: 'jpeg', quality: 0.98 },
-            html2canvas:  { 
-                scale: 2, 
-                useCORS: true, 
-                x: 0,
-                y: 0,
-                scrollX: 0,
-                scrollY: 0,
-                width: 800,
-                windowWidth: 800
-            },
-            jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
-            pagebreak:    { mode: ['avoid-all', 'css', 'legacy'] }
-        };
-
-        try {
-            // 3. Generar PDF
-            await html2pdf().set(opciones).from(clon).save();
-        } finally {
-            // 4. Limpieza del DOM
-            document.body.removeChild(wrapper);
-        }
-    } else {
-        window.print();
-    }
-}
 
 // Función auxiliar para convertir DD/MM/YYYY a YYYY-MM-DD
 function formatearFechaISO(fechaStr) {
