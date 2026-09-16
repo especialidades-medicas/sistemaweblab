@@ -364,6 +364,23 @@ async function descargarPDFH() {
     }
 }
 
+// Función auxiliar para convertir DD/MM/YYYY a YYYY-MM-DD
+function formatearFechaISO(fechaStr) {
+    if (!fechaStr) return '';
+    
+    // Si ya viene en formato YYYY-MM-DD (por ejemplo desde <input type="date">)
+    if (fechaStr.includes('-')) return fechaStr;
+
+    // Si viene en formato DD/MM/YYYY o DD-MM-YYYY
+    const partes = fechaStr.split('/');
+    if (partes.length === 3) {
+        const [dia, mes, anio] = partes;
+        return `${anio}-${mes.padStart(2, '0')}-${dia.padStart(2, '0')}`;
+    }
+
+    return fechaStr;
+}
+
 // Función para autocompletar el modal de turnos al escribir la cédula
 async function buscarPacienteParaTurno(cedula) {
     if (!cedula || cedula.length < 5) return;
