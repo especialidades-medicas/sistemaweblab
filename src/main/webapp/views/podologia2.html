@@ -396,7 +396,19 @@ canvas {
     cursor: crosshair; 
 }
 
+/* Evita que un elemento se corte a la mitad entre dos páginas */
+.avoid-break {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+}
 
+/* Fuerza el salto a una nueva página de forma limpia si es necesario */
+.page-break {
+    page-break-before: always !important;
+    break-before: page !important;
+}
+
+        
         /* Estilos del Calendario y Modal */
     .calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
     .calendar-controls { margin-bottom: 20px; }
@@ -1972,7 +1984,6 @@ function resetForm() {
     const elemento = document.getElementById('clinical-form');
     if (!elemento) return;
 
-    // Verificar si html2pdf está disponible
     if (typeof html2pdf !== 'undefined') {
         const cedula = document.getElementById('hcCedula')?.value.trim() || 'SIN_CEDULA';
         const nombreCompleto = document.getElementById('hcNombres')?.value.trim() || 'SIN_NOMBRE';
@@ -1981,16 +1992,22 @@ function resetForm() {
         const nombreArchivo = `${cedula}_${nombreFormateado}_${fecha}.pdf`;
 
         const opciones = {
-            margin:       [10, 10, 10, 10],
+            margin:       [5, 5, 5, 5], // Reducimos márgenes superiores/inferiores para evitar espacios en blanco
             filename:     nombreArchivo,
             image:        { type: 'jpeg', quality: 0.98 },
-            html2canvas:  { scale: 2, useCORS: true, logging: false },
-            jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            html2canvas:  { 
+                scale: 2, 
+                useCORS: true, 
+                scrollY: 0, // Evita que se capture espacio en blanco si el usuario hizo scroll
+                windowWidth: elemento.scrollWidth
+            },
+            jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
+            // Evita cortes en elementos clave y habilita modos de salto automático
+            pagebreak:    { mode: ['avoid-all', 'css', 'legacy'] }
         };
 
         html2pdf().set(opciones).from(elemento).save();
     } else {
-        // Respaldo de impresión nativa si falla la librería
         window.print();
     }
 }
