@@ -329,15 +329,71 @@
         }
 
         body { font-family: 'Inter', sans-serif; }
+        
         @media print {
-            .no-print { display: none !important; }
-            body { background: white !important; padding: 0 !important; }
-            .print-container { box-shadow: none !important; border: none !important; margin: 0 !important; width: 100% !important; max-width: none !important; }
-            input, textarea, select { border: none !important; background: transparent !important; resize: none !important; padding: 0 !important; }
-            input[type="checkbox"] { accent-color: black; }
-        }
-        /* Custom canvas cursor */
-        canvas { touch-action: none; cursor: crosshair; }
+    /* 1. Define márgenes físicos superiores e inferiores en cada hoja */
+    @page {
+        size: A4;
+        margin: 15mm 10mm 15mm 10mm; /* arriba, derecha, abajo, izquierda */
+    }
+
+    /* 2. Ocultar elementos no imprimibles y ajustar fondo */
+    .no-print { 
+        display: none !important; 
+    }
+    
+    body { 
+        background: white !important; 
+        padding: 0 !important; 
+        margin: 0 !important;
+    }
+
+    /* 3. Limpieza del contenedor principal */
+    .print-container { 
+        box-shadow: none !important; 
+        border: none !important; 
+        margin: 0 !important; 
+        padding: 0 !important;
+        width: 100% !important; 
+        max-width: none !important; 
+    }
+
+    /* 4. Estilos de componentes e inputs */
+    input, textarea, select { 
+        border: none !important; 
+        background: transparent !important; 
+        resize: none !important; 
+        padding: 0 !important; 
+    }
+    
+    input[type="checkbox"] { 
+        accent-color: black; 
+    }
+
+    /* 5. Adaptación para .content-card y control de saltos de página */
+    .content-card {
+        box-shadow: none !important;
+        border: none !important;
+        margin-bottom: 1rem !important;
+        padding: 0.5rem 0 !important;
+        border-radius: 0 !important;
+        /* Evita que un bloque se corte por la mitad entre dos páginas */
+        break-inside: avoid;
+        page-break-inside: avoid;
+    }
+
+    /* Evita separar títulos del contenido inferior */
+    h1, h2, h3, label, .content-card h2 {
+        break-after: avoid;
+        page-break-after: avoid;
+    }
+}
+
+/* Custom canvas cursor */
+canvas { 
+    touch-action: none; 
+    cursor: crosshair; 
+}
         
     </style>
 </head>
