@@ -5,12 +5,11 @@ async function cargarTurnosDB() {
     try {
         const response = await fetch('/ControladorTurnos');
         if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+            console.warn(`El endpoint /ControladorTurnos devolvió estado ${response.status}. Se cargarán turnos locales temporalmente.`);
+            return;
         }
 
         const turnosDB = await response.json();
-        
-        // Mapeamos los datos de MySQL al formato que utiliza el calendario en frontend
         turnos = turnosDB.map(t => ({
             id: t.id ? t.id.toString() : '',
             cedula: t.cedula || '',
