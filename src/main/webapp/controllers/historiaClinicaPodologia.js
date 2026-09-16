@@ -1,78 +1,75 @@
 // --- GESTIÓN DE TURNOS DE PODOLOGÍA (RAILWAY / MYSQL) ---
 
-// 1. Cargar/Consultar turnos desde la base de datos
+// 1. Obtener los turnos guardados en MySQL (Railway)
 async function cargarTurnosDB() {
     try {
-        // Usamos el mismo endpoint /ControladorPacientes registrado en PacienteServlet.java
-        const response = await fetch('/ControladorPacientes');
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
+        const response = await fetch('/ControladorTurnos');
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
 
         const turnosDB = await response.json();
-        
+
         if (Array.isArray(turnosDB)) {
             turnos = turnosDB.map(t => ({
                 id: t.id ? t.id.toString() : '',
                 cedula: t.cedula || '',
                 nombres: t.nombres || '',
-                celular: t.telefono || '',
-                email: t.correo || '',
+                celular: t.celular || '',
+                email: t.email || '',
                 motivo: t.motivo || '',
-                fecha: t.fechaNacimiento || t.fecha || '',
-                hora: t.hora_inicio || t.hora || '',
-                duracion: t.duracion_minutos || t.duracion || '40'
+                fecha: t.fecha || '',
+                hora: t.hora_inicio || '',
+                duracion: t.duracion_minutos || 40
             }));
 
             if (typeof renderizarCalendario === 'function') {
                 renderizarCalendario();
             }
         }
-
     } catch (error) {
-        console.error("Error al obtener los datos desde Railway:", error);
+        console.error("Error al obtener los turnos desde Railway:", error);
     }
 }
 
-// 2. Guardar o Actualizar Turno en la BD
+// 2. Guardar un nuevo turno en turnos_podologia
 async function guardarTurno(e) {
     if (e) e.preventDefault();
 
-    const id = document.getElementById('turno-id')?.value || '';
+    const cedula = document.getElementById('turnCedula')?.value.trim();
     const fecha = document.getElementById('fecha-agenda')?.value || '';
     const hora = document.getElementById('hora-inicio')?.value || '';
-    const cedula = document.getElementById('turnCedula')?.value.trim();
 
-    if (!cedula) {
-        alert("La cédula es un campo obligatorio.");
+    if (!cedula || !fecha || !hora) {
+        alert("Cédula, Fecha y Hora son campos obligatorios.");
         return;
     }
 
     try {
         const formData = new URLSearchParams();
-        formData.append("patCedula", cedula);
-        formData.append("patNombre", document.getElementById('turnNombres')?.value.trim().toUpperCase() || "");
-        formData.append("patTelefono", document.getElementById('turnCelular')?.value.trim() || "");
-        formData.append("patCorreo", document.getElementById('turnEmail')?.value.trim().toLowerCase() || "");
+        formData.append("cedula", cedula);
+        formData.append("nombres", document.getElementById('turnNombres')?.value.trim().toUpperCase() || "");
+        formData.append("celular", document.getElementById('turnCelular')?.value.trim() || "");
+        formData.append("email", document.getElementById('turnEmail')?.value.trim().toLowerCase() || "");
+        formData.append("motivo", document.getElementById('turnMotivo')?.value.trim() || "");
+        formData.append("fecha", fecha);
+        formData.append("hora_inicio", hora);
+        formData.append("duracion_minutos", document.getElementById('turnDuracion')?.value || "40");
 
-        const response = await fetch('/ControladorPacientes', {
+        const response = await fetch('/ControladorTurnos', {
             method: 'POST',
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
             body: formData.toString()
         });
 
-        const data = await response.json();
-
         if (response.ok) {
-            alert("¡Turno guardado con éxito!");
+            alert("¡Turno agendado con éxito!");
             if (typeof cerrarModal === 'function') cerrarModal();
             cargarTurnosDB();
         } else {
-            alert("Atención: " + (data.error || "No se pudo guardar la información."));
+            const data = await response.json();
+            alert("Atención: " + (data.error || "No se pudo guardar el turno."));
         }
-
     } catch (error) {
-        console.error("Error al conectar con el servidor:", error);
+        console.error("Error al guardar el turno:", error);
         alert("Error de conexión al procesar el guardado.");
     }
 }
