@@ -1111,31 +1111,27 @@ canvas {
                     </div>
 
                         <!-- Tipo de Pisada with Image Selector -->
+                        <!-- Tipo de Pisada con Imagen Fija -->
                         <div class="border border-slate-200 rounded-xl p-4 bg-slate-50 space-y-3">
                             <div class="flex justify-between items-center">
                                 <h4 class="text-xs font-bold uppercase text-slate-700">Referencia: Tipo de Pisada</h4>
-                                <input type="file" id="pisada-image-input" accept="image/*" onchange="previewSelectedImage(event, 'pisada-preview-img', 'pisada-placeholder')" class="hidden">
-                                <label for="pisada-image-input" class="no-print bg-teal-600 hover:bg-teal-700 text-white text-[10px] font-semibold px-2.5 py-1 rounded cursor-pointer transition-all">
-                                    Subir Imagen
-                                </label>
                             </div>
-
-                            <!-- Image Preview Box -->
-                            <div id="pisada-preview-container" class="w-full h-36 bg-white border-2 border-dashed border-slate-300 rounded-lg flex items-center justify-center overflow-hidden relative">
-                                <span id="pisada-placeholder" class="text-xs text-slate-400 text-center px-4">Ninguna imagen seleccionada. Haga clic en "Subir Imagen" para colocar la referencia gráfica.</span>
-                                <img id="pisada-preview-img" src="" alt="Tipo de Pisada" class="w-full h-full object-contain hidden">
+                        
+                            <!-- Image Container -->
+                            <div id="pisada-preview-container" class="w-full h-36 bg-white border border-slate-200 rounded-lg flex items-center justify-center overflow-hidden relative shadow-inner">
+                                <img id="pisada-preview-img" src="../img/tippisada.jpeg" alt="Tipo de Pisada" class="w-full h-full object-contain">
                             </div>
-
-                            <div class="flex justify-around items-center text-center text-xs text-slate-600 pt-1">
-                                <div class="p-1.5 bg-white rounded border border-slate-200 shadow-xs flex-1 mx-1">
+                        
+                            <div class="grid grid-cols-3 gap-2 text-center text-xs text-slate-600 pt-1">
+                                <div class="p-1.5 bg-white rounded border border-slate-200 shadow-xs">
                                     <span class="block font-bold">Pronador</span>
                                     <span class="text-[9px] text-slate-400">Apoyo interno</span>
                                 </div>
-                                <div class="p-1.5 bg-white rounded border border-slate-200 shadow-xs flex-1 mx-1">
+                                <div class="p-1.5 bg-white rounded border border-slate-200 shadow-xs">
                                     <span class="block font-bold">Neutro</span>
                                     <span class="text-[9px] text-slate-400">Balanceado</span>
                                 </div>
-                                <div class="p-1.5 bg-white rounded border border-slate-200 shadow-xs flex-1 mx-1">
+                                <div class="p-1.5 bg-white rounded border border-slate-200 shadow-xs">
                                     <span class="block font-bold">Supinador</span>
                                     <span class="text-[9px] text-slate-400">Apoyo externo</span>
                                 </div>
