@@ -763,7 +763,7 @@ canvas {
                         <span class="text-sm text-slate-500">Sistema de Historias Clínicas Digitales</span>
                     </div>
                     <div class="flex space-x-3">
-                        <button onclick="descargarPDF()" class="inline-flex items-center px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white text-sm font-medium rounded-lg shadow-sm transition-all focus:ring-2 focus:ring-teal-500 focus:outline-none">
+                        <button onclick="descargarPDFH()" class="no-print inline-flex items-center px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white text-sm font-medium rounded-lg shadow-sm transition-all focus:ring-2 focus:ring-teal-500 focus:outline-none">
                             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
                             Descargar / Imprimir PDF
                         </button>
@@ -1890,6 +1890,39 @@ function resetForm() {
         clearCanvas();
     }
 }
+
+        function descargarPDFH() {
+    // 1. Obtener valores de los campos
+    const cedula = document.getElementById('hcCedula')?.value.trim() || 'SIN_CEDULA';
+    
+    // Extraer apellidos (o el nombre completo) y limpiar espacios
+    const nombreCompleto = document.getElementById('hcNombres')?.value.trim() || 'SIN_NOMBRE';
+    const nombreFormateado = nombreCompleto.replace(/\s+/g, '_').toUpperCase();
+    
+    // Obtener fecha actual en formato YYYY-MM-DD
+    const hoy = new Date();
+    const fecha = hoy.toISOString().split('T')[0];
+    
+    // 2. Construir el nombre del archivo: CEDULA_APELLIDOS_FECHA.pdf
+    const nombreArchivo = `${cedula}_${nombreFormateado}_${fecha}.pdf`;
+
+    // 3. Configuración de html2pdf
+    const elemento = document.getElementById('clinical-form'); // ID de tu contenedor principal
+    const opciones = {
+        margin:       [10, 10, 10, 10], // arriba, izquierda, abajo, derecha en mm
+        filename:     nombreArchivo,
+        image:        { type: 'jpeg', quality: 0.98 },
+        html2canvas:  { scale: 2, useCORS: true, logging: false },
+        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    };
+
+    // 4. Generar el PDF, abrirlo en una nueva pestaña y descargarlo
+    html2pdf().set(opciones).from(elemento).toPdf().get('pdf').then(function(pdf) {
+        // Abre el PDF en una nueva pestaña para su revisión previa
+        window.open(pdf.output('bloburl'), '_blank');
+    }).save(); // Inicia la descarga automática con el nuevo nombre
+}
+        
     </script>
 </body>
 </html>
