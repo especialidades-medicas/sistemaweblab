@@ -716,7 +716,7 @@
             </div>
         </div>
         <div id="clinical-form" class="print-container max-w-4xl mx-auto bg-white shadow-xl rounded-2xl border border-slate-200 overflow-hidden p-6 sm:p-10 space-y-8">
-            <form id="formHistoriaClinica">
+            
                 <!-- HEADER / LOGO SECTION -->
                 <div class="flex flex-col sm:flex-row justify-between items-center border-b-2 border-teal-600 pb-6 gap-4">
                     <div class="flex items-center space-x-4">
@@ -1039,7 +1039,7 @@
                         NOTA: En caso de que el paciente esté incapacitado en poder firmar el documento, firmará el representante.
                     </div>
                 </section>                
-            </form>
+            
         </div>
     </div>
 </div>
@@ -1559,16 +1559,31 @@ function generarPDFCertificado(cert) {
 
 
 // --- AGE CALCULATION ---
-function calcularEdad() {
-    const hcNacimiento = document.getElementById('hcFecha').value;
-    if (!hcFecha) return;
-    const fnac = new Date(hcFecha);
+
+        function calcularEdad() {
+    // 1. Obtenemos el valor directamente del campo de Fecha de Nacimiento
+    const fechaNacimientoValue = document.getElementById('hcNacimiento').value;
+    
+    // 2. Si el usuario no ha ingresado fecha, limpiamos el campo de edad y salimos
+    if (!fechaNacimientoValue) {
+        document.getElementById('hcEdad').value = "";
+        return;
+    }
+    
+    // 3. Convertimos el string a Date (agregamos 'T00:00:00' para evitar desajustes por zona horaria)
+    const fnac = new Date(fechaNacimientoValue + 'T00:00:00');
     const hoy = new Date();
+    
+    // 4. Calculamos los años
     let edad = hoy.getFullYear() - fnac.getFullYear();
-    const m = hoy.getMonth() - fnac.getMonth();
-    if (m < 0 || (m === 0 && hoy.getDate() < fnac.getDate())) {
+    const mes = hoy.getMonth() - fnac.getMonth();
+    
+    // Si no ha cumplido años en el mes actual o está en el mismo mes pero no llega al día
+    if (mes < 0 || (mes === 0 && hoy.getDate() < fnac.getDate())) {
         edad--;
     }
+    
+    // 5. Asignamos el resultado al campo de Edad
     document.getElementById('hcEdad').value = edad >= 0 ? edad + " años" : "";
 }
 
