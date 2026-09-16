@@ -409,53 +409,88 @@ canvas {
 }
         
         /* Estilos del Calendario y Modal */
-    .calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
-    .calendar-controls { margin-bottom: 20px; }
-    .calendar-controls input[type="date"] { padding: 6px 10px; border: 1px solid #ccc; border-radius: 4px; }
-    .table-responsive { overflow-x: auto; }
-    .calendar-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-    .calendar-table th, .calendar-table td { border: 1px solid #e0e0e0; padding: 8px 10px; text-align: left; vertical-align: top; }
-    .calendar-table th { background-color: #f5f7fa; }
+    /* Variables de Color Sofisticadas */
+    :root {
+        --primary: #0077b6;
+        --primary-hover: #023e8a;
+        --bg-card: #ffffff;
+        --border-color: #e2e8f0;
+        --text-main: #1e293b;
+        --text-muted: #64748b;
+        --badge-bg: #f1f5f9;
+        --ws-color: #25D366;
+        --email-color: #0284c7;
+        --warning-bg: #fff7ed;
+        --warning-border: #f97316;
+    }
 
-    /* Estilo de fila para distinguir medias horas */
-    .calendar-table tr.media-hora td { background-color: #fafafa; }
+    .agenda-container { background: var(--bg-card); border-radius: 12px; padding: 24px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); }
+    .subtitle { color: var(--text-muted); font-size: 14px; margin-top: 4px; }
 
-    /* Tarjetas de pacientes */
-    .paciente-card {
-        background-color: #e3f2fd;
-        border-left: 4px solid #1976d2;
-        padding: 8px 12px;
-        margin-bottom: 6px;
-        border-radius: 4px;
+    /* Encabezado */
+    .calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+    
+    /* Navegador de Fecha con Flechas */
+    .date-navigator { display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 24px; background: #f8fafc; padding: 10px; border-radius: 10px; border: 1px solid var(--border-color); width: fit-content; margin-left: auto; margin-right: auto; }
+    .btn-nav { background: #ffffff; border: 1px solid var(--border-color); border-radius: 8px; padding: 8px 12px; cursor: pointer; color: var(--text-main); transition: all 0.2s; display: flex; align-items: center; }
+    .btn-nav:hover { background: var(--primary); color: white; border-color: var(--primary); }
+    .date-input-wrapper { display: flex; align-items: center; gap: 8px; background: white; padding: 6px 12px; border-radius: 8px; border: 1px solid var(--border-color); color: var(--text-muted); }
+    .date-input-wrapper input { border: none; outline: none; font-weight: 600; color: var(--text-main); font-size: 15px; cursor: pointer; }
+
+    /* Tabla Estilizada */
+    .table-responsive-pro { overflow-x: auto; border-radius: 10px; border: 1px solid var(--border-color); }
+    .calendar-table-pro { width: 100%; border-collapse: collapse; text-align: left; }
+    .calendar-table-pro th { background: #f8fafc; padding: 14px 16px; font-weight: 600; color: var(--text-muted); font-size: 13px; text-transform: uppercase; border-bottom: 1px solid var(--border-color); }
+    .calendar-table-pro td { padding: 10px 16px; border-bottom: 1px solid var(--border-color); vertical-align: top; }
+    .calendar-table-pro tr.media-hora td { background-color: #fafbfc; }
+
+    /* Tarjetas de Paciente Elevedas */
+    .paciente-card-pro {
+        background: #ffffff;
+        border: 1px solid var(--border-color);
+        border-left: 4px solid var(--primary);
+        border-radius: 8px;
+        padding: 10px 14px;
+        margin-bottom: 8px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.03);
         display: flex;
         justify-content: space-between;
         align-items: center;
-        gap: 10px;
+        transition: transform 0.1s ease;
     }
-    .paciente-card.sobreocupado { border-left-color: #f57c00; background-color: #fff3e0; }
+    .paciente-card-pro:hover { transform: translateY(-1px); box-shadow: 0 4px 10px rgba(0,0,0,0.06); }
+    .paciente-card-pro.sobreocupado { border-left-color: var(--warning-border); background-color: var(--warning-bg); }
 
-    .paciente-info { font-size: 13px; line-height: 1.4; }
-    .paciente-info small { color: #555; display: block; }
-    
-    /* Botones de acción */
-    .actions-group { display: flex; gap: 5px; align-items: center; flex-wrap: wrap; }
-    .btn-sm { padding: 4px 8px; font-size: 12px; border: none; border-radius: 3px; cursor: pointer; }
-    .btn-ws { background-color: #25D366; color: white; text-decoration: none; border-radius: 3px; padding: 4px 8px; font-size: 12px; display: inline-flex; align-items: center; }
-    .btn-email { background-color: #0078d4; color: white; text-decoration: none; border-radius: 3px; padding: 4px 8px; font-size: 12px; display: inline-flex; align-items: center; }
-    .btn-edit { background-color: #ffb74d; color: black; }
-    .btn-danger { background-color: #e57373; color: white; }
-    .btn-primary { background-color: #1976d2; color: white; padding: 8px 16px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; }
-    .btn-secondary { background-color: #9e9e9e; color: white; padding: 8px 16px; border: none; border-radius: 4px; cursor: pointer; }
+    .paciente-info-pro { font-size: 13px; color: var(--text-main); }
+    .paciente-info-pro .nombre { font-size: 14px; font-weight: 700; color: var(--text-main); display: block; }
+    .paciente-info-pro .detalles { color: var(--text-muted); font-size: 12px; margin-top: 2px; }
 
-    .alerta-cupo { color: #d32f2f; font-size: 12px; font-weight: bold; margin-top: 5px; }
+    /* Botones de Acción Pro */
+    .actions-group-pro { display: flex; gap: 6px; align-items: center; }
+    .btn-action { border: none; border-radius: 6px; padding: 6px 10px; font-size: 12px; font-weight: 600; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 4px; transition: opacity 0.2s; }
+    .btn-action:hover { opacity: 0.85; }
+    .btn-ws-pro { background-color: #dcfce7; color: #15803d; }
+    .btn-email-pro { background-color: #e0f2fe; color: #0369a1; }
+    .btn-edit-pro { background-color: #fef3c7; color: #b45309; }
+    .btn-danger-pro { background-color: #fee2e2; color: #b91c1c; }
+    .btn-primary-pro { background-color: var(--primary); color: white; border: none; border-radius: 8px; padding: 10px 18px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
+    .btn-primary-pro:hover { background-color: var(--primary-hover); }
+    .btn-secondary-pro { background-color: #e2e8f0; color: var(--text-main); border: none; border-radius: 8px; padding: 10px 18px; font-weight: 600; cursor: pointer; }
 
-    /* Modal */
-    .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 1000; }
-    .modal-content { background: white; padding: 20px; border-radius: 8px; width: 420px; max-width: 90%; box-shadow: 0 4px 10px rgba(0,0,0,0.15); }
-    .form-group { margin-bottom: 12px; display: flex; flex-direction: column; }
-    .form-group label { font-size: 13px; font-weight: bold; margin-bottom: 3px; }
-    .form-group input, .form-group select { padding: 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px; }
-    .modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 15px; }
+    .alerta-cupo-pro { color: #c2410c; font-size: 12px; font-weight: 600; margin-top: 4px; display: flex; align-items: center; gap: 4px; }
+
+    /* Modal Pro */
+    .modal-pro { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.5); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; z-index: 1000; }
+    .modal-content-pro { background: white; padding: 24px; border-radius: 12px; width: 460px; max-width: 90%; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); }
+    .modal-header-pro { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+    .btn-close-modal { background: none; border: none; font-size: 20px; color: var(--text-muted); cursor: pointer; }
+    .form-group-pro { margin-bottom: 14px; display: flex; flex-direction: column; flex: 1; }
+    .form-group-pro label { font-size: 12px; font-weight: 600; color: var(--text-muted); margin-bottom: 4px; text-transform: uppercase; }
+    .form-group-pro input, .form-group-pro select { padding: 9px 12px; border: 1px solid var(--border-color); border-radius: 6px; font-size: 14px; color: var(--text-main); outline: none; }
+    .form-group-pro input:focus, .form-group-pro select:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(0, 119, 182, 0.1); }
+    .form-row-pro { display: flex; gap: 12px; }
+    .modal-actions-pro { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; }
+
         
     </style>
 </head>
@@ -983,7 +1018,7 @@ canvas {
 
                 <section class="space-y-4">
                     <div>
-                        <div class="bg-teal-600 text-white text-xs font-bold uppercase px-3 py-1.5 rounded tracking-wider mb-2">
+                        <div class="bg-teal-600 text-white text-xs font-bold uppercase px-3 py-1.5 rounded tracking-wider mb-2 avoid-break bg-white p-4 rounded-lg shadow">
                             Motivo de la Consulta
                         </div>
                         <textarea id="motivo-consulta" rows="3" class="w-full border border-slate-300 rounded-xl p-3 text-sm focus:ring-2 focus:ring-teal-500 focus:outline-none" placeholder="Describa el motivo de la consulta, dolor, molestias, tiempo de evolución..."></textarea>
@@ -1165,38 +1200,53 @@ canvas {
 
 
             <!-- 3--SECCIÓN CALENDARIO DE CITAS PODOLÓGICAS -->
-            <div id="citas-view" class="section-view">
-                <div class="content-card">
-                    <div class="calendar-header">
-                        <div>
-                            <h2>Calendario de Citas Podológicas</h2>
-                            <p style="color: var(--gray, #666);">Módulo de programación de quiropodias, estudios de marcha y revisiones periódicas.</p>
-                        </div>
-                        <button type="button" class="btn-primary" onclick="abrirModalNuevoTurno()">+ Agendar Cita</button>
-                    </div>
-            
-                    <!-- Filtro de fecha -->
-                    <div class="calendar-controls">
-                        <label for="fecha-agenda"><strong>Fecha de Agenda:</strong></label>
-                        <input type="date" id="fecha-agenda" onchange="renderizarCalendario()">
-                    </div>
-            
-                    <!-- Tabla de Agenda Horaria (08:00 a 21:00) -->
-                    <div class="table-responsive">
-                        <table class="calendar-table">
-                            <thead>
-                                <tr>
-                                    <th style="width: 110px;">Horario</th>
-                                    <th>Pacientes Agendados (Máx. 3 por bloque)</th>
-                                </tr>
-                            </thead>
-                            <tbody id="cuerpo-calendario">
-                                <!-- Filas generadas dinámicamente con JavaScript -->
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+            <!-- SECCIÓN CALENDARIO DE CITAS PODOLÓGICAS -->
+<div id="citas-view" class="section-view">
+    <div class="content-card agenda-container">
+        <!-- Encabezado del Módulo -->
+        <div class="calendar-header">
+            <div>
+                <h2>Calendario de Citas Podológicas</h2>
+                <p class="subtitle">Módulo de programación de quiropodias, estudios de marcha y revisiones periódicas.</p>
             </div>
+            <button type="button" class="btn-primary-pro" onclick="abrirModalNuevoTurno()">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                Agendar Cita
+            </button>
+        </div>
+
+        <!-- Navegador de Fechas Estilo Agenda -->
+        <div class="date-navigator">
+            <button type="button" class="btn-nav" onclick="cambiarDia(-1)" title="Día Anterior">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"></polyline></svg>
+            </button>
+            
+            <div class="date-input-wrapper">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                <input type="date" id="fecha-agenda" onchange="renderizarCalendario()">
+            </div>
+
+            <button type="button" class="btn-nav" onclick="cambiarDia(1)" title="Día Siguiente">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+            </button>
+        </div>
+
+        <!-- Tabla de Agenda Horaria (08:00 a 21:00 cada 30 min) -->
+        <div class="table-responsive-pro">
+            <table class="calendar-table-pro">
+                <thead>
+                    <tr>
+                        <th style="width: 120px;">Horario</th>
+                        <th>Pacientes Agendados (Máx. 3 por bloque)</th>
+                    </tr>
+                </thead>
+                <tbody id="cuerpo-calendario">
+                    <!-- Filas generadas dinámicamente con JavaScript -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
 
 <!-- SECCIÓN RECETAS -->
 <div id="recetas-view" class="section-view">
@@ -2033,15 +2083,12 @@ function resetForm() {
 // turnos agendados
         let turnos = [];
 
-    // Generador de lista de horarios de 30 min (08:00 a 21:00)
     function obtenerIntervalos30Min() {
         const horarios = [];
         for (let h = 8; h <= 21; h++) {
             const horaStr = h < 10 ? `0${h}` : `${h}`;
             horarios.push(`${horaStr}:00`);
-            if (h < 21) {
-                horarios.push(`${horaStr}:30`);
-            }
+            if (h < 21) horarios.push(`${horaStr}:30`);
         }
         return horarios;
     }
@@ -2054,59 +2101,62 @@ function resetForm() {
         renderizarCalendario();
     });
 
-    // Cargar opciones en el select del modal
+    // Función para avanzar o retroceder de día con las flechas
+    function cambiarDia(offset) {
+        const inputFecha = document.getElementById('fecha-agenda');
+        const fechaActual = new Date(inputFecha.value + 'T00:00:00');
+        fechaActual.setDate(fechaActual.getDate() + offset);
+        
+        const nuevaFechaStr = fechaActual.toISOString().split('T')[0];
+        inputFecha.value = nuevaFechaStr;
+        renderizarCalendario();
+    }
+
     function cargarOpcionesHorario() {
         const select = document.getElementById('hora-inicio');
         select.innerHTML = '';
-        const intervalos = obtenerIntervalos30Min();
-        
-        intervalos.forEach(horaStr => {
+        obtenerIntervalos30Min().forEach(horaStr => {
             select.innerHTML += `<option value="${horaStr}">${horaStr}</option>`;
         });
     }
 
-    // Dibujar el calendario fila por fila (cada 30 min)
     function renderizarCalendario() {
         const fechaSeleccionada = document.getElementById('fecha-agenda').value;
         const cuerpo = document.getElementById('cuerpo-calendario');
         cuerpo.innerHTML = '';
 
-        const intervalos = obtenerIntervalos30Min();
-
-        intervalos.forEach(horaStr => {
+        obtenerIntervalos30Min().forEach(horaStr => {
             const turnosEnHora = turnos.filter(t => t.fecha === fechaSeleccionada && t.hora === horaStr);
             const numPacientes = turnosEnHora.length;
             const esMediaHora = horaStr.endsWith(':30');
 
             let alertaHtml = '';
             if (numPacientes >= 2) {
-                alertaHtml = `<div class="alerta-cupo">⚠️ Notificación: Hay ${numPacientes} pacientes agendados al mismo tiempo.</div>`;
+                alertaHtml = `<div class="alerta-cupo-pro">⚠️ Ocupación múltiple: ${numPacientes} pacientes agendados.</div>`;
             }
 
             let tarjetasPacientes = turnosEnHora.map(t => {
                 const mensajeTexto = `Saludos Sr/a ${t.nombres}, Recuerdo de Cita Medica en Podología a las ${t.hora} el dia ${t.fecha} debe acudir 10 minutos antes para la preparación y evaluación`;
-                
                 const enlaceWS = `https://wa.me/${t.celular}?text=${encodeURIComponent(mensajeTexto)}`;
 
                 let botonEmail = '';
                 if (t.email && t.email.trim() !== '') {
                     const asuntoEmail = encodeURIComponent("Recordatorio de Cita Médica - Podología");
                     const enlaceEmail = `mailto:${t.email}?subject=${asuntoEmail}&body=${encodeURIComponent(mensajeTexto)}`;
-                    botonEmail = `<a href="${enlaceEmail}" class="btn-email" title="Enviar Correo">✉️ Email</a>`;
+                    botonEmail = `<a href="${enlaceEmail}" class="btn-action btn-email-pro" title="Enviar Correo">✉️ Email</a>`;
                 }
 
                 return `
-                    <div class="paciente-card ${numPacientes > 1 ? 'sobreocupado' : ''}">
-                        <div class="paciente-info">
-                            <strong>${t.nombres}</strong> <small>(CI: ${t.cedula})</small>
-                            <small><strong>Motivo:</strong> ${t.motivo}</small>
-                            <small><strong>Duración:</strong> ${t.duracion} min | <strong>Tel:</strong> ${t.celular}</small>
+                    <div class="paciente-card-pro ${numPacientes > 1 ? 'sobreocupado' : ''}">
+                        <div class="paciente-info-pro">
+                            <span class="nombre">${t.nombres} <small style="font-weight:normal; color:var(--text-muted)">(CI: ${t.cedula})</small></span>
+                            <div class="detalles"><strong>Motivo:</strong> ${t.motivo} | <strong>Duración:</strong> ${t.duracion} min</div>
                         </div>
-                        <div class="actions-group">
-                            <a href="${enlaceWS}" target="_blank" class="btn-ws" title="Enviar WhatsApp">📲 WhatsApp</a>
+                        <div class="actions-group-pro">
+                            <a href="${enlaceWS}" target="_blank" class="btn-action btn-ws-pro" title="Enviar WhatsApp">📲 WhatsApp</a>
                             ${botonEmail}
-                            <button type="button" class="btn-sm btn-edit" onclick="editarTurno('${t.id}')">✏️ Editar</button>
-                            <button type="button" class="btn-sm btn-danger" onclick="cancelarTurno('${t.id}')">❌ Cancelar</button>
+                            <button type="button" class="btn-action btn-edit-pro" onclick="editarTurno('${t.id}')">✏️ Editar</button>
+                            <button type="button" class="btn-action btn-danger-pro" onclick="cancelarTurno('${t.id}')">❌ Cancelar</button>
                         </div>
                     </div>
                 `;
@@ -2114,11 +2164,11 @@ function resetForm() {
 
             cuerpo.innerHTML += `
                 <tr class="${esMediaHora ? 'media-hora' : ''}">
-                    <td><strong>${horaStr}</strong></td>
+                    <td><strong style="color:var(--text-main); font-size:14px;">${horaStr}</strong></td>
                     <td>
                         ${tarjetasPacientes}
                         ${alertaHtml}
-                        ${numPacientes >= 3 ? '<span style="color:#d32f2f; font-size:11px; font-weight:bold;">(Límite de 3 pacientes alcanzado en esta hora)</span>' : ''}
+                        ${numPacientes >= 3 ? '<span style="color:#b91c1c; font-size:11px; font-weight:bold;">(Límite de 3 pacientes alcanzado en esta hora)</span>' : ''}
                     </td>
                 </tr>
             `;
@@ -2142,7 +2192,6 @@ function resetForm() {
         const fecha = document.getElementById('fecha-agenda').value;
         const hora = document.getElementById('hora-inicio').value;
 
-        // Validar límite de máximo 3 pacientes por intervalo de 30 min
         const turnosExistentes = turnos.filter(t => t.fecha === fecha && t.hora === hora && t.id !== id);
         if (turnosExistentes.length >= 3) {
             alert('No se pueden agendar más de 3 pacientes en el mismo bloque horario.');
@@ -2151,11 +2200,11 @@ function resetForm() {
 
         const nuevoTurno = {
             id: id,
-            cedula: document.getElementById('hcCedula').value,
-            nombres: document.getElementById('hcNombres').value,
-            celular: document.getElementById('hcCelular').value,
-            email: document.getElementById('hcEmail').value,
-            motivo: document.getElementById('hcMotivo').value,
+            cedula: document.getElementById('turnCedula').value,
+            nombres: document.getElementById('turnNombres').value,
+            celular: document.getElementById('turnCelular').value,
+            email: document.getElementById('turnEmail').value,
+            motivo: document.getElementById('turnMotivo').value,
             fecha: fecha,
             hora: hora,
             duracion: document.getElementById('duracion-minutos').value
@@ -2178,11 +2227,11 @@ function resetForm() {
 
         document.getElementById('modal-titulo').innerText = "Editar Cita";
         document.getElementById('turno-id').value = turno.id;
-        document.getElementById('hcCedula').value = turno.cedula;
-        document.getElementById('hcNombres').value = turno.nombres;
-        document.getElementById('hcCelular').value = turno.celular;
-        document.getElementById('hcEmail').value = turno.email || '';
-        document.getElementById('hcMotivo').value = turno.motivo;
+        document.getElementById('turnCedula').value = turno.cedula;
+        document.getElementById('turnNombres').value = turno.nombres;
+        document.getElementById('turnCelular').value = turno.celular;
+        document.getElementById('turnEmail').value = turno.email || '';
+        document.getElementById('turnMotivo').value = turno.motivo;
         document.getElementById('hora-inicio').value = turno.hora;
         document.getElementById('duracion-minutos').value = turno.duracion;
 
@@ -2200,61 +2249,61 @@ function resetForm() {
 
     
 <!-- MODAL PARA AGENDAR / EDITAR TURNO -->
-<div id="modal-turno" class="modal" style="display: none;">
-    <div class="modal-content">
-        <h3 id="modal-titulo">Agendar Nueva Cita</h3>
+<div id="modal-turno" class="modal-pro" style="display: none;">
+    <div class="modal-content-pro">
+        <div class="modal-header-pro">
+            <h3 id="modal-titulo">Agendar Nueva Cita</h3>
+            <button type="button" class="btn-close-modal" onclick="cerrarModal()">&times;</button>
+        </div>
         <form id="form-turno" onsubmit="guardarTurno(event)">
             <input type="hidden" id="turno-id">
             
-            <!-- 1. Cédula -->
-            <div class="form-group">
-                <label for="hcCedula">Cédula / Identificación:</label>
-                <input type="text" id="hcCedula" placeholder="Ej: 1712345678" required>
+            <div class="form-group-pro">
+                <label for="turnCedula">Cédula / Identificación:</label>
+                <input type="text" id="turnCedula" placeholder="Ej: 1712345678" required>
             </div>
 
-            <!-- 2. Apellidos y Nombres -->
-            <div class="form-group">
-                <label for="hcNombres">Apellidos y Nombres:</label>
-                <input type="text" id="hcNombres" placeholder="Ej: Pérez Juan" required>
+            <div class="form-group-pro">
+                <label for="turnNombres">Apellidos y Nombres:</label>
+                <input type="text" id="turnNombres" placeholder="Ej: Pérez Juan" required>
             </div>
 
-            <!-- 3. Teléfono / Celular -->
-            <div class="form-group">
-                <label for="hcCelular">Teléfono (WhatsApp):</label>
-                <input type="tel" id="hcCelular" placeholder="Ej: 593991234567" required>
+            <div class="form-row-pro">
+                <div class="form-group-pro">
+                    <label for="turnCelular">Teléfono (WhatsApp):</label>
+                    <input type="tel" id="turnCelular" placeholder="Ej: 593991234567" required>
+                </div>
+
+                <div class="form-group-pro">
+                    <label for="turnEmail">Correo (Opcional):</label>
+                    <input type="email" id="turnEmail" placeholder="Ej: paciente@email.com">
+                </div>
             </div>
 
-            <!-- 4. Correo Electrónico (Opcional) -->
-            <div class="form-group">
-                <label for="hcEmail">Correo Electrónico (Opcional):</label>
-                <input type="email" id="hcEmail" placeholder="Ej: paciente@email.com">
+            <div class="form-group-pro">
+                <label for="turnMotivo">Motivo de Consulta:</label>
+                <input type="text" id="turnMotivo" placeholder="Ej: Quiropodia, Uñero, Estudio de marcha" required>
             </div>
 
-            <!-- 5. Motivo de Consulta -->
-            <div class="form-group">
-                <label for="hcMotivo">Motivo de Consulta:</label>
-                <input type="text" id="hcMotivo" placeholder="Ej: Quiropodia, Uñero, Estudio de marcha" required>
+            <div class="form-row-pro">
+                <div class="form-group-pro">
+                    <label for="hora-inicio">Hora de Inicio:</label>
+                    <select id="hora-inicio" required></select>
+                </div>
+
+                <div class="form-group-pro">
+                    <label for="duracion-minutos">Duración del Turno:</label>
+                    <select id="duracion-minutos" required>
+                        <option value="40">40 Minutos</option>
+                        <option value="50">50 Minutos</option>
+                        <option value="60">60 Minutos</option>
+                    </select>
+                </div>
             </div>
 
-            <!-- 6. Hora de Inicio (Intervalos de 30 min) -->
-            <div class="form-group">
-                <label for="hora-inicio">Hora de Inicio:</label>
-                <select id="hora-inicio" required></select>
-            </div>
-
-            <!-- 7. Duración del Turno -->
-            <div class="form-group">
-                <label for="duracion-minutos">Duración del Turno:</label>
-                <select id="duracion-minutos" required>
-                    <option value="40">40 Minutos</option>
-                    <option value="50">50 Minutos</option>
-                    <option value="60">60 Minutos</option>
-                </select>
-            </div>
-
-            <div class="modal-actions">
-                <button type="button" class="btn-secondary" onclick="cerrarModal()">Cancelar</button>
-                <button type="submit" class="btn-primary">Guardar Cita</button>
+            <div class="modal-actions-pro">
+                <button type="button" class="btn-secondary-pro" onclick="cerrarModal()">Cancelar</button>
+                <button type="submit" class="btn-primary-pro">Guardar Cita</button>
             </div>
         </form>
     </div>
