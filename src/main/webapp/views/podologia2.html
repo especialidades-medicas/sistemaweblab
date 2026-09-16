@@ -396,18 +396,17 @@ canvas {
     cursor: crosshair; 
 }
 
-/* Evita que un elemento se corte a la mitad entre dos páginas */
+        /* Asegura que todos los elementos se mantengan dentro del ancho fijo al exportar */
+#clinical-form * {
+    box-sizing: border-box !important;
+    max-width: 100% !important;
+}
+
+/* Evita cortes horizontales o fragmentación de secciones */
 .avoid-break {
     page-break-inside: avoid !important;
     break-inside: avoid !important;
 }
-
-/* Fuerza el salto a una nueva página de forma limpia si es necesario */
-.page-break {
-    page-break-before: always !important;
-    break-before: page !important;
-}
-
         
         /* Estilos del Calendario y Modal */
     .calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
@@ -415,8 +414,11 @@ canvas {
     .calendar-controls input[type="date"] { padding: 6px 10px; border: 1px solid #ccc; border-radius: 4px; }
     .table-responsive { overflow-x: auto; }
     .calendar-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-    .calendar-table th, .calendar-table td { border: 1px solid #e0e0e0; padding: 10px; text-align: left; vertical-align: top; }
+    .calendar-table th, .calendar-table td { border: 1px solid #e0e0e0; padding: 8px 10px; text-align: left; vertical-align: top; }
     .calendar-table th { background-color: #f5f7fa; }
+
+    /* Estilo de fila para distinguir medias horas */
+    .calendar-table tr.media-hora td { background-color: #fafafa; }
 
     /* Tarjetas de pacientes */
     .paciente-card {
@@ -1980,7 +1982,7 @@ function resetForm() {
     }
 }
 
-        function descargarPDFH() {
+        async function descargarPDFH() {
     const elemento = document.getElementById('clinical-form');
     if (!elemento) return;
 
@@ -1991,33 +1993,60 @@ function resetForm() {
         const fecha = new Date().toISOString().split('T')[0];
         const nombreArchivo = `${cedula}_${nombreFormateado}_${fecha}.pdf`;
 
+        // 1. Guardar estilos originales para no romper la pantalla del usuario
+        const estiloOriginalWidth = elemento.style.width;
+        const estiloOriginalMaxWidth = elemento.style.maxWidth;
+
+        // 2. Forzar ancho A4 estándar en píxeles antes de capturar
+        elemento.style.width = '794px'; // Ancho A4 exacto a 96 DPI
+        elemento.style.maxWidth = '794px';
+
         const opciones = {
-            margin:       [5, 5, 5, 5], // Reducimos márgenes superiores/inferiores para evitar espacios en blanco
+            margin:       [8, 8, 8, 8], // Márgenes uniformes en mm
             filename:     nombreArchivo,
             image:        { type: 'jpeg', quality: 0.98 },
             html2canvas:  { 
                 scale: 2, 
                 useCORS: true, 
-                scrollY: 0, // Evita que se capture espacio en blanco si el usuario hizo scroll
-                windowWidth: elemento.scrollWidth
+                scrollY: 0,
+                scrollX: 0,
+                width: 794,
+                windowWidth: 794
             },
             jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
-            // Evita cortes en elementos clave y habilita modos de salto automático
             pagebreak:    { mode: ['avoid-all', 'css', 'legacy'] }
         };
 
-        html2pdf().set(opciones).from(elemento).save();
+        try {
+            // 3. Generar y descargar el PDF
+            await html2pdf().set(opciones).from(elemento).save();
+        } finally {
+            // 4. Restaurar el diseño web original del usuario
+            elemento.style.width = estiloOriginalWidth;
+            elemento.style.maxWidth = estiloOriginalMaxWidth;
+        }
     } else {
         window.print();
     }
 }
 
 // turnos agendados
-        // Memoria para guardar los turnos agendados
-    let turnos = [];
+        let turnos = [];
+
+    // Generador de lista de horarios de 30 min (08:00 a 21:00)
+    function obtenerIntervalos30Min() {
+        const horarios = [];
+        for (let h = 8; h <= 21; h++) {
+            const horaStr = h < 10 ? `0${h}` : `${h}`;
+            horarios.push(`${horaStr}:00`);
+            if (h < 21) {
+                horarios.push(`${horaStr}:30`);
+            }
+        }
+        return horarios;
+    }
 
     document.addEventListener("DOMContentLoaded", () => {
-        // Inicializar con la fecha de hoy
         const hoy = new Date().toISOString().split('T')[0];
         document.getElementById('fecha-agenda').value = hoy;
         
@@ -2025,26 +2054,29 @@ function resetForm() {
         renderizarCalendario();
     });
 
-    // Cargar horas desde 08:00 hasta 21:00
+    // Cargar opciones en el select del modal
     function cargarOpcionesHorario() {
         const select = document.getElementById('hora-inicio');
         select.innerHTML = '';
-        for (let h = 8; h <= 21; h++) {
-            const horaStr = h < 10 ? `0${h}:00` : `${h}:00`;
+        const intervalos = obtenerIntervalos30Min();
+        
+        intervalos.forEach(horaStr => {
             select.innerHTML += `<option value="${horaStr}">${horaStr}</option>`;
-        }
+        });
     }
 
-    // Dibujar el calendario en pantalla
+    // Dibujar el calendario fila por fila (cada 30 min)
     function renderizarCalendario() {
         const fechaSeleccionada = document.getElementById('fecha-agenda').value;
         const cuerpo = document.getElementById('cuerpo-calendario');
         cuerpo.innerHTML = '';
 
-        for (let h = 8; h <= 21; h++) {
-            const horaStr = h < 10 ? `0${h}:00` : `${h}:00`;
+        const intervalos = obtenerIntervalos30Min();
+
+        intervalos.forEach(horaStr => {
             const turnosEnHora = turnos.filter(t => t.fecha === fechaSeleccionada && t.hora === horaStr);
             const numPacientes = turnosEnHora.length;
+            const esMediaHora = horaStr.endsWith(':30');
 
             let alertaHtml = '';
             if (numPacientes >= 2) {
@@ -2054,10 +2086,8 @@ function resetForm() {
             let tarjetasPacientes = turnosEnHora.map(t => {
                 const mensajeTexto = `Saludos Sr/a ${t.nombres}, Recuerdo de Cita Medica en Podología a las ${t.hora} el dia ${t.fecha} debe acudir 10 minutos antes para la preparación y evaluación`;
                 
-                // Botón WhatsApp
                 const enlaceWS = `https://wa.me/${t.celular}?text=${encodeURIComponent(mensajeTexto)}`;
 
-                // Botón Email (solo si se ingresó un correo)
                 let botonEmail = '';
                 if (t.email && t.email.trim() !== '') {
                     const asuntoEmail = encodeURIComponent("Recordatorio de Cita Médica - Podología");
@@ -2083,7 +2113,7 @@ function resetForm() {
             }).join('');
 
             cuerpo.innerHTML += `
-                <tr>
+                <tr class="${esMediaHora ? 'media-hora' : ''}">
                     <td><strong>${horaStr}</strong></td>
                     <td>
                         ${tarjetasPacientes}
@@ -2092,7 +2122,7 @@ function resetForm() {
                     </td>
                 </tr>
             `;
-        }
+        });
     }
 
     function abrirModalNuevoTurno() {
@@ -2112,7 +2142,7 @@ function resetForm() {
         const fecha = document.getElementById('fecha-agenda').value;
         const hora = document.getElementById('hora-inicio').value;
 
-        // Validar que no superen los 3 pacientes
+        // Validar límite de máximo 3 pacientes por intervalo de 30 min
         const turnosExistentes = turnos.filter(t => t.fecha === fecha && t.hora === hora && t.id !== id);
         if (turnosExistentes.length >= 3) {
             alert('No se pueden agendar más de 3 pacientes en el mismo bloque horario.');
@@ -2206,7 +2236,7 @@ function resetForm() {
                 <input type="text" id="hcMotivo" placeholder="Ej: Quiropodia, Uñero, Estudio de marcha" required>
             </div>
 
-            <!-- 6. Hora de Inicio -->
+            <!-- 6. Hora de Inicio (Intervalos de 30 min) -->
             <div class="form-group">
                 <label for="hora-inicio">Hora de Inicio:</label>
                 <select id="hora-inicio" required></select>
