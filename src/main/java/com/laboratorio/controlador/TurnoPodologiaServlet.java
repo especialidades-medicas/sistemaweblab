@@ -2,6 +2,12 @@ package com.laboratorio.controlador;
 
 import com.google.gson.Gson;
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Types;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -11,12 +17,11 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-@WebServlet(name = "ControladorTurnos", urlPatterns = {"/ControladorTurnos", "/views/ControladorTurnos"})
+@WebServlet(name = "ControladorTurnos", urlPatterns = {"/ControladorTurnos"})
 public class TurnoPodologiaServlet extends HttpServlet {
 
-    private static final Logger LOGGER = Logger.getLogger(TurnoPodologiaServlet.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(TurnoPodologiaServlet.class.getName());    
     private final Gson gson = new Gson();
-    private final TurnosPodologiaDAO dao = new TurnosPodologiaDAO();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -46,7 +51,13 @@ public class TurnoPodologiaServlet extends HttpServlet {
         response.setContentType("application/json;charset=UTF-8");
         String accion = request.getParameter("accion");
 
-        try {
+        try (Connection con = Conexion.getConnection()) {
+            if (con == null) {
+                response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                response.getWriter().write("{\"error\": \"No se pudo establecer conexión con la base de datos.\"}");
+                return;
+            }
+            
             if ("eliminar".equals(accion)) {
                 int id = Integer.parseInt(request.getParameter("id"));
                 boolean ok = dao.eliminar(id);
