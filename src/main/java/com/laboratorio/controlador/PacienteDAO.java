@@ -1,82 +1,51 @@
 package com.laboratorio.controlador;
 
 import java.sql.Connection;
-import java.sql.Date;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.sql.Types;
 
-public class TurnosPodologiaDAO {
-    private static final Logger LOGGER = Logger.getLogger(TurnosPodologiaDAO.class.getName());
+public class PacienteDAO {
 
-    public List<TurnoPodologia> listarPorFecha(Date fecha) {
-        List<TurnoPodologia> lista = new ArrayList<>();
-        String sql = "SELECT id, cedula, nombres, celular, email, motivo, fecha, hora_inicio, duracion_minutos, creado_en " +
-                     "FROM turnos_podologia WHERE fecha = ? ORDER BY hora_inicio ASC";
-
-        try (Connection con = Conexion.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
-
-            ps.setDate(1, fecha);
-            try (ResultSet rs = ps.executeQuery()) {
-                while (rs.next()) {
-                    TurnoPodologia t = new TurnoPodologia();
-                    t.setId(rs.getInt("id"));
-                    t.setCedula(rs.getString("cedula"));
-                    t.setNombres(rs.getString("nombres"));
-                    t.setCelular(rs.getString("celular"));
-                    t.setEmail(rs.getString("email"));
-                    t.setMotivo(rs.getString("motivo"));
-                    t.setFecha(rs.getDate("fecha"));
-                    t.setHoraInicio(rs.getTime("hora_inicio"));
-                    t.setDuracionMinutos(rs.getInt("duracion_minutos"));
-                    t.setCreadoEn(rs.getTimestamp("creado_en"));
-                    lista.add(t);
-                }
+    public boolean registrarPaciente(Paciente p) {
+        String sql = "INSERT INTO pacientes (cedula, nombres, fecha_nacimiento, genero, telefono, correo, direccion) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        
+        try (Connection conn = Conexion.getConnection()) {
+            if (conn == null) {
+                System.err.println("Error: No hay conexión a la base de datos.");
+                return false;
             }
+
+            try (PreparedStatement ps = conn.prepareStatement(sql)) {
+                ps.setString(1, p.getCedula());
+                ps.setString(2, p.getNombres());
+                
+                if (p.getFechaNacimiento() != null && !p.getFechaNacimiento().trim().isEmpty()) {
+                    ps.setString(3, p.getFechaNacimiento());
+                } else {
+                    ps.setNull(3, Types.DATE);
+                }
+                
+                setParamOrNull(ps, 4, p.getGenero());
+                setParamOrNull(ps, 5, p.getTelefono());
+                setParamOrNull(ps, 6, p.getCorreo());
+                setParamOrNull(ps, 7, p.getDireccion());
+                
+                ps.executeUpdate();
+                return true;
+            }
+            
         } catch (SQLException e) {
-            LOGGER.log(Level.SEVERE, "Error al listar turnos: " + e.getMessage(), e);
-        }
-        return lista;
-    }
-
-    public boolean insertar(TurnoPodologia turno) {
-        String sql = "INSERT INTO turnos_podologia (cedula, nombres, celular, email, motivo, fecha, hora_inicio, duracion_minutos) " +
-                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-
-        try (Connection con = Conexion.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
-
-            ps.setString(1, turno.getCedula());
-            ps.setString(2, turno.getNombres());
-            ps.setString(3, turno.getCelular());
-            ps.setString(4, turno.getEmail());
-            ps.setString(5, turno.getMotivo());
-            ps.setDate(6, turno.getFecha());
-            ps.setTime(7, turno.getHoraInicio());
-            ps.setInt(8, turno.getDuracionMinutos());
-
-            return ps.executeUpdate() > 0;
-        } catch (SQLException e) {
-            LOGGER.log(Level.SEVERE, "Error al insertar turno: " + e.getMessage(), e);
+            System.err.println("Error al registrar paciente: " + e.getMessage());
             return false;
         }
     }
 
-    public boolean eliminar(int id) {
-        String sql = "DELETE FROM turnos_podologia WHERE id = ?";
-        try (Connection con = Conexion.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
-
-            ps.setInt(1, id);
-            return ps.executeUpdate() > 0;
-        } catch (SQLException e) {
-            LOGGER.log(Level.SEVERE, "Error al eliminar turno: " + e.getMessage(), e);
-            return false;
+    private void setParamOrNull(PreparedStatement ps, int index, String value) throws SQLException {
+        if (value != null && !value.trim().isEmpty()) {
+            ps.setString(index, value.trim());
+        } else {
+            ps.setNull(index, Types.VARCHAR);
         }
     }
 }
