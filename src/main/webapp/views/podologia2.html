@@ -2312,20 +2312,25 @@ async function descargarPDFH() {
             </div>
 
             <div class="form-row-pro">
-                <div class="form-group-pro">
-                    <label for="hora-inicio">Hora de Inicio:</label>
-                    <select id="hora-inicio" required></select>
-                </div>
-
-                <div class="form-group-pro">
-                    <label for="duracion-minutos">Duración del Turno:</label>
-                    <select id="duracion-minutos" required>
-                        <option value="40">40 Minutos</option>
-                        <option value="50">50 Minutos</option>
-                        <option value="60">60 Minutos</option>
-                    </select>
-                </div>
+            <div class="form-group-pro">
+                <label for="modal-fecha">Fecha de Cita:</label>
+                <input type="date" id="modal-fecha" required>
             </div>
+        
+            <div class="form-group-pro">
+                <label for="hora-inicio">Hora de Inicio:</label>
+                <select id="hora-inicio" required></select>
+            </div>
+        
+            <div class="form-group-pro">
+                <label for="duracion-minutos">Duración del Turno:</label>
+                <select id="duracion-minutos" required>
+                    <option value="40">40 Minutos</option>
+                    <option value="50" selected>50 Minutos</option>
+                    <option value="60">60 Minutos</option>
+                </select>
+            </div>
+        </div>
 
             <div class="modal-actions-pro">
                 <button type="button" class="btn-secondary-pro" onclick="cerrarModal()">Cancelar</button>
