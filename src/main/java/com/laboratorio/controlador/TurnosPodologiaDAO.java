@@ -1,13 +1,12 @@
+package com.laboratorio.controlador;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.sql.Types;
 package com.laboratorio.dao;
 
-import com.laboratorio.controlador.Conexion;
-import com.laboratorio.modelo.TurnoPodologia;
 
-import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class TurnosPodologiaDAO {
     private static final Logger LOGGER = Logger.getLogger(TurnosPodologiaDAO.class.getName());
