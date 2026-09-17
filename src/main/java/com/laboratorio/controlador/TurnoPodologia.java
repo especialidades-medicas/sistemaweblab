@@ -1,9 +1,5 @@
 package com.laboratorio.controlador;
 
-import java.sql.Date;
-import java.sql.Time;
-import java.sql.Timestamp;
-
 public class TurnoPodologia {
     private int id;
     private String cedula;
@@ -11,15 +7,15 @@ public class TurnoPodologia {
     private String celular;
     private String email;
     private String motivo;
-    private Date fecha;
-    private Time horaInicio;
+    private String fecha;
+    private String horaInicio;
     private int duracionMinutos;
-    private Timestamp creadoEn;
+    private String creadoEn;
 
     public TurnoPodologia() {}
 
     public TurnoPodologia(String cedula, String nombres, String celular, String email, 
-                          String motivo, Date fecha, Time horaInicio, int duracionMinutos) {
+                          String motivo, String fecha, String horaInicio, int duracionMinutos) {
         this.cedula = cedula;
         this.nombres = nombres;
         this.celular = celular;
@@ -48,15 +44,15 @@ public class TurnoPodologia {
     public String getMotivo() { return motivo; }
     public void setMotivo(String motivo) { this.motivo = motivo; }
 
-    public Date getFecha() { return fecha; }
-    public void setFecha(Date fecha) { this.fecha = fecha; }
+    public String getFecha() { return fecha; }
+    public void setFecha(String fecha) { this.fecha = fecha; }
 
-    public Time getHoraInicio() { return horaInicio; }
-    public void setHoraInicio(Time horaInicio) { this.horaInicio = horaInicio; }
+    public String getHoraInicio() { return horaInicio; }
+    public void setHoraInicio(String horaInicio) { this.horaInicio = horaInicio; }
 
     public int getDuracionMinutos() { return duracionMinutos; }
     public void setDuracionMinutos(int duracionMinutos) { this.duracionMinutos = duracionMinutos; }
 
-    public Timestamp getCreadoEn() { return creadoEn; }
-    public void setCreadoEn(Timestamp creadoEn) { this.creadoEn = creadoEn; }
+    public String getCreadoEn() { return creadoEn; }
+    public void setCreadoEn(String creadoEn) { this.creadoEn = creadoEn; }
 }
