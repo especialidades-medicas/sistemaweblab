@@ -1,4 +1,6 @@
+// ============================================================================
 // --- GESTIÓN DE TURNOS Y CALENDARIO PODOLÓGICO ---
+// ============================================================================
 
 let turnos = [];
 
@@ -27,7 +29,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
+// ============================================================================
 // --- CONEXIÓN CON EL BACKEND (ControladorTurnos / Railway) ---
+// ============================================================================
 
 // Cargar las citas de la fecha seleccionada en #fecha-agenda
 async function cargarTurnosDB() {
@@ -56,7 +60,7 @@ async function cargarTurnosDB() {
                 motivo: t.motivo || '',
                 fecha: t.fecha || '',
                 hora: t.horaInicio || t.hora_inicio || '',
-                duracion: t.duracionMinutos || t.duracion_minutos || 30
+                duracion: t.duracionMinutos || t.duracion_minutos || 40
             }));
 
             renderizarCalendario();
@@ -81,7 +85,7 @@ async function guardarTurno(e) {
     const motivo = document.getElementById('turnMotivo')?.value.trim();
     const fecha = document.getElementById('modal-fecha')?.value || document.getElementById('fecha-agenda')?.value;
     const hora = document.getElementById('hora-inicio')?.value;
-    const duracion = document.getElementById('duracion-minutos')?.value || '30';
+    const duracion = document.getElementById('duracion-minutos')?.value || '40';
 
     if (!cedula || !fecha || !hora) {
         alert("La Cédula, Fecha y Hora de inicio son requeridas.");
@@ -105,7 +109,7 @@ async function guardarTurno(e) {
         formData.append("email", email || "");
         formData.append("motivo", motivo || "");
         formData.append("fecha", fecha);
-        formData.append("hora_inicio", hora);
+        formData.append("hora_inicio", hora.length === 5 ? `${hora}:00` : hora);
         formData.append("duracion_minutos", duracion);
 
         const response = await fetch('./ControladorTurnos', {
@@ -116,6 +120,10 @@ async function guardarTurno(e) {
 
         if (response.ok) {
             cerrarModal();
+            // Actualizar la fecha del calendario principal si fue agendado en otra fecha
+            const inputFechaAgenda = document.getElementById('fecha-agenda');
+            if (inputFechaAgenda) inputFechaAgenda.value = fecha;
+            
             cargarTurnosDB();
         } else {
             const data = await response.json().catch(() => ({}));
@@ -129,7 +137,7 @@ async function guardarTurno(e) {
 
 // Cancelar / Eliminar cita podológica
 async function cancelarTurno(id) {
-    if (!confirm('¿Está seguro de cancelar este turno?')) return;
+    if (!confirm('¿Está seguro de cancelar esta cita?')) return;
 
     try {
         const formData = new URLSearchParams();
@@ -150,11 +158,13 @@ async function cancelarTurno(id) {
         }
     } catch (error) {
         console.error("Error al eliminar turno:", error);
-        alert("Error de red al eliminar.");
+        alert("Error de red al eliminar el turno.");
     }
 }
 
+// ============================================================================
 // --- LÓGICA DE INTERFAZ Y RENDERIZADO DEL CALENDARIO ---
+// ============================================================================
 
 // Genera los bloques de 30 minutos desde 08:00 hasta 21:00
 function obtenerIntervalos30Min() {
@@ -243,7 +253,9 @@ function renderizarCalendario() {
     });
 }
 
+// ============================================================================
 // --- AUXILIARES Y BÚSQUEDA DE PACIENTES ---
+// ============================================================================
 
 function cargarOpcionesHorario() {
     const select = document.getElementById('hora-inicio');
@@ -298,6 +310,24 @@ function editarTurno(id) {
 
     const modal = document.getElementById('modal-turno');
     if (modal) modal.style.display = 'flex';
+}
+
+async function buscarPacienteParaTurno(cedula) {
+    if (!cedula || cedula.length < 5) return;
+
+    try {
+        const response = await fetch(`./ControladorPacientes?accion=buscar&cedula=${encodeURIComponent(cedula)}`);
+        if (response.ok) {
+            const paciente = await response.json();
+            if (paciente) {
+                if (document.getElementById('turnNombres')) document.getElementById('turnNombres').value = paciente.nombres || '';
+                if (document.getElementById('turnCelular')) document.getElementById('turnCelular').value = paciente.telefono || paciente.celular || '';
+                if (document.getElementById('turnEmail')) document.getElementById('turnEmail').value = paciente.correo || paciente.email || '';
+            }
+        }
+    } catch (error) {
+        console.error("Error al buscar paciente:", error);
+    }
 }
 
 async function buscarPacienteParaTurno(cedula) {
