@@ -23,7 +23,9 @@ public class ControladorTurnos extends HttpServlet {
         PrintWriter out = response.getWriter();
 
         String fechaStr = request.getParameter("fecha");
-        Date fecha = (fechaStr != null && !fechaStr.isEmpty()) ? Date.valueOf(fechaStr) : new Date(System.currentTimeMillis());
+        Date fecha = (fechaStr != null && !fechaStr.trim().isEmpty()) 
+                     ? Date.valueOf(fechaStr) 
+                     : new Date(System.currentTimeMillis());
 
         List<TurnoPodologia> lista = dao.listarPorFecha(fecha);
 
@@ -38,8 +40,8 @@ public class ControladorTurnos extends HttpServlet {
                 escapar(t.getCelular()),
                 escapar(t.getEmail()),
                 escapar(t.getMotivo()),
-                t.getFecha().toString(),
-                t.getHoraInicio().toString(),
+                t.getFecha() != null ? t.getFecha().toString() : "",
+                t.getHoraInicio() != null ? t.getHoraInicio().toString() : "",
                 t.getDuracionMinutos()
             ));
             if (i < lista.size() - 1) json.append(",");
@@ -60,13 +62,18 @@ public class ControladorTurnos extends HttpServlet {
         String accion = request.getParameter("accion");
 
         if ("eliminar".equals(accion)) {
-            int id = Integer.parseInt(request.getParameter("id"));
-            if (dao.eliminar(id)) {
-                response.setStatus(HttpServletResponse.SC_OK);
-                out.print("{\"mensaje\":\"Turno eliminado\"}");
-            } else {
-                response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                out.print("{\"error\":\"No se pudo eliminar\"}");
+            try {
+                int id = Integer.parseInt(request.getParameter("id"));
+                if (dao.eliminar(id)) {
+                    response.setStatus(200);
+                    out.print("{\"mensaje\":\"Turno eliminado\"}");
+                } else {
+                    response.setStatus(500);
+                    out.print("{\"error\":\"No se pudo eliminar\"}");
+                }
+            } catch (Exception e) {
+                response.setStatus(400);
+                out.print("{\"error\":\"ID invalido\"}");
             }
             return;
         }
@@ -80,7 +87,9 @@ public class ControladorTurnos extends HttpServlet {
             Date fecha = Date.valueOf(request.getParameter("fecha"));
             
             String horaStr = request.getParameter("hora_inicio");
-            if (horaStr != null && horaStr.length() == 5) horaStr += ":00";
+            if (horaStr != null && horaStr.length() == 5) {
+                horaStr += ":00";
+            }
             Time horaInicio = Time.valueOf(horaStr);
             
             int duracion = Integer.parseInt(request.getParameter("duracion_minutos"));
@@ -88,15 +97,15 @@ public class ControladorTurnos extends HttpServlet {
             TurnoPodologia turno = new TurnoPodologia(cedula, nombres, celular, email, motivo, fecha, horaInicio, duracion);
 
             if (dao.insertar(turno)) {
-                response.setStatus(HttpServletResponse.SC_OK);
+                response.setStatus(200);
                 out.print("{\"mensaje\":\"Turno guardado\"}");
             } else {
-                response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                response.setStatus(500);
                 out.print("{\"error\":\"Error en la base de datos\"}");
             }
         } catch (Exception e) {
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            out.print("{\"error\":\"Datos inválidos: " + e.getMessage() + "\"}");
+            response.setStatus(400);
+            out.print("{\"error\":\"Datos invalidos: " + e.getMessage() + "\"}");
         }
     }
 
