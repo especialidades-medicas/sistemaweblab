@@ -1042,8 +1042,10 @@ h3 {
                         </button>
                     </div>
                 </div>                
-                <div id="clinical-form" class="print-container max-w-4xl mx-auto bg-white rounded-2xl overflow-hidden p-6 sm:p-10 space-y-8">    
-                <!-- HEADER / LOGO SECTION -->
+                <!-- CÓDIGO CORREGIDO -->
+                <div id="clinical-form" class="print-container w-full max-w-full lg:max-w-4xl mx-auto bg-white rounded-2xl overflow-hidden p-4 sm:p-8 space-y-8">
+                    
+                    <!-- HEADER / LOGO SECTION -->
                 <div class="flex flex-col sm:flex-row justify-between items-center border-b-2 border-teal-600 pb-6 gap-4">
                     <div class="flex items-center space-x-4">
                         <!-- Medipie Logo Badge -->
@@ -2205,6 +2207,21 @@ canvas.addEventListener('touchstart', (e) => {
 canvas.addEventListener('touchmove', draw, { passive: false });
 canvas.addEventListener('touchend', stopDrawing);
 
+function switchTab(event, viewId) {
+    if (event) event.preventDefault();
+    document.querySelectorAll('.section-view').forEach(view => view.classList.remove('active'));
+    const targetView = document.getElementById(viewId);
+    if (targetView) targetView.classList.add('active');
+    
+    document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+    if (event && event.currentTarget) event.currentTarget.classList.add('active');
+
+    // Recalcular tamaño del canvas si se abre la pestaña de historia clínica
+    if (viewId === 'historia-clinica-view' && typeof resizeCanvas === 'function') {
+        setTimeout(resizeCanvas, 100);
+    }
+}
+        
         
 
 // --- PDF DOWNLOAD / PRINT ROUTINE ---
