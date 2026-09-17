@@ -8,21 +8,21 @@ let turnos = [];
 document.addEventListener('DOMContentLoaded', () => {
     const inputFecha = document.getElementById('fecha-agenda');
     
-    // 1. Establecer fecha por defecto a hoy si no hay una seleccionada
+    // Establecer fecha por defecto a hoy si no hay una seleccionada
     if (inputFecha && !inputFecha.value) {
         inputFecha.value = new Date().toISOString().split('T')[0];
     }
 
     cargarOpcionesHorario();
-    cargarTurnosDB(); // Primera carga desde MySQL
+    cargarTurnosDB(); // Carga desde MySQL
 
-    // 2. Event listener para el formulario del modal de agendamiento
+    // Event listener para el formulario del modal de agendamiento
     const formTurno = document.getElementById('form-turno');
     if (formTurno) {
         formTurno.addEventListener('submit', guardarTurno);
     }
 
-    // 3. Autocompletar paciente al ingresar/cambiar la cédula
+    // Autocompletar paciente al ingresar/cambiar la cédula
     const inputTurnCedula = document.getElementById('turnCedula');
     if (inputTurnCedula) {
         inputTurnCedula.addEventListener('blur', (e) => buscarPacienteParaTurno(e.target.value.trim()));
@@ -30,10 +30,9 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // ============================================================================
-// --- CONEXIÓN CON EL BACKEND (ControladorTurnos / Railway) ---
+// --- CONEXIÓN CON EL BACKEND (ControladorTurnos) ---
 // ============================================================================
 
-// Cargar las citas de la fecha seleccionada en #fecha-agenda
 async function cargarTurnosDB() {
     const inputFecha = document.getElementById('fecha-agenda');
     const fechaSeleccionada = inputFecha ? inputFecha.value : new Date().toISOString().split('T')[0];
@@ -50,7 +49,6 @@ async function cargarTurnosDB() {
         const turnosDB = await response.json();
 
         if (Array.isArray(turnosDB)) {
-            // Mapeo seguro ajustado a la tabla turnos_podologia
             turnos = turnosDB.map(t => ({
                 id: t.id ? t.id.toString() : '',
                 cedula: t.cedula || '',
@@ -73,7 +71,6 @@ async function cargarTurnosDB() {
     }
 }
 
-// Guardar o actualizar cita en la base de datos
 async function guardarTurno(e) {
     if (e) e.preventDefault();
 
@@ -92,7 +89,7 @@ async function guardarTurno(e) {
         return;
     }
 
-    // Validación de negocio: Máximo 3 pacientes por bloque
+    // Validación: Máximo 3 pacientes por bloque horario
     const turnosEnBloque = turnos.filter(t => t.fecha === fecha && t.hora.startsWith(hora.substring(0, 5)) && t.id !== idTurno);
     if (turnosEnBloque.length >= 3 && !idTurno) {
         alert('No es posible agendar más de 3 pacientes en el mismo bloque horario.');
@@ -120,7 +117,6 @@ async function guardarTurno(e) {
 
         if (response.ok) {
             cerrarModal();
-            // Actualizar la fecha del calendario principal si fue agendado en otra fecha
             const inputFechaAgenda = document.getElementById('fecha-agenda');
             if (inputFechaAgenda) inputFechaAgenda.value = fecha;
             
@@ -135,7 +131,6 @@ async function guardarTurno(e) {
     }
 }
 
-// Cancelar / Eliminar cita podológica
 async function cancelarTurno(id) {
     if (!confirm('¿Está seguro de cancelar esta cita?')) return;
 
@@ -163,10 +158,9 @@ async function cancelarTurno(id) {
 }
 
 // ============================================================================
-// --- LÓGICA DE INTERFAZ Y RENDERIZADO DEL CALENDARIO ---
+// --- LÓGICA DE INTERFAZ Y RENDERIZADO ---
 // ============================================================================
 
-// Genera los bloques de 30 minutos desde 08:00 hasta 21:00
 function obtenerIntervalos30Min() {
     const horarios = [];
     for (let h = 8; h <= 21; h++) {
@@ -177,7 +171,6 @@ function obtenerIntervalos30Min() {
     return horarios;
 }
 
-// Cambia la fecha con los botones < y >
 function cambiarDia(offset) {
     const inputFecha = document.getElementById('fecha-agenda');
     if (!inputFecha) return;
@@ -189,7 +182,6 @@ function cambiarDia(offset) {
     cargarTurnosDB();
 }
 
-// Renderiza las filas en el <tbody id="cuerpo-calendario">
 function renderizarCalendario() {
     const inputFecha = document.getElementById('fecha-agenda');
     const cuerpo = document.getElementById('cuerpo-calendario');
@@ -199,7 +191,6 @@ function renderizarCalendario() {
     cuerpo.innerHTML = '';
 
     obtenerIntervalos30Min().forEach(horaStr => {
-        // Filtrar pacientes agendados en esta franja horaria
         const turnosEnHora = turnos.filter(t => t.fecha === fechaSeleccionada && t.hora.startsWith(horaStr.substring(0, 5)));
         const numPacientes = turnosEnHora.length;
         const esMediaHora = horaStr.endsWith(':30');
@@ -329,29 +320,3 @@ async function buscarPacienteParaTurno(cedula) {
         console.error("Error al buscar paciente:", error);
     }
 }
-
-async function buscarPacienteParaTurno(cedula) {
-    if (!cedula || cedula.length < 5) return;
-
-    try {
-        const response = await fetch(`./ControladorPacientes?accion=buscar&cedula=${encodeURIComponent(cedula)}`);
-        if (response.ok) {
-            const paciente = await response.json();
-            if (paciente) {
-                if (document.getElementById('turnNombres')) document.getElementById('turnNombres').value = paciente.nombres || '';
-                if (document.getElementById('turnCelular')) document.getElementById('turnCelular').value = paciente.telefono || paciente.celular || '';
-                if (document.getElementById('turnEmail')) document.getElementById('turnEmail').value = paciente.correo || paciente.email || '';
-            }
-        }
-    } catch (error) {
-        console.error("Error al buscar paciente:", error);
-    }
-}
-
-
-
-
-
-
-
-
