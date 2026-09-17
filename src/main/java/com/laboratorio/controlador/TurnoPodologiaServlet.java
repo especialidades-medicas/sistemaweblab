@@ -41,7 +41,6 @@ public class TurnoPodologiaServlet extends HttpServlet {
         String accion = request.getParameter("accion");
 
         try {
-            // 1. ELIMINAR TURNO
             if ("eliminar".equals(accion)) {
                 String idEliminar = request.getParameter("id");
                 if (idEliminar == null || idEliminar.trim().isEmpty()) {
@@ -60,7 +59,6 @@ public class TurnoPodologiaServlet extends HttpServlet {
                 return;
             }
 
-            // 2. GUARDAR O ACTUALIZAR TURNO
             String idStr = request.getParameter("id");
             String fecha = request.getParameter("fecha");
             String horaInicio = request.getParameter("horaInicio");
