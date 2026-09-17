@@ -43,7 +43,7 @@ async function cargarTurnosDB() {
     }
 
     try {
-        const response = await fetch(`./ControladorTurnos?accion=listar&fecha=${fechaSeleccionada}`);
+        const response = await fetch(`/ControladorTurnos?accion=listar&fecha=${fechaSeleccionada}`);
         if (!response.ok) throw new Error(`Error HTTP: ${response.status}`);
 
         const turnosDB = await response.json();
@@ -109,7 +109,7 @@ async function guardarTurno(e) {
         formData.append("hora_inicio", hora.length === 5 ? `${hora}:00` : hora);
         formData.append("duracion_minutos", duracion);
 
-        const response = await fetch('./ControladorTurnos', {
+        const response = await fetch('/ControladorTurnos', {
             method: 'POST',
             headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
             body: formData.toString()
@@ -139,7 +139,7 @@ async function cancelarTurno(id) {
         formData.append("accion", "eliminar");
         formData.append("id", id);
 
-        const response = await fetch('./ControladorTurnos', {
+        const response = await fetch('/ControladorTurnos', {
             method: 'POST',
             headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
             body: formData.toString()
