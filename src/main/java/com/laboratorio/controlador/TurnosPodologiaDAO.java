@@ -31,15 +31,15 @@ public class TurnosPodologiaDAO {
                     t.setCelular(rs.getString("celular"));
                     t.setEmail(rs.getString("email"));
                     t.setMotivo(rs.getString("motivo"));
-                    t.setFecha(rs.getString("fecha"));
-                    t.setHoraInicio(rs.getString("hora_inicio"));
+                    t.setFecha(rs.getString("fecha")); // Se lee como String
+                    t.setHoraInicio(rs.getString("hora_inicio")); // Se lee como String
                     t.setDuracionMinutos(rs.getInt("duracion_minutos"));
                     t.setCreadoEn(rs.getTimestamp("creado_en"));
                     lista.add(t);
                 }
             }
         } catch (SQLException e) {
-            LOGGER.log(Level.SEVERE, "Error al listar turnos por fecha: " + e.getMessage(), e);
+            LOGGER.log(Level.SEVERE, "Error al listar turnos: " + e.getMessage(), e);
         }
         return lista;
     }
@@ -62,8 +62,8 @@ public class TurnosPodologiaDAO {
             ps.setString(3, turno.getCelular());
             ps.setString(4, turno.getEmail());
             ps.setString(5, turno.getMotivo());
-            ps.setString(6, turno.getFecha());
-            ps.setString(7, turno.getHoraInicio());
+            ps.setString(6, turno.getFecha()); // Se asigna como String
+            ps.setString(7, turno.getHoraInicio()); // Se asigna como String
             ps.setInt(8, turno.getDuracionMinutos());
 
             if (esEdicion) {
