@@ -1,5 +1,7 @@
 package com.laboratorio.controlador;
 
+import java.sql.Timestamp;
+
 public class TurnoPodologia {
     private int id;
     private String cedula;
@@ -10,21 +12,9 @@ public class TurnoPodologia {
     private String fecha;
     private String horaInicio;
     private int duracionMinutos;
-    private String creadoEn;
+    private Timestamp creadoEn;
 
     public TurnoPodologia() {}
-
-    public TurnoPodologia(String cedula, String nombres, String celular, String email, 
-                          String motivo, String fecha, String horaInicio, int duracionMinutos) {
-        this.cedula = cedula;
-        this.nombres = nombres;
-        this.celular = celular;
-        this.email = email;
-        this.motivo = motivo;
-        this.fecha = fecha;
-        this.horaInicio = horaInicio;
-        this.duracionMinutos = duracionMinutos;
-    }
 
     public int getId() { return id; }
     public void setId(int id) { this.id = id; }
@@ -53,6 +43,6 @@ public class TurnoPodologia {
     public int getDuracionMinutos() { return duracionMinutos; }
     public void setDuracionMinutos(int duracionMinutos) { this.duracionMinutos = duracionMinutos; }
 
-    public String getCreadoEn() { return creadoEn; }
-    public void setCreadoEn(String creadoEn) { this.creadoEn = creadoEn; }
+    public Timestamp getCreadoEn() { return creadoEn; }
+    public void setCreadoEn(Timestamp creadoEn) { this.creadoEn = creadoEn; }
 }
