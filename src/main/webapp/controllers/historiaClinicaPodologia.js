@@ -1,52 +1,54 @@
-// --- GESTIÓN DE TURNOS Y HISTORIA CLÍNICA PODOLÓGICA (MYSQL / RAILWAY) ---
+// --- GESTIÓN DE TURNOS Y CALENDARIO PODOLÓGICO ---
 
 let turnos = [];
 
-// Inicialización de eventos al cargar el DOM
+// Inicialización de eventos
 document.addEventListener('DOMContentLoaded', () => {
-    // Inicializar fecha de agenda al día actual
+    // 1. Establecer fecha por defecto a hoy
     const hoy = new Date().toISOString().split('T')[0];
     const fechaAgendaInput = document.getElementById('fecha-agenda');
+    
     if (fechaAgendaInput) {
         fechaAgendaInput.value = hoy;
-        // Evento para renderizar la tabla al cambiar la fecha
-        fechaAgendaInput.addEventListener('change', renderizarCalendario);
     }
 
     cargarOpcionesHorario();
-    cargarTurnosDB(); // Carga inicial desde Railway
+    cargarTurnosDB(); // Cargar turnos iniciales desde Railway
 
+    // 2. Asociar evento al formulario del modal (si existe en el HTML)
     const formTurno = document.getElementById('form-turno');
     if (formTurno) {
         formTurno.removeEventListener('submit', guardarTurno);
         formTurno.addEventListener('submit', guardarTurno);
     }
 
-    // Escuchador para autocompletar paciente mediante la cédula
+    // 3. Autocompletar paciente al ingresar la cédula
     const inputTurnCedula = document.getElementById('turnCedula');
     if (inputTurnCedula) {
         inputTurnCedula.addEventListener('blur', (e) => buscarPacienteParaTurno(e.target.value.trim()));
     }
 });
 
-// --- FUNCIONES DE BASE DE DATOS (API REST) ---
+// --- COMUNICACIÓN CON BASE DE DATOS (SERVLET / RAILWAY) ---
 
-// 1. Obtener los turnos desde la base de datos
+// Obtener turnos de la fecha seleccionada
 async function cargarTurnosDB() {
     const inputFecha = document.getElementById('fecha-agenda');
     const fechaSeleccionada = inputFecha ? inputFecha.value : new Date().toISOString().split('T')[0];
+    const cuerpo = document.getElementById('cuerpo-calendario');
+
+    if (cuerpo) {
+        cuerpo.innerHTML = `<tr><td colspan="2" style="text-align:center; padding: 20px; color: #64748b;">Cargando citas agendadas...</td></tr>`;
+    }
 
     try {
-        // Se envía la acción listar y la fecha seleccionada al Servlet/Controlador
         const response = await fetch(`./ControladorTurnos?accion=listar&fecha=${fechaSeleccionada}`);
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
+        if (!response.ok) throw new Error(`Error HTTP: ${response.status}`);
 
         const turnosDB = await response.json();
 
         if (Array.isArray(turnosDB)) {
-            // Mapeo directo adaptado a las columnas de MySQL (turnos_podologia)
+            // Mapeo adaptado a la tabla MySQL turnos_podologia
             turnos = turnosDB.map(t => ({
                 id: t.id ? t.id.toString() : '',
                 cedula: t.cedula || '',
@@ -62,11 +64,14 @@ async function cargarTurnosDB() {
             renderizarCalendario();
         }
     } catch (error) {
-        console.error("Error al obtener los turnos desde Railway:", error);
+        console.error("Error al obtener los turnos desde la base de datos:", error);
+        if (cuerpo) {
+            cuerpo.innerHTML = `<tr><td colspan="2" style="text-align:center; color: #ef4444; padding: 20px;">Error al conectar con la base de datos.</td></tr>`;
+        }
     }
 }
 
-// 2. Guardar o actualizar un turno en MySQL
+// Guardar o actualizar cita en MySQL
 async function guardarTurno(e) {
     if (e) e.preventDefault();
 
@@ -81,14 +86,14 @@ async function guardarTurno(e) {
     const duracion = document.getElementById('duracion-minutos')?.value || '50';
 
     if (!cedula || !fecha || !hora) {
-        alert("La Cédula, Fecha y Hora son campos requeridos.");
+        alert("La Cédula, Fecha y Hora de inicio son requeridas.");
         return;
     }
 
-    // Validar capacidad localmente (Límite máximo 3 por bloque horario)
-    const turnosEnHora = turnos.filter(t => t.fecha === fecha && t.hora.startsWith(hora.substring(0,5)) && t.id !== idTurno);
-    if (turnosEnHora.length >= 3 && !idTurno) {
-        alert('No se pueden agendar más de 3 pacientes en el mismo bloque horario.');
+    // Validación local: Límite máximo de 3 pacientes por bloque
+    const turnosEnBloque = turnos.filter(t => t.fecha === fecha && t.hora.startsWith(hora.substring(0,5)) && t.id !== idTurno);
+    if (turnosEnBloque.length >= 3 && !idTurno) {
+        alert('No es posible agendar más de 3 pacientes en el mismo bloque horario.');
         return;
     }
 
@@ -112,22 +117,21 @@ async function guardarTurno(e) {
         });
 
         if (response.ok) {
-            alert("¡Turno guardado exitosamente!");
             cerrarModal();
-            cargarTurnosDB(); // Recargar datos de la BD
+            cargarTurnosDB();
         } else {
             const data = await response.json().catch(() => ({}));
-            alert("Atención: " + (data.error || "No se pudo agendar el turno."));
+            alert("Atención: " + (data.error || "No se pudo guardar la cita."));
         }
     } catch (error) {
-        console.error("Error al conectar con el servidor:", error);
-        alert("Error de conexión al guardar el turno.");
+        console.error("Error al guardar turno:", error);
+        alert("Error de red al guardar la cita.");
     }
 }
 
-// 3. Eliminar / Cancelar un turno en MySQL
+// Cancelar / Eliminar cita
 async function cancelarTurno(id) {
-    if (!confirm('¿Desea cancelar este turno?')) return;
+    if (!confirm('¿Está seguro de cancelar este turno?')) return;
 
     try {
         const formData = new URLSearchParams();
@@ -141,20 +145,20 @@ async function cancelarTurno(id) {
         });
 
         if (response.ok) {
-            alert("Turno eliminado correctamente.");
             cargarTurnosDB();
         } else {
             const data = await response.json().catch(() => ({}));
             alert("Atención: " + (data.error || "No se pudo eliminar el turno."));
         }
     } catch (error) {
-        console.error("Error al cancelar turno:", error);
+        console.error("Error al eliminar turno:", error);
         alert("Error de conexión al eliminar.");
     }
 }
 
-// --- LÓGICA DE INTERFAZ DE AGENDA (CALENDARIO Y MODAL) ---
+// --- LÓGICA DE RENDERIZADO DEL CALENDARIO ---
 
+// Genera los intervalos de 30 minutos desde 08:00 hasta 21:00
 function obtenerIntervalos30Min() {
     const horarios = [];
     for (let h = 8; h <= 21; h++) {
@@ -165,6 +169,7 @@ function obtenerIntervalos30Min() {
     return horarios;
 }
 
+// Navegador de fechas (+1 día / -1 día)
 function cambiarDia(offset) {
     const inputFecha = document.getElementById('fecha-agenda');
     if (!inputFecha) return;
@@ -173,18 +178,10 @@ function cambiarDia(offset) {
     fechaActual.setDate(fechaActual.getDate() + offset);
     
     inputFecha.value = fechaActual.toISOString().split('T')[0];
-    cargarTurnosDB(); // Carga los turnos para la nueva fecha
+    cargarTurnosDB();
 }
 
-function cargarOpcionesHorario() {
-    const select = document.getElementById('hora-inicio');
-    if (!select) return;
-    select.innerHTML = '';
-    obtenerIntervalos30Min().forEach(horaStr => {
-        select.innerHTML += `<option value="${horaStr}">${horaStr}</option>`;
-    });
-}
-
+// Renderiza la tabla #cuerpo-calendario dinámica
 function renderizarCalendario() {
     const inputFecha = document.getElementById('fecha-agenda');
     const cuerpo = document.getElementById('cuerpo-calendario');
@@ -194,53 +191,68 @@ function renderizarCalendario() {
     cuerpo.innerHTML = '';
 
     obtenerIntervalos30Min().forEach(horaStr => {
-        // Filtrar turnos del bloque
+        // Filtrar citas que pertenecen a este bloque horaria
         const turnosEnHora = turnos.filter(t => t.fecha === fechaSeleccionada && t.hora.startsWith(horaStr.substring(0,5)));
         const numPacientes = turnosEnHora.length;
         const esMediaHora = horaStr.endsWith(':30');
 
         let alertaHtml = '';
         if (numPacientes >= 2) {
-            alertaHtml = `<div class="alerta-cupo-pro" style="color: #d97706; font-size: 11px; margin-top: 4px;">⚠️ Ocupación múltiple: ${numPacientes} pacientes agendados.</div>`;
+            alertaHtml = `<div style="color: #d97706; font-size: 11px; margin-top: 4px; font-weight: 600;">⚠️ Ocupación múltiple: ${numPacientes} pacientes agendados.</div>`;
         }
 
         let tarjetasPacientes = turnosEnHora.map(t => {
-            const mensajeTexto = `Saludos Sr/a ${t.nombres}, Recuerdo de Cita Médica en Podología a las ${t.hora.substring(0,5)} el día ${t.fecha}. Por favor acudir 10 minutos antes.`;
+            const mensajeTexto = `Saludos Sr/a ${t.nombres}, le recordamos su cita médica de Podología programada a las ${t.hora.substring(0,5)} el día ${t.fecha}. Por favor acudir 10 minutos antes.`;
             const enlaceWS = `https://wa.me/${t.celular}?text=${encodeURIComponent(mensajeTexto)}`;
 
             let botonEmail = '';
             if (t.email && t.email.trim() !== '') {
                 const asuntoEmail = encodeURIComponent("Recordatorio de Cita Médica - Podología");
                 const enlaceEmail = `mailto:${t.email}?subject=${asuntoEmail}&body=${encodeURIComponent(mensajeTexto)}`;
-                botonEmail = `<a href="${enlaceEmail}" class="btn-action btn-email-pro" title="Enviar Correo">✉️ Email</a>`;
+                botonEmail = `<a href="${enlaceEmail}" class="btn-action btn-email-pro" style="text-decoration:none; font-size:11px;" title="Enviar Correo">✉️ Email</a>`;
             }
 
             return `
-                <div class="paciente-card-pro ${numPacientes > 1 ? 'sobreocupado' : ''}" style="background: #f8fafc; border-left: 4px solid #0284c7; padding: 6px 10px; margin-bottom: 6px; border-radius: 4px;">
+                <div class="paciente-card-pro ${numPacientes > 1 ? 'sobreocupado' : ''}" style="background: #ffffff; border: 1px solid #e2e8f0; border-left: 4px solid #0284c7; padding: 8px 12px; margin-bottom: 6px; border-radius: 6px; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
                     <div class="paciente-info-pro">
-                        <span class="nombre" style="font-weight: bold; font-size: 13px;">${t.nombres} <small style="font-weight:normal; color:#64748b">(CI: ${t.cedula})</small></span>
-                        <div class="detalles" style="font-size: 12px; color: #334155;"><strong>Motivo:</strong> ${t.motivo} | <strong>Duración:</strong> ${t.duracion} min</div>
+                        <span class="nombre" style="font-weight: bold; font-size: 13px; color: #0f172a;">${t.nombres} <small style="font-weight:normal; color:#64748b">(CI: ${t.cedula})</small></span>
+                        <div class="detalles" style="font-size: 12px; color: #334155; margin-top: 2px;">
+                            <strong>Motivo:</strong> ${t.motivo || 'Consulta general'} | <strong>Duración:</strong> ${t.duracion} min
+                        </div>
                     </div>
-                    <div class="actions-group-pro" style="margin-top: 4px; display: flex; gap: 6px; flex-wrap: wrap;">
-                        <a href="${enlaceWS}" target="_blank" class="btn-action btn-ws-pro" style="text-decoration:none; font-size:11px;" title="Enviar WhatsApp">📲 WhatsApp</a>
+                    <div class="actions-group-pro" style="margin-top: 6px; display: flex; gap: 6px; flex-wrap: wrap; align-items: center;">
+                        ${t.celular ? `<a href="${enlaceWS}" target="_blank" class="btn-action btn-ws-pro" style="text-decoration:none; font-size:11px;" title="Enviar WhatsApp">📲 WhatsApp</a>` : ''}
                         ${botonEmail}
-                        <button type="button" class="btn-action btn-edit-pro" style="font-size:11px;" onclick="editarTurno('${t.id}')">✏️ Editar</button>
-                        <button type="button" class="btn-action btn-danger-pro" style="font-size:11px;" onclick="cancelarTurno('${t.id}')">❌ Cancelar</button>
+                        <button type="button" class="btn-action btn-edit-pro" style="font-size:11px; cursor:pointer;" onclick="editarTurno('${t.id}')">✏️ Editar</button>
+                        <button type="button" class="btn-action btn-danger-pro" style="font-size:11px; cursor:pointer; color:#ef4444;" onclick="cancelarTurno('${t.id}')">❌ Cancelar</button>
                     </div>
                 </div>
             `;
         }).join('');
 
         cuerpo.innerHTML += `
-            <tr class="${esMediaHora ? 'media-hora' : ''}">
-                <td style="width: 120px; font-weight: bold; vertical-align: top;"><strong style="color:var(--text-main); font-size:14px;">${horaStr}</strong></td>
-                <td>
+            <tr class="${esMediaHora ? 'media-hora' : ''}" style="border-bottom: 1px solid #f1f5f9;">
+                <td style="width: 120px; font-weight: bold; vertical-align: top; padding: 10px; background: #f8fafc;">
+                    <span style="color:#0f172a; font-size:14px;">${horaStr}</span>
+                </td>
+                <td style="padding: 10px;">
                     ${tarjetasPacientes || '<span style="color: #94a3b8; font-style: italic; font-size: 13px;">Disponible</span>'}
                     ${alertaHtml}
-                    ${numPacientes >= 3 ? '<span style="color:#b91c1c; font-size:11px; font-weight:bold;">(Límite de 3 pacientes alcanzado en esta hora)</span>' : ''}
+                    ${numPacientes >= 3 ? '<span style="color:#b91c1c; font-size:11px; font-weight:bold; display:block; margin-top:4px;">(Capacidad máxima de 3 pacientes alcanzada)</span>' : ''}
                 </td>
             </tr>
         `;
+    });
+}
+
+// --- MODALES Y BÚSQUEDA DE PACIENTES ---
+
+function cargarOpcionesHorario() {
+    const select = document.getElementById('hora-inicio');
+    if (!select) return;
+    select.innerHTML = '';
+    obtenerIntervalos30Min().forEach(horaStr => {
+        select.innerHTML += `<option value="${horaStr}">${horaStr}</option>`;
     });
 }
 
@@ -274,7 +286,7 @@ function editarTurno(id) {
     if (!turno) return;
 
     const modalTitulo = document.getElementById('modal-titulo');
-    if (modalTitulo) modalTitulo.innerText = "Editar Cita";
+    if (modalTitulo) modalTitulo.innerText = "Editar Cita Podológica";
 
     if (document.getElementById('turno-id')) document.getElementById('turno-id').value = turno.id;
     if (document.getElementById('turnCedula')) document.getElementById('turnCedula').value = turno.cedula;
@@ -289,44 +301,6 @@ function editarTurno(id) {
     const modal = document.getElementById('modal-turno');
     if (modal) modal.style.display = 'flex';
 }
-
-// --- HERRAMIENTAS DE HISTORIA CLÍNICA (RESET Y PDF) ---
-
-function resetForm() {
-    if (window.confirm("¿Desea limpiar todos los campos del formulario y el lienzo?")) {
-        const formContainer = document.getElementById('clinical-form');
-        if (!formContainer) return;
-
-        formContainer.querySelectorAll('input[type="text"], input[type="tel"], input[type="email"], input[type="number"], input[type="date"], textarea').forEach(input => input.value = '');
-        formContainer.querySelectorAll('input[type="checkbox"], input[type="radio"]').forEach(input => input.checked = false);
-        
-        const hcFecha = document.getElementById('hcFecha');
-        if (hcFecha) hcFecha.valueAsDate = new Date();
-        
-        // Reset previews de imágenes si existen
-        const piePreview = document.getElementById('pie-preview-img');
-        const piePlaceholder = document.getElementById('pie-placeholder');
-        if (piePreview && piePlaceholder) {
-            piePreview.classList.add('hidden');
-            piePlaceholder.classList.remove('hidden');
-            document.getElementById('pie-image-input').value = '';
-        }
-
-        const pisadaPreview = document.getElementById('pisada-preview-img');
-        const pisadaPlaceholder = document.getElementById('pisada-placeholder');
-        if (pisadaPreview && pisadaPlaceholder) {
-            pisadaPreview.classList.add('hidden');
-            pisadaPlaceholder.classList.remove('hidden');
-            document.getElementById('pisada-image-input').value = '';
-        }
-        
-        if (typeof clearCanvas === 'function') {
-            clearCanvas();
-        }
-    }
-}
-
-
 
 // Función auxiliar para convertir DD/MM/YYYY a YYYY-MM-DD
 function formatearFechaISO(fechaStr) {
@@ -372,7 +346,3 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-// 4. Inicializar carga al cargar el DOM
-document.addEventListener('DOMContentLoaded', () => {
-    cargarTurnosDB();
-});
