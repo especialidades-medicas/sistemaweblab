@@ -11,7 +11,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-@WebServlet(name = "ControladorTurnos", urlPatterns = {"/ControladorTurnos"})
+@WebServlet(name = "ControladorTurnos", urlPatterns = {"/ControladorTurnos", "/views/ControladorTurnos"})
 public class TurnoPodologiaServlet extends HttpServlet {
 
     private static final Logger LOGGER = Logger.getLogger(TurnoPodologiaServlet.class.getName());
