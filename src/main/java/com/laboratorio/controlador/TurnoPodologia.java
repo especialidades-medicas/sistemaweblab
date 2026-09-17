@@ -1,132 +1,62 @@
 package com.laboratorio.controlador;
 
-import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.io.PrintWriter;
 import java.sql.Date;
 import java.sql.Time;
-import java.util.List;
+import java.sql.Timestamp;
 
-@WebServlet("/ControladorTurnos")
-public class ControladorTurnos extends HttpServlet {
+public class TurnoPodologia {
+    private int id;
+    private String cedula;
+    private String nombres;
+    private String celular;
+    private String email;
+    private String motivo;
+    private Date fecha;
+    private Time horaInicio;
+    private int duracionMinutos;
+    private Timestamp creadoEn;
 
-    private final TurnosPodologiaDAO dao = new TurnosPodologiaDAO();
+    public TurnoPodologia() {}
 
-    @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) 
-            throws ServletException, IOException {
-        response.setContentType("application/json; charset=UTF-8");
-        PrintWriter out = response.getWriter();
-
-        String fechaStr = request.getParameter("fecha");
-        Date fecha = (fechaStr != null && !fechaStr.trim().isEmpty()) 
-                     ? Date.valueOf(fechaStr) 
-                     : new Date(System.currentTimeMillis());
-
-        List<TurnoPodologia> lista = dao.listarPorFecha(fecha);
-
-        StringBuilder json = new StringBuilder("[");
-        for (int i = 0; i < lista.size(); i++) {
-            TurnoPodologia t = lista.get(i);
-            json.append(String.format(
-                "{\"id\":%d, \"cedula\":\"%s\", \"nombres\":\"%s\", \"celular\":\"%s\", \"email\":\"%s\", \"motivo\":\"%s\", \"fecha\":\"%s\", \"hora_inicio\":\"%s\", \"duracion_minutos\":%d}",
-                t.getId(),
-                escapar(t.getCedula()),
-                escapar(t.getNombres()),
-                escapar(t.getCelular()),
-                escapar(t.getEmail()),
-                escapar(t.getMotivo()),
-                t.getFecha().toString(),
-                t.getHoraInicio().toString(),
-                t.getDuracionMinutos()
-            ));
-            if (i < lista.size() - 1) json.append(",");
-        }
-        json.append("]");
-
-        out.print(json.toString());
-        out.flush();
+    public TurnoPodologia(String cedula, String nombres, String celular, String email, 
+                          String motivo, Date fecha, Time horaInicio, int duracionMinutos) {
+        this.cedula = cedula;
+        this.nombres = nombres;
+        this.celular = celular;
+        this.email = email;
+        this.motivo = motivo;
+        this.fecha = fecha;
+        this.horaInicio = horaInicio;
+        this.duracionMinutos = duracionMinutos;
     }
 
-    @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) 
-            throws ServletException, IOException {
-        request.setCharacterEncoding("UTF-8");
-        response.setContentType("application/json; charset=UTF-8");
-        PrintWriter out = response.getWriter();
+    public int getId() { return id; }
+    public void setId(int id) { this.id = id; }
 
-        String accion = request.getParameter("accion");
+    public String getCedula() { return cedula; }
+    public void setCedula(String cedula) { this.cedula = cedula; }
 
-        if ("eliminar".equals(accion)) {
-            try {
-                int id = Integer.parseInt(request.getParameter("id"));
-                if (dao.eliminar(id)) {
-                    response.setStatus(HttpServletResponse.SC_OK);
-                    out.print("{\"mensaje\":\"Turno eliminado\"}");
-                } else {
-                    response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                    out.print("{\"error\":\"No se pudo eliminar el turno\"}");
-                }
-            } catch (Exception e) {
-                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                out.print("{\"error\":\"ID inválido\"}");
-            }
-            return;
-        }
+    public String getNombres() { return nombres; }
+    public void setNombres(String nombres) { this.nombres = nombres; }
 
-        // Caso Insertar o Actualizar
-        try {
-            String idStr = request.getParameter("id");
-            String cedula = request.getParameter("cedula");
-            String nombres = request.getParameter("nombres");
-            String celular = request.getParameter("celular");
-            String email = request.getParameter("email");
-            String motivo = request.getParameter("motivo");
-            Date fecha = Date.valueOf(request.getParameter("fecha"));
-            
-            String horaStr = request.getParameter("hora_inicio");
-            if (horaStr != null && horaStr.length() == 5) {
-                horaStr += ":00"; // Transformar "08:00" a "08:00:00" para SQL
-            }
-            Time horaInicio = Time.valueOf(horaStr);
-            
-            int duracion = 50;
-            if (request.getParameter("duracion_minutos") != null && !request.getParameter("duracion_minutos").isEmpty()) {
-                duracion = Integer.parseInt(request.getParameter("duracion_minutos"));
-            }
+    public String getCelular() { return celular; }
+    public void setCelular(String celular) { this.celular = celular; }
 
-            TurnoPodologia turno = new TurnoPodologia(cedula, nombres, celular, email, motivo, fecha, horaInicio, duracion);
+    public String getEmail() { return email; }
+    public void setEmail(String email) { this.email = email; }
 
-            boolean exito;
-            if (idStr != null && !idStr.trim().isEmpty()) {
-                turno.setId(Integer.parseInt(idStr));
-                exito = dao.actualizar(turno);
-            } else {
-                exito = dao.insertar(turno);
-            }
+    public String getMotivo() { return motivo; }
+    public void setMotivo(String motivo) { this.motivo = motivo; }
 
-            if (exito) {
-                response.setStatus(HttpServletResponse.SC_OK);
-                out.print("{\"mensaje\":\"Operación exitosa\"}");
-            } else {
-                response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                out.print("{\"error\":\"Error al procesar la base de datos\"}");
-            }
-        } catch (Exception e) {
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            out.print("{\"error\":\"Datos inválidos: " + e.getMessage() + "\"}");
-        }
-    }
+    public Date getFecha() { return fecha; }
+    public void setFecha(Date fecha) { this.fecha = fecha; }
 
-    private String escapar(String valor) {
-        if (valor == null) return "";
-        return valor.replace("\\", "\\\\")
-                    .replace("\"", "\\\"")
-                    .replace("\r", "")
-                    .replace("\n", " ");
-    }
+    public Time getHoraInicio() { return horaInicio; }
+    public void setHoraInicio(Time horaInicio) { this.horaInicio = horaInicio; }
+
+    public int getDuracionMinutos() { return duracionMinutos; }
+    public void setDuracionMinutos(int duracionMinutos) { this.duracionMinutos = duracionMinutos; }
+
+    public Timestamp getCreadoEn() { return creadoEn; }
+    public void setCreadoEn(Timestamp creadoEn) { this.creadoEn = creadoEn; }
 }
