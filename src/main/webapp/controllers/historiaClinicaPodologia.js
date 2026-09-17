@@ -7,16 +7,25 @@ document.addEventListener('DOMContentLoaded', () => {
     // Inicializar fecha de agenda al día actual
     const hoy = new Date().toISOString().split('T')[0];
     const fechaAgendaInput = document.getElementById('fecha-agenda');
-    if (fechaAgendaInput) fechaAgendaInput.value = hoy;
+    if (fechaAgendaInput) {
+        fechaAgendaInput.value = hoy;
+        // Evento para renderizar la tabla al cambiar la fecha
+        fechaAgendaInput.addEventListener('change', renderizarCalendario);
+    }
 
     cargarOpcionesHorario();
     cargarTurnosDB(); // Carga inicial desde Railway
 
     const formTurno = document.getElementById('form-turno');
     if (formTurno) {
-        // Asegurarse de que no haya múltiples event listeners
         formTurno.removeEventListener('submit', guardarTurno);
         formTurno.addEventListener('submit', guardarTurno);
+    }
+
+    // Escuchador para autocompletar paciente mediante la cédula
+    const inputTurnCedula = document.getElementById('turnCedula');
+    if (inputTurnCedula) {
+        inputTurnCedula.addEventListener('blur', (e) => buscarPacienteParaTurno(e.target.value.trim()));
     }
 });
 
@@ -24,8 +33,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // 1. Obtener los turnos desde la base de datos
 async function cargarTurnosDB() {
+    const inputFecha = document.getElementById('fecha-agenda');
+    const fechaSeleccionada = inputFecha ? inputFecha.value : new Date().toISOString().split('T')[0];
+
     try {
-        const response = await fetch('/ControladorTurnos');
+        // Se envía la acción listar y la fecha seleccionada al Servlet/Controlador
+        const response = await fetch(`./ControladorTurnos?accion=listar&fecha=${fechaSeleccionada}`);
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -33,7 +46,7 @@ async function cargarTurnosDB() {
         const turnosDB = await response.json();
 
         if (Array.isArray(turnosDB)) {
-            // Mapeo directo a la estructura de la tabla turnos_podologia
+            // Mapeo directo adaptado a las columnas de MySQL (turnos_podologia)
             turnos = turnosDB.map(t => ({
                 id: t.id ? t.id.toString() : '',
                 cedula: t.cedula || '',
@@ -42,8 +55,8 @@ async function cargarTurnosDB() {
                 email: t.email || '',
                 motivo: t.motivo || '',
                 fecha: t.fecha || '',
-                hora: t.hora_inicio || '',
-                duracion: t.duracion_minutos || 40
+                hora: t.hora_inicio || t.horaInicio || '',
+                duracion: t.duracion_minutos || t.duracionMinutos || 50
             }));
 
             renderizarCalendario();
@@ -63,17 +76,17 @@ async function guardarTurno(e) {
     const celular = document.getElementById('turnCelular')?.value.trim();
     const email = document.getElementById('turnEmail')?.value.trim().toLowerCase();
     const motivo = document.getElementById('turnMotivo')?.value.trim();
-    const fecha = document.getElementById('fecha-agenda')?.value;
+    const fecha = document.getElementById('modal-fecha')?.value || document.getElementById('fecha-agenda')?.value;
     const hora = document.getElementById('hora-inicio')?.value;
-    const duracion = document.getElementById('duracion-minutos')?.value || '40'; // Corregido ID
+    const duracion = document.getElementById('duracion-minutos')?.value || '50';
 
     if (!cedula || !fecha || !hora) {
         alert("La Cédula, Fecha y Hora son campos requeridos.");
         return;
     }
 
-    // Validar capacidad localmente antes de enviar a DB (Límite 3)
-    const turnosEnHora = turnos.filter(t => t.fecha === fecha && t.hora === hora && t.id !== idTurno);
+    // Validar capacidad localmente (Límite máximo 3 por bloque horario)
+    const turnosEnHora = turnos.filter(t => t.fecha === fecha && t.hora.startsWith(hora.substring(0,5)) && t.id !== idTurno);
     if (turnosEnHora.length >= 3 && !idTurno) {
         alert('No se pueden agendar más de 3 pacientes en el mismo bloque horario.');
         return;
@@ -81,7 +94,8 @@ async function guardarTurno(e) {
 
     try {
         const formData = new URLSearchParams();
-        if (idTurno) formData.append("id", idTurno); // Si es actualización
+        formData.append("accion", idTurno ? "actualizar" : "insertar");
+        if (idTurno) formData.append("id", idTurno);
         formData.append("cedula", cedula);
         formData.append("nombres", nombres || "");
         formData.append("celular", celular || "");
@@ -91,18 +105,18 @@ async function guardarTurno(e) {
         formData.append("hora_inicio", hora);
         formData.append("duracion_minutos", duracion);
 
-        const response = await fetch('/ControladorTurnos', {
+        const response = await fetch('./ControladorTurnos', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
             body: formData.toString()
         });
 
         if (response.ok) {
-            alert("¡Turno registrado exitosamente!");
+            alert("¡Turno guardado exitosamente!");
             cerrarModal();
-            cargarTurnosDB(); // Recargar datos frescos de la BD
+            cargarTurnosDB(); // Recargar datos de la BD
         } else {
-            const data = await response.json();
+            const data = await response.json().catch(() => ({}));
             alert("Atención: " + (data.error || "No se pudo agendar el turno."));
         }
     } catch (error) {
@@ -120,9 +134,9 @@ async function cancelarTurno(id) {
         formData.append("accion", "eliminar");
         formData.append("id", id);
 
-        const response = await fetch('/ControladorTurnos', {
+        const response = await fetch('./ControladorTurnos', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
             body: formData.toString()
         });
 
@@ -130,7 +144,7 @@ async function cancelarTurno(id) {
             alert("Turno eliminado correctamente.");
             cargarTurnosDB();
         } else {
-            const data = await response.json();
+            const data = await response.json().catch(() => ({}));
             alert("Atención: " + (data.error || "No se pudo eliminar el turno."));
         }
     } catch (error) {
@@ -138,7 +152,6 @@ async function cancelarTurno(id) {
         alert("Error de conexión al eliminar.");
     }
 }
-
 
 // --- LÓGICA DE INTERFAZ DE AGENDA (CALENDARIO Y MODAL) ---
 
@@ -159,9 +172,8 @@ function cambiarDia(offset) {
     const fechaActual = new Date(inputFecha.value + 'T00:00:00');
     fechaActual.setDate(fechaActual.getDate() + offset);
     
-    const nuevaFechaStr = fechaActual.toISOString().split('T')[0];
-    inputFecha.value = nuevaFechaStr;
-    renderizarCalendario();
+    inputFecha.value = fechaActual.toISOString().split('T')[0];
+    cargarTurnosDB(); // Carga los turnos para la nueva fecha
 }
 
 function cargarOpcionesHorario() {
@@ -182,17 +194,18 @@ function renderizarCalendario() {
     cuerpo.innerHTML = '';
 
     obtenerIntervalos30Min().forEach(horaStr => {
-        const turnosEnHora = turnos.filter(t => t.fecha === fechaSeleccionada && t.hora.startsWith(horaStr.substring(0,5))); // Comparación segura de hora
+        // Filtrar turnos del bloque
+        const turnosEnHora = turnos.filter(t => t.fecha === fechaSeleccionada && t.hora.startsWith(horaStr.substring(0,5)));
         const numPacientes = turnosEnHora.length;
         const esMediaHora = horaStr.endsWith(':30');
 
         let alertaHtml = '';
         if (numPacientes >= 2) {
-            alertaHtml = `<div class="alerta-cupo-pro">⚠️ Ocupación múltiple: ${numPacientes} pacientes agendados.</div>`;
+            alertaHtml = `<div class="alerta-cupo-pro" style="color: #d97706; font-size: 11px; margin-top: 4px;">⚠️ Ocupación múltiple: ${numPacientes} pacientes agendados.</div>`;
         }
 
         let tarjetasPacientes = turnosEnHora.map(t => {
-            const mensajeTexto = `Saludos Sr/a ${t.nombres}, Recuerdo de Cita Medica en Podología a las ${t.hora} el dia ${t.fecha} debe acudir 10 minutos antes para la preparación y evaluación`;
+            const mensajeTexto = `Saludos Sr/a ${t.nombres}, Recuerdo de Cita Médica en Podología a las ${t.hora.substring(0,5)} el día ${t.fecha}. Por favor acudir 10 minutos antes.`;
             const enlaceWS = `https://wa.me/${t.celular}?text=${encodeURIComponent(mensajeTexto)}`;
 
             let botonEmail = '';
@@ -203,16 +216,16 @@ function renderizarCalendario() {
             }
 
             return `
-                <div class="paciente-card-pro ${numPacientes > 1 ? 'sobreocupado' : ''}">
+                <div class="paciente-card-pro ${numPacientes > 1 ? 'sobreocupado' : ''}" style="background: #f8fafc; border-left: 4px solid #0284c7; padding: 6px 10px; margin-bottom: 6px; border-radius: 4px;">
                     <div class="paciente-info-pro">
-                        <span class="nombre">${t.nombres} <small style="font-weight:normal; color:var(--text-muted)">(CI: ${t.cedula})</small></span>
-                        <div class="detalles"><strong>Motivo:</strong> ${t.motivo} | <strong>Duración:</strong> ${t.duracion} min</div>
+                        <span class="nombre" style="font-weight: bold; font-size: 13px;">${t.nombres} <small style="font-weight:normal; color:#64748b">(CI: ${t.cedula})</small></span>
+                        <div class="detalles" style="font-size: 12px; color: #334155;"><strong>Motivo:</strong> ${t.motivo} | <strong>Duración:</strong> ${t.duracion} min</div>
                     </div>
-                    <div class="actions-group-pro">
-                        <a href="${enlaceWS}" target="_blank" class="btn-action btn-ws-pro" title="Enviar WhatsApp">📲 WhatsApp</a>
+                    <div class="actions-group-pro" style="margin-top: 4px; display: flex; gap: 6px; flex-wrap: wrap;">
+                        <a href="${enlaceWS}" target="_blank" class="btn-action btn-ws-pro" style="text-decoration:none; font-size:11px;" title="Enviar WhatsApp">📲 WhatsApp</a>
                         ${botonEmail}
-                        <button type="button" class="btn-action btn-edit-pro" onclick="editarTurno('${t.id}')">✏️ Editar</button>
-                        <button type="button" class="btn-action btn-danger-pro" onclick="cancelarTurno('${t.id}')">❌ Cancelar</button>
+                        <button type="button" class="btn-action btn-edit-pro" style="font-size:11px;" onclick="editarTurno('${t.id}')">✏️ Editar</button>
+                        <button type="button" class="btn-action btn-danger-pro" style="font-size:11px;" onclick="cancelarTurno('${t.id}')">❌ Cancelar</button>
                     </div>
                 </div>
             `;
@@ -220,9 +233,9 @@ function renderizarCalendario() {
 
         cuerpo.innerHTML += `
             <tr class="${esMediaHora ? 'media-hora' : ''}">
-                <td><strong style="color:var(--text-main); font-size:14px;">${horaStr}</strong></td>
+                <td style="width: 120px; font-weight: bold; vertical-align: top;"><strong style="color:var(--text-main); font-size:14px;">${horaStr}</strong></td>
                 <td>
-                    ${tarjetasPacientes}
+                    ${tarjetasPacientes || '<span style="color: #94a3b8; font-style: italic; font-size: 13px;">Disponible</span>'}
                     ${alertaHtml}
                     ${numPacientes >= 3 ? '<span style="color:#b91c1c; font-size:11px; font-weight:bold;">(Límite de 3 pacientes alcanzado en esta hora)</span>' : ''}
                 </td>
@@ -232,18 +245,23 @@ function renderizarCalendario() {
 }
 
 function abrirModalNuevoTurno() {
-    document.getElementById('modal-titulo').innerText = "Agendar Nueva Cita";
-    document.getElementById('turno-id').value = '';
-    const form = document.getElementById('form-turno');
-    if(form) form.reset();
+    const modalTitulo = document.getElementById('modal-titulo');
+    if (modalTitulo) modalTitulo.innerText = "Agendar Nueva Cita";
     
-    // Setear la fecha del modal con la fecha actual del calendario
+    const turnoIdInput = document.getElementById('turno-id');
+    if (turnoIdInput) turnoIdInput.value = '';
+
+    const form = document.getElementById('form-turno');
+    if (form) form.reset();
+    
     const fechaCalendario = document.getElementById('fecha-agenda')?.value;
-    if (fechaCalendario && document.getElementById('modal-fecha')) {
-         document.getElementById('modal-fecha').value = fechaCalendario;
+    const modalFecha = document.getElementById('modal-fecha');
+    if (fechaCalendario && modalFecha) {
+         modalFecha.value = fechaCalendario;
     }
 
-    document.getElementById('modal-turno').style.display = 'flex';
+    const modal = document.getElementById('modal-turno');
+    if (modal) modal.style.display = 'flex';
 }
 
 function cerrarModal() {
@@ -255,17 +273,21 @@ function editarTurno(id) {
     const turno = turnos.find(t => t.id === id || t.id === id.toString());
     if (!turno) return;
 
-    document.getElementById('modal-titulo').innerText = "Editar Cita";
-    document.getElementById('turno-id').value = turno.id;
-    document.getElementById('turnCedula').value = turno.cedula;
-    document.getElementById('turnNombres').value = turno.nombres;
-    document.getElementById('turnCelular').value = turno.celular;
-    document.getElementById('turnEmail').value = turno.email || '';
-    document.getElementById('turnMotivo').value = turno.motivo;
-    document.getElementById('hora-inicio').value = turno.hora.substring(0,5); // Asegurar formato HH:MM
-    document.getElementById('duracion-minutos').value = turno.duracion;
+    const modalTitulo = document.getElementById('modal-titulo');
+    if (modalTitulo) modalTitulo.innerText = "Editar Cita";
 
-    document.getElementById('modal-turno').style.display = 'flex';
+    if (document.getElementById('turno-id')) document.getElementById('turno-id').value = turno.id;
+    if (document.getElementById('turnCedula')) document.getElementById('turnCedula').value = turno.cedula;
+    if (document.getElementById('turnNombres')) document.getElementById('turnNombres').value = turno.nombres;
+    if (document.getElementById('turnCelular')) document.getElementById('turnCelular').value = turno.celular;
+    if (document.getElementById('turnEmail')) document.getElementById('turnEmail').value = turno.email || '';
+    if (document.getElementById('turnMotivo')) document.getElementById('turnMotivo').value = turno.motivo;
+    if (document.getElementById('modal-fecha')) document.getElementById('modal-fecha').value = turno.fecha;
+    if (document.getElementById('hora-inicio')) document.getElementById('hora-inicio').value = turno.hora.substring(0,5);
+    if (document.getElementById('duracion-minutos')) document.getElementById('duracion-minutos').value = turno.duracion;
+
+    const modal = document.getElementById('modal-turno');
+    if (modal) modal.style.display = 'flex';
 }
 
 // --- HERRAMIENTAS DE HISTORIA CLÍNICA (RESET Y PDF) ---
