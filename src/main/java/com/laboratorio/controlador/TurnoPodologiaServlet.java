@@ -2,6 +2,7 @@ package com.laboratorio.controlador;
 
 import com.google.gson.Gson;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -21,7 +22,10 @@ public class TurnoPodologiaServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        
+        request.setCharacterEncoding("UTF-8");
         response.setContentType("application/json;charset=UTF-8");
+        
         String fecha = request.getParameter("fecha");
 
         try {
@@ -29,51 +33,62 @@ public class TurnoPodologiaServlet extends HttpServlet {
             response.getWriter().write(gson.toJson(lista));
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Error en doGet: ControladorTurnos", e);
-            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            response.getWriter().write("{\"error\": \"Error interno en el servidor: " + e.getMessage() + "\"}");
+            enviarRespuestaError(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error interno en el servidor: " + e.getMessage());
         }
     }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        
+        // Forzar codificación UTF-8 antes de leer parámetros para acentos y caracteres especiales
+        request.setCharacterEncoding("UTF-8");
         response.setContentType("application/json;charset=UTF-8");
+        
         String accion = request.getParameter("accion");
 
         try {
+            // Caso 1: Eliminar Turno
             if ("eliminar".equals(accion)) {
                 String idEliminar = request.getParameter("id");
                 if (idEliminar == null || idEliminar.trim().isEmpty()) {
-                    response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                    response.getWriter().write("{\"error\": \"El ID es obligatorio para eliminar.\"}");
+                    enviarRespuestaError(response, HttpServletResponse.SC_BAD_REQUEST, "El ID es obligatorio para eliminar.");
                     return;
                 }
 
-                boolean eliminado = dao.eliminar(Integer.parseInt(idEliminar.trim()));
-                if (eliminado) {
-                    response.getWriter().write("{\"status\": \"OK\"}");
-                } else {
-                    response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-                    response.getWriter().write("{\"error\": \"Turno no encontrado para eliminar.\"}");
+                try {
+                    int id = Integer.parseInt(idEliminar.trim());
+                    boolean eliminado = dao.eliminar(id);
+                    if (eliminado) {
+                        response.getWriter().write(gson.toJson(Collections.singletonMap("status", "OK")));
+                    } else {
+                        enviarRespuestaError(response, HttpServletResponse.SC_NOT_FOUND, "Turno no encontrado para eliminar.");
+                    }
+                } catch (NumberFormatException e) {
+                    enviarRespuestaError(response, HttpServletResponse.SC_BAD_REQUEST, "El ID de eliminación no es válido.");
                 }
                 return;
             }
 
+            // Caso 2: Guardar o Actualizar Turno
             String idStr = request.getParameter("id");
             String fecha = request.getParameter("fecha");
             String horaInicio = request.getParameter("horaInicio");
 
             if (fecha == null || fecha.trim().isEmpty() || horaInicio == null || horaInicio.trim().isEmpty()) {
-                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                response.getWriter().write("{\"error\": \"La fecha y la hora de inicio son obligatorias.\"}");
+                enviarRespuestaError(response, HttpServletResponse.SC_BAD_REQUEST, "La fecha y la hora de inicio son obligatorias.");
                 return;
             }
 
             TurnoPodologia turno = new TurnoPodologia();
+            
+            // Asignación de ID para edición
             if (idStr != null && !idStr.trim().isEmpty()) {
                 try {
                     turno.setId(Integer.parseInt(idStr.trim()));
-                } catch (NumberFormatException ignored) {}
+                } catch (NumberFormatException e) {
+                    LOGGER.log(Level.WARNING, "ID de turno no numérico recibido para edición: {0}", idStr);
+                }
             }
 
             turno.setCedula(obtenerParametro(request, "turnCedula", "cedula"));
@@ -95,16 +110,14 @@ public class TurnoPodologiaServlet extends HttpServlet {
 
             boolean exito = dao.guardarOActualizar(turno);
             if (exito) {
-                response.getWriter().write("{\"status\": \"OK\"}");
+                response.getWriter().write(gson.toJson(Collections.singletonMap("status", "OK")));
             } else {
-                response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                response.getWriter().write("{\"error\": \"No se pudo guardar el turno en la base de datos.\"}");
+                enviarRespuestaError(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "No se pudo guardar o actualizar el turno en la base de datos.");
             }
 
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Error en doPost: ControladorTurnos", e);
-            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            response.getWriter().write("{\"error\": \"Error al procesar la solicitud: " + e.getMessage() + "\"}");
+            enviarRespuestaError(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error al procesar la solicitud: " + e.getMessage());
         }
     }
 
@@ -113,6 +126,11 @@ public class TurnoPodologiaServlet extends HttpServlet {
         if (valor == null || valor.trim().isEmpty()) {
             valor = request.getParameter(claveAlternativa);
         }
-        return valor;
+        return valor != null ? valor.trim() : null;
+    }
+
+    private void enviarRespuestaError(HttpServletResponse response, int statusCode, String mensaje) throws IOException {
+        response.setStatus(statusCode);
+        response.getWriter().write(gson.toJson(Collections.singletonMap("error", mensaje)));
     }
 }
