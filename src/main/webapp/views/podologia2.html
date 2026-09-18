@@ -859,24 +859,33 @@
         /* ==========================================================================
            13. CONTROL DE SALTOS DE PÁGINA (EVITAR CORTE EN DESCARGA PDF)
            ========================================================================== */
+        /* Evita que los bloques de sección o tablas se dividan entre páginas */
         .content-card,
         .form-section,
-        .hc-header,
-        .signature-section,
         .motivo-consulta-container,
         table,
         tr,
         tbody,
-        .meds-list,
-        .med-item-row {
+        .table-responsive,
+        .canvas-container,
+        .form-group {
             page-break-inside: avoid !important;
             break-inside: avoid !important;
             -webkit-column-break-inside: avoid !important;
         }
-
-        h2, h3, .section-legend, .header-title, .med-table-header {
+        
+        /* Fuerza a que los encabezados permanezcan junto a su contenido */
+        h2, h3, .section-legend, .header-title, th {
             page-break-after: avoid !important;
             break-after: avoid !important;
+        }
+        
+        /* Oculta elementos interactivos no deseados en la descarga */
+        @media print {
+            .btn-secondary-pro,
+            button:not(.btn-signature) {
+                display: none !important;
+            }
         }
     </style>
 
@@ -2805,6 +2814,19 @@ function autocompletarPacienteReceta() {
         });
 }
 
+ // --- evitacortes descargar ---
+        const element = document.getElementById('historia-clinica'); // Contenedor a exportar
+
+const opt = {
+    margin:       [10, 10, 10, 10], // Margen en mm [arriba, izquierda, abajo, derecha]
+    filename:     'Historia_Clinica.pdf',
+    image:        { type: 'jpeg', quality: 0.98 },
+    html2canvas:  { scale: 2, useCORS: true, logging: false },
+    jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
+    pagebreak:    { mode: ['avoid-all', 'css', 'legacy'] } // Forzar respeto a CSS page-break
+};
+
+html2pdf().set(opt).from(element).save();
         
     </script>
 
