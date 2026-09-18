@@ -635,6 +635,147 @@
                 justify-content: center;
             }
         }
+/* ==========================================================================
+   11. CONTROLES DE AGENDA Y NAVEGACIÓN DE FECHAS (AGREGADO)
+   ========================================================================== */
+
+/* Header superior del módulo de agenda */
+.calendar-header-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+/* Contenedor del selector de fecha (< 18/09/2026 >) */
+.date-picker-container {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: #ffffff;
+    padding: 0.4rem 0.8rem;
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+
+.date-picker-container input[type="date"] {
+    border: none;
+    outline: none;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--text-main);
+    background: transparent;
+    cursor: pointer;
+    font-family: inherit;
+}
+
+/* Botones de navegación de fecha (< y >) */
+.btn-nav-date {
+    background: #f1f5f9;
+    border: 1px solid var(--border-color);
+    color: var(--text-main);
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.2s ease;
+}
+
+.btn-nav-date:hover {
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
+}
+
+/* Botón principal "+ Agendar Cita" */
+.btn-primary-pro {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+    color: white;
+    border: none;
+    padding: 0.65rem 1.25rem;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    box-shadow: 0 4px 12px rgba(42, 157, 143, 0.25);
+    transition: all 0.2s ease;
+    text-decoration: none;
+}
+
+.btn-primary-pro:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(42, 157, 143, 0.35);
+}
+
+/* Botón dashed de slots "+ Agendar en 08:00 (2 cupos)" */
+.btn-secondary-pro {
+    background: #f8fafc;
+    border: 1.5px dashed #cbd5e1;
+    color: var(--text-muted);
+    padding: 0.4rem 0.85rem;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-top: 4px;
+    display: inline-block;
+}
+
+.btn-secondary-pro:hover {
+    background: #e0f2fe;
+    border-color: var(--primary);
+    color: var(--primary-dark);
+}
+
+        /* ==========================================================================
+           12. CONTROL DE SALTOS DE PÁGINA (EVITAR CORTE EN DESCARGA PDF)
+           ========================================================================== */
+
+        /* Evita que los bloques de tablas, firmas, cards y secciones se dividan entre páginas */
+        .content-card,
+        .form-section,
+        .hc-header,
+        .signature-section,
+        .motivo-consulta-container,
+        table,
+        tr,
+        tbody,
+        .meds-list,
+        .med-item-row {
+            page-break-inside: avoid !important;
+            break-inside: avoid !important;
+            -webkit-column-break-inside: avoid !important;
+        }
+
+        /* Evita que los títulos queden huérfanos al final de una página */
+        h2, h3, .section-legend, .header-title, .med-table-header {
+            page-break-after: avoid !important;
+            break-after: avoid !important;
+        }
+
+        /* Reglas reforzadas al imprimir o procesar vía canvas/PDF */
+        @media print {
+            .content-card,
+            .form-section,
+            tr,
+            table,
+            .signature-section {
+                page-break-inside: avoid !important;
+                break-inside: avoid !important;
+            }
+        }
+        
     </style>
 </head>
 <body class="bg-slate-100 text-slate-800 antialiased min-h-screen py-8 px-4 sm:px-6 lg:px-8">
