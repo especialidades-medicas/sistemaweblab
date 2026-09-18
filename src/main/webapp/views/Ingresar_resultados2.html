@@ -601,19 +601,19 @@
                                         FSH (H. Foliculoestimulante)
                                         <select class="form-select form-select-sm mt-1" id="metodoFSH" style="font-size: 10px;">
                                             <option value="" selected disabled>Método Analítico...</option>
+											<option value="Metódo: ELFA (Ensayo de fluorescencia ligado a enzimas)">Metódo: ELFA (Ensayo de fluorescencia ligado a enzimas)</option>
                                             <option value="Electroquimioluminiscencia">Electroquimioluminiscencia</option>
                                             <option value="Inmunofluorescencia">Inmunofluorescencia</option>
                                             <option value="Quimioluminiscencia">Quimioluminiscencia</option>
+											<option value="">-</option>
                                         </select>
                                     </td>
                                     <td><input type="text" class="form-control form-control-sm form-control-editable" id="resFSH"></td>
                                     <td><input type="text" class="form-control form-control-sm text-muted" value="mUI/mL"></td>
                                     <td>
                                         <select class="form-select form-select-sm mt-1" style="font-size: 10px;">                                            
-                                            <option value="Mujeres :
-
-                                                Fase Folicular: 2.7 - 15.4 / Fase Ovulatoria: 3.9 - 22.0 / Fase Lútea: 1.0 - 14.4 / Postmenopausia: 5.0 - 160.0 / Hombres adultos: 1.5 - 12.4 ">Fase Folicular: 2.7 - 15.4 / Fase Ovulatoria: 3.9 - 22.0 / Fase Lútea: 1.0 - 14.4 / Postmenopausia: 5.0 - 160.0 / Hombres adultos: 1.5 - 12.4</option>
-                                            
+                                            <option value="F. Folicular: 2.70 - 15.40 | F. Ovulatoria: 4.70 - 21.50 | F. Lutea: 1.00 - 14.40 | Postmenopausia: 25.00 - 160.00 | Niños: 0.20 - 3.80 | Hombres: 1.00 - 42.50">F. Folicular: 2.70 - 15.40 | F. Ovulatoria: 4.70 - 21.50 | F. Lutea: 1.00 - 14.40 | Postmenopausia: 25.00 - 160.00 | Niños: 0.20 - 3.80 | Hombres: 1.00 - 42.50</option>
+                                            <option value="">-</option>
                                          </select>
                                     </td>
                                 </tr>
@@ -623,9 +623,11 @@
                                         17 Beta Estradiol
                                         <select class="form-select form-select-sm mt-1" id="metodoEstradiol" style="font-size: 10px;">
                                             <option class="form-control form-control-sm mt-1 text-secondary" value="" selected disabled >Método Analítico...</option>
+											<option value="Metódo: ELFA (Ensayo de fluorescencia ligado a enzimas)">Metódo: ELFA (Ensayo de fluorescencia ligado a enzimas)</option>
                                             <option value="Electroquimioluminiscencia">Electroquimioluminiscencia</option>
                                             <option value="Inmunofluorescencia">Inmunofluorescencia</option>
                                             <option value="Quimioluminiscencia">Quimioluminiscencia</option>
+											<option value="">-</option>
                                         </select>
                                     </td>                                            
                                             <td><input type="text" class="form-control form-control-sm form-control-editable" id="resEstradiol"></td>
@@ -637,23 +639,36 @@
                                                 LH (Hormona Luteinizante)                                                
                                             <select class="form-select form-select-sm mt-1" id="metodoLH" style="font-size: 10px;">
                                             <option class="form-control form-control-sm mt-1 text-secondary" value="" selected disabled >Método Analítico...</option>
+												
+											<option value="Metódo: ELFA (Ensayo de fluorescencia ligado a enzimas)">Metódo: ELFA (Ensayo de fluorescencia ligado a enzimas)</option>
                                             <option value="Electroquimioluminiscencia">Electroquimioluminiscencia</option>
                                             <option value="Inmunofluorescencia">Inmunofluorescencia</option>
                                             <option value="Quimioluminiscencia">Quimioluminiscencia</option>
+											<option value="">-</option>
                                         </select>
                                             </td>
                                             <td><input type="text" class="form-control form-control-sm form-control-editable" id="resLH"></td>
                                             <td><input type="text" class="form-control form-control-sm text-muted" value="mUI/mL"></td>
-                                            <td><input type="text" class="form-control form-control-sm text-muted" value="F. Folicular: 2.4–12.6 | P. Ovulatorio: 14.0–95.6 | Lútea: 1.0–11.4"></td>
+                                            <td><input type="text" class="form-control form-control-sm text-muted" value="Fase Folicular: 1.70 - 13.30 | F. Ovulatoria: 18.40 - 61.20 | F. Lutea: 0.50 - 19.80 | Postmenopausia: 14.40 - 62.20 | Niños: 0.20 - 1.40 | Hombres: 1.70 - 11.20"></td>
                                         </tr>
                                         <tr>
                                             <td class="fw-bold">
                                                 Progesterona
-                                                <input type="text" class="form-control form-control-sm mt-1 text-secondary" id="metodoProgesterona" value="Método: Quimioluminiscencia" style="font-size: 10px;">
+                                                <input type="text" class="form-control form-control-sm mt-1 text-secondary" id="metodoProgesterona" value="Metódo: ELFA (Ensayo de fluorescencia ligado a enzimas)" style="font-size: 10px;">
                                             </td>
                                             <td><input type="text" class="form-control form-control-sm form-control-editable" id="resProgesterona"></td>
                                             <td><input type="text" class="form-control form-control-sm text-muted" value="ng/mL"></td>
-                                            <td><input type="text" class="form-control form-control-sm text-muted" value="F. Folicular: 0.1–0.3 | Lútea: 1.2–15.9 | Embarazo: 10.0–44.0"></td>
+                                            <td><input type="text" class="form-control form-control-sm text-muted" value="F. Folicular: 0.15 - 1.40 | F. Ovulatoria 0.80 - 3.00 | Fase Lutea: 2.00 - 25.00 | Postmenopausia: 0.00 - 0.80 | Hombres 0.13 - 1.22 | EMBARAZO: 1er Trimestre 7.25 - 90.00 | 2do Trimestre 19.50 - 91.00 | 3er Trimestre 49.00 - 422.0"></td>
+                                        </tr>
+
+										 <tr>
+                                            <td class="fw-bold">
+                                                ESTROGENOS E2 (ESTRADIOL)
+                                                <input type="text" class="form-control form-control-sm mt-1 text-secondary" id="metodoEstrogeno" value="Metódo: ELFA (Ensayo de fluorescencia ligado a enzimas)" style="font-size: 10px;">
+                                            </td>
+                                            <td><input type="text" class="form-control form-control-sm form-control-editable" id="resEstrogeno"></td>
+                                            <td><input type="text" class="form-control form-control-sm text-muted" value="pg/mL"></td>
+                                            <td><input type="text" class="form-control form-control-sm text-muted" value="F. Folicular: 21.80 - 83.70 | F. Ovulatoria: 66.10 - 693.10 | F. Lutea 189.90 - 269.70 | Postmenopausia: 32.10 - 73.10 | Niños: 10.00 - 36.00 | Hombres: 20.00 - 75.00 | EMBARAZO: 1er Trimestre 786 - 4584 |  2do Trimestre 801 - 5763 |  3er Trimestre 1810 - 13890"></td>
                                         </tr>
                                         <!-- L.D.H -->
                                 <tr>
