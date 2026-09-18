@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -48,6 +49,8 @@ public class TurnosPodologiaDAO {
     }
 
     public boolean guardarOActualizar(TurnoPodologia turno) {
+        if (turno == null) return false;
+
         boolean esEdicion = turno.getId() > 0;
         String sql;
 
@@ -67,18 +70,21 @@ public class TurnosPodologiaDAO {
             setParamOrNull(ps, 3, turno.getCelular());
             setParamOrNull(ps, 4, turno.getEmail());
             setParamOrNull(ps, 5, turno.getMotivo());
-            ps.setString(6, turno.getFecha());
-            ps.setString(7, turno.getHoraInicio());
+            
+            // Normalización para evitar fallos de sintaxis en columnas DATE y TIME de MySQL
+            ps.setString(6, normalizarFecha(turno.getFecha()));
+            ps.setString(7, normalizarHora(turno.getHoraInicio()));
             ps.setInt(8, turno.getDuracionMinutos() > 0 ? turno.getDuracionMinutos() : 30);
 
             if (esEdicion) {
                 ps.setInt(9, turno.getId());
             }
 
-            return ps.executeUpdate() > 0;
+            int filasAfectadas = ps.executeUpdate();
+            return filasAfectadas > 0;
 
         } catch (SQLException e) {
-            LOGGER.log(Level.SEVERE, "Error al guardar/actualizar turno: " + e.getMessage(), e);
+            LOGGER.log(Level.SEVERE, "Error al " + (esEdicion ? "actualizar" : "guardar") + " turno (ID: " + turno.getId() + "): " + e.getMessage(), e);
             return false;
         }
     }
@@ -105,7 +111,10 @@ public class TurnosPodologiaDAO {
         t.setCelular(rs.getString("celular"));
         t.setEmail(rs.getString("email"));
         t.setMotivo(rs.getString("motivo"));
-        t.setFecha(rs.getString("fecha"));
+        
+        java.sql.Date f = rs.getDate("fecha");
+        t.setFecha(f != null ? f.toString() : rs.getString("fecha"));
+        
         t.setHoraInicio(rs.getString("hora_inicio"));
         t.setDuracionMinutos(rs.getInt("duracion_minutos"));
         t.setCreadoEn(rs.getTimestamp("creado_en"));
@@ -118,5 +127,24 @@ public class TurnosPodologiaDAO {
         } else {
             ps.setNull(index, Types.VARCHAR);
         }
+    }
+
+    private String normalizarFecha(String fecha) {
+        if (fecha == null || fecha.trim().isEmpty()) {
+            return LocalDate.now().toString();
+        }
+        return fecha.trim();
+    }
+
+    private String normalizarHora(String hora) {
+        if (hora == null || hora.trim().isEmpty()) {
+            return "08:00:00";
+        }
+        hora = hora.trim();
+        // Si viene en formato HH:mm (ej: "08:30"), lo convierte a HH:mm:ss ("08:30:00")
+        if (hora.length() == 5) {
+            return hora + ":00";
+        }
+        return hora;
     }
 }
