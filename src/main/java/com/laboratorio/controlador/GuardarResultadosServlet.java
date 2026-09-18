@@ -5,6 +5,7 @@ import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -63,7 +64,7 @@ public class GuardarResultadosServlet extends HttpServlet {
 
             conn.setAutoCommit(false); // Iniciar transacción
 
-            // 1. Extraer los nombres de los exámenes que SÍ tienen resultado
+            // 1. Extraer nombres de exámenes que conservan resultado
             List<String> examenesConservar = new ArrayList<>();
             for (int i = 0; i < array.length(); i++) {
                 JSONObject obj = array.getJSONObject(i);
@@ -73,7 +74,7 @@ public class GuardarResultadosServlet extends HttpServlet {
                 }
             }
 
-            // 2. Eliminar de la BD los exámenes de esta orden que ya no tienen resultado (NOT IN)
+            // 2. Limpiar registros eliminados
             if (!examenesConservar.isEmpty()) {
                 StringBuilder sqlDelete = new StringBuilder(
                     "DELETE FROM laboratorio_resultados WHERE TRIM(id_orden) = ? AND TRIM(nombre_examen) NOT IN ("
@@ -91,7 +92,6 @@ public class GuardarResultadosServlet extends HttpServlet {
                     stmtDelete.executeUpdate();
                 }
             } else {
-                // Si la lista vino sin exámenes activos, se limpian todos los resultados de la orden
                 String sqlDeleteAll = "DELETE FROM laboratorio_resultados WHERE TRIM(id_orden) = ?";
                 try (PreparedStatement stmtDelete = conn.prepareStatement(sqlDeleteAll)) {
                     stmtDelete.setString(1, idOrden);
@@ -99,7 +99,7 @@ public class GuardarResultadosServlet extends HttpServlet {
                 }
             }
 
-            // 3. Insertar o Actualizar los exámenes activos
+            // 3. Insertar o actualizar resultados válidos
             boolean hayExamenesValidos = primerRegistro.has("nombre_examen") && !primerRegistro.optBoolean("eliminar_todos", false);
             
             if (hayExamenesValidos) {
@@ -119,9 +119,12 @@ public class GuardarResultadosServlet extends HttpServlet {
                         stmtUpsert.setString(1, idOrden);
                         stmtUpsert.setString(2, obj.optString("cod_doc", ""));
                         stmtUpsert.setString(3, obj.optString("nombre_paciente", ""));
-                        stmtUpsert.setString(4, obj.optString("fecha_nacimiento", ""));
+                        
+                        // Asignación segura de fechas (NULL si vienen vacías)
+                        setParametroFecha(stmtUpsert, 4, obj.optString("fecha_nacimiento", ""));
                         stmtUpsert.setString(5, obj.optString("edad", ""));
-                        stmtUpsert.setString(6, obj.optString("fecha_registro", ""));
+                        setParametroFecha(stmtUpsert, 6, obj.optString("fecha_registro", ""));
+
                         stmtUpsert.setString(7, obj.optString("sexo", ""));
                         stmtUpsert.setString(8, obj.optString("telefono", ""));
                         stmtUpsert.setString(9, obj.optString("categoria", ""));
@@ -135,12 +138,23 @@ public class GuardarResultadosServlet extends HttpServlet {
                 }
             }
 
-            conn.commit(); // Confirmar cambios en la base de datos
-            out.print("{\"status\":\"success\", \"message\":\"Resultados sincronizados y guardados correctamente.\"}");
+            conn.commit();
+            out.print("{\"status\":\"success\", \"message\":\"Resultados guardados y sincronizados correctamente.\"}");
 
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Error al sincronizar resultados: " + e.getMessage(), e);
             out.print("{\"status\":\"error\", \"message\":\"" + e.getMessage().replace("\"", "'") + "\"}");
+        }
+    }
+
+    /**
+     * Setea una fecha válida o NULL para evitar 'Data truncation: Incorrect date value'
+     */
+    private void setParametroFecha(PreparedStatement stmt, int index, String fechaStr) throws SQLException {
+        if (fechaStr == null || fechaStr.trim().isEmpty()) {
+            stmt.setNull(index, Types.DATE);
+        } else {
+            stmt.setString(index, fechaStr.trim());
         }
     }
 }
