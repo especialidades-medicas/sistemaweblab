@@ -33,11 +33,14 @@
             font-family: 'Poppins', 'Inter', sans-serif;
             background: linear-gradient(135deg, #f0f4f8 0%, #d7e3ec 100%);
             min-height: 100vh;
+            color: #1e293b;
         }
 
         canvas { 
             touch-action: none; 
             cursor: crosshair; 
+            max-width: 100%;
+            border-radius: 8px;
         }
 
         /* ==========================================================================
@@ -272,7 +275,7 @@
             font-size: 28px;
         }
 
-        .stat-info h3 { color: var(--gray); font-size: 0.85rem; font-weight: 500; margin-bottom: 0.2rem; }
+        .stat-info h3 { color: var(--gray); font-size: 0.85rem; font-weight: 500; margin-bottom: 0.2rem; border-bottom: none; padding-bottom: 0; }
         .stat-info .number { font-size: 1.75rem; font-weight: 700; color: var(--dark); }
 
         .content-card {
@@ -344,7 +347,7 @@
             background: linear-gradient(135deg, var(--primary-hover) 0%, var(--primary-dark) 100%);
         }
 
-        .btn-delete { background: var(--danger); color: white; border: none; border-radius: 6px; cursor: pointer; transition: 0.2s; }
+        .btn-delete { background: var(--danger); color: white; border: none; padding: 0.4rem 0.8rem; border-radius: 6px; cursor: pointer; transition: 0.2s; }
         .btn-delete:hover { background: var(--danger-dark); }
 
         .form-grid {
@@ -365,6 +368,14 @@
             font-size: 0.9rem;
             outline: none;
             transition: border-color 0.2s;
+            font-family: inherit;
+        }
+
+        .form-group input:focus, 
+        .form-group select:focus, 
+        .form-group textarea:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(42, 157, 143, 0.15);
         }
 
         .form-group.full-width { grid-column: 1 / -1; }
@@ -373,7 +384,7 @@
         .checkbox-label input { cursor: pointer; width: 15px; height: 15px; }
 
         /* ==========================================================================
-           7. SECCIONES ESPECÍFICAS
+           7. SECCIONES ESPECÍFICAS & FIRMAS
            ========================================================================== */
         .iess-only { display: none; }
         .iess-active .iess-only { display: flex; }
@@ -389,8 +400,75 @@
             border-bottom: 1px dashed #dee2e6; 
         }
 
+        /* Sección de Firmas (Agregado para PDFs) */
+        .signature-section {
+            display: flex;
+            justify-content: space-around;
+            align-items: flex-end;
+            margin-top: 3rem;
+            padding-top: 1rem;
+            page-break-inside: avoid;
+        }
+
+        .signature-box {
+            text-align: center;
+            width: 220px;
+            border-top: 1px solid var(--dark);
+            padding-top: 0.5rem;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-main);
+        }
+
+        /* Contenedor del Podograma/Canvas */
+        .canvas-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #f8fafc;
+            border: 1px dashed var(--border-color);
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+
         /* ==========================================================================
-           8. ADAPTABILIDAD (RESPONSIVE)
+           8. VENTANAS MODALES / DIÁLOGOS (Agregado)
+           ========================================================================== */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 2rem;
+            border-radius: 1rem;
+            max-width: 600px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+
+        /* ==========================================================================
+           9. ADAPTABILIDAD (RESPONSIVE)
            ========================================================================== */
         @media (max-width: 992px) {
             .dashboard { grid-template-columns: 1fr; }
@@ -429,15 +507,15 @@
         }
 
         /* ==========================================================================
-           9. ESTILOS DE IMPRESIÓN (@media print)
+           10. ESTILOS DE IMPRESIÓN (@media print) Y DESCARGA EN PDF
            ========================================================================== */
         @media print {
             @page {
                 size: A4;
-                margin: 15mm 10mm 15mm 10mm;
+                margin: 12mm 10mm 12mm 10mm;
             }
 
-            .no-print { 
+            .no-print, .sidebar, .menu-toggle, .header, .btn-action, .btn-secondary-outline, .btn-primary-pro { 
                 display: none !important; 
             }
 
@@ -445,6 +523,16 @@
                 background: white !important; 
                 padding: 0 !important; 
                 margin: 0 !important;
+                color: black !important;
+            }
+
+            .dashboard {
+                display: block !important;
+            }
+
+            .main-content {
+                padding: 0 !important;
+                overflow: visible !important;
             }
 
             .print-container { 
@@ -461,6 +549,8 @@
                 background: transparent !important; 
                 resize: none !important; 
                 padding: 0 !important; 
+                box-shadow: none !important;
+                color: black !important;
             }
 
             .content-card {
@@ -473,7 +563,7 @@
         }
 
         /* ==========================================================================
-           10. ESTILOS ESPECÍFICOS: RECETARIO / PRESCRIPCIÓN MÉDICA
+           11. ESTILOS ESPECÍFICOS: RECETARIO / PRESCRIPCIÓN MÉDICA
            ========================================================================== */
         .card-header-wrapper {
             margin-bottom: 1.5rem;
@@ -633,10 +723,8 @@
         }
 
         /* ==========================================================================
-           11. CONTROLES DE AGENDA Y NAVEGACIÓN DE FECHAS (ADAPTADO AL HTML REAL)
+           12. CONTROLES DE AGENDA Y NAVEGACIÓN DE FECHAS
            ========================================================================== */
-
-        /* Encabezado del Módulo de Citas */
         .calendar-header {
             display: flex;
             justify-content: space-between;
@@ -658,7 +746,6 @@
             margin-top: 0.2rem;
         }
 
-        /* Navegador de Fechas Horizontal (< 19/09/2026 >) */
         .date-navigator {
             display: inline-flex !important;
             flex-direction: row !important;
@@ -673,7 +760,6 @@
             width: fit-content;
         }
 
-        /* Botones de navegación con flechas SVG */
         .btn-nav {
             background: #f1f5f9;
             border: 1px solid var(--border-color);
@@ -702,7 +788,6 @@
             pointer-events: none;
         }
 
-        /* Campo envoltorio del Input de Fecha e icono */
         .date-input-wrapper {
             display: inline-flex !important;
             align-items: center !important;
@@ -729,7 +814,6 @@
             cursor: pointer;
         }
 
-        /* Botón estilo PRO ("+ Agendar Cita") */
         .btn-primary-pro {
             background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
             color: white;
@@ -773,10 +857,8 @@
         }
 
         /* ==========================================================================
-           12. CONTROL DE SALTOS DE PÁGINA (EVITAR CORTE EN DESCARGA PDF)
+           13. CONTROL DE SALTOS DE PÁGINA (EVITAR CORTE EN DESCARGA PDF)
            ========================================================================== */
-
-        /* Evita que los bloques de tablas, firmas, cards y secciones se dividan entre páginas */
         .content-card,
         .form-section,
         .hc-header,
@@ -792,22 +874,9 @@
             -webkit-column-break-inside: avoid !important;
         }
 
-        /* Evita que los títulos queden huérfanos al final de una página */
         h2, h3, .section-legend, .header-title, .med-table-header {
             page-break-after: avoid !important;
             break-after: avoid !important;
-        }
-
-        /* Reglas reforzadas al imprimir o procesar vía canvas/PDF */
-        @media print {
-            .content-card,
-            .form-section,
-            tr,
-            table,
-            .signature-section {
-                page-break-inside: avoid !important;
-                break-inside: avoid !important;
-            }
         }
     </style>
 
@@ -2778,25 +2847,25 @@ function autocompletarPacienteReceta() {
             </div>
 
             <div class="form-row-pro">
-            <div class="form-group-pro">
-                <label for="modal-fecha">Fecha de Cita:</label>
-                <input type="date" id="modal-fecha" required>
-            </div>
-        
-            <div class="form-group-pro">
-                <label for="hora-inicio">Hora de Inicio:</label>
-                <select id="hora-inicio" required></select>
-            </div>
-        
-            <div class="form-group-pro">
-                <label for="duracion-minutos">Duración del Turno:</label>
-                <select id="duracion-minutos" required>
-                    <option value="40">40 Minutos</option>
-                    <option value="50" selected>50 Minutos</option>
-                    <option value="60">60 Minutos</option>
-                </select>
-            </div>
-        </div>
+                <div class="form-group-pro">
+                    <label for="modal-fecha">Fecha de Cita:</label>
+                    <input type="date" id="modal-fecha" required>
+                </div>
+            
+                <div class="form-group-pro">
+                    <label for="hora-inicio">Hora de Inicio:</label>
+                    <select id="hora-inicio" required></select>
+                </div>
+            
+                <div class="form-group-pro">
+                    <label for="duracion-minutos">Duración del Turno:</label>
+                    <select id="duracion-minutos" required>
+                        <option value="40">40 Minutos</option>
+                        <option value="50" selected>50 Minutos</option>
+                        <option value="60">60 Minutos</option>
+                    </select>
+                </div>
+            </div> <!-- Se cierra correctamente el bloque form-row-pro -->
 
             <div class="modal-actions-pro">
                 <button type="button" class="btn-secondary-pro" onclick="cerrarModal()">Cancelar</button>
