@@ -121,13 +121,33 @@ function renderizarCalendario() {
 
     tbody.innerHTML = '';
 
+    // Obtener la fecha seleccionada actualmente en el input
+    const inputFecha = document.getElementById('fecha-agenda');
+    const fechaSeleccionada = inputFecha ? inputFecha.value : '';
+    
+    // Formatear la fecha a DD/MM/YYYY para un mensaje más legible
+    let fechaTexto = fechaSeleccionada;
+    if (fechaSeleccionada && fechaSeleccionada.includes('-')) {
+        const [anio, mes, dia] = fechaSeleccionada.split('-');
+        fechaTexto = `${dia}/${mes}/${anio}`;
+    }
+
     HORARIOS_AGENDA.forEach(hora => {
         const turnosEnBloque = turnosDelDia.filter(t => t.horaInicio === hora);
         const tr = document.createElement('tr');
 
         let tarjetasHTML = turnosEnBloque.map(t => {
-            const celularLimpio = t.celular ? t.celular.replace(/\D/g, '') : '';
-            const mensajeWA = encodeURIComponent(`Hola ${t.nombres}, le recordamos su cita de Podología programada para el ${t.fecha} a las ${t.horaInicio}.`);
+            // Limpiar el número de teléfono
+            let celularLimpio = t.celular ? t.celular.replace(/\D/g, '') : '';
+            
+            // Formatear código de país para Ecuador (+593)
+            if (celularLimpio.startsWith('0') && celularLimpio.length === 10) {
+                celularLimpio = '593' + celularLimpio.substring(1);
+            }
+
+            // Usar la fecha formateada de la agenda seleccionada
+            const fechaCita = fechaTexto || t.fecha || '';
+            const mensajeWA = encodeURIComponent(`Hola ${t.nombres}, le recordamos su cita de Podología programada para el ${fechaCita} a las ${t.horaInicio}.`);
             
             const botonWhatsApp = celularLimpio ? `
                 <a href="https://wa.me/${celularLimpio}?text=${mensajeWA}" 
