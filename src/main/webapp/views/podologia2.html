@@ -21,648 +21,773 @@
         
     <style>
         /* ==========================================================================
-   1. RESET & ESTILOS BASE
-   ========================================================================== */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
-body {
-    font-family: 'Poppins', 'Inter', sans-serif;
-    background: linear-gradient(135deg, #f0f4f8 0%, #d7e3ec 100%);
-    min-height: 100vh;
-}
-
-canvas { 
-    touch-action: none; 
-    cursor: crosshair; 
-}
-
-
-/* ==========================================================================
-   2. VARIABLES GLOBALES (:root)
-   ========================================================================== */
-:root {
-    /* Paleta Principal */
-    --primary: #2a9d8f;
-    --primary-dark: #264653;
-    --primary-hover: #023e8a;
-    --secondary: #e76f51;
-    --success: #2a9d8f;
-    --danger: #ef476f;
-    
-    /* Neutros y Fondos */
-    --light-bg: #f8f9fa;
-    --dark: #212529;
-    --gray: #6c757d;
-    --bg-card: #ffffff;
-    --border-color: #e2e8f0;
-    --text-main: #1e293b;
-    --text-muted: #64748b;
-    --badge-bg: #f1f5f9;
-    
-    /* Indicadores y Redes */
-    --ws-color: #25D366;
-    --email-color: #0284c7;
-    --warning-bg: #fff7ed;
-    --warning-border: #f97316;
-}
-
-
-/* ==========================================================================
-   3. LAYOUT PRINCIPAL & DASHBOARD
-   ========================================================================== */
-.dashboard {
-    display: grid;
-    grid-template-columns: 260px 1fr;
-    min-height: 100vh;
-    position: relative;
-}
-
-.main-content {
-    padding: 2.5rem;
-    overflow-y: auto;
-    width: 100%;
-    max-width: 100%;
-    box-sizing: border-box;
-}
-
-.section-view { display: none; }
-.section-view.active { display: block; }
-
-
-/* ==========================================================================
-   4. SIDEBAR & NAVEGACIÓN
-   ========================================================================== */
-.sidebar {
-    background: linear-gradient(180deg, #2a9d8f 0%, #264653 100%);
-    padding: 1.5rem 1rem;
-    color: white;
-    box-shadow: 4px 0 15px rgba(0,0,0,0.1);
-    transition: transform 0.3s ease;
-    z-index: 100;
-}
-
-.logo {
-    padding: 0.5rem 1rem 1.5rem 1rem;
-    font-size: 1.7rem;
-    font-weight: 700;
-    letter-spacing: 0.5px;
-    border-bottom: 1px solid rgba(255,255,255,0.2);
-    margin-bottom: 1.5rem;
-    color: #ffffff;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.close-sidebar-btn {
-    display: none;
-    background: none;
-    border: none;
-    color: white;
-    font-size: 1.5rem;
-    cursor: pointer;
-}
-
-.nav-item {
-    padding: 0.85rem 1rem;
-    margin: 0.4rem 0;
-    border-radius: 0.75rem;
-    cursor: pointer;
-    color: rgba(255, 255, 255, 0.8);
-    font-weight: 500;
-    transition: all 0.3s ease;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    text-decoration: none;
-}
-
-.nav-item:hover {
-    background: rgba(255, 255, 255, 0.15);
-    color: white;
-    transform: translateX(5px);
-}
-
-.nav-item.active {
-    background: #ffffff;
-    color: var(--primary-dark);
-    font-weight: 600;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-}
-
-.menu-toggle {
-    display: none;
-    background: var(--primary);
-    color: white;
-    border: none;
-    width: 40px;
-    height: 40px;
-    border-radius: 8px;
-    font-size: 1.2rem;
-    cursor: pointer;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-}
-
-.sidebar-overlay {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0,0,0,0.5);
-    z-index: 99;
-}
-
-.sidebar-overlay.active { display: block; }
-
-
-/* ==========================================================================
-   5. HEADER & BÚSQUEDA
-   ========================================================================== */
-.header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 2rem;
-    background: white;
-    padding: 1.2rem 2rem;
-    border-radius: 1rem;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-    gap: 1rem;
-    flex-wrap: wrap;
-}
-
-.header-left {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-}
-
-.header h1 { 
-    font-size: 1.5rem; 
-    color: var(--dark); 
-    font-weight: 600; 
-}
-
-.search-container {
-    display: flex;
-    align-items: center;
-    background: #f1f3f5;
-    border-radius: 50px;
-    padding: 0.3rem 0.3rem 0.3rem 1.2rem;
-    width: 100%;
-    max-width: 300px;
-    border: 1px solid #dee2e6;
-    box-sizing: border-box;
-}
-
-.search-container input { 
-    border: none; 
-    background: transparent; 
-    outline: none; 
-    width: 100%; 
-    font-size: 0.9rem; 
-    color: var(--dark); 
-}
-
-.search-container button { 
-    background: var(--primary); 
-    border: none; 
-    color: white; 
-    padding: 0.5rem 1.2rem; 
-    border-radius: 50px; 
-    cursor: pointer; 
-    font-weight: 500; 
-    flex-shrink: 0; 
-}
-
-
-/* ==========================================================================
-   6. COMPONENTES GENERALES
-   ========================================================================== */
-
-/* --- Tarjetas de Estadísticas --- */
-.stats-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-    gap: 1.5rem;
-    margin-bottom: 2.5rem;
-}
-
-.stat-card {
-    background: white;
-    padding: 1.5rem;
-    border-radius: 1rem;
-    box-shadow: 0 6px 20px rgba(0,0,0,0.06);
-    display: flex;
-    align-items: center;
-    gap: 20px;
-    border-left: 5px solid var(--primary);
-}
-
-.stat-icon {
-    width: 60px;
-    height: 60px;
-    border-radius: 12px;
-    background: rgba(42, 157, 143, 0.1);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 28px;
-}
-
-.stat-info h3 { color: var(--gray); font-size: 0.85rem; font-weight: 500; margin-bottom: 0.2rem; }
-.stat-info .number { font-size: 1.75rem; font-weight: 700; color: var(--dark); }
-
-/* --- Contenedor de Contenido --- */
-.content-card {
-    background: white;
-    padding: 2rem;
-    border-radius: 1rem;
-    box-shadow: 0 6px 20px rgba(0,0,0,0.06);
-    margin-bottom: 2rem;
-    overflow-x: auto;
-}
-
-.content-card h2 { font-size: 1.25rem; color: var(--dark); margin-bottom: 1.2rem; font-weight: 600; }
-
-/* --- Tablas --- */
-table { 
-    width: 100%; 
-    border-collapse: collapse; 
-    min-width: 600px;
-}
-
-th { 
-    text-align: left; 
-    padding: 1rem; 
-    background: #f8f9fa; 
-    color: var(--gray); 
-    font-size: 0.85rem; 
-    font-weight: 600; 
-    border-bottom: 2px solid #dee2e6; 
-}
-
-td { 
-    padding: 1rem; 
-    border-bottom: 1px solid #f1f3f5; 
-    font-size: 0.9rem; 
-    color: var(--dark); 
-}
-
-.status { 
-    padding: 0.35rem 0.85rem; 
-    border-radius: 50px; 
-    font-size: 0.75rem; 
-    font-weight: 600; 
-    display: inline-block; 
-}
-
-.status.confirmed { background: #e8f5e9; color: #2e7d32; }
-.status.pending { background: #fff8e1; color: #f57f17; }
-
-/* --- Botones --- */
-.btn-action { 
-    background: var(--primary); 
-    color: white; 
-    border: none; 
-    padding: 0.4rem 1rem; 
-    border-radius: 6px; 
-    cursor: pointer; 
-    font-size: 0.85rem; 
-    transition: 0.2s; 
-    text-decoration: none; 
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-}
-
-.btn-action:hover { background: var(--primary-dark); opacity: 0.9; }
-
-.btn-delete { background: var(--danger); color: white; border: none; border-radius: 6px; cursor: pointer; transition: 0.2s; }
-.btn-delete:hover { background: #d90429; }
-
-/* --- Formularios --- */
-.form-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 1.2rem;
-    margin-bottom: 1.5rem;
-}
-
-.form-group { display: flex; flex-direction: column; gap: 0.4rem; }
-.form-group label { font-size: 0.85rem; font-weight: 600; color: var(--gray); }
-.form-group input, 
-.form-group select, 
-.form-group textarea {
-    padding: 0.7rem 1rem;
-    border: 1px solid #dee2e6;
-    border-radius: 8px;
-    font-size: 0.9rem;
-    outline: none;
-    transition: border-color 0.2s;
-}
-
-.form-group.full-width { grid-column: 1 / -1; }
-
-.checkbox-label { display: flex; align-items: center; gap: 8px; font-size: 0.82rem; color: var(--dark); cursor: pointer; }
-.checkbox-label input { cursor: pointer; width: 15px; height: 15px; }
-
-/* --- Pestañas (Tabs) --- */
-.tabs-container {
-    display: flex;
-    gap: 15px;
-    margin-bottom: 20px;
-    border-bottom: 2px solid #eef2f5;
-}
-
-.tab-btn {
-    background: transparent;
-    border: none;
-    padding: 10px 20px;
-    font-size: 1rem;
-    font-weight: 600;
-    color: #6c757d;
-    cursor: pointer;
-    border-bottom: 3px solid transparent;
-    transition: all 0.3s ease;
-    margin-bottom: -2px;
-}
-
-.tab-btn:hover { color: var(--primary-dark); }
-.tab-btn.active { color: var(--primary-dark); border-bottom: 3px solid var(--primary-dark); }
-
-
-/* ==========================================================================
-   7. SECCIONES ESPECÍFICAS
-   ========================================================================== */
-
-/* --- Historia Clínica --- */
-.iess-only { display: none; }
-.iess-active .iess-only { display: flex; }
-
-.hc-header { text-align: center; border-bottom: 2px solid var(--primary); padding-bottom: 1rem; margin-bottom: 1.5rem; }
-.hc-header h2 { color: var(--primary-dark); font-size: 1.3rem; }
-
-h3 { 
-    font-size: 1.05rem; 
-    color: var(--primary-dark); 
-    margin: 1.5rem 0 0.8rem 0; 
-    padding-bottom: 0.3rem; 
-    border-bottom: 1px dashed #dee2e6; 
-}
-
-.tratamiento-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 0.8rem;
-    background: #eef9f6;
-    padding: 1rem;
-    border-radius: 8px;
-    border: 1px solid #a3e4d7;
-}
-
-#clinical-form, #clinical-form * {
-    box-sizing: border-box !important;
-}
-
-/* --- Agenda & Calendario --- */
-.agenda-container { background: var(--bg-card); border-radius: 12px; padding: 24px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); }
-.subtitle { color: var(--text-muted); font-size: 14px; margin-top: 4px; }
-
-.calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-
-.date-navigator { 
-    display: flex; 
-    align-items: center; 
-    justify-content: center; 
-    gap: 12px; 
-    margin-bottom: 24px; 
-    background: #f8fafc; 
-    padding: 10px; 
-    border-radius: 10px; 
-    border: 1px solid var(--border-color); 
-    width: fit-content; 
-    margin-left: auto; 
-    margin-right: auto; 
-}
-
-.btn-nav { 
-    background: #ffffff; 
-    border: 1px solid var(--border-color); 
-    border-radius: 8px; 
-    padding: 8px 12px; 
-    cursor: pointer; 
-    color: var(--text-main); 
-    transition: all 0.2s; 
-    display: flex; 
-    align-items: center; 
-}
-.btn-nav:hover { background: var(--primary); color: white; border-color: var(--primary); }
-
-.date-input-wrapper { display: flex; align-items: center; gap: 8px; background: white; padding: 6px 12px; border-radius: 8px; border: 1px solid var(--border-color); color: var(--text-muted); }
-.date-input-wrapper input { border: none; outline: none; font-weight: 600; color: var(--text-main); font-size: 15px; cursor: pointer; }
-
-.table-responsive-pro { overflow-x: auto; border-radius: 10px; border: 1px solid var(--border-color); }
-.calendar-table-pro { width: 100%; border-collapse: collapse; text-align: left; }
-.calendar-table-pro th { background: #f8fafc; padding: 14px 16px; font-weight: 600; color: var(--text-muted); font-size: 13px; text-transform: uppercase; border-bottom: 1px solid var(--border-color); }
-.calendar-table-pro td { padding: 10px 16px; border-bottom: 1px solid var(--border-color); vertical-align: top; }
-.calendar-table-pro tr.media-hora td { background-color: #fafbfc; }
-
-.paciente-card-pro {
-    background: #ffffff;
-    border: 1px solid var(--border-color);
-    border-left: 4px solid var(--primary);
-    border-radius: 8px;
-    padding: 10px 14px;
-    margin-bottom: 8px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.03);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    transition: transform 0.1s ease;
-}
-.paciente-card-pro:hover { transform: translateY(-1px); box-shadow: 0 4px 10px rgba(0,0,0,0.06); }
-.paciente-card-pro.sobreocupado { border-left-color: var(--warning-border); background-color: var(--warning-bg); }
-
-.paciente-info-pro { font-size: 13px; color: var(--text-main); }
-.paciente-info-pro .nombre { font-size: 14px; font-weight: 700; color: var(--text-main); display: block; }
-.paciente-info-pro .detalles { color: var(--text-muted); font-size: 12px; margin-top: 2px; }
-
-.actions-group-pro { display: flex; gap: 6px; align-items: center; }
-
-/* Botones específicos de Agenda */
-.btn-ws-pro { background-color: #dcfce7; color: #15803d; }
-.btn-email-pro { background-color: #e0f2fe; color: #0369a1; }
-.btn-edit-pro { background-color: #fef3c7; color: #b45309; }
-.btn-danger-pro { background-color: #fee2e2; color: #b91c1c; }
-.btn-primary-pro { background-color: var(--primary); color: white; border: none; border-radius: 8px; padding: 10px 18px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
-.btn-primary-pro:hover { background-color: var(--primary-hover); }
-.btn-secondary-pro { background-color: #e2e8f0; color: var(--text-main); border: none; border-radius: 8px; padding: 10px 18px; font-weight: 600; cursor: pointer; }
-
-.alerta-cupo-pro { color: #c2410c; font-size: 12px; font-weight: 600; margin-top: 4px; display: flex; align-items: center; gap: 4px; }
-
-/* --- Modales --- */
-.modal-pro { 
-    position: fixed; 
-    top: 0; 
-    left: 0; 
-    width: 100%; 
-    height: 100%; 
-    background: rgba(15, 23, 42, 0.5); 
-    backdrop-filter: blur(4px); 
-    display: flex; 
-    align-items: center; 
-    justify-content: center; 
-    z-index: 1000; 
-}
-
-.modal-content-pro { 
-    background: white; 
-    padding: 24px; 
-    border-radius: 12px; 
-    width: 460px; 
-    max-width: 90%; 
-    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); 
-}
-
-.modal-header-pro { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
-.btn-close-modal { background: none; border: none; font-size: 20px; color: var(--text-muted); cursor: pointer; }
-
-.form-group-pro { margin-bottom: 14px; display: flex; flex-direction: column; flex: 1; }
-.form-group-pro label { font-size: 12px; font-weight: 600; color: var(--text-muted); margin-bottom: 4px; text-transform: uppercase; }
-.form-group-pro input, 
-.form-group-pro select { 
-    padding: 9px 12px; 
-    border: 1px solid var(--border-color); 
-    border-radius: 6px; 
-    font-size: 14px; 
-    color: var(--text-main); 
-    outline: none; 
-}
-
-.form-group-pro input:focus, 
-.form-group-pro select:focus { 
-    border-color: var(--primary); 
-    box-shadow: 0 0 0 3px rgba(0, 119, 182, 0.1); 
-}
-
-.form-row-pro { display: flex; gap: 12px; }
-.modal-actions-pro { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; }
-
-
-/* ==========================================================================
-   8. ADAPTABILIDAD (RESPONSIVE)
-   ========================================================================== */
-@media (max-width: 992px) {
-    .dashboard { grid-template-columns: 1fr; }
-    
-    .sidebar { 
-        position: fixed; 
-        top: 0; 
-        left: -280px; 
-        width: 260px; 
-        height: 100vh; 
-        transition: transform 0.3s ease-in-out; 
-        z-index: 101; 
-    }
-    .sidebar.open { transform: translateX(280px); }
-    
-    .close-sidebar-btn { display: block; }
-    .menu-toggle { display: flex; }
-    
-    .main-content { padding: 1.5rem 1rem; }
-
-    .header {
-        flex-direction: column;
-        align-items: stretch;
-        padding: 1rem;
-    }
-
-    .header-left {
-        justify-content: space-between;
-        width: 100%;
-    }
-
-    .search-container {
-        max-width: 100%;
-        margin-top: 0.5rem;
-    }
-}
-
-
-/* ==========================================================================
-   9. ESTILOS DE IMPRESIÓN (@media print)
-   ========================================================================== */
-@media print {
-    @page {
-        size: A4;
-        margin: 15mm 10mm 15mm 10mm;
-    }
-
-    .no-print { 
-        display: none !important; 
-    }
-
-    body { 
-        background: white !important; 
-        padding: 0 !important; 
-        margin: 0 !important;
-    }
-
-    .print-container { 
-        box-shadow: none !important; 
-        border: none !important; 
-        margin: 0 !important; 
-        padding: 0 !important;
-        width: 100% !important; 
-        max-width: none !important; 
-    }
-
-    input, textarea, select { 
-        border: none !important; 
-        background: transparent !important; 
-        resize: none !important; 
-        padding: 0 !important; 
-    }
-
-    input[type="checkbox"] { 
-        accent-color: black; 
-    }
-
-    .content-card {
-        box-shadow: none !important;
-        border: none !important;
-        margin-bottom: 1rem !important;
-        padding: 0.5rem 0 !important;
-        border-radius: 0 !important;
-        break-inside: avoid;
-        page-break-inside: avoid;
-    }
-
-    h1, h2, h3, label, .content-card h2 {
-        break-after: avoid;
-        page-break-after: avoid;
-    }
-
-    .avoid-break {
-        page-break-inside: avoid !important;
-        break-inside: avoid !important;
-    }
-
-    .page-break {
-        page-break-before: always !important;
-        break-before: page !important;
-    }
-}
-        
+           1. RESET & ESTILOS BASE
+           ========================================================================== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', 'Inter', sans-serif;
+            background: linear-gradient(135deg, #f0f4f8 0%, #d7e3ec 100%);
+            min-height: 100vh;
+        }
+
+        canvas { 
+            touch-action: none; 
+            cursor: crosshair; 
+        }
+
+        /* ==========================================================================
+           2. VARIABLES GLOBALES (:root)
+           ========================================================================== */
+        :root {
+            /* Paleta Principal */
+            --primary: #2a9d8f;
+            --primary-dark: #264653;
+            --primary-hover: #023e8a;
+            --secondary: #e76f51;
+            --success: #2a9d8f;
+            --danger: #ef476f;
+            
+            /* Neutros y Fondos */
+            --light-bg: #f8f9fa;
+            --dark: #212529;
+            --gray: #6c757d;
+            --bg-card: #ffffff;
+            --border-color: #e2e8f0;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --badge-bg: #f1f5f9;
+            
+            /* Indicadores y Redes */
+            --ws-color: #25D366;
+            --email-color: #0284c7;
+            --warning-bg: #fff7ed;
+            --warning-border: #f97316;
+        }
+
+        /* ==========================================================================
+           3. LAYOUT PRINCIPAL & DASHBOARD
+           ========================================================================== */
+        .dashboard {
+            display: grid;
+            grid-template-columns: 260px 1fr;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        .main-content {
+            padding: 2.5rem;
+            overflow-y: auto;
+            width: 100%;
+            max-width: 100%;
+            box-sizing: border-box;
+        }
+
+        .section-view { display: none; }
+        .section-view.active { display: block; }
+
+        /* ==========================================================================
+           4. SIDEBAR & NAVEGACIÓN
+           ========================================================================== */
+        .sidebar {
+            background: linear-gradient(180deg, #2a9d8f 0%, #264653 100%);
+            padding: 1.5rem 1rem;
+            color: white;
+            box-shadow: 4px 0 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+            z-index: 100;
+        }
+
+        .logo {
+            padding: 0.5rem 1rem 1.5rem 1rem;
+            font-size: 1.7rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+            margin-bottom: 1.5rem;
+            color: #ffffff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .close-sidebar-btn {
+            display: none;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .nav-item {
+            padding: 0.85rem 1rem;
+            margin: 0.4rem 0;
+            border-radius: 0.75rem;
+            cursor: pointer;
+            color: rgba(255, 255, 255, 0.8);
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+        }
+
+        .nav-item:hover {
+            background: rgba(255, 255, 255, 0.15);
+            color: white;
+            transform: translateX(5px);
+        }
+
+        .nav-item.active {
+            background: #ffffff;
+            color: var(--primary-dark);
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .menu-toggle {
+            display: none;
+            background: var(--primary);
+            color: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        }
+
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 99;
+        }
+
+        .sidebar-overlay.active { display: block; }
+
+        /* ==========================================================================
+           5. HEADER & BÚSQUEDA
+           ========================================================================== */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            background: white;
+            padding: 1.2rem 2rem;
+            border-radius: 1rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .header h1 { 
+            font-size: 1.5rem; 
+            color: var(--dark); 
+            font-weight: 600; 
+        }
+
+        .search-container {
+            display: flex;
+            align-items: center;
+            background: #f1f3f5;
+            border-radius: 50px;
+            padding: 0.3rem 0.3rem 0.3rem 1.2rem;
+            width: 100%;
+            max-width: 300px;
+            border: 1px solid #dee2e6;
+            box-sizing: border-box;
+        }
+
+        .search-container input { 
+            border: none; 
+            background: transparent; 
+            outline: none; 
+            width: 100%; 
+            font-size: 0.9rem; 
+            color: var(--dark); 
+        }
+
+        .search-container button { 
+            background: var(--primary); 
+            border: none; 
+            color: white; 
+            padding: 0.5rem 1.2rem; 
+            border-radius: 50px; 
+            cursor: pointer; 
+            font-weight: 500; 
+            flex-shrink: 0; 
+        }
+
+        /* ==========================================================================
+           6. COMPONENTES GENERALES
+           ========================================================================== */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 1rem;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.06);
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            border-left: 5px solid var(--primary);
+        }
+
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            background: rgba(42, 157, 143, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+        }
+
+        .stat-info h3 { color: var(--gray); font-size: 0.85rem; font-weight: 500; margin-bottom: 0.2rem; }
+        .stat-info .number { font-size: 1.75rem; font-weight: 700; color: var(--dark); }
+
+        .content-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 1rem;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.06);
+            margin-bottom: 2rem;
+            overflow-x: auto;
+        }
+
+        .content-card h2 { font-size: 1.25rem; color: var(--dark); margin-bottom: 1.2rem; font-weight: 600; }
+
+        table { 
+            width: 100%; 
+            border-collapse: collapse; 
+            min-width: 600px;
+        }
+
+        th { 
+            text-align: left; 
+            padding: 1rem; 
+            background: #f8f9fa; 
+            color: var(--gray); 
+            font-size: 0.85rem; 
+            font-weight: 600; 
+            border-bottom: 2px solid #dee2e6; 
+        }
+
+        td { 
+            padding: 1rem; 
+            border-bottom: 1px solid #f1f3f5; 
+            font-size: 0.9rem; 
+            color: var(--dark); 
+        }
+
+        .status { 
+            padding: 0.35rem 0.85rem; 
+            border-radius: 50px; 
+            font-size: 0.75rem; 
+            font-weight: 600; 
+            display: inline-block; 
+        }
+
+        .status.confirmed { background: #e8f5e9; color: #2e7d32; }
+        .status.pending { background: #fff8e1; color: #f57f17; }
+
+        .btn-action { 
+            background: var(--primary); 
+            color: white; 
+            border: none; 
+            padding: 0.4rem 1rem; 
+            border-radius: 6px; 
+            cursor: pointer; 
+            font-size: 0.85rem; 
+            transition: 0.2s; 
+            text-decoration: none; 
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .btn-action:hover { background: var(--primary-dark); opacity: 0.9; }
+
+        .btn-delete { background: var(--danger); color: white; border: none; border-radius: 6px; cursor: pointer; transition: 0.2s; }
+        .btn-delete:hover { background: #d90429; }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group { display: flex; flex-direction: column; gap: 0.4rem; }
+        .form-group label { font-size: 0.85rem; font-weight: 600; color: var(--gray); }
+        .form-group input, 
+        .form-group select, 
+        .form-group textarea {
+            padding: 0.7rem 1rem;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .form-group.full-width { grid-column: 1 / -1; }
+
+        .checkbox-label { display: flex; align-items: center; gap: 8px; font-size: 0.82rem; color: var(--dark); cursor: pointer; }
+        .checkbox-label input { cursor: pointer; width: 15px; height: 15px; }
+
+        .tabs-container {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #eef2f5;
+        }
+
+        .tab-btn {
+            background: transparent;
+            border: none;
+            padding: 10px 20px;
+            font-size: 1rem;
+            font-weight: 600;
+            color: #6c757d;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+            margin-bottom: -2px;
+        }
+
+        .tab-btn:hover { color: var(--primary-dark); }
+        .tab-btn.active { color: var(--primary-dark); border-bottom: 3px solid var(--primary-dark); }
+
+        /* ==========================================================================
+           7. SECCIONES ESPECÍFICAS
+           ========================================================================== */
+        .iess-only { display: none; }
+        .iess-active .iess-only { display: flex; }
+
+        .hc-header { text-align: center; border-bottom: 2px solid var(--primary); padding-bottom: 1rem; margin-bottom: 1.5rem; }
+        .hc-header h2 { color: var(--primary-dark); font-size: 1.3rem; }
+
+        h3 { 
+            font-size: 1.05rem; 
+            color: var(--primary-dark); 
+            margin: 1.5rem 0 0.8rem 0; 
+            padding-bottom: 0.3rem; 
+            border-bottom: 1px dashed #dee2e6; 
+        }
+
+        .tratamiento-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.8rem;
+            background: #eef9f6;
+            padding: 1rem;
+            border-radius: 8px;
+            border: 1px solid #a3e4d7;
+        }
+
+        #clinical-form, #clinical-form * {
+            box-sizing: border-box !important;
+        }
+
+        .agenda-container { background: var(--bg-card); border-radius: 12px; padding: 24px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); }
+        .subtitle { color: var(--text-muted); font-size: 14px; margin-top: 4px; }
+
+        .calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+
+        .date-navigator { 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            gap: 12px; 
+            margin-bottom: 24px; 
+            background: #f8fafc; 
+            padding: 10px; 
+            border-radius: 10px; 
+            border: 1px solid var(--border-color); 
+            width: fit-content; 
+            margin-left: auto; 
+            margin-right: auto; 
+        }
+
+        .btn-nav { 
+            background: #ffffff; 
+            border: 1px solid var(--border-color); 
+            border-radius: 8px; 
+            padding: 8px 12px; 
+            cursor: pointer; 
+            color: var(--text-main); 
+            transition: all 0.2s; 
+            display: flex; 
+            align-items: center; 
+        }
+        .btn-nav:hover { background: var(--primary); color: white; border-color: var(--primary); }
+
+        .date-input-wrapper { display: flex; align-items: center; gap: 8px; background: white; padding: 6px 12px; border-radius: 8px; border: 1px solid var(--border-color); color: var(--text-muted); }
+        .date-input-wrapper input { border: none; outline: none; font-weight: 600; color: var(--text-main); font-size: 15px; cursor: pointer; }
+
+        .table-responsive-pro { overflow-x: auto; border-radius: 10px; border: 1px solid var(--border-color); }
+        .calendar-table-pro { width: 100%; border-collapse: collapse; text-align: left; }
+        .calendar-table-pro th { background: #f8fafc; padding: 14px 16px; font-weight: 600; color: var(--text-muted); font-size: 13px; text-transform: uppercase; border-bottom: 1px solid var(--border-color); }
+        .calendar-table-pro td { padding: 10px 16px; border-bottom: 1px solid var(--border-color); vertical-align: top; }
+        .calendar-table-pro tr.media-hora td { background-color: #fafbfc; }
+
+        .paciente-card-pro {
+            background: #ffffff;
+            border: 1px solid var(--border-color);
+            border-left: 4px solid var(--primary);
+            border-radius: 8px;
+            padding: 10px 14px;
+            margin-bottom: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.03);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: transform 0.1s ease;
+        }
+        .paciente-card-pro:hover { transform: translateY(-1px); box-shadow: 0 4px 10px rgba(0,0,0,0.06); }
+        .paciente-card-pro.sobreocupado { border-left-color: var(--warning-border); background-color: var(--warning-bg); }
+
+        .paciente-info-pro { font-size: 13px; color: var(--text-main); }
+        .paciente-info-pro .nombre { font-size: 14px; font-weight: 700; color: var(--text-main); display: block; }
+        .paciente-info-pro .detalles { color: var(--text-muted); font-size: 12px; margin-top: 2px; }
+
+        .actions-group-pro { display: flex; gap: 6px; align-items: center; }
+
+        .btn-ws-pro { background-color: #dcfce7; color: #15803d; }
+        .btn-email-pro { background-color: #e0f2fe; color: #0369a1; }
+        .btn-edit-pro { background-color: #fef3c7; color: #b45309; }
+        .btn-danger-pro { background-color: #fee2e2; color: #b91c1c; }
+        .btn-primary-pro { background-color: var(--primary); color: white; border: none; border-radius: 8px; padding: 10px 18px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
+        .btn-primary-pro:hover { background-color: var(--primary-hover); }
+        .btn-secondary-pro { background-color: #e2e8f0; color: var(--text-main); border: none; border-radius: 8px; padding: 10px 18px; font-weight: 600; cursor: pointer; }
+
+        .alerta-cupo-pro { color: #c2410c; font-size: 12px; font-weight: 600; margin-top: 4px; display: flex; align-items: center; gap: 4px; }
+
+        .modal-pro { 
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%; 
+            background: rgba(15, 23, 42, 0.5); 
+            backdrop-filter: blur(4px); 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            z-index: 1000; 
+        }
+
+        .modal-content-pro { 
+            background: white; 
+            padding: 24px; 
+            border-radius: 12px; 
+            width: 460px; 
+            max-width: 90%; 
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); 
+        }
+
+        .modal-header-pro { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+        .btn-close-modal { background: none; border: none; font-size: 20px; color: var(--text-muted); cursor: pointer; }
+
+        .form-group-pro { margin-bottom: 14px; display: flex; flex-direction: column; flex: 1; }
+        .form-group-pro label { font-size: 12px; font-weight: 600; color: var(--text-muted); margin-bottom: 4px; text-transform: uppercase; }
+        .form-group-pro input, 
+        .form-group-pro select { 
+            padding: 9px 12px; 
+            border: 1px solid var(--border-color); 
+            border-radius: 6px; 
+            font-size: 14px; 
+            color: var(--text-main); 
+            outline: none; 
+        }
+
+        .form-group-pro input:focus, 
+        .form-group-pro select:focus { 
+            border-color: var(--primary); 
+            box-shadow: 0 0 0 3px rgba(0, 119, 182, 0.1); 
+        }
+
+        .form-row-pro { display: flex; gap: 12px; }
+        .modal-actions-pro { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; }
+
+        /* ==========================================================================
+           8. ADAPTABILIDAD (RESPONSIVE)
+           ========================================================================== */
+        @media (max-width: 992px) {
+            .dashboard { grid-template-columns: 1fr; }
+            
+            .sidebar { 
+                position: fixed; 
+                top: 0; 
+                left: -280px; 
+                width: 260px; 
+                height: 100vh; 
+                transition: transform 0.3s ease-in-out; 
+                z-index: 101; 
+            }
+            .sidebar.open { transform: translateX(280px); }
+            
+            .close-sidebar-btn { display: block; }
+            .menu-toggle { display: flex; }
+            
+            .main-content { padding: 1.5rem 1rem; }
+
+            .header {
+                flex-direction: column;
+                align-items: stretch;
+                padding: 1rem;
+            }
+
+            .header-left {
+                justify-content: space-between;
+                width: 100%;
+            }
+
+            .search-container {
+                max-width: 100%;
+                margin-top: 0.5rem;
+            }
+        }
+
+        /* ==========================================================================
+           9. ESTILOS DE IMPRESIÓN (@media print)
+           ========================================================================== */
+        @media print {
+            @page {
+                size: A4;
+                margin: 15mm 10mm 15mm 10mm;
+            }
+
+            .no-print { 
+                display: none !important; 
+            }
+
+            body { 
+                background: white !important; 
+                padding: 0 !important; 
+                margin: 0 !important;
+            }
+
+            .print-container { 
+                box-shadow: none !important; 
+                border: none !important; 
+                margin: 0 !important; 
+                padding: 0 !important;
+                width: 100% !important; 
+                max-width: none !important; 
+            }
+
+            input, textarea, select { 
+                border: none !important; 
+                background: transparent !important; 
+                resize: none !important; 
+                padding: 0 !important; 
+            }
+
+            input[type="checkbox"] { 
+                accent-color: black; 
+            }
+
+            .content-card {
+                box-shadow: none !important;
+                border: none !important;
+                margin-bottom: 1rem !important;
+                padding: 0.5rem 0 !important;
+                border-radius: 0 !important;
+                break-inside: avoid;
+                page-break-inside: avoid;
+            }
+
+            h1, h2, h3, label, .content-card h2 {
+                break-after: avoid;
+                page-break-after: avoid;
+            }
+
+            .avoid-break {
+                page-break-inside: avoid !important;
+                break-inside: avoid !important;
+            }
+
+            .page-break {
+                page-break-before: always !important;
+                break-before: page !important;
+            }
+        }
+
+        /* ==========================================================================
+           10. ESTILOS ESPECÍFICOS: RECETARIO / PRESCRIPCIÓN MÉDICA
+           ========================================================================== */
+        .card-header-wrapper {
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 1rem;
+        }
+
+        .header-title {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .badge-status {
+            background: rgba(42, 157, 143, 0.12);
+            color: var(--primary-dark);
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 0.25rem 0.65rem;
+            border-radius: 20px;
+        }
+
+        .form-section {
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 1.25rem;
+            margin-bottom: 1.5rem;
+            background: #fafbfc;
+        }
+
+        .section-legend {
+            font-weight: 600;
+            color: var(--primary-dark);
+            padding: 0 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.95rem;
+        }
+
+        .required { color: var(--danger); }
+
+        .med-table-header {
+            display: grid;
+            grid-template-columns: 2.5fr 1fr 1fr 1fr 40px;
+            gap: 0.5rem;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--gray);
+            padding: 0.5rem 0;
+            margin-top: 0.5rem;
+        }
+
+        .meds-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .med-item-row {
+            display: grid;
+            grid-template-columns: 2.5fr 1fr 1fr 1fr 40px;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        .mobile-only { display: none; }
+
+        .btn-icon-delete {
+            background: transparent;
+            border: none;
+            color: var(--gray);
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .btn-icon-delete:hover {
+            color: var(--danger);
+            background: #fee2e2;
+        }
+
+        .btn-secondary-outline {
+            background: #ffffff;
+            border: 1px solid var(--primary);
+            color: var(--primary-dark);
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            transition: background 0.2s ease;
+        }
+
+        .btn-secondary-outline:hover {
+            background: rgba(42, 157, 143, 0.1);
+        }
+
+        .form-footer {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 1.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .med-table-header { display: none; }
+            .med-item-row {
+                grid-template-columns: 1fr;
+                background: #ffffff;
+                padding: 1rem;
+                border: 1px solid var(--border-color);
+                border-radius: 8px;
+                gap: 0.75rem;
+            }
+            .mobile-only {
+                display: block;
+                font-size: 0.75rem;
+                font-weight: 600;
+                color: var(--gray);
+                margin-bottom: 0.2rem;
+            }
+            .btn-icon-delete {
+                justify-content: flex-end;
+                width: 100%;
+                background: #fee2e2;
+                color: var(--danger);
+                padding: 0.4rem;
+            }
+            .form-footer {
+                justify-content: stretch;
+            }
+            .form-footer button {
+                width: 100%;
+                justify-content: center;
+            }
+        }
     </style>
 </head>
 <body class="bg-slate-100 text-slate-800 antialiased min-h-screen py-8 px-4 sm:px-6 lg:px-8">
@@ -1441,62 +1566,133 @@ h3 {
 </div>
             
             <!-- VISTA 4: RECETARIO / PRESCRIPCIÓN MÉDICA -->
-            <div id="recetario-view" class="section-view">
-                <div class="content-card">
-                    <h2>Prescripción Médica y Recetario</h2>
-                    <p style="color: var(--gray); margin-bottom: 1.2rem;">Genere recetas médicas estandarizadas con indicación clara de dosis e indicaciones.</p>
-
-                    <form id="formReceta" onsubmit="generarPDFReceta(event)">
-                        <div class="form-grid">
-                            <div class="form-group">
-                                <label>Fecha:</label>
-                                <input type="date" id="recFecha" required>
-                            </div>
-                            <div class="form-group">
-                                <label>Cédula Paciente:</label>
-                                <input type="text" id="recCedula" placeholder="Ej. 1713031167" onblur="autocompletarPacienteReceta()" required>
-                            </div>
-                            <div class="form-group full-width">
-                                <label>Nombre del Paciente:</label>
-                                <input type="text" id="recNombres" placeholder="Nombres del paciente" required>
-                            </div>
-                            <div class="form-group">
-                                <label>Edad:</label>
-                                <input type="text" id="recEdad" placeholder="Ej. 28 años">
-                            </div>
-                            <div class="form-group">
-                                <label>Alergias Conocidas:</label>
-                                <input type="text" id="recAlergias" placeholder="Ej. Penicilina / Ninguna" value="Ninguna declarada">
-                            </div>
-                            <div class="form-group full-width">
-                                <label>Diagnóstico / Presunción Clínica:</label>
-                                <input type="text" id="recDiagnostico" placeholder="Ej. Gastroenteritis aguda no especificada">
-                            </div>
-                        </div>
-
-                        <h3 style="margin: 1.5rem 0 1rem; color: var(--primary);">Medicamentos Prescritos</h3>
-                        <div id="medicamentosContainer">
-                            <div class="med-item">
-                                <input type="text" class="med-nombre" placeholder="Medicamento / Presentación (Ej. Paracetamol 500mg)" required>
-                                <input type="text" class="med-dosis" placeholder="Dosis (Ej. 1 tableta)" required>
-                                <input type="text" class="med-frecuencia" placeholder="Frecuencia (Ej. c/8 horas)" required>
-                                <input type="text" class="med-duracion" placeholder="Duración (Ej. 5 días)" required>
-                                <button type="button" class="btn-delete" onclick="eliminarFilaMed(this)">✕</button>
-                            </div>
-                        </div>
-                        <button type="button" class="btn-secondary" onclick="agregarFilaMed()" style="margin-bottom: 1.5rem;">+ Agregar Medicamento</button>
-
-                        <div class="form-group full-width">
-                            <label>Indicaciones Adicionales / Dieta / Cuidados Generales:</label>
-                            <textarea id="recIndicaciones" rows="3" placeholder="Ej. Tomar abundantemente líquidos, reposo relativo, acudir a control en 5 días o antes si hay signos de alarma."></textarea>
-                        </div>
-
-                        <div style="margin-top: 1.5rem;">
-                            <button type="submit" class="btn-action" style="padding: 0.7rem 1.5rem;">Imprimir / Descargar Receta Médica (PDF)</button>
-                        </div>
-                    </form>
-                </div>
+<div id="recetario-view" class="section-view">
+    <div class="content-card shadow-sm">
+        <!-- Encabezado de Sección -->
+        <div class="card-header-wrapper">
+            <div class="header-title">
+                <h2>Prescripción Médica y Recetario</h2>
+                <span class="badge-status">Módulo Oficial</span>
             </div>
+            <p class="subtitle">Genere recetas médicas estandarizadas con indicación clara de dosis e indicaciones.</p>
+        </div>
+
+        <form id="formReceta" onsubmit="generarPDFReceta(event)" class="prescription-form">
+            
+            <!-- SECCIÓN: Datos del Paciente -->
+            <fieldset class="form-section">
+                <legend class="section-legend">
+                    <svg class="icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                    Información del Paciente
+                </legend>
+                
+                <div class="form-grid">
+                    <div class="form-group col-3">
+                        <label for="recFecha">Fecha de Emisión <span class="required">*</span></label>
+                        <input type="date" id="recFecha" required>
+                    </div>
+
+                    <div class="form-group col-3">
+                        <label for="recCedula">Cédula / Documento <span class="required">*</span></label>
+                        <div class="input-with-action">
+                            <input type="text" id="recCedula" placeholder="Ej. 1713031167" onblur="autocompletarPacienteReceta()" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group col-6">
+                        <label for="recNombres">Nombres y Apellidos Completos <span class="required">*</span></label>
+                        <input type="text" id="recNombres" placeholder="Nombres del paciente" required>
+                    </div>
+
+                    <div class="form-group col-3">
+                        <label for="recEdad">Edad</label>
+                        <input type="text" id="recEdad" placeholder="Ej. 28 años">
+                    </div>
+
+                    <div class="form-group col-9">
+                        <label for="recAlergias">Alergias Conocidas</label>
+                        <input type="text" id="recAlergias" placeholder="Ej. Penicilina / Ninguna" value="Ninguna declarada" class="highlight-input">
+                    </div>
+
+                    <div class="form-group col-12">
+                        <label for="recDiagnostico">Diagnóstico / Presunción Clínica</label>
+                        <input type="text" id="recDiagnostico" placeholder="Ej. Gastroenteritis aguda no especificada">
+                    </div>
+                </div>
+            </fieldset>
+
+            <!-- SECCIÓN: Medicamentos Prescritos -->
+            <fieldset class="form-section">
+                <legend class="section-legend">
+                    <svg class="icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.5 20.5L3 13a4.95 4.95 0 1 1 7-7l7.5 7.5a4.95 4.95 0 1 1-7 7z"/><path d="m8.5 8.5 7 7"/></svg>
+                    Esquema Terapéutico (Medicamentos)
+                </legend>
+
+                <div class="med-table-header">
+                    <span class="col-med-name">Medicamento / Presentación</span>
+                    <span class="col-med-dose">Dosis</span>
+                    <span class="col-med-freq">Frecuencia</span>
+                    <span class="col-med-dur">Duración</span>
+                    <span class="col-med-action"></span>
+                </div>
+
+                <div id="medicamentosContainer" class="meds-list">
+                    <div class="med-item-row">
+                        <div class="med-field flex-grow-2">
+                            <label class="mobile-only">Medicamento / Presentación</label>
+                            <input type="text" class="med-nombre" placeholder="Ej. Paracetamol 500mg" required>
+                        </div>
+                        <div class="med-field">
+                            <label class="mobile-only">Dosis</label>
+                            <input type="text" class="med-dosis" placeholder="Ej. 1 tableta" required>
+                        </div>
+                        <div class="med-field">
+                            <label class="mobile-only">Frecuencia</label>
+                            <input type="text" class="med-frecuencia" placeholder="Ej. c/8 horas" required>
+                        </div>
+                        <div class="med-field">
+                            <label class="mobile-only">Duración</label>
+                            <input type="text" class="med-duracion" placeholder="Ej. 5 días" required>
+                        </div>
+                        <div class="med-action">
+                            <button type="button" class="btn-icon-delete" title="Eliminar medicamento" onclick="eliminarFilaMed(this)" aria-label="Eliminar fila">
+                                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="med-actions-bar">
+                    <button type="button" class="btn-secondary-outline" onclick="agregarFilaMed()">
+                        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                        Agregar Medicamento
+                    </button>
+                </div>
+            </fieldset>
+
+            <!-- SECCIÓN: Indicaciones y Cierre -->
+            <fieldset class="form-section">
+                <legend class="section-legend">
+                    <svg class="icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                    Indicaciones Adicionales
+                </legend>
+
+                <div class="form-group full-width">
+                    <label for="recIndicaciones">Cuidados Generales, Dieta o Signos de Alarma</label>
+                    <textarea id="recIndicaciones" rows="3" placeholder="Ej. Tomar abundante líquido, reposo relativo, acudir a control en 5 días o antes si presenta signos de alarma."></textarea>
+                </div>
+            </fieldset>
+
+            <!-- Acciones Principales -->
+            <div class="form-footer">
+                <button type="submit" class="btn-primary-action">
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+                    Generar y Descargar Receta (PDF)
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
 
         </div>
     </div>
