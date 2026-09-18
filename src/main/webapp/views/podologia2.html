@@ -47,10 +47,11 @@
             /* Paleta Principal */
             --primary: #2a9d8f;
             --primary-dark: #264653;
-            --primary-hover: #023e8a;
+            --primary-hover: #1d7066;
             --secondary: #e76f51;
             --success: #2a9d8f;
             --danger: #ef476f;
+            --danger-dark: #d90429;
             
             /* Neutros y Fondos */
             --light-bg: #f8f9fa;
@@ -320,24 +321,31 @@
         .status.pending { background: #fff8e1; color: #f57f17; }
 
         .btn-action { 
-            background: var(--primary); 
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
             color: white; 
             border: none; 
-            padding: 0.4rem 1rem; 
-            border-radius: 6px; 
+            padding: 0.8rem 1.6rem; 
+            border-radius: 8px; 
             cursor: pointer; 
-            font-size: 0.85rem; 
-            transition: 0.2s; 
+            font-size: 0.95rem; 
+            font-weight: 600;
+            transition: all 0.25s ease; 
             text-decoration: none; 
             display: inline-flex;
             align-items: center;
-            gap: 4px;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: 0 4px 12px rgba(42, 157, 143, 0.3);
         }
 
-        .btn-action:hover { background: var(--primary-dark); opacity: 0.9; }
+        .btn-action:hover { 
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(42, 157, 143, 0.4);
+            background: linear-gradient(135deg, var(--primary-hover) 0%, var(--primary-dark) 100%);
+        }
 
         .btn-delete { background: var(--danger); color: white; border: none; border-radius: 6px; cursor: pointer; transition: 0.2s; }
-        .btn-delete:hover { background: #d90429; }
+        .btn-delete:hover { background: var(--danger-dark); }
 
         .form-grid {
             display: grid;
@@ -364,29 +372,6 @@
         .checkbox-label { display: flex; align-items: center; gap: 8px; font-size: 0.82rem; color: var(--dark); cursor: pointer; }
         .checkbox-label input { cursor: pointer; width: 15px; height: 15px; }
 
-        .tabs-container {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 20px;
-            border-bottom: 2px solid #eef2f5;
-        }
-
-        .tab-btn {
-            background: transparent;
-            border: none;
-            padding: 10px 20px;
-            font-size: 1rem;
-            font-weight: 600;
-            color: #6c757d;
-            cursor: pointer;
-            border-bottom: 3px solid transparent;
-            transition: all 0.3s ease;
-            margin-bottom: -2px;
-        }
-
-        .tab-btn:hover { color: var(--primary-dark); }
-        .tab-btn.active { color: var(--primary-dark); border-bottom: 3px solid var(--primary-dark); }
-
         /* ==========================================================================
            7. SECCIONES ESPECÍFICAS
            ========================================================================== */
@@ -403,141 +388,6 @@
             padding-bottom: 0.3rem; 
             border-bottom: 1px dashed #dee2e6; 
         }
-
-        .tratamiento-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 0.8rem;
-            background: #eef9f6;
-            padding: 1rem;
-            border-radius: 8px;
-            border: 1px solid #a3e4d7;
-        }
-
-        #clinical-form, #clinical-form * {
-            box-sizing: border-box !important;
-        }
-
-        .agenda-container { background: var(--bg-card); border-radius: 12px; padding: 24px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); }
-        .subtitle { color: var(--text-muted); font-size: 14px; margin-top: 4px; }
-
-        .calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-
-        .date-navigator { 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            gap: 12px; 
-            margin-bottom: 24px; 
-            background: #f8fafc; 
-            padding: 10px; 
-            border-radius: 10px; 
-            border: 1px solid var(--border-color); 
-            width: fit-content; 
-            margin-left: auto; 
-            margin-right: auto; 
-        }
-
-        .btn-nav { 
-            background: #ffffff; 
-            border: 1px solid var(--border-color); 
-            border-radius: 8px; 
-            padding: 8px 12px; 
-            cursor: pointer; 
-            color: var(--text-main); 
-            transition: all 0.2s; 
-            display: flex; 
-            align-items: center; 
-        }
-        .btn-nav:hover { background: var(--primary); color: white; border-color: var(--primary); }
-
-        .date-input-wrapper { display: flex; align-items: center; gap: 8px; background: white; padding: 6px 12px; border-radius: 8px; border: 1px solid var(--border-color); color: var(--text-muted); }
-        .date-input-wrapper input { border: none; outline: none; font-weight: 600; color: var(--text-main); font-size: 15px; cursor: pointer; }
-
-        .table-responsive-pro { overflow-x: auto; border-radius: 10px; border: 1px solid var(--border-color); }
-        .calendar-table-pro { width: 100%; border-collapse: collapse; text-align: left; }
-        .calendar-table-pro th { background: #f8fafc; padding: 14px 16px; font-weight: 600; color: var(--text-muted); font-size: 13px; text-transform: uppercase; border-bottom: 1px solid var(--border-color); }
-        .calendar-table-pro td { padding: 10px 16px; border-bottom: 1px solid var(--border-color); vertical-align: top; }
-        .calendar-table-pro tr.media-hora td { background-color: #fafbfc; }
-
-        .paciente-card-pro {
-            background: #ffffff;
-            border: 1px solid var(--border-color);
-            border-left: 4px solid var(--primary);
-            border-radius: 8px;
-            padding: 10px 14px;
-            margin-bottom: 8px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.03);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            transition: transform 0.1s ease;
-        }
-        .paciente-card-pro:hover { transform: translateY(-1px); box-shadow: 0 4px 10px rgba(0,0,0,0.06); }
-        .paciente-card-pro.sobreocupado { border-left-color: var(--warning-border); background-color: var(--warning-bg); }
-
-        .paciente-info-pro { font-size: 13px; color: var(--text-main); }
-        .paciente-info-pro .nombre { font-size: 14px; font-weight: 700; color: var(--text-main); display: block; }
-        .paciente-info-pro .detalles { color: var(--text-muted); font-size: 12px; margin-top: 2px; }
-
-        .actions-group-pro { display: flex; gap: 6px; align-items: center; }
-
-        .btn-ws-pro { background-color: #dcfce7; color: #15803d; }
-        .btn-email-pro { background-color: #e0f2fe; color: #0369a1; }
-        .btn-edit-pro { background-color: #fef3c7; color: #b45309; }
-        .btn-danger-pro { background-color: #fee2e2; color: #b91c1c; }
-        .btn-primary-pro { background-color: var(--primary); color: white; border: none; border-radius: 8px; padding: 10px 18px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
-        .btn-primary-pro:hover { background-color: var(--primary-hover); }
-        .btn-secondary-pro { background-color: #e2e8f0; color: var(--text-main); border: none; border-radius: 8px; padding: 10px 18px; font-weight: 600; cursor: pointer; }
-
-        .alerta-cupo-pro { color: #c2410c; font-size: 12px; font-weight: 600; margin-top: 4px; display: flex; align-items: center; gap: 4px; }
-
-        .modal-pro { 
-            position: fixed; 
-            top: 0; 
-            left: 0; 
-            width: 100%; 
-            height: 100%; 
-            background: rgba(15, 23, 42, 0.5); 
-            backdrop-filter: blur(4px); 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            z-index: 1000; 
-        }
-
-        .modal-content-pro { 
-            background: white; 
-            padding: 24px; 
-            border-radius: 12px; 
-            width: 460px; 
-            max-width: 90%; 
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); 
-        }
-
-        .modal-header-pro { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
-        .btn-close-modal { background: none; border: none; font-size: 20px; color: var(--text-muted); cursor: pointer; }
-
-        .form-group-pro { margin-bottom: 14px; display: flex; flex-direction: column; flex: 1; }
-        .form-group-pro label { font-size: 12px; font-weight: 600; color: var(--text-muted); margin-bottom: 4px; text-transform: uppercase; }
-        .form-group-pro input, 
-        .form-group-pro select { 
-            padding: 9px 12px; 
-            border: 1px solid var(--border-color); 
-            border-radius: 6px; 
-            font-size: 14px; 
-            color: var(--text-main); 
-            outline: none; 
-        }
-
-        .form-group-pro input:focus, 
-        .form-group-pro select:focus { 
-            border-color: var(--primary); 
-            box-shadow: 0 0 0 3px rgba(0, 119, 182, 0.1); 
-        }
-
-        .form-row-pro { display: flex; gap: 12px; }
-        .modal-actions-pro { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; }
 
         /* ==========================================================================
            8. ADAPTABILIDAD (RESPONSIVE)
@@ -613,33 +463,12 @@
                 padding: 0 !important; 
             }
 
-            input[type="checkbox"] { 
-                accent-color: black; 
-            }
-
             .content-card {
                 box-shadow: none !important;
                 border: none !important;
                 margin-bottom: 1rem !important;
                 padding: 0.5rem 0 !important;
                 border-radius: 0 !important;
-                break-inside: avoid;
-                page-break-inside: avoid;
-            }
-
-            h1, h2, h3, label, .content-card h2 {
-                break-after: avoid;
-                page-break-after: avoid;
-            }
-
-            .avoid-break {
-                page-break-inside: avoid !important;
-                break-inside: avoid !important;
-            }
-
-            .page-break {
-                page-break-before: always !important;
-                break-before: page !important;
             }
         }
 
@@ -687,15 +516,21 @@
 
         .required { color: var(--danger); }
 
+        /* Ajuste de proporciones en Grid: Medicamento más ancho, campos secundarios reducidos */
         .med-table-header {
             display: grid;
-            grid-template-columns: 2.5fr 1fr 1fr 1fr 40px;
+            grid-template-columns: 3.5fr 1fr 1fr 1fr 42px;
             gap: 0.5rem;
             font-size: 0.8rem;
             font-weight: 600;
             color: var(--gray);
             padding: 0.5rem 0;
             margin-top: 0.5rem;
+            text-align: center;
+        }
+
+        .med-table-header span:first-child {
+            text-align: left;
         }
 
         .meds-list {
@@ -706,48 +541,64 @@
 
         .med-item-row {
             display: grid;
-            grid-template-columns: 2.5fr 1fr 1fr 1fr 40px;
+            grid-template-columns: 3.5fr 1fr 1fr 1fr 42px;
             gap: 0.5rem;
             align-items: center;
         }
 
+        /* Padding reducido y tamaño optimizado para entradas cortas */
+        .med-item-row input {
+            padding: 0.55rem 0.6rem;
+            font-size: 0.85rem;
+            width: 100%;
+        }
+
         .mobile-only { display: none; }
 
+        /* Botón ELIMINAR Optimizado */
         .btn-icon-delete {
-            background: transparent;
-            border: none;
-            color: var(--gray);
+            background: #fee2e2;
+            border: 1px solid #fca5a5;
+            color: var(--danger);
             cursor: pointer;
-            padding: 0.5rem;
-            border-radius: 6px;
+            padding: 0;
+            border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
             transition: all 0.2s ease;
+            width: 42px;
+            height: 36px;
         }
 
         .btn-icon-delete:hover {
-            color: var(--danger);
-            background: #fee2e2;
+            color: white;
+            background: var(--danger);
+            border-color: var(--danger-dark);
+            box-shadow: 0 2px 8px rgba(239, 71, 111, 0.3);
         }
 
+        /* Botón AGREGAR MEDICAMENTO */
         .btn-secondary-outline {
-            background: #ffffff;
-            border: 1px solid var(--primary);
+            background: #e6f4f1;
+            border: 1.5px dashed var(--primary);
             color: var(--primary-dark);
-            padding: 0.5rem 1rem;
-            border-radius: 6px;
+            padding: 0.6rem 1.2rem;
+            border-radius: 8px;
             font-weight: 600;
-            font-size: 0.85rem;
+            font-size: 0.88rem;
             cursor: pointer;
             display: inline-flex;
             align-items: center;
-            gap: 0.4rem;
-            transition: background 0.2s ease;
+            gap: 0.5rem;
+            transition: all 0.2s ease;
         }
 
         .btn-secondary-outline:hover {
-            background: rgba(42, 157, 143, 0.1);
+            background: var(--primary);
+            color: white;
+            border-style: solid;
+            box-shadow: 0 4px 10px rgba(42, 157, 143, 0.25);
         }
 
         .form-footer {
@@ -774,11 +625,7 @@
                 margin-bottom: 0.2rem;
             }
             .btn-icon-delete {
-                justify-content: flex-end;
                 width: 100%;
-                background: #fee2e2;
-                color: var(--danger);
-                padding: 0.4rem;
             }
             .form-footer {
                 justify-content: stretch;
@@ -1318,7 +1165,7 @@
 
                 <section class="space-y-4">
                     <div avoid-break rounded-lg shadow>
-                        <div class="bg-teal-600 text-white text-xs font-bold uppercase px-3 py-1.5 rounded tracking-wider mb-2">
+                        <div avoid-break class="bg-teal-600 text-white text-xs font-bold uppercase px-3 py-1.5 rounded tracking-wider mb-2">
                             Motivo de la Consulta
                         </div>
                         <textarea id="motivo-consulta" rows="3" class="w-full border border-slate-300 rounded-xl p-3 text-sm focus:ring-2 focus:ring-teal-500 focus:outline-none" placeholder="Describa el motivo de la consulta, dolor, molestias, tiempo de evolución..."></textarea>
