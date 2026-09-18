@@ -829,7 +829,7 @@
                 <a href="#" class="nav-item" onclick="switchTab(event, 'pacientes-view'); toggleSidebarMobile();">👣 Pacientes</a>
                 <a href="#" class="nav-item" onclick="switchTab(event, 'historia-clinica-view'); toggleSidebarMobile();">📋 Historia Clínica</a>
                 <a href="#" class="nav-item" onclick="switchTab(event, 'citas-view'); toggleSidebarMobile();">📅 Citas Podológicas</a>
-                <a href="#" class="nav-item" onclick="switchTab(event, 'recetas-view'); toggleSidebarMobile();">🧴 Tratamientos</a>
+                <a href="#" class="nav-item" onclick="switchTab(event, 'tratamiento-view'); toggleSidebarMobile();">🧴 Tratamientos</a>
                 <a href="#" class="nav-item" onclick="switchTab(event, 'certificados-view'); toggleSidebarMobile();">📄 Certificados</a>
                 <a href="#" class="nav-item" onclick="switchTab(event, 'informes-view'); toggleSidebarMobile();">📈 Informes</a>
                 <a href="#" class="nav-item" onclick="switchTab(event, 'recetario-view'); toggleSidebarMobile();">💊 Recetario</a>
@@ -854,6 +854,15 @@
                     <!-- Icono pequeño para regresar al menú principal -->
                     <a href="dashboard.html" class="btn-back-icon no-print" title="Volver al Menú Principal">↩</a>
                 </div>
+
+                <!-- Specialist Profile -->
+        <div class="p-4 border-t border-slate-800 flex items-center space-x-3">
+            <img src="https://images.unsplash.com/photo-1559839734-2b71ea197ec2?auto=format&fit=crop&q=80&w=150" alt="Zulay Estrella<" class="w-10 h-10 rounded-full object-cover border-2 border-brand-500">
+            <div class="overflow-hidden">
+                <h4 class="text-sm font-semibold text-white truncate">Zulay Estrella</h4>
+                <p class="text-xs text-slate-400 truncate">Podólogo - Reg. xxx</p>
+            </div>
+        </div>
             </div>
 
             <!-- VISTA 1: PANEL PRINCIPAL (DASHBOARD) -->
@@ -1572,8 +1581,9 @@
         </div>    
 </div>
 
-<!-- SECCIÓN RECETAS -->
-<div id="recetas-view" class="section-view">
+<!-- SECCIÓN tratamiento -->
+            
+<div id="tratamiento-view" class="section-view">
     <div class="content-card">
         <h2>Tratamientos y Prescripciones Tópicas</h2>
         <p style="color: var(--gray, #666);">Recetas de antimicóticos, ortesis plantares y recomendaciones de calzado.</p>
