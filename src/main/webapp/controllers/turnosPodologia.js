@@ -1,7 +1,3 @@
-// ==========================================
-// ARCHIVO: turnosPodologia.js
-// ==========================================
-
 const HORARIOS_AGENDA = [
     "08:00", "08:30", "09:00", "09:30", "10:00", "10:30", 
     "11:00", "11:30", "12:00", "12:30", "13:00", "13:30", 
@@ -81,7 +77,6 @@ async function cargarTurnosDB() {
     }
 
     try {
-        // Ruta absoluta /ControladorTurnos elimina el 404 producido desde /views/
         const response = await fetch(`/ControladorTurnos?accion=listar&fecha=${encodeURIComponent(fechaSeleccionada)}`);
         
         if (!response.ok) {
@@ -126,19 +121,36 @@ function renderizarCalendario() {
         const turnosEnBloque = turnosDelDia.filter(t => t.horaInicio === hora);
         const tr = document.createElement('tr');
 
-        let tarjetasHTML = turnosEnBloque.map(t => `
-            <div class="card-turno-pro" style="background:#e0f2fe; border-left: 4px solid #0284c7; padding: 8px 12px; margin-bottom: 6px; border-radius: 6px; display: flex; justify-content: space-between; align-items: center;">
-                <div>
-                    <strong>${t.nombres}</strong> <small>(${t.cedula})</small><br>
-                    <span style="font-size: 0.85rem; color: #334155;">Motivo: ${t.motivo} | Tel: ${t.celular}</span><br>
-                    <span style="font-size: 0.75rem; background: #bae6fd; padding: 2px 6px; border-radius: 4px; font-weight: 600;">${t.duracionMinutos} min</span>
+        let tarjetasHTML = turnosEnBloque.map(t => {
+            // Limpieza de teléfono y mensaje dinámico para WhatsApp
+            const celularLimpio = t.celular ? t.celular.replace(/\D/g, '') : '';
+            const mensajeWA = encodeURIComponent(`Hola ${t.nombres}, le recordamos su cita de Podología programada para el ${t.fecha} a las ${t.horaInicio}.`);
+            
+            const botonWhatsApp = celularLimpio ? `
+                <a href="https://wa.me/${celularLimpio}?text=${mensajeWA}" 
+                   target="_blank" 
+                   class="btn-action btn-ws-pro" 
+                   style="padding: 3px 8px; font-size: 0.8rem; background-color: #25D366; color: white; text-decoration: none; border-radius: 4px; display: inline-flex; align-items: center; gap: 4px;" 
+                   title="Enviar recordatorio por WhatsApp">
+                    📲 WhatsApp
+                </a>
+            ` : '';
+
+            return `
+                <div class="card-turno-pro" style="background:#e0f2fe; border-left: 4px solid #0284c7; padding: 8px 12px; margin-bottom: 6px; border-radius: 6px; display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <strong>${t.nombres}</strong> <small>(${t.cedula})</small><br>
+                        <span style="font-size: 0.85rem; color: #334155;">Motivo: ${t.motivo} | Tel: ${t.celular}</span><br>
+                        <span style="font-size: 0.75rem; background: #bae6fd; padding: 2px 6px; border-radius: 4px; font-weight: 600;">${t.duracionMinutos} min</span>
+                    </div>
+                    <div style="display: flex; gap: 4px; align-items: center;">
+                        ${botonWhatsApp}
+                        <button type="button" class="btn-action" onclick="editarTurno(${t.id})" style="padding: 3px 8px; font-size: 0.8rem;">Editar</button>
+                        <button type="button" class="btn-delete" onclick="eliminarTurno(${t.id})" style="padding: 3px 8px; font-size: 0.8rem;">Eliminar</button>
+                    </div>
                 </div>
-                <div>
-                    <button type="button" class="btn-action" onclick="editarTurno(${t.id})" style="padding: 3px 8px; font-size: 0.8rem;">Editar</button>
-                    <button type="button" class="btn-delete" onclick="eliminarTurno(${t.id})" style="padding: 3px 8px; font-size: 0.8rem;">Eliminar</button>
-                </div>
-            </div>
-        `).join('');
+            `;
+        }).join('');
 
         const cuposDisponibles = 3 - turnosEnBloque.length;
         let botonAgregar = '';
@@ -271,7 +283,6 @@ async function eliminarTurno(id) {
         alert("Error de conexión al eliminar.");
     }
 }
-
 
 
 // Función para autocompletar el modal de turnos al escribir la cédula
