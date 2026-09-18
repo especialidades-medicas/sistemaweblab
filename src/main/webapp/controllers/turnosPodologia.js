@@ -7,6 +7,7 @@ const HORARIOS_AGENDA = [
 ];
 
 let turnosDelDia = [];
+let enviandoFormulario = false;
 
 document.addEventListener('DOMContentLoaded', () => {
     poblarHorasInicio();
@@ -20,9 +21,11 @@ document.addEventListener('DOMContentLoaded', () => {
         fechaInput.addEventListener('change', cargarTurnosDB);
     }
     
+    // Escuchadores para autocompletar al perder el foco (blur) o al escribir (input)
     const turnCedula = document.getElementById('turnCedula');
     if (turnCedula) {
-        turnCedula.addEventListener('blur', (e) => autocompletarPacienteTurno(e.target.value.trim()));
+        turnCedula.addEventListener('blur', (e) => buscarPacienteParaTurno(e.target.value.trim()));
+        turnCedula.addEventListener('input', (e) => buscarPacienteParaTurno(e.target.value.trim()));
     }
 
     const formTurno = document.getElementById('form-turno');
@@ -49,20 +52,21 @@ function cambiarDia(delta) {
     cargarTurnosDB();
 }
 
-async function autocompletarPacienteTurno(cedula) {
+async function buscarPacienteParaTurno(cedula) {
     if (!cedula || cedula.length < 5) return;
+    
     try {
-        const res = await fetch(`/ControladorPacientes?accion=buscar&cedula=${encodeURIComponent(cedula)}`);
-        if (res.ok) {
-            const p = await res.json();
-            if (p) {
-                if (document.getElementById('turnNombres')) document.getElementById('turnNombres').value = p.nombres || '';
-                if (document.getElementById('turnCelular')) document.getElementById('turnCelular').value = p.telefono || p.celular || '';
-                if (document.getElementById('turnEmail')) document.getElementById('turnEmail').value = p.correo || p.email || '';
+        const response = await fetch(`/ControladorPacientes?accion=buscar&cedula=${encodeURIComponent(cedula)}`);
+        if (response.ok) {
+            const paciente = await response.json();
+            if (paciente) {
+                if (document.getElementById('turnNombres')) document.getElementById('turnNombres').value = paciente.nombres || '';
+                if (document.getElementById('turnCelular')) document.getElementById('turnCelular').value = paciente.telefono || paciente.celular || '';
+                if (document.getElementById('turnEmail')) document.getElementById('turnEmail').value = paciente.correo || paciente.email || '';
             }
         }
-    } catch (e) {
-        console.error("Error al autocompletar paciente:", e);
+    } catch (error) {
+        console.error("Error al buscar paciente para el turno:", error);
     }
 }
 
@@ -104,7 +108,7 @@ async function cargarTurnosDB() {
         renderizarCalendario();
 
     } catch (error) {
-        console.error("Error al obtener los turnos desde Railway:", error);
+        console.error("Error al obtener los turnos:", error);
         if (tbody) {
             tbody.innerHTML = '<tr><td colspan="2" style="text-align:center; color:red; padding: 20px;">Error al cargar los turnos agendados.</td></tr>';
         }
@@ -122,7 +126,6 @@ function renderizarCalendario() {
         const tr = document.createElement('tr');
 
         let tarjetasHTML = turnosEnBloque.map(t => {
-            // Limpieza de teléfono y mensaje dinámico para WhatsApp
             const celularLimpio = t.celular ? t.celular.replace(/\D/g, '') : '';
             const mensajeWA = encodeURIComponent(`Hola ${t.nombres}, le recordamos su cita de Podología programada para el ${t.fecha} a las ${t.horaInicio}.`);
             
@@ -218,6 +221,8 @@ function editarTurno(id) {
 async function guardarTurno(event) {
     if (event) event.preventDefault();
 
+    if (enviandoFormulario) return;
+
     const fechaInput = document.getElementById('fecha-agenda');
     const fecha = fechaInput ? fechaInput.value : '';
     if (!fecha) {
@@ -225,8 +230,12 @@ async function guardarTurno(event) {
         return;
     }
 
+    const idTurno = document.getElementById('turno-id')?.value || '';
+    const esEdicion = idTurno.trim() !== '' && idTurno !== '0';
+    const btnSubmit = document.querySelector('#form-turno button[type="submit"]');
+
     const params = new URLSearchParams();
-    params.append('id', document.getElementById('turno-id')?.value || '');
+    params.append('id', idTurno);
     params.append('turnCedula', document.getElementById('turnCedula')?.value.trim() || '');
     params.append('turnNombres', document.getElementById('turnNombres')?.value.trim() || '');
     params.append('turnCelular', document.getElementById('turnCelular')?.value.trim() || '');
@@ -237,15 +246,18 @@ async function guardarTurno(event) {
     params.append('fecha', fecha);
 
     try {
+        enviandoFormulario = true;
+        if (btnSubmit) btnSubmit.disabled = true;
+
         const res = await fetch('/ControladorTurnos', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
             body: params.toString()
         });
 
         const data = await res.json();
         if (res.ok) {
-            alert("Cita agendada correctamente.");
+            alert(esEdicion ? "Cita actualizada exitosamente." : "Cita agendada exitosamente.");
             cerrarModal();
             cargarTurnosDB();
         } else {
@@ -254,11 +266,14 @@ async function guardarTurno(event) {
     } catch (e) {
         console.error("Error al guardar el turno:", e);
         alert("Error de conexión al guardar la cita.");
+    } finally {
+        enviandoFormulario = false;
+        if (btnSubmit) btnSubmit.disabled = false;
     }
 }
 
 async function eliminarTurno(id) {
-    if (!confirm("¿Está seguro de cancelar/eliminar esta cita podológica?")) return;
+    if (!confirm("¿Está seguro de que desea eliminar esta cita podológica?")) return;
 
     const params = new URLSearchParams();
     params.append('accion', 'eliminar');
@@ -267,12 +282,12 @@ async function eliminarTurno(id) {
     try {
         const res = await fetch('/ControladorTurnos', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
             body: params.toString()
         });
 
         if (res.ok) {
-            alert("Cita eliminada correctamente.");
+            alert("Cita eliminada exitosamente.");
             cargarTurnosDB();
         } else {
             const data = await res.json();
@@ -283,31 +298,3 @@ async function eliminarTurno(id) {
         alert("Error de conexión al eliminar.");
     }
 }
-
-
-// Función para autocompletar el modal de turnos al escribir la cédula
-async function buscarPacienteParaTurno(cedula) {
-    if (!cedula || cedula.length < 5) return;
-    
-    try {
-        const response = await fetch(`/ControladorPacientes?accion=buscar&cedula=${encodeURIComponent(cedula)}`);
-        if (response.ok) {
-            const paciente = await response.json();
-            if (paciente) {
-                if (document.getElementById('turnNombres')) document.getElementById('turnNombres').value = paciente.nombres || '';
-                if (document.getElementById('turnCelular')) document.getElementById('turnCelular').value = paciente.telefono || '';
-                if (document.getElementById('turnEmail')) document.getElementById('turnEmail').value = paciente.correo || '';
-            }
-        }
-    } catch (error) {
-        console.error("Error al buscar paciente para el turno:", error);
-    }
-}
-
-// Escuchador de evento en el input de Cédula del Turno
-document.addEventListener('DOMContentLoaded', () => {
-    const inputTurnCedula = document.getElementById('turnCedula');
-    if (inputTurnCedula) {
-        inputTurnCedula.addEventListener('blur', (e) => buscarPacienteParaTurno(e.target.value.trim()));
-    }
-});
