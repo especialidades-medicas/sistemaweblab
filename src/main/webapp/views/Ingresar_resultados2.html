@@ -659,7 +659,7 @@
                                         </tr>
                                         <tr>
                                             <td class="fw-bold">
-                                                Progesterona
+                                                PROGESTERONA
                                                 <input type="text" class="form-control form-control-sm mt-1 text-secondary" id="metodoProgesterona" value="Metódo: ELFA (Ensayo de fluorescencia ligado a enzimas)" style="font-size: 10px;">
                                             </td>
                                             <td><input type="text" class="form-control form-control-sm form-control-editable" id="resProgesterona"></td>
@@ -689,6 +689,21 @@
                                     <td><input type="text" class="form-control form-control-sm form-control-editable" id="resLDH"></td>
                                     <td><input type="text" class="form-control form-control-sm text-muted" value="U/L"></td>
                                     <td><input type="text" class="form-control form-control-sm text-muted" value="135 - 225"></td>
+                                </tr>
+										<!-- PROLACTINA -->
+                                <tr>
+                                    <td class="fw-bold">
+                                        PROLACTINA
+                                        <select class="form-select form-select-sm mt-1" style="font-size: 10px;">
+                                            <option value="" selected disabled>Método Analítico...</option>
+                                            <option value="Metódo: ELFA (Ensayo de fluorescencia ligado a enzimas)">Metódo: ELFA (Ensayo de fluorescencia ligado a enzimas)</option>
+                                            <option value="Espectrofotometría">Espectrofotometría</option>
+											<option value="">-</option>
+                                        </select>
+                                    </td>
+                                    <td><input type="text" class="form-control form-control-sm form-control-editable" id="resProlactina"></td>
+                                    <td><input type="text" class="form-control form-control-sm text-muted" value="ng/mL"></td>
+                                    <td><input type="text" class="form-control form-control-sm text-muted" value="Niños: 3.90 - 25.40 | Hombres: 1.80 - 17.00 | Mujeres: 1.20 - 24.10 | Postmenopausia: 1.50 - 18.50"></td>
                                 </tr>
                                     </tbody>
                                 </table>
@@ -725,7 +740,7 @@
                                         <td class="fw-bold text-success">ÍNDICE HOMA-IR</td>										
                                         <td><input type="text" class="form-control form-control-sm form-control-editable fw-bold text-success" id="resHomaFinal" readonly placeholder="Auto"></td>
                                         <td class="text-muted">-</td>
-                                        <td><input type="text" class="form-control form-control-sm text-muted" id="refHomaFinal" value="Niños < A 12 años: menor  a 3.6 / Adultos: menor a 2.5 / Resistencia: > 2.5"></td>
+                                        <td><input type="text" class="form-control form-control-sm text-muted" id="refHomaFinal" value="Niños < A 12 años: menor  a 3.6 | Adultos: menor a 2.5 | Resistencia: > 2.5"></td>
                                     </tr>
                                     
                                     <!-- Hb Glicosilada Corregido (Se agrupa el botón dentro de un input-group para mantener exactamente 4 columnas) -->
@@ -745,7 +760,7 @@
                                     <td class="fw-bold">INSULINA</td>
                                     <td><input type="text" class="form-control form-control-sm form-control-editable" id="resInsulina"></td>
                                     <td class="text-muted">uIU/mL</td>
-                                    <td><input type="text" class="form-control form-control-sm text-muted" id="refInsulina" value="Niños < a 12 años: menor  a 10,0 / Adultos: menor a 17.00 / Diabeticos: 5.00 - 15.00"></td>
+                                    <td><input type="text" class="form-control form-control-sm text-muted" id="refInsulina" value="Niños < a 12 años: menor  a 10,0 | Adultos: menor a 17.00 | Diabeticos: 5.00 - 15.00"></td>
                                     
                                 </tr>
                                 </tbody>
@@ -916,6 +931,15 @@
                                     </td>
                                     <td class="text-muted">-</td>
                                     <td class="text-muted">Cualitativo</td>
+                                </tr>
+								<tr>
+                                        <td class="fw-bold">
+                                               <input type="text" class="form-control form-control-sm fw-bold mb-1" id="inmunoExamen1" placeholder="Ingrese nombre del examen ...">
+                                               <input type="text" class="form-control form-control-sm text-secondary" id="metodoinmuno1" placeholder="Método manual..." style="font-size: 10px;">
+                                        </td>
+                                        <td><input type="text" class="form-control form-control-sm form-control-editable" id="resinmuno1"></td>
+                                        <td><input type="text" class="form-control form-control-sm text-muted" id="unidadinmuno1" placeholder="Unidad"></td>
+                                        <td><input type="text" class="form-control form-control-sm text-muted" id="refinmuno1" placeholder="Valores de referencia"></td>
                                 </tr>
                             </tbody>
                         </table>
@@ -1130,6 +1154,15 @@
                                 <td class="text-muted">ug/ml</td>
                                 <td><input type="text" class="form-control form-control-sm text-muted" id="refDimero" value="Menor a: 0.50"></td>
                             </tr>
+								<tr>
+                                        <td class="fw-bold">
+                                               <input type="text" class="form-control form-control-sm fw-bold mb-1" id="cuaguExamen1" placeholder="Ingrese nombre del examen ...">
+                                               <input type="text" class="form-control form-control-sm text-secondary" id="metodocuagu1" placeholder="Método manual..." style="font-size: 10px;">
+                                        </td>
+                                        <td><input type="text" class="form-control form-control-sm form-control-editable" id="rescuagu"></td>
+                                        <td><input type="text" class="form-control form-control-sm text-muted" id="unidadcuagu1" placeholder="Unidad"></td>
+                                        <td><input type="text" class="form-control form-control-sm text-muted" id="refcuagu1" placeholder="Valores de referencia"></td>
+                                </tr>
                             </tbody>
                         </table>
                     </div>
@@ -1165,8 +1198,17 @@
                     </td>
                     <td><input type="text" class="form-control form-control-sm form-control-editable" id="resPsalibre"></td>
                     <td><input type="text" class="form-control form-control-sm text-muted" value="ng/mL"></td>
-                    <td><input type="text" class="form-control form-control-sm text-muted" value="-"></td>
+                    <td><input type="text" class="form-control form-control-sm text-muted" value="-"></td>				
                 </tr>
+				<tr>
+                    <td class="fw-bold">
+                    <input type="text" class="form-control form-control-sm fw-bold mb-1" id="cuaguOnco1" placeholder="Ingrese nombre del examen ...">
+                    <input type="text" class="form-control form-control-sm text-secondary" id="metodoOnco1" placeholder="Método manual..." style="font-size: 10px;">
+                    </td>
+                    <td><input type="text" class="form-control form-control-sm form-control-editable" id="resOnco"></td>
+                    <td><input type="text" class="form-control form-control-sm text-muted" id="unidadOnco1" placeholder="Unidad"></td>
+                    <td><input type="text" class="form-control form-control-sm text-muted" id="refOnco1" placeholder="Valores de referencia"></td>
+                 </tr>
             </tbody>
         </table>
     </div>
@@ -1326,6 +1368,15 @@
                                     <td><input type="text" class="form-control form-control-sm text-muted" value="ng/ml"></td>
                                     <td><input type="text" class="form-control form-control-sm text-muted" value="DEFICIENTE: < a 20.0 / INSUFICIENTE: Desde 20.0 hasta 29.0 / SUFICIENTE: Desde 30.0 a 100.0 / TOXICIDAD: > a 100.0"></td>
                                 </tr>
+								<tr>
+				                    <td class="fw-bold">
+				                    <input type="text" class="form-control form-control-sm fw-bold mb-1" id="cuaguVita1" placeholder="Ingrese nombre del examen ...">
+				                    <input type="text" class="form-control form-control-sm text-secondary" id="metodoVita1" placeholder="Método manual..." style="font-size: 10px;">
+				                    </td>
+				                    <td><input type="text" class="form-control form-control-sm form-control-editable" id="resVita"></td>
+				                    <td><input type="text" class="form-control form-control-sm text-muted" id="unidadVita1" placeholder="Unidad"></td>
+				                    <td><input type="text" class="form-control form-control-sm text-muted" id="refVita1" placeholder="Valores de referencia"></td>
+				                 </tr>
 								
 							</tbody>
                         </table>
