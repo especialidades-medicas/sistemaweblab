@@ -209,7 +209,7 @@ function abrirModalNuevoTurno(horaInicio = '08:00') {
     const selectHora = document.getElementById('hora-inicio');
     if (selectHora) selectHora.value = horaInicio;
     
-    // Copiar la fecha seleccionada en la agenda hacia el modal
+    // Sincronizar fecha seleccionada
     const fechaAgenda = document.getElementById('fecha-agenda')?.value;
     const fechaModal = document.getElementById('modal-fecha');
     if (fechaAgenda && fechaModal) {
@@ -217,12 +217,21 @@ function abrirModalNuevoTurno(horaInicio = '08:00') {
     }
 
     const modal = document.getElementById('modal-turno');
-    if (modal) modal.style.display = 'flex'; // Al poner display flex se centra con el nuevo CSS
+    if (modal) {
+        modal.style.display = 'flex';
+        // Forzar renderizado previo para que la transición CSS funcione suavemente
+        setTimeout(() => modal.classList.add('active'), 10);
+    }
 }
 
 function cerrarModal() {
     const modal = document.getElementById('modal-turno');
-    if (modal) modal.style.display = 'none';
+    if (modal) {
+        modal.classList.remove('active');
+        setTimeout(() => {
+            modal.style.display = 'none';
+        }, 300); // Espera 300ms mientras se realiza la animación de desvanecimiento
+    }
 }
 
 function editarTurno(id) {
@@ -235,6 +244,7 @@ function editarTurno(id) {
     if (document.getElementById('turnCelular')) document.getElementById('turnCelular').value = turno.celular;
     if (document.getElementById('turnEmail')) document.getElementById('turnEmail').value = turno.email;
     if (document.getElementById('turnMotivo')) document.getElementById('turnMotivo').value = turno.motivo;
+    if (document.getElementById('modal-fecha')) document.getElementById('modal-fecha').value = turno.fecha;
     if (document.getElementById('hora-inicio')) document.getElementById('hora-inicio').value = turno.horaInicio;
     if (document.getElementById('duracion-minutos')) document.getElementById('duracion-minutos').value = turno.duracionMinutos;
 
@@ -242,7 +252,10 @@ function editarTurno(id) {
     if (titulo) titulo.innerText = 'Editar Cita Podológica';
 
     const modal = document.getElementById('modal-turno');
-    if (modal) modal.style.display = 'flex';
+    if (modal) {
+        modal.style.display = 'flex';
+        setTimeout(() => modal.classList.add('active'), 10);
+    }
 }
 
 async function guardarTurno(event) {
