@@ -209,8 +209,15 @@ function abrirModalNuevoTurno(horaInicio = '08:00') {
     const selectHora = document.getElementById('hora-inicio');
     if (selectHora) selectHora.value = horaInicio;
     
+    // Copiar la fecha seleccionada en la agenda hacia el modal
+    const fechaAgenda = document.getElementById('fecha-agenda')?.value;
+    const fechaModal = document.getElementById('modal-fecha');
+    if (fechaAgenda && fechaModal) {
+        fechaModal.value = fechaAgenda;
+    }
+
     const modal = document.getElementById('modal-turno');
-    if (modal) modal.style.display = 'flex';
+    if (modal) modal.style.display = 'flex'; // Al poner display flex se centra con el nuevo CSS
 }
 
 function cerrarModal() {
