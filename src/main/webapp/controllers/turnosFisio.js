@@ -56,7 +56,7 @@ async function buscarPacienteParaTurno(cedula) {
     if (!cedula || cedula.length < 5) return;
     
     try {
-        const response = await fetch(`/ControladorPacientesFisioterapia?accion=buscar&cedula=${encodeURIComponent(cedula)}`);
+        const response = await fetch(`/ControladorPacientes?accion=buscar&cedula=${encodeURIComponent(cedula)}`);
         if (response.ok) {
             const paciente = await response.json();
             if (paciente) {
