@@ -6,15 +6,14 @@
     <title>Fisiolab.st - Panel de Control</title>
     <!-- Google Fonts para mejor estética -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
+    <link rel="icon" type="image/png" href="../img/logFisio2.png">   
     <!-- Librería SheetJS (XLSX) para la exportación e importación de archivos Excel -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <!-- Librería jsPDF para la exportación de la historia clínica en PDF -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <link rel="stylesheet" href="../assets/css/bodyselector.css">
     <!-- Cargar html2canvas desde CDN si no lo tienes incluido -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>  
     
     
     <style>
@@ -487,6 +486,70 @@
 .btn-primary-pro:hover {
     background: #115e59 !important;
 }
+
+        /* ==========================================================================
+   10. AGENDA Y NAVEGADOR DE FECHAS
+   ========================================================================== */
+.calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.date-navigator {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 0.5rem;
+    background: var(--bg-card);
+    padding: 0.35rem 0.5rem;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow-sm);
+}
+
+.btn-nav {
+    background: #f8fafc;
+    border: 1px solid var(--border-color);
+    color: var(--text-main);
+    width: 36px !important;
+    height: 36px !important;
+    border-radius: var(--radius-sm);
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    cursor: pointer;
+    transition: var(--transition-fast);
+}
+
+.btn-nav:hover {
+    background: var(--primary);
+    color: var(--text-white);
+    border-color: var(--primary);
+}
+
+.date-input-wrapper {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 0.5rem;
+    background: #f8fafc;
+    padding: 0.35rem 0.75rem;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border-color);
+}
+
+.date-input-wrapper input[type="date"] {
+    border: none !important;
+    outline: none !important;
+    background: transparent !important;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-main);
+    cursor: pointer;
+}
+
     </style>
 </head>
 <body>
