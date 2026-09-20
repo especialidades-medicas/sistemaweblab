@@ -1,0 +1,340 @@
+const HORARIOS_AGENDA = [
+    "08:00", "08:30", "09:00", "09:30", "10:00", "10:30", 
+    "11:00", "11:30", "12:00", "12:30", "13:00", "13:30", 
+    "14:00", "14:30", "15:00", "15:30", "16:00", "16:30", 
+    "17:00", "17:30", "18:00", "18:30", "19:00", "19:30", 
+    "20:00", "20:30", "21:00"
+];
+
+let turnosDelDia = [];
+let enviandoFormulario = false;
+
+document.addEventListener('DOMContentLoaded', () => {
+    poblarHorasInicio();
+    
+    const fechaInput = document.getElementById('fecha-agenda');
+    if (fechaInput && !fechaInput.value) {
+        fechaInput.value = new Date().toISOString().split('T')[0];
+    }
+
+    if (fechaInput) {
+        fechaInput.addEventListener('change', cargarTurnosDB);
+    }
+    
+    // Escuchadores para autocompletar al perder el foco (blur) o al escribir (input)
+    const turnCedula = document.getElementById('turnCedula');
+    if (turnCedula) {
+        turnCedula.addEventListener('blur', (e) => buscarPacienteParaTurno(e.target.value.trim()));
+        turnCedula.addEventListener('input', (e) => buscarPacienteParaTurno(e.target.value.trim()));
+    }
+
+    const formTurno = document.getElementById('form-turno');
+    if (formTurno) {
+        formTurno.addEventListener('submit', guardarTurno);
+    }
+
+    cargarTurnosDB();
+});
+
+function poblarHorasInicio() {
+    const select = document.getElementById('hora-inicio');
+    if (!select) return;
+    select.innerHTML = HORARIOS_AGENDA.map(h => `<option value="${h}">${h}</option>`).join('');
+}
+
+function cambiarDia(delta) {
+    const input = document.getElementById('fecha-agenda');
+    if (!input || !input.value) return;
+
+    const fecha = new Date(input.value + 'T00:00:00');
+    fecha.setDate(fecha.getDate() + delta);
+    input.value = fecha.toISOString().split('T')[0];
+    cargarTurnosDB();
+}
+
+async function buscarPacienteParaTurno(cedula) {
+    if (!cedula || cedula.length < 5) return;
+    
+    try {
+        const response = await fetch(`/ControladorPacientes?accion=buscar&cedula=${encodeURIComponent(cedula)}`);
+        if (response.ok) {
+            const paciente = await response.json();
+            if (paciente) {
+                if (document.getElementById('turnNombres')) document.getElementById('turnNombres').value = paciente.nombres || '';
+                if (document.getElementById('turnCelular')) document.getElementById('turnCelular').value = paciente.telefono || paciente.celular || '';
+                if (document.getElementById('turnEmail')) document.getElementById('turnEmail').value = paciente.correo || paciente.email || '';
+            }
+        }
+    } catch (error) {
+        console.error("Error al buscar paciente para el turno:", error);
+    }
+}
+
+async function cargarTurnosDB() {
+    const tbody = document.getElementById('cuerpo-calendario');
+    const inputFecha = document.getElementById('fecha-agenda');
+    if (!inputFecha) return;
+
+    const fechaSeleccionada = inputFecha.value;
+    if (tbody) {
+        tbody.innerHTML = '<tr><td colspan="2" style="text-align:center; padding: 20px;">Cargando agenda...</td></tr>';
+    }
+
+    try {
+        const response = await fetch(`/ControladorTurnos?accion=listar&fecha=${encodeURIComponent(fechaSeleccionada)}`);
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const turnosDB = await response.json();
+
+        if (Array.isArray(turnosDB)) {
+            turnosDelDia = turnosDB.map(t => ({
+                id: t.id,
+                cedula: t.cedula || '',
+                nombres: t.nombres || '',
+                celular: t.celular || '',
+                email: t.email || '',
+                motivo: t.motivo || '',
+                fecha: t.fecha || fechaSeleccionada,
+                horaInicio: t.hora_inicio || t.horaInicio || '',
+                duracionMinutos: t.duracion_minutos || t.duracionMinutos || 30
+            }));
+        } else {
+            turnosDelDia = [];
+        }
+
+        renderizarCalendario();
+
+    } catch (error) {
+        console.error("Error al obtener los turnos:", error);
+        if (tbody) {
+            tbody.innerHTML = '<tr><td colspan="2" style="text-align:center; color:red; padding: 20px;">Error al cargar los turnos agendados.</td></tr>';
+        }
+    }
+}
+
+function renderizarCalendario() {
+    const tbody = document.getElementById('cuerpo-calendario');
+    if (!tbody) return;
+
+    tbody.innerHTML = '';
+
+    // Obtener la fecha seleccionada actualmente en el input
+    const inputFecha = document.getElementById('fecha-agenda');
+    const fechaSeleccionada = inputFecha ? inputFecha.value : '';
+    
+    // Formatear la fecha a DD/MM/YYYY para un mensaje más legible
+    let fechaTexto = fechaSeleccionada;
+    if (fechaSeleccionada && fechaSeleccionada.includes('-')) {
+        const [anio, mes, dia] = fechaSeleccionada.split('-');
+        fechaTexto = `${dia}/${mes}/${anio}`;
+    }
+
+    HORARIOS_AGENDA.forEach(hora => {
+        const turnosEnBloque = turnosDelDia.filter(t => t.horaInicio === hora);
+        const tr = document.createElement('tr');
+
+        let tarjetasHTML = turnosEnBloque.map(t => {
+            // Limpiar el número de teléfono
+            let celularLimpio = t.celular ? t.celular.replace(/\D/g, '') : '';
+            
+            // Formatear código de país para Ecuador (+593)
+            if (celularLimpio.startsWith('0') && celularLimpio.length === 10) {
+                celularLimpio = '593' + celularLimpio.substring(1);
+            }
+
+            // Usar la fecha formateada de la agenda seleccionada
+            const fechaCita = fechaTexto || t.fecha || '';
+            const mensajeWA = encodeURIComponent(`Hola ${t.nombres}, le recordamos su cita de Podología programada para el ${fechaCita} a las ${t.horaInicio}.`);
+            
+            const botonWhatsApp = celularLimpio ? `
+                <a href="https://wa.me/${celularLimpio}?text=${mensajeWA}" 
+                   target="_blank" 
+                   class="btn-action btn-ws-pro" 
+                   style="padding: 3px 8px; font-size: 0.8rem; background-color: #25D366; color: white; text-decoration: none; border-radius: 4px; display: inline-flex; align-items: center; gap: 4px;" 
+                   title="Enviar recordatorio por WhatsApp">
+                    📲 WhatsApp
+                </a>
+            ` : '';
+
+            return `
+                <div class="card-turno-pro" style="background:#e0f2fe; border-left: 4px solid #0284c7; padding: 8px 12px; margin-bottom: 6px; border-radius: 6px; display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <strong>${t.nombres}</strong> <small>(${t.cedula})</small><br>
+                        <span style="font-size: 0.85rem; color: #334155;">Motivo: ${t.motivo} | Tel: ${t.celular}</span><br>
+                        <span style="font-size: 0.75rem; background: #bae6fd; padding: 2px 6px; border-radius: 4px; font-weight: 600;">${t.duracionMinutos} min</span>
+                    </div>
+                    <div style="display: flex; gap: 4px; align-items: center;">
+                        ${botonWhatsApp}
+                        <button type="button" class="btn-action" onclick="editarTurno(${t.id})" style="padding: 3px 8px; font-size: 0.8rem;">Editar</button>
+                        <button type="button" class="btn-delete" onclick="eliminarTurno(${t.id})" style="padding: 3px 8px; font-size: 0.8rem;">Eliminar</button>
+                    </div>
+                </div>
+            `;
+        }).join('');
+
+        const cuposDisponibles = 3 - turnosEnBloque.length;
+        let botonAgregar = '';
+        if (cuposDisponibles > 0) {
+            botonAgregar = `
+                <button type="button" class="btn-secondary-pro" onclick="abrirModalNuevoTurno('${hora}')" style="font-size: 0.8rem; padding: 4px 10px; border-style: dashed;">
+                    + Agendar en ${hora} (${cuposDisponibles} cupo${cuposDisponibles > 1 ? 's' : ''})
+                </button>
+            `;
+        }
+
+        tr.innerHTML = `
+            <td style="font-weight: bold; color: #475569; vertical-align: top; width: 100px;">${hora}</td>
+            <td>
+                ${tarjetasHTML}
+                ${botonAgregar}
+            </td>
+        `;
+        tbody.appendChild(tr);
+    });
+}
+
+function abrirModalNuevoTurno(horaInicio = '08:00') {
+    const form = document.getElementById('form-turno');
+    if (form) form.reset();
+    
+    const turnoId = document.getElementById('turno-id');
+    if (turnoId) turnoId.value = '';
+
+    const titulo = document.getElementById('modal-titulo');
+    if (titulo) titulo.innerText = 'Agendar Nueva Cita';
+
+    const selectHora = document.getElementById('hora-inicio');
+    if (selectHora) selectHora.value = horaInicio;
+    
+    // Sincronizar fecha seleccionada
+    const fechaAgenda = document.getElementById('fecha-agenda')?.value;
+    const fechaModal = document.getElementById('modal-fecha');
+    if (fechaAgenda && fechaModal) {
+        fechaModal.value = fechaAgenda;
+    }
+
+    const modal = document.getElementById('modal-turno');
+    if (modal) {
+        modal.style.display = 'flex';
+        // Forzar renderizado previo para que la transición CSS funcione suavemente
+        setTimeout(() => modal.classList.add('active'), 10);
+    }
+}
+
+function cerrarModal() {
+    const modal = document.getElementById('modal-turno');
+    if (modal) {
+        modal.classList.remove('active');
+        setTimeout(() => {
+            modal.style.display = 'none';
+        }, 300); // Espera 300ms mientras se realiza la animación de desvanecimiento
+    }
+}
+
+function editarTurno(id) {
+    const turno = turnosDelDia.find(t => t.id === id);
+    if (!turno) return;
+
+    if (document.getElementById('turno-id')) document.getElementById('turno-id').value = turno.id;
+    if (document.getElementById('turnCedula')) document.getElementById('turnCedula').value = turno.cedula;
+    if (document.getElementById('turnNombres')) document.getElementById('turnNombres').value = turno.nombres;
+    if (document.getElementById('turnCelular')) document.getElementById('turnCelular').value = turno.celular;
+    if (document.getElementById('turnEmail')) document.getElementById('turnEmail').value = turno.email;
+    if (document.getElementById('turnMotivo')) document.getElementById('turnMotivo').value = turno.motivo;
+    if (document.getElementById('modal-fecha')) document.getElementById('modal-fecha').value = turno.fecha;
+    if (document.getElementById('hora-inicio')) document.getElementById('hora-inicio').value = turno.horaInicio;
+    if (document.getElementById('duracion-minutos')) document.getElementById('duracion-minutos').value = turno.duracionMinutos;
+
+    const titulo = document.getElementById('modal-titulo');
+    if (titulo) titulo.innerText = 'Editar Cita Podológica';
+
+    const modal = document.getElementById('modal-turno');
+    if (modal) {
+        modal.style.display = 'flex';
+        setTimeout(() => modal.classList.add('active'), 10);
+    }
+}
+
+async function guardarTurno(event) {
+    if (event) event.preventDefault();
+
+    if (enviandoFormulario) return;
+
+    const fechaInput = document.getElementById('fecha-agenda');
+    const fecha = fechaInput ? fechaInput.value : '';
+    if (!fecha) {
+        alert("Seleccione una fecha válida en la agenda.");
+        return;
+    }
+
+    const idTurno = document.getElementById('turno-id')?.value || '';
+    const esEdicion = idTurno.trim() !== '' && idTurno !== '0';
+    const btnSubmit = document.querySelector('#form-turno button[type="submit"]');
+
+    const params = new URLSearchParams();
+    params.append('id', idTurno);
+    params.append('turnCedula', document.getElementById('turnCedula')?.value.trim() || '');
+    params.append('turnNombres', document.getElementById('turnNombres')?.value.trim() || '');
+    params.append('turnCelular', document.getElementById('turnCelular')?.value.trim() || '');
+    params.append('turnEmail', document.getElementById('turnEmail')?.value.trim() || '');
+    params.append('turnMotivo', document.getElementById('turnMotivo')?.value.trim() || '');
+    params.append('horaInicio', document.getElementById('hora-inicio')?.value || '08:00');
+    params.append('duracionMinutos', document.getElementById('duracion-minutos')?.value || '30');
+    params.append('fecha', fecha);
+
+    try {
+        enviandoFormulario = true;
+        if (btnSubmit) btnSubmit.disabled = true;
+
+        const res = await fetch('/ControladorTurnos', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
+            body: params.toString()
+        });
+
+        const data = await res.json();
+        if (res.ok) {
+            alert(esEdicion ? "Cita actualizada exitosamente." : "Cita agendada exitosamente.");
+            cerrarModal();
+            cargarTurnosDB();
+        } else {
+            alert("Atención: " + (data.error || "No se pudo guardar la cita."));
+        }
+    } catch (e) {
+        console.error("Error al guardar el turno:", e);
+        alert("Error de conexión al guardar la cita.");
+    } finally {
+        enviandoFormulario = false;
+        if (btnSubmit) btnSubmit.disabled = false;
+    }
+}
+
+async function eliminarTurno(id) {
+    if (!confirm("¿Está seguro de que desea eliminar esta cita podológica?")) return;
+
+    const params = new URLSearchParams();
+    params.append('accion', 'eliminar');
+    params.append('id', id);
+
+    try {
+        const res = await fetch('/ControladorTurnos', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
+            body: params.toString()
+        });
+
+        if (res.ok) {
+            alert("Cita eliminada exitosamente.");
+            cargarTurnosDB();
+        } else {
+            const data = await res.json();
+            alert("Error: " + (data.error || "No se pudo eliminar el turno."));
+        }
+    } catch (e) {
+        console.error("Error al eliminar el turno:", e);
+        alert("Error de conexión al eliminar.");
+    }
+}
