@@ -974,13 +974,60 @@
                     </table>
                 </div>
             </div>
-<!-- OTRAS VISTAS DE NAVEGACIÓN PRINCIPALES -->
-            <div id="citas-view" class="section-view">
-                <div class="content-card">
-                    <h2>Calendario y Citas Médicas</h2>
-                    <p style="color: var(--gray);">Módulo de programación de terapias físicas y control de horarios.</p>
-                </div>
+
+
+
+<!-- --SECCIÓN CALENDARIO DE CITAS  -->
+            <!-- SECCIÓN CALENDARIO DE CITAS -->
+<div id="citas-view" class="section-view content-card agenda-container">    
+        <!-- Encabezado del Módulo -->
+        <div class="calendar-header">
+            <div>
+                <h2>Calendario de Citas</h2>
+                <p class="subtitle">Módulo de programación de terapias físicas y control de horarios.</p>
             </div>
+            <button type="button" class="btn-primary-pro" onclick="abrirModalNuevoTurno()">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                Agendar Cita
+            </button>
+        </div>
+
+        <!-- Navegador de Fechas Estilo Agenda -->
+        <div class="date-navigator">
+            <button type="button" class="btn-nav" onclick="cambiarDia(-1)" title="Día Anterior">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"></polyline></svg>
+            </button>
+            
+            <div class="date-input-wrapper">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                <input type="date" id="fecha-agenda" onchange="renderizarCalendario()">
+            </div>
+
+            <button type="button" class="btn-nav" onclick="cambiarDia(1)" title="Día Siguiente">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+            </button>
+        </div>
+
+        <!-- Tabla de Agenda Horaria (08:00 a 21:00 cada 30 min) -->
+        <div class="table-responsive-pro">
+            <table class="calendar-table-pro">
+                <thead>
+                    <tr>
+                        <th style="width: 120px;">Horario</th>
+                        <th>Pacientes Agendados (Máx. 3 por bloque)</th>
+                    </tr>
+                </thead>
+                <tbody id="cuerpo-calendario">
+                    <!-- Filas generadas dinámicamente con JavaScript -->
+                </tbody>
+            </table>
+        </div>    
+</div>
+
+
+
+
+            
 
 <div id="recetas-view" class="section-view">
                 <div class="content-card">
