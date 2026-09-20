@@ -6,6 +6,7 @@ const HORARIOS_AGENDA = [
     "20:00", "20:30", "21:00"
 ];
 
+
 let turnosDelDia = [];
 let enviandoFormulario = false;
 
