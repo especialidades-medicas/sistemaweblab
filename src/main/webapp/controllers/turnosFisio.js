@@ -56,7 +56,7 @@ async function buscarPacienteParaTurno(cedula) {
     if (!cedula || cedula.length < 5) return;
     
     try {
-        const response = await fetch(`/ControladorPacientes?accion=buscar&cedula=${encodeURIComponent(cedula)}`);
+        const response = await fetch(`/ControladorPacientesFisioterapia?accion=buscar&cedula=${encodeURIComponent(cedula)}`);
         if (response.ok) {
             const paciente = await response.json();
             if (paciente) {
@@ -81,7 +81,7 @@ async function cargarTurnosDB() {
     }
 
     try {
-        const response = await fetch(`/ControladorTurnos?accion=listar&fecha=${encodeURIComponent(fechaSeleccionada)}`);
+        const response = await fetch(`/ControladorTurnosFisioterapia?accion=listar&fecha=${encodeURIComponent(fechaSeleccionada)}`);
         
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
@@ -289,7 +289,7 @@ async function guardarTurno(event) {
         enviandoFormulario = true;
         if (btnSubmit) btnSubmit.disabled = true;
 
-        const res = await fetch('/ControladorTurnos', {
+        const res = await fetch('/ControladorTurnosFisioterapia', {
             method: 'POST',
             headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
             body: params.toString()
@@ -320,7 +320,7 @@ async function eliminarTurno(id) {
     params.append('id', id);
 
     try {
-        const res = await fetch('/ControladorTurnos', {
+        const res = await fetch('/ControladorTurnosFisioterapia', {
             method: 'POST',
             headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
             body: params.toString()
