@@ -1185,16 +1185,119 @@
 </div>
 
 
+    
+
+<!-- VISTA 4: RECETARIO / PRESCRIPCIÓN MÉDICA -->
+<div id="recetas-view" class="section-view">
+    <div class="content-card shadow-sm">
+        <!-- Encabezado de Sección -->
+        <div class="card-header-wrapper">
+            <div class="header-title">
+                <h2>Prescripción Médica y Recetario</h2>
+                <span class="badge-status">Módulo Oficial</span>
+            </div>
+            <p class="subtitle">Prescripciones de ejercicios y pautas de rehabilitación.</p>
+        </div>
+
+        <form id="formReceta" onsubmit="generarPDFReceta(event)" class="prescription-form">
+            
+            <!-- SECCIÓN: Datos del Paciente -->
+            <fieldset class="form-section">
+                <legend class="section-legend">
+                    <svg class="icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                    Información del Paciente
+                </legend>
+                
+                <div class="form-grid">
+                    <div class="form-group col-3">
+                        <label for="recFecha">Fecha de Emisión <span class="required">*</span></label>
+                        <input type="date" id="recFecha" required>
+                    </div>
+
+                    <div class="form-group col-3">
+                        <label for="recCedula">Cédula / Documento <span class="required">*</span></label>
+                        <div class="input-with-action">
+                            <input type="text" id="recCedula" placeholder="Ej. 1713031167" onblur="autocompletarPacienteReceta()" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group col-6">
+                        <label for="recNombres">Nombres y Apellidos Completos <span class="required">*</span></label>
+                        <input type="text" id="recNombres" placeholder="Nombres del paciente" required>
+                    </div>
+
+                    <div class="form-group col-3">
+                        <label for="recEdad">Edad</label>
+                        <input type="text" id="recEdad" placeholder="Ej. 28 años">
+                    </div>
+
+                    <div class="form-group col-9">
+                        <label for="recAlergias">Alergias Conocidas</label>
+                        <input type="text" id="recAlergias" placeholder="Ej. Penicilina / Ninguna" value="Ninguna declarada" class="highlight-input">
+                    </div>
+
+                    <div class="form-group col-12">
+                        <label for="recDiagnostico">Diagnóstico / Presunción Clínica</label>
+                        <input type="text" id="recDiagnostico" placeholder="Ej. Gastroenteritis aguda no especificada">
+                    </div>
+                </div>
+            </fieldset>
+
+            <!-- SECCIÓN: Medicamentos Prescritos -->
+            <fieldset class="form-section">
+                <legend class="section-legend">
+                    <svg class="icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.5 20.5L3 13a4.95 4.95 0 1 1 7-7l7.5 7.5a4.95 4.95 0 1 1-7 7z"/><path d="m8.5 8.5 7 7"/></svg>
+                    Esquema Terapéutico (Medicamentos)
+                </legend>
+
+                <div class="med-table-header">
+                    <span class="col-med-name">Medicamento / Presentación</span>
+                    <span class="col-med-dose">Dosis</span>
+                    <span class="col-med-freq">Frecuencia</span>
+                    <span class="col-med-dur">Duración</span>
+                    <span class="col-med-action"></span>
+                </div>
+
+                <div id="medicamentosContainer" class="meds-list">
+                    <div class="med-item-row">
+                        <div class="med-field flex-grow-2">
+                            <label class="mobile-only">Medicamento / Presentación</label>
+                            <input type="text" class="med-nombre" placeholder="Ej. Paracetamol 500mg" required>
+                        </div>
+                        <div class="med-field">
+                            <label class="mobile-only">Dosis</label>
+                            <input type="text" class="med-dosis" placeholder="Ej. 1 tableta" required>
+                        </div>
+                        <div class="med-field">
+                            <label class="mobile-only">Frecuencia</label>
+                            <input type="text" class="med-frecuencia" placeholder="Ej. c/8 horas" required>
+                        </div>
+                        <div class="med-field">
+                            <label class="mobile-only">Duración</label>
+                            <input type="text" class="med-duracion" placeholder="Ej. 5 días" required>
+                        </div>
+                        <div class="med-action">
+                            <button type="button" class="btn-icon-delete" title="Eliminar medicamento" onclick="eliminarFilaMed(this)" aria-label="Eliminar fila">
+                                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="med-actions-bar">
+                    <button type="button" class="btn-secondary-outline" onclick="agregarFilaMed()">
+                        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                        Agregar Medicamento
+                    </button>
+                </div>
+            </fieldset>
+
+
+
+
 
 
             
-
-<div id="recetas-view" class="section-view">
-                <div class="content-card">
-                    <h2>Recetas e Indicaciones Médicas</h2>
-                    <p style="color: var(--gray);">Prescripciones de ejercicios y pautas de rehabilitación domiciliaria.</p>
-                </div>
-            </div>
 
 <div id="informes-view" class="section-view">
                 <div class="content-card">
