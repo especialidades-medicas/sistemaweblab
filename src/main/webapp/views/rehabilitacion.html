@@ -732,7 +732,10 @@ h3 {
     .close-sidebar-btn { display: block; }
     .menu-toggle { display: flex; }
     
-    .main-content { padding: 1.5rem 1rem; }
+    .main-content { 
+        padding: 1.5rem 1rem; 
+        overflow-x: hidden; /* Evita desborde horizontal general del contenedor */
+    }
 
     /* Ajustes del Header */
     .header {
@@ -751,9 +754,52 @@ h3 {
         max-width: 100%; 
         margin-top: 0.5rem;
     }
+
+    /* ==========================================================================
+       CORRECCIÓN DE FORMULARIOS E INPUTS DESBORDADOS (< 992px)
+       ========================================================================== */
     
-    /* Grillas de Tratamiento */
-    .tratamiento-grid { grid-template-columns: 1fr; }
+    /* Forzar a la grilla del formulario a volverse 1 sola columna en pantallas pequeñas */
+    .form-grid {
+        grid-template-columns: 1fr !important;
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    /* Anular la expansión de columnas en móvil para que nada fuerce el ancho */
+    .col-span-2, 
+    .col-span-3, 
+    .form-group.col-span-2, 
+    .form-group.col-span-3 {
+        grid-column: span 1 !important;
+        width: 100% !important;
+    }
+
+    /* Asegurar control total del tamaño en los grupos e inputs */
+    .form-group {
+        width: 100%;
+        max-width: 100%;
+        box-sizing: border-box;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important; /* Mantiene padding y borde DENTRO del ancho */
+    }
+
+    /* Grillas de Tratamiento y Antecedentes en 1 sola columna */
+    .tratamiento-grid, 
+    .antecedentes-grid,
+    .info-sections-grid { 
+        grid-template-columns: 1fr !important; 
+        gap: 0.75rem;
+    }
 }
 
 /* ==========================================================================
