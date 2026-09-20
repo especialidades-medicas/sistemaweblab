@@ -435,40 +435,164 @@
         /* ==========================================================================
            8. VENTANAS MODALES / DIÁLOGOS (Agregado)
            ========================================================================== */
+        /* ==========================================================================
+   ESTILOS PROFESIONALES PARA MODAL DE CITAS
+   ========================================================================== */
+
         .modal-pro {
             position: fixed !important;
             top: 0 !important;
             left: 0 !important;
             width: 100vw !important;
             height: 100vh !important;
-            background: rgba(0, 0, 0, 0.5) !important;
-            backdrop-filter: blur(4px); /* Efecto difuminado de fondo */
+            background: rgba(15, 23, 42, 0.6) !important;
+            backdrop-filter: blur(6px);
             display: flex !important;
             justify-content: center !important;
             align-items: center !important;
-            z-index: 99999 !important; /* Evita que el contenedor del calendario lo tape */
+            z-index: 99999 !important;
             opacity: 0;
             pointer-events: none;
-            transition: opacity 0.3s ease;
+            transition: all 0.25s ease-in-out;
         }
-    
-    /* Estado activo para cuando la clase es .active o mediante display */
-    .modal-pro.active {
-        opacity: 1 !important;
-        pointer-events: auto !important;
-    }
-    
-    .modal-content-pro {
-        background: white !important;
-        padding: 2rem !important;
-        border-radius: 1rem !important;
-        max-width: 600px !important;
-        width: 90% !important;
-        max-height: 90vh !important;
-        overflow-y: auto !important;
-        box-shadow: 0 10px 25px rgba(0,0,0,0.2) !important;
-        position: relative !important;
-    }
+        
+        .modal-pro.active {
+            opacity: 1 !important;
+            pointer-events: auto !important;
+        }
+        
+        .modal-content-pro {
+            background: #ffffff !important;
+            padding: 2rem !important;
+            border-radius: 16px !important;
+            width: 90% !important;
+            max-width: 560px !important;
+            max-height: 90vh !important;
+            overflow-y: auto !important;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25) !important;
+            border: 1px solid #e2e8f0;
+        }
+        
+        /* Encabezado limpio con botón X a la derecha */
+        .modal-header-pro {
+            display: flex !important;
+            justify-content: space-between !important;
+            align-items: center !important;
+            padding-bottom: 1rem;
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .modal-header-pro h3 {
+            margin: 0;
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #0f172a;
+        }
+        
+        .btn-close-modal {
+            background: #f1f5f9;
+            border: none;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            font-size: 1.2rem;
+            color: #64748b;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+        }
+        
+        .btn-close-modal:hover {
+            background: #e2e8f0;
+            color: #0f172a;
+        }
+        
+        /* Agrupación vertical de etiquetas e inputs */
+        .form-group-pro {
+            display: flex !important;
+            flex-direction: column !important;
+            gap: 6px !important;
+            margin-bottom: 1.2rem !important;
+        }
+        
+        .form-group-pro label {
+            font-size: 0.85rem !important;
+            font-weight: 600 !important;
+            color: #334155 !important;
+        }
+        
+        /* Cajas de texto y selects elegantes */
+        .form-group-pro input,
+        .form-group-pro select {
+            width: 100% !important;
+            padding: 10px 14px !important;
+            border: 1px solid #cbd5e1 !important;
+            border-radius: 8px !important;
+            font-size: 0.95rem !important;
+            color: #1e293b !important;
+            background-color: #f8fafc !important;
+            outline: none !important;
+            box-sizing: border-box !important;
+            transition: all 0.2s ease;
+        }
+        
+        .form-group-pro input:focus,
+        .form-group-pro select:focus {
+            background-color: #ffffff !important;
+            border-color: #0f766e !important;
+            box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.15) !important;
+        }
+        
+        /* Filas organizadas en 2 columnas */
+        .form-grid-2 {
+            display: grid !important;
+            grid-template-columns: 1fr 1fr !important;
+            gap: 12px !important;
+        }
+        
+        .form-grid-3 {
+            display: grid !important;
+            grid-template-columns: 1fr 1fr 1fr !important;
+            gap: 10px !important;
+        }
+        
+        /* Botones de acción alineados */
+        .modal-actions-pro {
+            display: flex !important;
+            justify-content: flex-end !important;
+            gap: 12px !important;
+            margin-top: 1.5rem !important;
+            padding-top: 1rem !important;
+            border-top: 1px solid #f1f5f9 !important;
+        }
+        
+        .btn-secondary-pro {
+            background: #f1f5f9 !important;
+            color: #475569 !important;
+            border: 1px solid #cbd5e1 !important;
+            padding: 10px 18px !important;
+            border-radius: 8px !important;
+            font-weight: 600 !important;
+            cursor: pointer !important;
+        }
+        
+        .btn-primary-pro {
+            background: #0f766e !important;
+            color: #ffffff !important;
+            border: none !important;
+            padding: 10px 22px !important;
+            border-radius: 8px !important;
+            font-weight: 600 !important;
+            cursor: pointer !important;
+            box-shadow: 0 4px 6px -1px rgba(15, 118, 110, 0.2) !important;
+        }
+        
+        .btn-primary-pro:hover {
+            background: #115e59 !important;
+        }
 
         /* ==========================================================================
            9. ADAPTABILIDAD (RESPONSIVE)
@@ -1295,7 +1419,9 @@
                             <p class="text-xs font-bold uppercase tracking-widest text-teal-600">Podología Clínica</p>
                         </div>
                     </div>
-                    
+                    <div class="text-[10px] text-slate-400 italic text-center pt-2">
+                        Dirección: Solanda sector Dos, calle Simón Guerra, junto a la casa barrial. Telf.:0995225328.
+                    </div>
                     <!-- Date & Expedition inputs -->
                     <div class="flex space-x-4 bg-slate-50 p-3 rounded-xl border border-slate-200">
                         <div>
@@ -1601,13 +1727,12 @@
                                 <span class="block text-[10px] text-slate-500">C.I.: 1720615218-7</span>
                             </div>
                         </div>
-                    </div>
-
-                    <!-- Legal note at bottom -->
+                        <!-- Legal note at bottom -->
                     <div class="text-[10px] text-slate-400 italic text-center pt-2">
                         NOTA: En caso de que el paciente esté incapacitado en poder firmar el documento, firmará el representante.
                     </div>
-                </section>                
+                    </div>                    
+                </section>               
             
         </div>
     </div>
@@ -2837,66 +2962,72 @@ html2pdf().set(opt).from(element).save();
 <!-- MODAL PARA AGENDAR / EDITAR TURNO -->
 <div id="modal-turno" class="modal-pro" style="display: none;">
     <div class="modal-content-pro">
+        
+        <!-- Header del Modal -->
         <div class="modal-header-pro">
             <h3 id="modal-titulo">Agendar Nueva Cita</h3>
             <button type="button" class="btn-close-modal" onclick="cerrarModal()">&times;</button>
         </div>
+
+        <!-- Formulario -->
         <form id="form-turno" onsubmit="guardarTurno(event)">
             <input type="hidden" id="turno-id">
-            
+
             <div class="form-group-pro">
-                <label for="turnCedula">Cédula / Identificación:</label>
+                <label for="turnCedula">Cédula / Identificación</label>
                 <input type="text" id="turnCedula" placeholder="Ej: 1712345678" required>
             </div>
 
             <div class="form-group-pro">
-                <label for="turnNombres">Apellidos y Nombres:</label>
+                <label for="turnNombres">Apellidos y Nombres</label>
                 <input type="text" id="turnNombres" placeholder="Ej: Pérez Juan" required>
             </div>
 
-            <div class="form-row-pro">
+            <div class="form-grid-2">
                 <div class="form-group-pro">
-                    <label for="turnCelular">Teléfono (WhatsApp):</label>
-                    <input type="tel" id="turnCelular" placeholder="Ej: 593991234567" required>
+                    <label for="turnCelular">Teléfono (WhatsApp)</label>
+                    <input type="tel" id="turnCelular" placeholder="Ej: 0991234567" required>
                 </div>
 
                 <div class="form-group-pro">
-                    <label for="turnEmail">Correo (Opcional):</label>
-                    <input type="email" id="turnEmail" placeholder="Ej: paciente@email.com">
+                    <label for="turnEmail">Correo (Opcional)</label>
+                    <input type="email" id="turnEmail" placeholder="paciente@email.com">
                 </div>
             </div>
 
             <div class="form-group-pro">
-                <label for="turnMotivo">Motivo de Consulta:</label>
+                <label for="turnMotivo">Motivo de Consulta</label>
                 <input type="text" id="turnMotivo" placeholder="Ej: Quiropodia, Uñero, Estudio de marcha" required>
             </div>
 
-            <div class="form-row-pro">
+            <div class="form-grid-3">
                 <div class="form-group-pro">
-                    <label for="modal-fecha">Fecha de Cita:</label>
+                    <label for="modal-fecha">Fecha</label>
                     <input type="date" id="modal-fecha" required>
                 </div>
-            
+
                 <div class="form-group-pro">
-                    <label for="hora-inicio">Hora de Inicio:</label>
+                    <label for="hora-inicio">Hora Inicio</label>
                     <select id="hora-inicio" required></select>
                 </div>
-            
+
                 <div class="form-group-pro">
-                    <label for="duracion-minutos">Duración del Turno:</label>
+                    <label for="duracion-minutos">Duración</label>
                     <select id="duracion-minutos" required>
-                        <option value="40">40 Minutos</option>
-                        <option value="50" selected>50 Minutos</option>
-                        <option value="60">60 Minutos</option>
+                        <option value="40">40 Min</option>
+                        <option value="50" selected>50 Min</option>
+                        <option value="60">60 Min</option>
                     </select>
                 </div>
-            </div> <!-- Se cierra correctamente el bloque form-row-pro -->
+            </div>
 
+            <!-- Acciones -->
             <div class="modal-actions-pro">
                 <button type="button" class="btn-secondary-pro" onclick="cerrarModal()">Cancelar</button>
                 <button type="submit" class="btn-primary-pro">Guardar Cita</button>
             </div>
         </form>
+
     </div>
 </div>
     
