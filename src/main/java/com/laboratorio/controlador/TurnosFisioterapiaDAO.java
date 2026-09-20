@@ -90,7 +90,7 @@ public class TurnosFisioterapiaDAO {
     }
 
     public boolean eliminar(int id) {
-        String sql = "DELETE FROM turnos_podologia WHERE id = ?";
+        String sql = "DELETE FROM turnos_fisioterapia WHERE id = ?";
         try (Connection con = Conexion.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
 
