@@ -147,7 +147,7 @@ function renderizarCalendario() {
 
             // Usar la fecha formateada de la agenda seleccionada
             const fechaCita = fechaTexto || t.fecha || '';
-            const mensajeWA = encodeURIComponent(`Hola ${t.nombres}, le recordamos su cita de Podología programada para el ${fechaCita} a las ${t.horaInicio}.`);
+            const mensajeWA = encodeURIComponent(`Hola saludos ${t.nombres}, le recordamos su cita de Fisioterapia programada para el ${fechaCita} a las ${t.horaInicio}.`);
             
             const botonWhatsApp = celularLimpio ? `
                 <a href="https://wa.me/${celularLimpio}?text=${mensajeWA}" 
@@ -249,7 +249,7 @@ function editarTurno(id) {
     if (document.getElementById('duracion-minutos')) document.getElementById('duracion-minutos').value = turno.duracionMinutos;
 
     const titulo = document.getElementById('modal-titulo');
-    if (titulo) titulo.innerText = 'Editar Cita Podológica';
+    if (titulo) titulo.innerText = 'Editar Cita Fisioterapia';
 
     const modal = document.getElementById('modal-turno');
     if (modal) {
@@ -313,7 +313,7 @@ async function guardarTurno(event) {
 }
 
 async function eliminarTurno(id) {
-    if (!confirm("¿Está seguro de que desea eliminar esta cita podológica?")) return;
+    if (!confirm("¿Está seguro de que desea eliminar esta cita Fisioterapia?")) return;
 
     const params = new URLSearchParams();
     params.append('accion', 'eliminar');
