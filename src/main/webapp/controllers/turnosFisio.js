@@ -276,10 +276,14 @@ async function guardarTurno(event) {
 
     if (enviandoFormulario) return;
 
-    const fechaInput = document.getElementById('fecha-agenda');
-    const fecha = fechaInput ? fechaInput.value : '';
-    if (!fecha) {
-        alert("Seleccione una fecha válida en la agenda.");
+    // 1. Priorizar la fecha seleccionada en el MODAL (#modal-fecha)
+    // Si no existe o está vacía, se toma la de la agenda principal (#fecha-agenda)
+    const fechaModal = document.getElementById('modal-fecha')?.value;
+    const fechaAgenda = document.getElementById('fecha-agenda')?.value;
+    const fechaFinal = fechaModal || fechaAgenda;
+
+    if (!fechaFinal) {
+        alert("Seleccione una fecha válida para la cita.");
         return;
     }
 
@@ -296,7 +300,9 @@ async function guardarTurno(event) {
     params.append('turnMotivo', document.getElementById('turnMotivo')?.value.trim() || '');
     params.append('horaInicio', document.getElementById('hora-inicio')?.value || '08:00');
     params.append('duracionMinutos', document.getElementById('duracion-minutos')?.value || '30');
-    params.append('fecha', fecha);
+    
+    // 2. Se envía la fecha elegida en el modal
+    params.append('fecha', fechaFinal);
 
     try {
         enviandoFormulario = true;
@@ -312,6 +318,13 @@ async function guardarTurno(event) {
         if (res.ok) {
             alert(esEdicion ? "Cita actualizada exitosamente." : "Cita agendada exitosamente.");
             cerrarModal();
+
+            // 3. Sincronizar el selector principal de fecha para mostrar el día al que se movió la cita
+            const inputAgenda = document.getElementById('fecha-agenda');
+            if (inputAgenda && inputAgenda.value !== fechaFinal) {
+                inputAgenda.value = fechaFinal;
+            }
+
             cargarTurnosDB();
         } else {
             alert("Atención: " + (data.error || "No se pudo guardar la cita."));
