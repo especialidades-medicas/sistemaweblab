@@ -1,19 +1,29 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
+    <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Fisiolab.st - Panel de Control</title>
     <!-- Google Fonts para mejor estética -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="icon" type="image/png" href="../img/logFisio2.png">   
+    <link rel="icon" type="image/png" href="../img/logFisio2.png">    
+    
     <!-- Librería SheetJS (XLSX) para la exportación e importación de archivos Excel -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    
     <!-- Librería jsPDF para la exportación de la historia clínica en PDF -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <link rel="stylesheet" href="../assets/css/bodyselector.css">
-    <!-- Cargar html2canvas desde CDN si no lo tienes incluido -->
+    <!-- Plugin AutoTable para jsPDF (Recomendado para tablas de medicamentos) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+    
+    <!-- Cargar html2canvas desde CDN -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>  
+    
+    <!-- Estilos locales -->
+    <link rel="stylesheet" href="../assets/css/bodyselector.css">
+    
+    <style>
     
     
     <style>
