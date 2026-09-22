@@ -50,14 +50,14 @@ public class TurnoFisioterapiaServlet extends HttpServlet {
         try {
             // Caso 1: Eliminar Turno
             if ("eliminar".equals(accion)) {
-                String idEliminar = request.getParameter("id");
-                if (idEliminar == null || idEliminar.trim().isEmpty()) {
+                String idEliminar = obtenerParametroMultiples(request, "id", "turnoId", "idEliminar", "turno-id");
+                if (idEliminar == null || idEliminar.isEmpty()) {
                     enviarRespuestaError(response, HttpServletResponse.SC_BAD_REQUEST, "El ID es obligatorio para eliminar.");
                     return;
                 }
 
                 try {
-                    int id = Integer.parseInt(idEliminar.trim());
+                    int id = Integer.parseInt(idEliminar);
                     boolean eliminado = dao.eliminar(id);
                     if (eliminado) {
                         response.getWriter().write(gson.toJson(Collections.singletonMap("status", "OK")));
@@ -71,11 +71,12 @@ public class TurnoFisioterapiaServlet extends HttpServlet {
             }
 
             // Caso 2: Guardar o Actualizar Turno
-            String idStr = request.getParameter("id");
-            String fecha = request.getParameter("fecha");
-            String horaInicio = request.getParameter("horaInicio");
+            // Búsqueda flexible del ID probando las diferentes claves habituales del formulario
+            String idStr = obtenerParametroMultiples(request, "id", "turnoId", "turnId", "turno-id");
+            String fecha = obtenerParametroMultiples(request, "fecha", "turnFecha", "fechaTurno");
+            String horaInicio = obtenerParametroMultiples(request, "horaInicio", "turnHoraInicio", "hora_inicio", "hora");
 
-            if (fecha == null || fecha.trim().isEmpty() || horaInicio == null || horaInicio.trim().isEmpty()) {
+            if (fecha == null || fecha.isEmpty() || horaInicio == null || horaInicio.isEmpty()) {
                 enviarRespuestaError(response, HttpServletResponse.SC_BAD_REQUEST, "La fecha y la hora de inicio son obligatorias.");
                 return;
             }
@@ -83,9 +84,9 @@ public class TurnoFisioterapiaServlet extends HttpServlet {
             TurnoFisioterapia turno = new TurnoFisioterapia();
             
             // Asignación de ID para edición
-            if (idStr != null && !idStr.trim().isEmpty()) {
+            if (idStr != null && !idStr.isEmpty()) {
                 try {
-                    turno.setId(Integer.parseInt(idStr.trim()));
+                    turno.setId(Integer.parseInt(idStr));
                 } catch (NumberFormatException e) {
                     LOGGER.log(Level.WARNING, "ID de turno no numérico recibido para edición: {0}", idStr);
                 }
@@ -96,14 +97,14 @@ public class TurnoFisioterapiaServlet extends HttpServlet {
             turno.setCelular(obtenerParametro(request, "turnCelular", "celular"));
             turno.setEmail(obtenerParametro(request, "turnEmail", "email"));
             turno.setMotivo(obtenerParametro(request, "turnMotivo", "motivo"));
-            turno.setFecha(fecha.trim());
-            turno.setHoraInicio(horaInicio.trim());
+            turno.setFecha(fecha);
+            turno.setHoraInicio(horaInicio);
 
-            String duracionStr = request.getParameter("duracionMinutos");
+            String duracionStr = obtenerParametroMultiples(request, "duracionMinutos", "duracion", "turnDuracion");
             int duracion = 30;
-            if (duracionStr != null && !duracionStr.trim().isEmpty()) {
+            if (duracionStr != null && !duracionStr.isEmpty()) {
                 try {
-                    duracion = Integer.parseInt(duracionStr.trim());
+                    duracion = Integer.parseInt(duracionStr);
                 } catch (NumberFormatException ignored) {}
             }
             turno.setDuracionMinutos(duracion);
@@ -127,6 +128,16 @@ public class TurnoFisioterapiaServlet extends HttpServlet {
             valor = request.getParameter(claveAlternativa);
         }
         return valor != null ? valor.trim() : null;
+    }
+
+    private String obtenerParametroMultiples(HttpServletRequest request, String... claves) {
+        for (String clave : claves) {
+            String valor = request.getParameter(clave);
+            if (valor != null && !valor.trim().isEmpty()) {
+                return valor.trim();
+            }
+        }
+        return null;
     }
 
     private void enviarRespuestaError(HttpServletResponse response, int statusCode, String mensaje) throws IOException {
