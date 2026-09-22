@@ -225,30 +225,57 @@ function cerrarModal() {
 }
 
 function editarTurno(id) {
-    const turno = turnosDelDia.find(t => t.id === id);
+    const turno = turnosDelDia.find(t => String(t.id) === String(id));
     if (!turno) return;
 
     if (document.getElementById('turno-id')) document.getElementById('turno-id').value = turno.id;
-    if (document.getElementById('turnCedula')) document.getElementById('turnCedula').value = turno.cedula;
-    if (document.getElementById('turnNombres')) document.getElementById('turnNombres').value = turno.nombres;
-    if (document.getElementById('turnCelular')) document.getElementById('turnCelular').value = turno.celular;
-    if (document.getElementById('turnEmail')) document.getElementById('turnEmail').value = turno.email;
-    if (document.getElementById('turnMotivo')) document.getElementById('turnMotivo').value = turno.motivo;
+    if (document.getElementById('turnCedula')) document.getElementById('turnCedula').value = turno.cedula || '';
+    if (document.getElementById('turnNombres')) document.getElementById('turnNombres').value = turno.nombres || '';
+    if (document.getElementById('turnCelular')) document.getElementById('turnCelular').value = turno.celular || '';
+    if (document.getElementById('turnEmail')) document.getElementById('turnEmail').value = turno.email || '';
+    if (document.getElementById('turnMotivo')) document.getElementById('turnMotivo').value = turno.motivo || '';
     
-    // Normalizar la fecha a formato obligatorio YYYY-MM-DD
+    // 1. Panagpabaro ti fecha iti format a YYYY-MM-DD
     let fechaFormateada = turno.fecha || '';
     if (fechaFormateada.includes('T')) {
         fechaFormateada = fechaFormateada.split('T')[0];
     } else if (fechaFormateada.includes('/')) {
         const partes = fechaFormateada.split('/');
         if (partes.length === 3) {
-            fechaFormateada = `${partes[2]}-${partes[1].padStart(2, '0')}-${partes[0].padStart(2, '0')}`;
+            if (partes[0].length === 4) {
+                fechaFormateada = `${partes[0]}-${partes[1].padStart(2, '0')}-${partes[2].padStart(2, '0')}`;
+            } else {
+                fechaFormateada = `${partes[2]}-${partes[1].padStart(2, '0')}-${partes[0].padStart(2, '0')}`;
+            }
         }
     }
 
-    if (document.getElementById('modal-fecha')) document.getElementById('modal-fecha').value = fechaFormateada;
-    if (document.getElementById('hora-inicio')) document.getElementById('hora-inicio').value = turno.horaInicio;
-    if (document.getElementById('duracion-minutos')) document.getElementById('duracion-minutos').value = turno.duracionMinutos;
+    if (document.getElementById('modal-fecha')) {
+        document.getElementById('modal-fecha').value = fechaFormateada;
+    }
+
+    // 2. Panagkortar iti segundos ti hora_inicio (kas pagarigan: "08:00:00" -> "08:00")
+    let horaInicio = turno.horaInicio || turno.hora_inicio || '';
+    if (horaInicio.length > 5) {
+        horaInicio = horaInicio.substring(0, 5);
+    }
+
+    const selectHora = document.getElementById('hora-inicio');
+    if (selectHora) {
+        // Panangisigurado a adda ti option ti select
+        let existeOpcion = Array.from(selectHora.options).some(opt => opt.value === horaInicio);
+        if (!existeOpcion && horaInicio) {
+            const opt = document.createElement('option');
+            opt.value = horaInicio;
+            opt.textContent = horaInicio;
+            selectHora.appendChild(opt);
+        }
+        selectHora.value = horaInicio;
+    }
+
+    if (document.getElementById('duracion-minutos')) {
+        document.getElementById('duracion-minutos').value = turno.duracionMinutos || turno.duracion_min || '50';[cite: 10]
+    }
 
     const titulo = document.getElementById('modal-titulo');
     if (titulo) titulo.innerText = 'Editar Cita Fisioterapia';
