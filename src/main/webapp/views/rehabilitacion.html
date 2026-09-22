@@ -1064,173 +1064,80 @@ h3 {
    FORMULARIO DE PRESCRIPCIÓN MÉDICA (RECETARIO) - ESTILO PREMIUM
    ========================================================================= */
 
-#recetas-view {
-    font-family: 'Poppins', sans-serif;
-    color: #1e293b; /* Slate 800 */
-    --primary: #14b8a6; /* teal-500 */
-    --primary-dark: #0f766e; /* teal-700 */
-    --primary-light: #ccfbf1; /* teal-100 */
-    --danger: #ef4444; /* red-500 */
-    --bg-input: #f8fafc; /* slate-50 */
-    --border-color: #e2e8f0; /* slate-200 */
-}
+/* ==========================================================================
+   13. ESTILOS ESPECÍFICOS PARA PRESCRIPCIÓN MÉDICA Y RECETARIO
+   ========================================================================== */
 
-/* --- Contenedor Principal (Tarjeta) --- */
-.content-card {
-    background-color: #ffffff;
-    padding: 2.5rem;
-    border-radius: 1rem;
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-    margin-bottom: 2rem;
-    border: 1px solid #e2e8f0;
-}
-
-/* --- Encabezado de la Sección --- */
+/* Encabezado y sub-secciones de la receta */
 .card-header-wrapper {
-    margin-bottom: 2.5rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
     border-bottom: 1px solid var(--border-color);
-    padding-bottom: 1.5rem;
 }
 
-.header-title {
+.card-header-wrapper .header-title {
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    margin-bottom: 0.5rem;
-}
-
-.header-title h2 {
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: var(--primary-dark);
-    letter-spacing: -0.5px;
-    margin: 0;
-}
-
-.badge-status {
-    background-color: var(--primary-light);
-    color: var(--primary-dark);
-    font-size: 0.75rem;
-    font-weight: 700;
-    padding: 0.35rem 0.85rem;
-    border-radius: 50px;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
+    gap: 1rem;
 }
 
 .card-header-wrapper .subtitle {
-    font-size: 0.95rem;
-    color: #64748b; /* slate-500 */
-    margin: 0;
+    color: var(--text-muted);
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
 }
 
-/* --- Secciones del Formulario (Fieldsets) --- */
+.badge-status {
+    background: var(--primary-light);
+    color: var(--primary-dark);
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.25rem 0.6rem;
+    border-radius: var(--radius-full);
+}
+
 .form-section {
     border: 1px solid var(--border-color);
-    border-radius: 0.75rem;
-    padding: 1.5rem 2rem;
-    margin-bottom: 2.5rem;
-    background-color: #ffffff;
+    border-radius: var(--radius-md);
+    padding: 1.25rem;
+    margin-bottom: 1.5rem;
+    background-color: #fafafa;
 }
 
 .section-legend {
-    font-size: 1.1rem;
     font-weight: 700;
+    font-size: 0.95rem;
     color: var(--primary-dark);
+    padding: 0 0.5rem;
     display: flex;
     align-items: center;
-    gap: 10px;
-    padding: 0 1rem;
-    letter-spacing: -0.3px;
-    margin-bottom: 1.5rem;
-    width: auto;
-}
-
-.section-legend svg {
-    color: var(--primary);
-}
-
-/* --- Grilla de Campos de Datos --- */
-.form-grid {
-    display: grid;
-    grid-template-columns: repeat(12, 1fr);
-    gap: 1.5rem;
-}
-
-.form-group {
-    display: flex;
-    flex-direction: column;
     gap: 0.5rem;
 }
 
-/* Definición de Columnas de Grilla */
-.col-3 { grid-column: span 3; }
-.col-6 { grid-column: span 6; }
-.col-9 { grid-column: span 9; }
-.col-12 { grid-column: span 12; }
-
-/* Estilo de Etiquetas de Campo */
-.form-group label {
-    font-size: 0.85rem;
-    font-weight: 600;
-    color: #1e293b;
-}
-
 .required {
-    color: #ef4444;
+    color: var(--danger);
 }
 
-/* Estilo de Inputs Generales */
-.form-group input {
-    padding: 0.8rem 1rem;
-    border: 1px solid #cbd5e1;
-    border-radius: 0.5rem;
-    font-size: 0.95rem;
-    background-color: var(--bg-input);
-    transition: all 0.2s ease;
-    outline: none;
-}
-
-.form-group input:focus {
-    border-color: var(--primary);
-    background-color: #ffffff;
-    box-shadow: 0 0 0 4px rgba(20, 184, 166, 0.1);
-}
-
-/* Resaltado para Campos Críticos (Alergias) */
-.highlight-input {
-    border-color: #fca5a5;
-    background-color: #fef2f2;
-    color: #b91c1c;
-    font-weight: 600;
-}
-
-.highlight-input:focus {
-    border-color: #ef4444;
-    background-color: #ffffff;
-    box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.1);
-}
-
-/* --- Lista de Medicamentos (Esquema Terapéutico) --- */
+/* Tabla / Lista de Medicamentos (Fix para el desajuste en pantalla) */
 .med-table-header {
     display: flex;
-    font-size: 0.8rem;
+    gap: 0.75rem;
+    padding: 0.5rem 0.75rem;
+    background: var(--primary-light);
+    border-radius: var(--radius-sm);
     font-weight: 700;
-    color: #64748b;
+    font-size: 0.8rem;
+    color: var(--primary-dark);
     text-transform: uppercase;
-    letter-spacing: 0.5px;
-    padding: 1rem;
-    background-color: #f1f5f9;
-    border-radius: 0.5rem;
     margin-bottom: 0.75rem;
 }
 
-/* Definición de Columnas de Medicamentos */
-.col-med-name { flex: 2; padding-left: 0.5rem; }
-.col-med-dose, .col-med-freq, .col-med-dur { flex: 1; text-align: left; }
+.col-med-name { flex: 3; }
+.col-med-dose { flex: 1.5; }
+.col-med-freq { flex: 1.5; }
+.col-med-dur  { flex: 1.5; }
 .col-med-action { width: 40px; }
 
-/* Fila de Medicamento (Item) */
 .meds-list {
     display: flex;
     flex-direction: column;
@@ -1240,96 +1147,101 @@ h3 {
 .med-item-row {
     display: flex;
     align-items: center;
-    gap: 1rem;
-    padding: 0.75rem 1rem;
-    background-color: #ffffff;
+    gap: 0.75rem;
+    background: var(--bg-card);
+    padding: 0.5rem 0.75rem;
     border: 1px solid var(--border-color);
-    border-radius: 0.5rem;
-    transition: all 0.2s ease;
+    border-radius: var(--radius-md);
+    transition: var(--transition-fast);
 }
 
 .med-item-row:hover {
-    border-color: var(--primary-light);
-    background-color: #f0fdfa;
+    border-color: var(--primary);
+    box-shadow: var(--shadow-sm);
 }
 
-/* Inputs dentro de Fila */
+.med-field {
+    flex: 1.5;
+}
+
+.med-field.flex-grow-2 {
+    flex: 3;
+}
+
 .med-field input {
     width: 100%;
-    padding: 0.65rem 0.85rem;
-    border: 1px solid #cbd5e1;
-    border-radius: 0.35rem;
-    font-size: 0.9rem;
+    padding: 0.55rem 0.75rem;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    font-size: 0.875rem;
+    background-color: #ffffff;
 }
 
-.med-field.flex-grow-2 { flex: 2; }
-.med-field { flex: 1; }
-
-/* Ocultar etiquetas móviles por defecto */
-.mobile-only { display: none; }
-
-/* Botón de Eliminar (Icono) */
-.btn-icon-delete {
-    background: transparent;
-    border: none;
-    color: #94a3b8;
-    padding: 0.5rem;
-    cursor: pointer;
-    border-radius: 0.35rem;
-    transition: all 0.2s ease;
+.med-field input:focus {
+    border-color: var(--primary);
+    outline: none;
+    box-shadow: 0 0 0 2px var(--primary-light);
 }
 
-.btn-icon-delete:hover {
-    color: #ef4444;
-    background-color: #fef2f2;
+.med-action {
+    width: 40px;
+    display: flex;
+    justify-content: center;
 }
 
-/* --- Barra de Acciones de Medicamentos --- */
+.mobile-only {
+    display: none;
+}
+
 .med-actions-bar {
+    margin-top: 1rem;
+    display: flex;
+    justify-content: flex-start;
+}
+
+.highlight-input {
+    background-color: #fffbeb !important;
+    border-color: #fde68a !important;
+}
+
+/* Pie de formulario */
+.form-footer {
     display: flex;
     justify-content: flex-end;
     margin-top: 1.5rem;
 }
 
-.btn-secondary-outline {
-    background: transparent;
-    color: var(--primary-dark);
-    border: 1px solid var(--primary-dark);
-    padding: 0.7rem 1.25rem;
-    border-radius: 0.5rem;
-    font-weight: 600;
-    font-size: 0.9rem;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    transition: all 0.2s ease;
-}
+/* Responsivo para móviles en la tabla de medicamentos */
+@media (max-width: 768px) {
+    .med-table-header {
+        display: none;
+    }
 
-.btn-secondary-outline:hover {
-    background-color: var(--primary-light);
-    border-color: var(--primary-light);
-    box-shadow: 0 4px 6px -1px rgba(20, 184, 166, 0.1);
-}
-
-/* --- Responsive para Móviles --- */
-@media (max-width: 992px) {
-    .content-card { padding: 1.5rem; }
-    .form-grid { gap: 1rem; }
-    .col-3, .col-6, .col-9, .col-12 { grid-column: span 12; }
-    
-    .med-table-header { display: none; }
     .med-item-row {
         flex-direction: column;
-        align-items: flex-start;
-        gap: 0.75rem;
-        padding: 1.25rem;
+        align-items: stretch;
+        position: relative;
+        padding-top: 1rem;
     }
-    
-    .med-field { width: 100%; }
-    .mobile-only { display: block; font-size: 0.8rem; font-weight: 600; color: #1e293b; margin-bottom: 0.25rem;}
-    
-    .med-action { width: 100%; display: flex; justify-content: flex-end; }
+
+    .med-field {
+        width: 100%;
+    }
+
+    .mobile-only {
+        display: block;
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: var(--text-muted);
+        margin-bottom: 0.2rem;
+    }
+
+    .med-action {
+        position: absolute;
+        top: 0.5rem;
+        right: 0.5rem;
+        width: auto;
+    }
 }
         
 </style>
@@ -2063,25 +1975,22 @@ h3 {
 
 <!-- VISTA 4: RECETARIO / PRESCRIPCIÓN MÉDICA -->
 
-    <div id="recetas-view" class="section-view content-card agenda-container">    
-
+    <!-- VISTA: RECETARIO / PRESCRIPCIÓN MÉDICA -->
+<div id="recetas-view" class="section-view active">
     <div class="content-card shadow-sm">
-        <!-- Encabezado de Sección -->
         <div class="card-header-wrapper">
             <div class="header-title">
                 <h2>Prescripción Médica y Recetario</h2>
                 <span class="badge-status">Módulo Oficial</span>
             </div>
-            <p class="subtitle">Prescripciones de medicamentos, ejercicios y pautas.</p>
+            <p class="subtitle">Prescripciones de medicamentos, ejercicios y pautas de rehabilitación.</p>
         </div>
 
-        <form id="formReceta" onsubmit="generarPDFReceta(event)" class="prescription-form" novalidate>
+        <form id="formReceta" onsubmit="generarPDFReceta(event)" class="prescription-form">
             
-            <!-- SECCIÓN: Datos del Paciente -->
+            <!-- DATOS DEL PACIENTE -->
             <fieldset class="form-section">
-                <legend class="section-legend">
-                    Información del Paciente
-                </legend>
+                <legend class="section-legend">Información del Paciente</legend>
                 
                 <div class="form-grid">
                     <div class="form-group col-3">
@@ -2111,16 +2020,14 @@ h3 {
 
                     <div class="form-group col-12">
                         <label for="recDiagnostico">Diagnóstico / Presunción Clínica</label>
-                        <input type="text" id="recDiagnostico" placeholder="Ej. Gastroenteritis aguda no especificada">
+                        <input type="text" id="recDiagnostico" placeholder="Ej. Tendinitis Rotuliana">
                     </div>
                 </div>
             </fieldset>
 
-            <!-- SECCIÓN: Medicamentos Prescritos -->
+            <!-- MEDICAMENTOS / ESQUEMA -->
             <fieldset class="form-section">
-                <legend class="section-legend">
-                    Esquema Terapéutico (Medicamentos)
-                </legend>
+                <legend class="section-legend">Esquema Terapéutico (Medicamentos / Pautas)</legend>
 
                 <div class="med-table-header">
                     <span class="col-med-name">Medicamento / Presentación</span>
@@ -2131,51 +2038,39 @@ h3 {
                 </div>
 
                 <div id="medicamentosContainer" class="meds-list">
-                    <!-- Fila base estática -->
                     <div class="med-item-row">
                         <div class="med-field flex-grow-2">
-                            <label class="mobile-only">Medicamento / Presentación</label>
-                            <input type="text" class="med-nombre" placeholder="Ej. Paracetamol 500mg">
+                            <input type="text" class="med-nombre" placeholder="Ej. Ibuprofeno 400mg">
                         </div>
                         <div class="med-field">
-                            <label class="mobile-only">Dosis</label>
                             <input type="text" class="med-dosis" placeholder="Ej. 1 tableta">
                         </div>
                         <div class="med-field">
-                            <label class="mobile-only">Frecuencia</label>
                             <input type="text" class="med-frecuencia" placeholder="Ej. c/8 horas">
                         </div>
                         <div class="med-field">
-                            <label class="mobile-only">Duración</label>
                             <input type="text" class="med-duracion" placeholder="Ej. 5 días">
                         </div>
                         <div class="med-action">
-                            <button type="button" class="btn-icon-delete" title="Eliminar medicamento" onclick="eliminarFilaMed(this)" aria-label="Eliminar fila">
-                                ✕
-                            </button>
+                            <button type="button" class="btn-icon-delete" title="Eliminar" onclick="eliminarFilaMed(this)">&times;</button>
                         </div>
                     </div>
                 </div>
 
-                <div class="med-actions-bar">
-                    <button type="button" class="btn-secondary-outline" onclick="agregarFilaMed()">
-                        + Agregar Medicamento
-                    </button>
+                <div class="med-actions-bar" style="margin-top: 15px;">
+                    <button type="button" class="btn-secondary-outline" onclick="agregarFilaMed()">+ Agregar Fila</button>
                 </div>
             </fieldset>
 
-            <!-- SECCIÓN: Indicaciones Adicionales -->
+            <!-- INDICACIONES -->
             <fieldset class="form-section">
-                <legend class="section-legend">
-                    Indicaciones Adicionales y Recomendaciones
-                </legend>
+                <legend class="section-legend">Indicaciones Adicionales y Recomendaciones</legend>
                 <div class="form-group col-12">
-                    <textarea id="recIndicaciones" rows="3" placeholder="Ej. Reposo por 48 horas, abundante hidratación, evitar ejercicios de alto impacto..."></textarea>
+                    <textarea id="recIndicaciones" rows="3" placeholder="Ej. Crioterapia 15 min 3 veces al día..."></textarea>
                 </div>
             </fieldset>
 
-            <!-- Botón de Envío -->
-            <div class="form-actions">
+            <div class="form-actions" style="margin-top: 20px;">
                 <button type="submit" class="btn-primary">Generar y Descargar Receta (PDF)</button>
             </div>
         </form>
