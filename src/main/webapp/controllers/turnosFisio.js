@@ -246,7 +246,7 @@ function editarTurno(id) {
     if (document.getElementById('turnEmail')) document.getElementById('turnEmail').value = turno.email || '';
     if (document.getElementById('turnMotivo')) document.getElementById('turnMotivo').value = turno.motivo || '';
     
-    // Normalizar la fecha a YYYY-MM-DD
+    // Format ti petsa tapno agbalin a YYYY-MM-DD
     let fechaFormateada = turno.fecha || '';
     if (fechaFormateada.includes('T')) {
         fechaFormateada = fechaFormateada.split('T')[0];
@@ -261,11 +261,12 @@ function editarTurno(id) {
         }
     }
 
-    if (document.getElementById('modal-fecha')) {
-        document.getElementById('modal-fecha').value = fechaFormateada;
+    const inputFecha = document.getElementById('modal-fecha');
+    if (inputFecha) {
+        inputFecha.value = fechaFormateada;
     }
 
-    // Normalizar hora (remover segundos de HH:mm:ss)
+    // Format ti oras (sukaten ti HH:mm)
     let horaInicio = turno.horaInicio || turno.hora_inicio || '';
     if (horaInicio.length > 5) {
         horaInicio = horaInicio.substring(0, 5);
