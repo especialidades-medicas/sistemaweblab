@@ -1,68 +1,15 @@
-// ==========================================
-// MANEJO DE FILAS DINÁMICAS (RECETAS)
-// ==========================================
-function agregarFilaMed() {
-    const container = document.getElementById('medicamentosContainer');
-    if (!container) return;
-
-    const div = document.createElement('div');
-    div.className = 'med-item-row';
-    div.innerHTML = `
-        <div class="med-field flex-grow-2">
-            <label class="mobile-only">Medicamento / Presentación</label>
-            <input type="text" class="med-nombre" placeholder="Ej. Ibuprofeno 400mg">
-        </div>
-        <div class="med-field">
-            <label class="mobile-only">Dosis</label>
-            <input type="text" class="med-dosis" placeholder="Ej. 1 tableta">
-        </div>
-        <div class="med-field">
-            <label class="mobile-only">Frecuencia</label>
-            <input type="text" class="med-frecuencia" placeholder="Ej. c/8 horas">
-        </div>
-        <div class="med-field">
-            <label class="mobile-only">Duración</label>
-            <input type="text" class="med-duracion" placeholder="Ej. 3 días">
-        </div>
-        <div class="med-action">
-            <button type="button" class="btn-icon-delete" title="Eliminar medicamento" onclick="eliminarFilaMed(this)" aria-label="Eliminar fila">
-                ✕
-            </button>
-        </div>
-    `;
-    container.appendChild(div);
-}
-
-function eliminarFilaMed(btn) {
-    const items = document.querySelectorAll('.med-item-row');
-    if (items.length > 1) {
-        // Elimina el contenedor padre completo de la fila
-        const fila = btn.closest('.med-item-row');
-        if (fila) fila.remove();
-    } else {
-        alert("Debe mantener al menos un medicamento en la receta.");
-    }
-}
-
-// ==========================================
-// GENERACIÓN DE PDF Y AUTOCOMPLETADO
-// ==========================================
-
-// Función auxiliar para cargar imagen como objeto antes de renderizar en PDF
-function cargarImagen(url) {
-    return new Promise((resolve, reject) => {
-        const img = new Image();
-        img.crossOrigin = "Anonymous";
-        img.src = url;
-        img.onload = () => resolve(img);
-        img.onerror = (err) => reject(err);
-    });
-}
-
 async function generarPDFReceta(e) {
     e.preventDefault();
+    
+    if (!window.jspdf) {
+        alert("Error: La librería jsPDF no está cargada en la página.");
+        return;
+    }
 
-    // Comprobación de seguridad en lectura de inputs (evita que el código muera si falta un ID)
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+
+    // Obtención segura de valores
     const fecha = document.getElementById('recFecha')?.value || '';
     const cedula = document.getElementById('recCedula')?.value || '';
     const nombres = document.getElementById('recNombres')?.value || '';
@@ -71,18 +18,12 @@ async function generarPDFReceta(e) {
     const diagnostico = document.getElementById('recDiagnostico')?.value || '';
     const indicaciones = document.getElementById('recIndicaciones')?.value || '';
 
-    if (!window.jspdf) {
-        alert("La librería jsPDF no está cargada correctamente.");
-        return;
-    }
-
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF();
-
     // --- ENCABEZADO CON LOGO ---
     try {
-        const imgLogo = await cargarImagen('../img/logFisio.png');
-        doc.addImage(imgLogo, 'PNG', 15, 10, 22, 22);
+        if (typeof cargarImagen === 'function') {
+            const imgLogo = await cargarImagen('../img/logFisio.png');
+            doc.addImage(imgLogo, 'PNG', 15, 10, 22, 22);
+        }
     } catch (err) {
         console.warn("No se pudo cargar el logo, continuando sin imagen.", err);
     }
@@ -92,9 +33,8 @@ async function generarPDFReceta(e) {
     doc.setTextColor(29, 53, 87);
     doc.text("RECETARIO MÉDICO - ESPECIALIDADES MÉDICAS", 42, 22);
 
-    // Límite para salto de página
     const pageHeight = doc.internal.pageSize.getHeight();
-    const marginBottom = 50; 
+    const marginBottom = 30;
 
     // --- DATOS DEL PACIENTE ---
     let y = 38;
@@ -104,19 +44,34 @@ async function generarPDFReceta(e) {
     doc.setFontSize(8.5);
     doc.setTextColor(30, 30, 30);
     doc.setFont("helvetica", "bold");
-    doc.text(`Paciente:`, 20, y + 8); doc.setFont("helvetica", "normal"); doc.text(nombres || '', 40, y + 8);
-    doc.setFont("helvetica", "bold");
-    doc.text(`Cédula:`, 130, y + 8); doc.setFont("helvetica", "normal"); doc.text(cedula || '', 150, y + 8);
+    doc.text(`Paciente:`, 20, y + 8); 
+    doc.setFont("helvetica", "normal"); 
+    doc.text(nombres, 40, y + 8);
 
     doc.setFont("helvetica", "bold");
-    doc.text(`Fecha:`, 20, y + 15); doc.setFont("helvetica", "normal"); doc.text(fecha || '', 40, y + 15);
-    doc.setFont("helvetica", "bold");
-    doc.text(`Edad:`, 80, y + 15); doc.setFont("helvetica", "normal"); doc.text(edad || 'N/D', 95, y + 15);
-    doc.setFont("helvetica", "bold");
-    doc.text(`Alergias:`, 130, y + 15); doc.setFont("helvetica", "normal"); doc.text(alergias || 'Ninguna', 150, y + 15);
+    doc.text(`Cédula:`, 130, y + 8); 
+    doc.setFont("helvetica", "normal"); 
+    doc.text(cedula, 150, y + 8);
 
     doc.setFont("helvetica", "bold");
-    doc.text(`Diagnóstico:`, 20, y + 22); doc.setFont("helvetica", "normal"); doc.text(diagnostico || 'N/D', 45, y + 22);
+    doc.text(`Fecha:`, 20, y + 15); 
+    doc.setFont("helvetica", "normal"); 
+    doc.text(fecha, 40, y + 15);
+
+    doc.setFont("helvetica", "bold");
+    doc.text(`Edad:`, 80, y + 15); 
+    doc.setFont("helvetica", "normal"); 
+    doc.text(edad || 'N/D', 95, y + 15);
+
+    doc.setFont("helvetica", "bold");
+    doc.text(`Alergias:`, 130, y + 15); 
+    doc.setFont("helvetica", "normal"); 
+    doc.text(alergias || 'Ninguna', 150, y + 15);
+
+    doc.setFont("helvetica", "bold");
+    doc.text(`Diagnóstico:`, 20, y + 22); 
+    doc.setFont("helvetica", "normal"); 
+    doc.text(diagnostico || 'N/D', 45, y + 22);
 
     // --- TABLA DE PRESCRIPCIÓN ---
     y += 36;
@@ -140,7 +95,7 @@ async function generarPDFReceta(e) {
     doc.setFont("helvetica", "normal");
     doc.setFontSize(8.5);
 
-    // Búsqueda unificada por clase .med-item-row (Sincronizado con HTML)
+    // Iteración de Filas
     const medItems = document.querySelectorAll('.med-item-row');
     medItems.forEach(item => {
         const nombre = item.querySelector('.med-nombre')?.value || '';
@@ -160,7 +115,6 @@ async function generarPDFReceta(e) {
             splitDuracion.length
         );
 
-        // Control de salto de página
         if (y + (lineasMaximas * 5) > pageHeight - marginBottom) {
             doc.addPage();
             y = 20;
@@ -220,7 +174,42 @@ async function generarPDFReceta(e) {
     doc.text("Firma y Sello Médico", 105, y + 6, { align: "center" });
 
     doc.save(`Receta_Medica_${cedula || 'Paciente'}.pdf`);
-    alert("¡Receta médica (PDF) generada correctamente!");
+}
+
+// FUNCIONES AUXILIARES
+function agregarFilaMed() {
+    const container = document.getElementById('medicamentosContainer');
+    if (!container) return;
+
+    const newRow = document.createElement('div');
+    newRow.className = 'med-item-row';
+    newRow.innerHTML = `
+        <div class="med-field flex-grow-2">
+            <input type="text" class="med-nombre" placeholder="Ej. Paracetamol 500mg">
+        </div>
+        <div class="med-field">
+            <input type="text" class="med-dosis" placeholder="Ej. 1 tableta">
+        </div>
+        <div class="med-field">
+            <input type="text" class="med-frecuencia" placeholder="Ej. c/8 horas">
+        </div>
+        <div class="med-field">
+            <input type="text" class="med-duracion" placeholder="Ej. 5 días">
+        </div>
+        <div class="med-action">
+            <button type="button" class="btn-icon-delete" title="Eliminar" onclick="eliminarFilaMed(this)">&times;</button>
+        </div>
+    `;
+    container.appendChild(newRow);
+}
+
+function eliminarFilaMed(btn) {
+    const rows = document.querySelectorAll('.med-item-row');
+    if (rows.length > 1) {
+        btn.closest('.med-item-row').remove();
+    } else {
+        alert("Debe mantener al menos un medicamento en la lista.");
+    }
 }
 
 function autocompletarPacienteReceta() {
@@ -237,17 +226,26 @@ function autocompletarPacienteReceta() {
                 const elNombres = document.getElementById('recNombres');
                 if (elNombres) elNombres.value = p.nombres || '';
                 
-                // Si tienes la función de edad en otro lado de tu proyecto:
                 if (p.fechaNacimiento && typeof calcularEdad === 'function') {
                     const edadCalculada = calcularEdad(p.fechaNacimiento);
                     const elEdad = document.getElementById('recEdad');
                     if (elEdad) elEdad.value = edadCalculada ? `${edadCalculada} años` : '';
                 }
-            } else {
-                console.warn("Paciente no encontrado en la base de datos.");
             }
         })
         .catch(error => {
             console.error("Error al buscar el paciente:", error);
         });
+}
+
+function calcularEdad(fechaNacimiento) {
+    if (!fechaNacimiento) return '';
+    const hoy = new Date();
+    const nac = new Date(fechaNacimiento);
+    let edad = hoy.getFullYear() - nac.getFullYear();
+    const m = hoy.getMonth() - nac.getMonth();
+    if (m < 0 || (m === 0 && hoy.getDate() < nac.getDate())) {
+        edad--;
+    }
+    return edad;
 }
