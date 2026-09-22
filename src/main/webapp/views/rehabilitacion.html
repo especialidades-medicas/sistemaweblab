@@ -1922,75 +1922,90 @@ h3 {
 
 
 
-<!-- --SECCIÓN CALENDARIO DE CITAS  -->
-            <!-- SECCIÓN CALENDARIO DE CITAS -->
-            
+<!-- SECCIÓN CALENDARIO DE CITAS FISIOTERAPIA -->
 <div id="citas-view" class="section-view content-card agenda-container">    
-        <!-- Encabezado del Módulo -->
-        <div class="calendar-header">
-            <div>
-                <h2>Calendario de Citas</h2>
-                <p class="subtitle">Módulo de programación de terapias físicas y control de horarios.</p>
-            </div>
-            <button type="button" class="btn-primary-pro" onclick="abrirModalNuevoTurno()">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                Agendar Cita
-            </button>
+    <!-- Encabezado del Módulo -->
+    <div class="calendar-header">
+        <div>
+            <h2>Calendario de Citas de Fisioterapia</h2>
+            <p class="subtitle">Módulo de programación de evaluaciones físicas, terapias y revisiones periódicas.</p>
+        </div>
+        <button type="button" class="btn-primary-pro" onclick="abrirModalNuevoTurno()">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+            Agendar Cita
+        </button>
+    </div>
+
+    <!-- Navegador de Fechas Estilo Agenda -->
+    <div class="date-navigator">
+        <button type="button" class="btn-nav" onclick="cambiarDia(-1)" title="Día Anterior">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"></polyline></svg>
+        </button>
+        
+        <div class="date-input-wrapper">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+            <input type="date" id="fecha-agenda" onchange="renderizarCalendario()">
         </div>
 
-        <!-- Navegador de Fechas Estilo Agenda -->
-        <div class="date-navigator">
-            <button type="button" class="btn-nav" onclick="cambiarDia(-1)" title="Día Anterior">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"></polyline></svg>
-            </button>
-            
-            <div class="date-input-wrapper">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-                    <line x1="16" y1="2" x2="16" y2="6"></line>
-                    <line x1="8" y1="2" x2="8" y2="6"></line>
-                    <line x1="3" y1="10" x2="21" y2="10"></line>
-                </svg>
-                <input type="date" id="calendarDate" onchange="cargarCitasDelDia()">
-            </div>
+        <button type="button" class="btn-nav" onclick="cambiarDia(1)" title="Día Siguiente">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+        </button>
+    </div>
 
-        <!-- Tabla de Agenda Horaria (08:00 a 21:00 cada 30 min) -->
-        <div class="table-responsive-pro">
-            <table class="calendar-table-pro">
-                <thead>
-                    <tr>
-                        <th style="width: 120px;">Horario</th>
-                        <th>Pacientes Agendados (Máx. 3 por bloque)</th>
-                    </tr>
-                </thead>
-                <tbody id="cuerpo-calendario">
-                    <!-- Filas generadas dinámicamente con JavaScript -->
-                </tbody>
-            </table>
-        </div>    
+    <!-- Tabla de Agenda Horaria -->
+    <div class="table-responsive-pro">
+        <table class="calendar-table-pro">
+            <thead>
+                <tr>
+                    <th style="width: 120px;">Horario</th>
+                    <th>Pacientes Agendados (Máx. 3 por bloque)</th>
+                </tr>
+            </thead>
+            <tbody id="cuerpo-calendario">
+                <!-- Filas generadas dinámicamente con JavaScript -->
+            </tbody>
+        </table>
+    </div>    
+</div>
+
+<!-- SECCIÓN TRATAMIENTO Y PAUTAS -->
+<div id="tratamiento-view" class="section-view">
+    <div class="content-card">
+        <h2>Tratamientos y Pautas de Rehabilitación</h2>
+        <p style="color: var(--gray, #666);">Indicación de ejercicios terapéuticos, agentes físicos, analgesia y recomendaciones funcionales.</p>
+    </div>
+</div>
+
+<!-- SECCIÓN INFORMES -->
+<div id="informes-view" class="section-view">
+    <div class="content-card">
+        <h2>Informes Clínicos y de Evolución</h2>
+        <p style="color: var(--gray, #666);">Estadísticas generales de evolución funcional de pacientes y reportes del centro de fisioterapia.</p>
+    </div>
 </div>
 
 
-    
-
-<!-- VISTA 4: RECETARIO / PRESCRIPCIÓN MÉDICA -->
-
-    <!-- VISTA: RECETARIO / PRESCRIPCIÓN MÉDICA -->
-<div id="recetas-view" class="section-view active">
+            
+<!-- VISTA: RECETARIO / PRESCRIPCIÓN MÉDICA Y TERAPÉUTICA -->
+<div id="recetas-view" class="section-view">
     <div class="content-card shadow-sm">
+        <!-- Encabezado de Sección -->
         <div class="card-header-wrapper">
             <div class="header-title">
                 <h2>Prescripción Médica y Recetario</h2>
                 <span class="badge-status">Módulo Oficial</span>
             </div>
-            <p class="subtitle">Prescripciones de medicamentos, ejercicios y pautas de rehabilitación.</p>
+            <p class="subtitle">Genere recetas médicas y pautas estandarizadas con indicación clara de dosis e instrucciones.</p>
         </div>
 
         <form id="formReceta" onsubmit="generarPDFReceta(event)" class="prescription-form">
             
-            <!-- DATOS DEL PACIENTE -->
+            <!-- SECCIÓN: Datos del Paciente -->
             <fieldset class="form-section">
-                <legend class="section-legend">Información del Paciente</legend>
+                <legend class="section-legend">
+                    <svg class="icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                    Información del Paciente
+                </legend>
                 
                 <div class="form-grid">
                     <div class="form-group col-3">
@@ -2000,7 +2015,9 @@ h3 {
 
                     <div class="form-group col-3">
                         <label for="recCedula">Cédula / Documento <span class="required">*</span></label>
-                        <input type="text" id="recCedula" placeholder="Ej. 17130....." onblur="autocompletarPacienteReceta()" required>
+                        <div class="input-with-action">
+                            <input type="text" id="recCedula" placeholder="Ej. 1713031167" onblur="autocompletarPacienteReceta()" required>
+                        </div>
                     </div>
 
                     <div class="form-group col-6">
@@ -2015,19 +2032,22 @@ h3 {
 
                     <div class="form-group col-9">
                         <label for="recAlergias">Alergias Conocidas</label>
-                        <input type="text" id="recAlergias" placeholder="Ej. Penicilina / Ninguna" value="Ninguna">
+                        <input type="text" id="recAlergias" placeholder="Ej. Penicilina / Ninguna" value="Ninguna declarada" class="highlight-input">
                     </div>
 
                     <div class="form-group col-12">
                         <label for="recDiagnostico">Diagnóstico / Presunción Clínica</label>
-                        <input type="text" id="recDiagnostico" placeholder="Ej. Tendinitis Rotuliana">
+                        <input type="text" id="recDiagnostico" placeholder="Ej. Tendinitis Rotuliana / Lumbalgia Mecánica">
                     </div>
                 </div>
             </fieldset>
 
-            <!-- MEDICAMENTOS / ESQUEMA -->
+            <!-- SECCIÓN: Medicamentos o Pautas Prescritas -->
             <fieldset class="form-section">
-                <legend class="section-legend">Esquema Terapéutico (Medicamentos / Pautas)</legend>
+                <legend class="section-legend">
+                    <svg class="icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.5 20.5L3 13a4.95 4.95 0 1 1 7-7l7.5 7.5a4.95 4.95 0 1 1-7 7z"/><path d="m8.5 8.5 7 7"/></svg>
+                    Esquema Terapéutico (Medicamentos / Pautas)
+                </legend>
 
                 <div class="med-table-header">
                     <span class="col-med-name">Medicamento / Presentación</span>
@@ -2040,38 +2060,56 @@ h3 {
                 <div id="medicamentosContainer" class="meds-list">
                     <div class="med-item-row">
                         <div class="med-field flex-grow-2">
-                            <input type="text" class="med-nombre" placeholder="Ej. Ibuprofeno 400mg">
+                            <label class="mobile-only">Medicamento / Presentación</label>
+                            <input type="text" class="med-nombre" placeholder="Ej. Ibuprofeno 400mg" required>
                         </div>
                         <div class="med-field">
-                            <input type="text" class="med-dosis" placeholder="Ej. 1 tableta">
+                            <label class="mobile-only">Dosis</label>
+                            <input type="text" class="med-dosis" placeholder="Ej. 1 tableta" required>
                         </div>
                         <div class="med-field">
-                            <input type="text" class="med-frecuencia" placeholder="Ej. c/8 horas">
+                            <label class="mobile-only">Frecuencia</label>
+                            <input type="text" class="med-frecuencia" placeholder="Ej. c/8 horas" required>
                         </div>
                         <div class="med-field">
-                            <input type="text" class="med-duracion" placeholder="Ej. 5 días">
+                            <label class="mobile-only">Duración</label>
+                            <input type="text" class="med-duracion" placeholder="Ej. 5 días" required>
                         </div>
                         <div class="med-action">
-                            <button type="button" class="btn-icon-delete" title="Eliminar" onclick="eliminarFilaMed(this)">&times;</button>
+                            <button type="button" class="btn-icon-delete" title="Eliminar medicamento" onclick="eliminarFilaMed(this)" aria-label="Eliminar fila">
+                                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                            </button>
                         </div>
                     </div>
                 </div>
 
-                <div class="med-actions-bar" style="margin-top: 15px;">
-                    <button type="button" class="btn-secondary-outline" onclick="agregarFilaMed()">+ Agregar Fila</button>
+                <div class="med-actions-bar">
+                    <button type="button" class="btn-secondary-outline" onclick="agregarFilaMed()">
+                        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                        Agregar Medicamento
+                    </button>
                 </div>
             </fieldset>
 
-            <!-- INDICACIONES -->
+            <!-- SECCIÓN: Indicaciones y Cierre -->
             <fieldset class="form-section">
-                <legend class="section-legend">Indicaciones Adicionales y Recomendaciones</legend>
-                <div class="form-group col-12">
-                    <textarea id="recIndicaciones" rows="3" placeholder="Ej. Crioterapia 15 min 3 veces al día..."></textarea>
+                <legend class="section-legend">
+                    <svg class="icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                    Indicaciones Adicionales
+                </legend>
+
+                <div class="form-group full-width">
+                    <label for="recIndicaciones">Cuidados Generales, Crioterapia o Ejercicios en Casa</label>
+                    <textarea id="recIndicaciones" rows="3" placeholder="Ej. Aplicar compresa fría por 15 min, realizar estiramientos suaves, evitar ejercicios de alto impacto..."></textarea>
                 </div>
             </fieldset>
 
-            <div class="form-actions" style="margin-top: 20px;">
-                <button type="submit" class="btn-primary">Generar y Descargar Receta (PDF)</button>
+            <!-- Acciones Principales -->
+            <div class="form-footer">
+                <button type="submit" class="btn-primary-action">
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+                    Generar y Descargar Receta (PDF)
+                </button>
             </div>
         </form>
     </div>
