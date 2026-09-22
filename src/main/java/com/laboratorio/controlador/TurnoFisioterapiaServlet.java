@@ -73,7 +73,7 @@ public class TurnoFisioterapiaServlet extends HttpServlet {
             // Caso 2: Guardar o Actualizar Turno
             // Búsqueda flexible del ID probando las diferentes claves habituales del formulario
             String idStr = obtenerParametroMultiples(request, "id", "turnoId", "turnId", "turno-id");
-            String fecha = obtenerParametroMultiples(request, "fecha", "turnFecha", "fechaTurno");
+            String fecha = obtenerParametroMultiples(request, "fecha", "modal-fecha", "turnFecha", "fechaTurno");
             String horaInicio = obtenerParametroMultiples(request, "horaInicio", "turnHoraInicio", "hora_inicio", "hora");
 
             if (fecha == null || fecha.isEmpty() || horaInicio == null || horaInicio.isEmpty()) {
