@@ -24,14 +24,14 @@
     <link rel="stylesheet" href="../assets/css/bodyselector.css">
     
     <style>
-    /* ==========================================================================
+  /* ==========================================================================
    1. RESET GENERAL Y TIPOGRAFÍA PROFESIONAL
    ========================================================================== */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-family: 'Poppins', sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 }
@@ -39,50 +39,45 @@
 body {
     background-color: var(--bg-main);
     min-height: 100vh;
-    color: var(--text-main);
 }
 
 /* ==========================================================================
-   2. VARIABLES DE SISTEMA (PALETA FISIOTERAPIA Y REHABILITACIÓN)
+   2. VARIABLES DE SISTEMA (PALETA REFINADA Y MODERNA)
    ========================================================================== */
 :root {
-    /* Identidad Primaria (Salud, Rehabilitación & Movimiento) */
-    --primary: #0d9488;        /* Teal 600 */
-    --primary-dark: #0f766e;   /* Teal 700 */
-    --primary-light: #ccfbf1;  /* Teal 100 */
-    --primary-hover: #115e59;  /* Teal 800 */
+    /* Colores Primarios */
+    --primary: #14b8a6;       /* teal-500 */
+    --primary-dark: #0f766e;  /* teal-700 */
+    --primary-light: #ccfbf1; /* teal-100 */
 
-    /* Acentos y Auxiliares */
-    --accent: #2563eb;         /* Blue 600 - Movimiento/Fuerza */
-    --accent-light: #dbeafe;    /* Blue 100 */
-    --success: #16a34a;        /* Green 600 - Alta médica / Progreso */
-    --success-light: #dcfce7;  /* Green 100 */
-    --warning: #d97706;        /* Amber 600 - En tratamiento */
-    --warning-light: #fef3c7;  /* Amber 100 */
-    --danger: #dc2626;         /* Red 600 - Dolor severo / Alerta */
-    --danger-light: #fee2e2;   /* Red 100 */
-
-    /* Paleta de Grises (Slate Neutral) */
-    --text-main: #0f172a;      /* Slate 900 */
-    --text-muted: #64748b;     /* Slate 500 */
+    /* Colores Secundarios/Acento */
+    --secondary: #7e22ce;     /* purple-700 */
+    --success: #22c55e;       /* green-500 */
+    
+    /* Paleta de Grises */
+    --text-main: #1e293b;     /* slate-800 */
+    --text-muted: #64748b;    /* slate-500 */
     --text-white: #ffffff;
-
-    --bg-main: #f8fafc;        /* Slate 50 */
+    
+    --bg-main: #f1f5f9;       /* slate-100 */
     --bg-card: #ffffff;
-    --bg-sidebar: #0f172a;     /* Slate 900 */
-    --bg-input: #f1f5f9;       /* Slate 100 */
+    --bg-sidebar: #0f172a;    /* slate-900 */
+    --bg-input: #f8fafc;      /* slate-50 */
 
-    --border-color: #e2e8f0;   /* Slate 200 */
-    --border-input: #cbd5e1;   /* Slate 300 */
+    --border-color: #e2e8f0;  /* slate-200 */
+    --border-input: #cbd5e1;  /* slate-300 */
+    
+    --danger: #ef4444;        /* red-500 */
+    --danger-dark: #b91c1c;   /* red-700 */
 
-    /* Sombras y Radios */
+    /* Efectos y Estilos */
     --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
     --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
     --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-
-    --radius-sm: 0.375rem;     /* 6px */
-    --radius-md: 0.5rem;       /* 8px */
-    --radius-lg: 0.75rem;      /* 12px */
+    
+    --radius-sm: 0.375rem;    /* 6px */
+    --radius-md: 0.5rem;      /* 8px */
+    --radius-lg: 0.75rem;     /* 12px */
     --radius-full: 9999px;
 
     --transition-fast: all 0.2s ease;
@@ -90,7 +85,7 @@ body {
 }
 
 /* ==========================================================================
-   3. ESTRUCTURA PRINCIPAL (LAYOUT DASHBOARD)
+   3. ESTRUCTURA PRINCIPAL (LAYOUT)
    ========================================================================== */
 .dashboard {
     display: grid;
@@ -100,7 +95,7 @@ body {
 }
 
 .main-content {
-    padding: 2rem;
+    padding: 2.5rem;
     overflow-y: auto;
     width: 100%;
 }
@@ -112,17 +107,17 @@ body {
     background-color: var(--bg-sidebar);
     padding: 1.5rem 1rem;
     color: var(--text-white);
-    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+    box-shadow: 2px 0 10px rgba(0,0,0,0.1);
     transition: var(--transition-normal);
     z-index: 100;
 }
 
 .logo {
     padding: 0.5rem 1rem 1.5rem 1rem;
-    font-size: 1.5rem;
+    font-size: 1.6rem;
     font-weight: 700;
     letter-spacing: -0.5px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    border-bottom: 1px solid rgba(255,255,255,0.1);
     margin-bottom: 1.5rem;
     color: var(--text-white);
     display: flex;
@@ -130,15 +125,11 @@ body {
     align-items: center;
 }
 
-.logo span {
-    color: var(--primary);
-}
-
 .close-sidebar-btn {
     display: none;
     background: none;
     border: none;
-    color: rgba(255, 255, 255, 0.6);
+    color: rgba(255,255,255,0.6);
     font-size: 1.25rem;
     cursor: pointer;
     transition: var(--transition-fast);
@@ -148,7 +139,6 @@ body {
     color: var(--text-white);
 }
 
-/* Navegación */
 .nav-item {
     padding: 0.75rem 1rem;
     margin: 0.25rem 0;
@@ -165,7 +155,7 @@ body {
 }
 
 .nav-item:hover {
-    background-color: rgba(255, 255, 255, 0.08);
+    background-color: rgba(255, 255, 255, 0.05);
     color: var(--text-white);
     transform: translateX(4px);
 }
@@ -177,7 +167,6 @@ body {
     box-shadow: var(--shadow-md);
 }
 
-/* Controls Móviles */
 .menu-toggle {
     display: none;
     background-color: var(--bg-card);
@@ -196,6 +185,7 @@ body {
 
 .menu-toggle:hover {
     background-color: var(--bg-main);
+    border-color: var(--border-input);
 }
 
 .sidebar-overlay {
@@ -206,14 +196,14 @@ body {
     width: 100%;
     height: 100%;
     background-color: rgba(15, 23, 42, 0.5);
-    backdrop-filter: blur(3px);
+    backdrop-filter: blur(2px);
     z-index: 99;
 }
 
 .sidebar-overlay.active { display: block; }
 
 /* ==========================================================================
-   5. CABECERA GENERAL Y HEADER DE HISTORIA CLÍNICA FISIOTERAPÉUTICA
+   5. CABECERA DE CONTENIDO (HEADER) Y BUSCADOR
    ========================================================================== */
 .header {
     display: flex;
@@ -235,12 +225,7 @@ body {
     gap: 1rem;
 }
 
-.header h1 {
-    font-size: 1.35rem;
-    color: var(--text-main);
-    font-weight: 700;
-    letter-spacing: -0.5px;
-}
+.header h1 { font-size: 1.35rem; color: var(--text-main); font-weight: 700; letter-spacing: -0.5px;}
 
 .search-container {
     display: flex;
@@ -257,50 +242,50 @@ body {
 .search-container:focus-within {
     border-color: var(--primary);
     background-color: var(--bg-card);
-    box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.15);
+    box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.1);
 }
 
-.search-container input {
-    border: none;
-    background: transparent;
-    outline: none;
-    width: 100%;
-    font-size: 0.9rem;
-    color: var(--text-main);
+.search-container input { 
+    border: none; 
+    background: transparent; 
+    outline: none; 
+    width: 100%; 
+    font-size: 0.9rem; 
+    color: var(--text-main); 
+    font-family: inherit;
 }
+.search-container input::placeholder { color: var(--text-muted); }
 
-.search-container button {
-    background-color: var(--primary);
-    border: none;
-    color: var(--text-white);
-    padding: 0.5rem 1.2rem;
-    border-radius: var(--radius-full);
-    cursor: pointer;
-    font-weight: 600;
+.search-container button { 
+    background-color: var(--primary); 
+    border: none; 
+    color: var(--text-white); 
+    padding: 0.5rem 1.2rem; 
+    border-radius: var(--radius-full); 
+    cursor: pointer; 
+    font-weight: 600; 
     font-size: 0.85rem;
+    flex-shrink: 0; 
     transition: var(--transition-fast);
 }
 
-.search-container button:hover {
-    background-color: var(--primary-dark);
-}
+.search-container button:hover { background-color: var(--primary-dark); }
 
-/* Cabecera del Documento Clínico FISIOLAB */
 .hc-header-container {
     display: flex;
     align-items: center;
     gap: 20px;
-    border-bottom: 2px solid var(--border-color);
+    border-bottom: 2px solid #e0e6ed;
     padding-bottom: 20px;
     margin-bottom: 25px;
 }
 
 .hc-logo-wrapper {
-    width: 64px;
-    height: 64px;
-    border-radius: var(--radius-full);
-    background-color: var(--primary-light);
-    border: 2px solid var(--primary);
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background-color: #f0fdfa;
+    border: 2px solid #2dd4bf;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -310,169 +295,133 @@ body {
 }
 
 .hc-logo-img {
-    width: 42px;
-    height: 42px;
+    width: 40px;
+    height: 40px;
     object-fit: contain;
 }
 
-.hc-text-header {
-    flex-grow: 1;
+.hc-text-header { flex-grow: 1; }
+.hc-text-header h2 { margin: 0; color: #1a202c; font-size: 1.25rem; }
+.hc-text-header h3 { margin: 2px 0 0 0; color: #4a5568; font-size: 1rem; font-weight: 500; }
+.hc-brand-name { margin-top: 5px; color: #0f766e; font-size: 1.1rem; }
+
+@media (min-width: 768px) {
+    .form-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 15px;
+    }
+
+    .col-span-2 { grid-column: span 2; }
+    .col-span-3 { grid-column: span 3; }
+    
+    .antecedentes-grid, .tratamiento-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
 }
 
-.hc-text-header h2 {
-    margin: 0;
-    color: var(--text-main);
-    font-size: 1.3rem;
-    font-weight: 700;
+.form-section { margin-bottom: 25px; }
+.modern-box {
+    background-color: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 15px;
 }
-
-.hc-text-header h3 {
-    margin: 2px 0 0 0;
-    color: var(--text-muted);
-    font-size: 0.95rem;
-    font-weight: 500;
-    border: none;
-    padding: 0;
+.recomendaciones-box p { margin: 0 0 8px 0; }
+.info-sections-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-bottom: 25px;
 }
-
-.hc-brand-name {
-    margin-top: 4px;
-    color: var(--primary-dark);
-    font-weight: 700;
+.form-actions-final {
+    margin-top: 30px;
+    display: flex;
+    justify-content: flex-end;
+}
+.btn-save-hc {
+    padding: 12px 30px;
     font-size: 1.1rem;
 }
 
-/* ==========================================================================
-   6. SECCIÓN DE EVALUACIÓN FISIOTERAPÉUTICA (MAPA DE DOLOR & EVA)
-   ========================================================================== */
-.mapa-dolor-container {
-    background: var(--bg-card);
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius-lg);
-    padding: 1.5rem;
+.mapa-dolor-controls { margin-top: 20px; }
+.mapa-actions {
     display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 1.25rem;
-}
-
-.mapa-dolor-svg-wrapper {
-    width: 100%;
-    max-width: 450px;
-    height: auto;
-    background-color: #fafafa;
-    border: 1px dashed var(--border-input);
-    border-radius: var(--radius-md);
-    padding: 1rem;
-    display: flex;
+    gap: 10px;
     justify-content: center;
-    align-items: center;
-}
-
-/* Escala Visual Analógica (EVA 0-10) */
-.eva-scale-container {
-    width: 100%;
-    margin: 1.5rem 0;
-}
-
-.eva-scale-grid {
-    display: grid;
-    grid-template-columns: repeat(11, 1fr);
-    gap: 4px;
-    margin-top: 0.5rem;
-}
-
-.eva-btn {
-    border: 1px solid var(--border-color);
-    background: var(--bg-input);
-    padding: 0.5rem 0;
-    text-align: center;
-    font-weight: 700;
-    font-size: 0.9rem;
-    border-radius: var(--radius-sm);
-    cursor: pointer;
-    transition: var(--transition-fast);
-}
-
-.eva-btn:hover, .eva-btn.active {
-    background-color: var(--primary);
-    color: var(--text-white);
-    border-color: var(--primary-dark);
+    margin-top: 15px;
 }
 
 /* ==========================================================================
-   7. TARJETAS DE ESTADÍSTICAS Y MÉTRICAS
+   6. TARJETAS DE ESTADÍSTICAS (STATS)
    ========================================================================== */
 .stats-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-    gap: 1.25rem;
-    margin-bottom: 2rem;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2.5rem;
 }
 
 .stat-card {
     background-color: var(--bg-card);
-    padding: 1.25rem 1.5rem;
+    padding: 1.5rem;
     border-radius: var(--radius-lg);
     box-shadow: var(--shadow-sm);
     display: flex;
     align-items: center;
-    gap: 16px;
+    gap: 20px;
     border: 1px solid var(--border-color);
     border-left: 4px solid var(--primary);
     transition: var(--transition-fast);
 }
 
 .stat-card:hover {
-    transform: translateY(-2px);
+    transform: translateY(-3px);
     box-shadow: var(--shadow-md);
 }
 
 .stat-icon {
-    width: 52px;
-    height: 52px;
+    width: 56px;
+    height: 56px;
     border-radius: var(--radius-md);
     background-color: var(--primary-light);
     color: var(--primary-dark);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 22px;
-    flex-shrink: 0;
+    font-size: 24px;
 }
 
-.stat-info h3 {
-    color: var(--text-muted);
-    font-size: 0.8rem;
-    font-weight: 600;
-    margin: 0 0 0.2rem 0;
-    padding: 0;
-    border: none;
+.stat-info h3 { 
+    color: var(--text-muted); 
+    font-size: 0.85rem; 
+    font-weight: 600; 
+    margin-bottom: 0.25rem; 
     text-transform: uppercase;
     letter-spacing: 0.5px;
 }
 
-.stat-info .number {
-    font-size: 1.75rem;
-    font-weight: 800;
-    color: var(--text-main);
-    letter-spacing: -0.5px;
+.stat-info .number { 
+    font-size: 1.85rem; 
+    font-weight: 800; 
+    color: var(--text-main); 
+    letter-spacing: -1px;
 }
 
 /* ==========================================================================
-   8. TABLAS Y BADGES FISIOTERAPÉUTICOS
+   7. COMPONENTES DE CONTENIDO (CARDS, TABLAS, BOTONES GENERATES)
    ========================================================================== */
 .section-view { display: none; }
-.section-view.active { display: block; animation: fadeIn 0.25s ease-out; }
+.section-view.active { display: block; animation: fadeIn 0.3s ease; }
 
 @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(6px); }
+    from { opacity: 0; transform: translateY(10px); }
     to { opacity: 1; transform: translateY(0); }
 }
 
 .content-card {
     background-color: var(--bg-card);
-    padding: 1.75rem;
+    padding: 2rem;
     border-radius: var(--radius-lg);
     box-shadow: var(--shadow-sm);
     margin-bottom: 2rem;
@@ -480,180 +429,336 @@ body {
     border: 1px solid var(--border-color);
 }
 
-.content-card h2 {
-    font-size: 1.2rem;
-    color: var(--text-main);
-    margin-bottom: 1.25rem;
-    font-weight: 700;
+.content-card h2 { 
+    font-size: 1.25rem; 
+    color: var(--text-main); 
+    margin-bottom: 1.5rem; 
+    font-weight: 700; 
+    letter-spacing: -0.5px;
 }
 
-table {
-    width: 100%;
-    border-collapse: collapse;
-    min-width: 650px;
+table { 
+    width: 100%; 
+    border-collapse: collapse; 
+    min-width: 700px;
 }
 
-th {
-    text-align: left;
-    padding: 0.85rem 1rem;
-    background-color: var(--bg-input);
-    color: var(--text-muted);
-    font-size: 0.78rem;
-    font-weight: 700;
+th { 
+    text-align: left; 
+    padding: 1rem; 
+    background-color: var(--bg-input); 
+    color: var(--text-muted); 
+    font-size: 0.8rem; 
+    font-weight: 600; 
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    border-bottom: 1px solid var(--border-color);
+    border-bottom: 1px solid var(--border-color); 
 }
 
-td {
-    padding: 0.9rem 1rem;
-    border-bottom: 1px solid var(--border-color);
-    font-size: 0.9rem;
-    color: var(--text-main);
+td { 
+    padding: 1rem; 
+    border-bottom: 1px solid var(--border-color); 
+    font-size: 0.9rem; 
+    color: var(--text-main); 
     vertical-align: middle;
 }
 
-tr:hover td {
-    background-color: rgba(241, 245, 249, 0.6);
-}
+tr:last-child td { border-bottom: none; }
+tr:hover td { background-color: rgba(241, 245, 249, 0.5); }
 
-/* Badges de Estado */
-.status {
-    padding: 0.3rem 0.7rem;
-    border-radius: var(--radius-full);
-    font-size: 0.75rem;
-    font-weight: 700;
+.status { 
+    padding: 0.35rem 0.75rem; 
+    border-radius: var(--radius-full); 
+    font-size: 0.75rem; 
+    font-weight: 700; 
     display: inline-flex;
     align-items: center;
-    gap: 4px;
+    gap: 5px;
 }
 
-.status.confirmed, .status.alta {
-    background-color: var(--success-light);
-    color: var(--success);
-}
+.status.confirmed { background-color: #dcfce7; color: #166534; }
+.status.pending { background-color: #fef9c3; color: #854d0e; }
 
-.status.pending, .status.tratamiento {
-    background-color: var(--warning-light);
-    color: var(--warning);
-}
-
-.status.evaluacion {
-    background-color: var(--accent-light);
-    color: var(--accent);
-}
-
-/* Botones de Acción */
-.btn-action {
-    background-color: var(--primary);
-    color: var(--text-white);
+/* Botones universales estandarizados */
+button, .btn-action, .btn-outline, .btn-agendar, .btn-primary-pro, .btn-secondary-pro {
+    font-family: inherit;
+    cursor: pointer;
+    border-radius: var(--radius-md);
+    font-size: 0.875rem;
+    font-weight: 600;
+    transition: var(--transition-fast);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.6rem 1.25rem;
     border: none;
-    padding: 0.45rem 0.9rem;
-    border-radius: var(--radius-md);
-    cursor: pointer;
-    font-size: 0.85rem;
-    font-weight: 600;
-    transition: var(--transition-fast);
     text-decoration: none;
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
 }
 
-.btn-action:hover {
-    background-color: var(--primary-dark);
+.btn-action, .btn-primary-pro { 
+    background-color: var(--primary); 
+    color: var(--text-white); 
 }
 
-.btn-delete {
-    background-color: transparent;
-    color: var(--danger);
+.btn-action:hover, .btn-primary-pro:hover { 
+    background-color: var(--primary-dark); 
+    box-shadow: var(--shadow-sm);
+}
+
+.btn-outline, .btn-secondary-pro {
+    background-color: var(--bg-card);
+    color: var(--text-main);
     border: 1px solid var(--border-input);
-    padding: 0.4rem 0.8rem;
-    border-radius: var(--radius-md);
-    cursor: pointer;
-    font-size: 0.85rem;
-    font-weight: 600;
-    transition: var(--transition-fast);
 }
 
-.btn-delete:hover {
-    background-color: var(--danger);
+.btn-outline:hover, .btn-secondary-pro:hover {
+    background-color: var(--bg-input);
+    border-color: var(--text-muted);
+}
+
+.btn-delete, .btn-danger { 
+    background-color: transparent; 
+    color: var(--danger); 
+    border: 1px solid #fca5a5; 
+    padding: 0.4rem 0.9rem;
+}
+
+.btn-delete:hover, .btn-danger:hover { 
+    background-color: var(--danger); 
     color: var(--text-white);
     border-color: var(--danger);
 }
 
+.btn-agendar-slot {
+    background-color: #f0fdfa;
+    color: var(--primary-dark);
+    border: 1px dashed var(--primary);
+    padding: 0.5rem 1rem;
+    width: 100%;
+    margin-top: 0.5rem;
+    font-weight: 600;
+}
+
+.btn-agendar-slot:hover {
+    background-color: var(--primary);
+    color: var(--text-white);
+    border-style: solid;
+}
+
 /* ==========================================================================
-   9. FORMULARIOS Y AGENTES FÍSICOS (TRATAMIENTO)
+   8. FORMULARIOS REFINADOS
    ========================================================================== */
 .form-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 1.25rem;
-    margin-bottom: 1.5rem;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
 }
 
-.form-group {
-    display: flex;
-    flex-direction: column;
-    gap: 0.4rem;
+.form-group { display: flex; flex-direction: column; gap: 0.5rem; }
+
+.form-group label { 
+    font-size: 0.85rem; 
+    font-weight: 600; 
+    color: var(--text-main); 
 }
 
-.form-group label {
-    font-size: 0.85rem;
-    font-weight: 600;
-    color: var(--text-main);
-}
-
-.form-group input,
-.form-group select,
+.form-group input, 
+.form-group select, 
 .form-group textarea {
-    padding: 0.7rem 0.9rem;
+    padding: 0.75rem 1rem;
     border: 1px solid var(--border-input);
     border-radius: var(--radius-md);
-    font-size: 0.92rem;
+    font-size: 0.95rem;
     color: var(--text-main);
     background-color: var(--bg-card);
     outline: none;
     transition: var(--transition-fast);
+    font-family: inherit;
 }
 
-.form-group input:focus,
-.form-group select:focus,
+.form-group input::placeholder,
+.form-group textarea::placeholder {
+    color: var(--text-muted);
+    opacity: 0.7;
+}
+
+.form-group input:focus, 
+.form-group select:focus, 
 .form-group textarea:focus {
     border-color: var(--primary);
-    box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.15);
+    box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.1);
+    background-color: var(--bg-card);
 }
 
-/* Grilla de Agentes Físicos y Electroterapia */
-.tratamiento-grid, .antecedentes-grid {
+.form-group.full-width { grid-column: 1 / -1; }
+
+.iess-only { display: none; }
+.iess-active .iess-only { display: flex; }
+
+.tabs-container {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 2rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.tab-btn {
+    background: transparent;
+    border: none;
+    padding: 0.75rem 1.25rem;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    transition: var(--transition-fast);
+    margin-bottom: -1px;
+}
+
+.tab-btn:hover { color: var(--primary); }
+
+.tab-btn.active { 
+    color: var(--primary); 
+    border-bottom-color: var(--primary); 
+}
+
+.checkbox-label { 
+    display: flex; 
+    align-items: center; 
+    gap: 10px; 
+    font-size: 0.9rem; 
+    color: var(--text-main); 
+    cursor: pointer; 
+    padding: 0.25rem 0;
+}
+
+.checkbox-label input { 
+    cursor: pointer; 
+    width: 16px; 
+    height: 16px; 
+    accent-color: var(--primary);
+}
+
+.tratamiento-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 0.85rem;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1rem;
     background-color: #f0fdfa;
-    padding: 1.25rem;
+    padding: 1.5rem;
     border-radius: var(--radius-md);
     border: 1px solid var(--primary-light);
 }
 
-.checkbox-label {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 0.88rem;
-    color: var(--text-main);
-    cursor: pointer;
-    padding: 0.2rem 0;
+.hc-header { 
+    text-align: center; 
+    border-bottom: 2px solid var(--primary-light); 
+    padding-bottom: 1.5rem; 
+    margin-bottom: 2rem; 
 }
 
-.checkbox-label input {
-    cursor: pointer;
-    width: 17px;
-    height: 17px;
-    accent-color: var(--primary);
+.hc-header h2 { 
+    color: var(--primary-dark); 
+    font-size: 1.4rem; 
+    letter-spacing: -0.5px;
+}
+
+h3 { 
+    font-size: 1.1rem; 
+    color: var(--text-main); 
+    margin: 2rem 0 1rem 0; 
+    padding-bottom: 0.5rem; 
+    border-bottom: 1px solid var(--border-color); 
+    font-weight: 700;
+    letter-spacing: -0.3px;
 }
 
 /* ==========================================================================
-   10. MODAL Y NAVEGADOR DE CITAS Y AGENDA
+   9. MEDIA QUERIES PARA RESPONSIVE (< 992px)
+   ========================================================================== */
+@media (max-width: 992px) {
+    .dashboard { grid-template-columns: 1fr; }
+    
+    .sidebar { 
+        position: fixed; 
+        top: 0; 
+        left: -280px; 
+        width: 260px; 
+        height: 100vh; 
+        transition: transform 0.3s ease-in-out; 
+        z-index: 101; 
+        box-shadow: 4px 0 15px rgba(0,0,0,0.15);
+    }
+    
+    .sidebar.open { transform: translateX(280px); }
+    
+    .close-sidebar-btn { display: block; }
+    .menu-toggle { display: flex; }
+    
+    .main-content { 
+        padding: 1.5rem 1rem; 
+        overflow-x: hidden;
+    }
+
+    .header {
+        flex-direction: column;
+        align-items: stretch;
+        padding: 1rem;
+        border-radius: var(--radius-md);
+    }
+
+    .header-left {
+        justify-content: space-between;
+        width: 100%;
+    }
+
+    .search-container {
+        max-width: 100%; 
+        margin-top: 0.5rem;
+    }
+
+    .form-grid {
+        grid-template-columns: 1fr !important;
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    .col-span-2, 
+    .col-span-3, 
+    .form-group.col-span-2, 
+    .form-group.col-span-3 {
+        grid-column: span 1 !important;
+        width: 100% !important;
+    }
+
+    .form-group {
+        width: 100%;
+        max-width: 100%;
+        box-sizing: border-box;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+    }
+
+    .tratamiento-grid, 
+    .antecedentes-grid,
+    .info-sections-grid { 
+        grid-template-columns: 1fr !important; 
+        gap: 0.75rem;
+    }
+}
+
+/* ==========================================================================
+   10. MODAL DE CITAS PROFESIONAL
    ========================================================================== */
 .modal-pro {
     position: fixed !important;
@@ -679,21 +784,123 @@ tr:hover td {
 
 .modal-content-pro {
     background-color: var(--bg-card) !important;
-    padding: 1.75rem !important;
+    padding: 2rem !important;
     border-radius: var(--radius-lg) !important;
     width: 90% !important;
-    max-width: 560px !important;
+    max-width: 580px !important;
     max-height: 90vh !important;
     overflow-y: auto !important;
     box-shadow: var(--shadow-lg) !important;
     border: 1px solid var(--border-color);
+    animation: modalSlideUp 0.3s ease;
 }
 
+@keyframes modalSlideUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.modal-header-pro {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    padding-bottom: 1rem;
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.modal-header-pro h3 {
+    margin: 0 !important;
+    font-size: 1.25rem !important;
+    font-weight: 700 !important;
+    color: var(--text-main) !important;
+    letter-spacing: -0.5px !important;
+    border-bottom: none !important;
+}
+
+.btn-close-modal {
+    background-color: var(--bg-input);
+    border: none;
+    width: 34px;
+    height: 34px;
+    border-radius: var(--radius-full);
+    font-size: 1.2rem;
+    color: var(--text-muted);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition-fast);
+}
+
+.btn-close-modal:hover {
+    background-color: #e2e8f0;
+    color: var(--text-main);
+}
+
+.form-group-pro {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 0.5rem !important;
+    margin-bottom: 1.25rem !important;
+}
+
+.form-group-pro label {
+    font-size: 0.85rem !important;
+    font-weight: 600 !important;
+    color: var(--text-main) !important;
+}
+
+.form-group-pro input,
+.form-group-pro select {
+    width: 100% !important;
+    padding: 0.75rem 1rem !important;
+    border: 1px solid var(--border-input) !important;
+    border-radius: var(--radius-md) !important;
+    font-size: 0.95rem !important;
+    color: var(--text-main) !important;
+    background-color: var(--bg-card) !important;
+    outline: none !important;
+    box-sizing: border-box !important;
+    transition: var(--transition-fast);
+    font-family: inherit;
+}
+
+.form-group-pro input:focus,
+.form-group-pro select:focus {
+    border-color: var(--primary) !important;
+    box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.1) !important;
+}
+
+.form-grid-2 {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 1rem !important;
+}
+
+.form-grid-3 {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr 1fr !important;
+    gap: 1rem !important;
+}
+
+.modal-actions-pro {
+    display: flex !important;
+    justify-content: flex-end !important;
+    gap: 12px !important;
+    margin-top: 2rem !important;
+    padding-top: 1rem !important;
+    border-top: 1px solid var(--border-color) !important;
+}
+
+/* ==========================================================================
+   11. AGENDA Y NAVEGADOR DE FECHAS
+   ========================================================================== */
 .calendar-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 1.25rem;
+    margin-bottom: 1.5rem;
     gap: 1rem;
     flex-wrap: wrap;
     background-color: var(--bg-input);
@@ -702,55 +909,216 @@ tr:hover td {
     border: 1px solid var(--border-color);
 }
 
+.date-navigator {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 0.5rem;
+}
+
+.btn-nav {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-input);
+    color: var(--text-main);
+    width: 38px !important;
+    height: 38px !important;
+    border-radius: var(--radius-md);
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    cursor: pointer;
+    transition: var(--transition-fast);
+    font-size: 1.1rem;
+}
+
+.btn-nav:hover {
+    background-color: var(--primary);
+    color: var(--text-white);
+    border-color: var(--primary);
+    box-shadow: var(--shadow-sm);
+}
+
+.date-input-wrapper {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 0.5rem;
+    background-color: var(--bg-card);
+    padding: 0.35rem 0.5rem 0.35rem 1rem;
+    border-radius: var(--radius-full);
+    border: 1px solid var(--border-input);
+    transition: var(--transition-fast);
+}
+
+.date-input-wrapper:focus-within {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.1);
+}
+
+.date-input-wrapper input[type="date"] {
+    border: none !important;
+    outline: none !important;
+    background: transparent !important;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--text-main);
+    cursor: pointer;
+    font-family: inherit;
+    padding: 0.25rem 0;
+}
+
 /* ==========================================================================
-   11. ADAPTABILIDAD RESPONSIVA (< 992px)
+   13. ESTILOS ESPECÍFICOS PARA PRESCRIPCIÓN MÉDICA Y RECETARIO
    ========================================================================== */
-@media (min-width: 768px) {
-    .form-grid {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-    }
-    .col-span-2 { grid-column: span 2; }
-    .col-span-3 { grid-column: span 3; }
+.card-header-wrapper {
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border-color);
 }
 
-@media (max-width: 992px) {
-    .dashboard { grid-template-columns: 1fr; }
+.card-header-wrapper .header-title {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
 
-    .sidebar {
-        position: fixed;
-        top: 0;
-        left: -280px;
-        width: 260px;
-        height: 100vh;
-        z-index: 101;
-    }
+.card-header-wrapper .subtitle {
+    color: var(--text-muted);
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+}
 
-    .sidebar.open { transform: translateX(280px); }
-    .close-sidebar-btn { display: block; }
-    .menu-toggle { display: flex; }
+.badge-status {
+    background: var(--primary-light);
+    color: var(--primary-dark);
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.25rem 0.6rem;
+    border-radius: var(--radius-full);
+}
 
-    .main-content {
-        padding: 1.25rem 0.85rem;
-    }
+.section-legend {
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: var(--primary-dark);
+    padding: 0 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
 
-    .form-grid {
-        grid-template-columns: 1fr !important;
-        display: flex;
+.required { color: var(--danger); }
+
+/* Tabla / Lista de Medicamentos estilizada */
+.med-table-header {
+    display: flex;
+    gap: 0.75rem;
+    padding: 0.5rem 0.75rem;
+    background: var(--primary-light);
+    border-radius: var(--radius-sm);
+    font-weight: 700;
+    font-size: 0.8rem;
+    color: var(--primary-dark);
+    text-transform: uppercase;
+    margin-bottom: 0.75rem;
+}
+
+.col-med-name { flex: 3; }
+.col-med-dose { flex: 1.5; }
+.col-med-freq { flex: 1.5; }
+.col-med-dur  { flex: 1.5; }
+.col-med-action { width: 40px; }
+
+.meds-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.med-item-row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    background: var(--bg-card);
+    padding: 0.5rem 0.75rem;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    transition: var(--transition-fast);
+}
+
+.med-item-row:hover {
+    border-color: var(--primary);
+    box-shadow: var(--shadow-sm);
+}
+
+.med-field { flex: 1.5; }
+.med-field.flex-grow-2 { flex: 3; }
+
+.med-field input {
+    width: 100%;
+    padding: 0.55rem 0.75rem;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    font-size: 0.875rem;
+    background-color: #ffffff;
+}
+
+.med-field input:focus {
+    border-color: var(--primary);
+    outline: none;
+    box-shadow: 0 0 0 2px var(--primary-light);
+}
+
+.med-action {
+    width: 40px;
+    display: flex;
+    justify-content: center;
+}
+
+.mobile-only { display: none; }
+
+.med-actions-bar {
+    margin-top: 1rem;
+    display: flex;
+    justify-content: flex-start;
+}
+
+.highlight-input {
+    background-color: #fffbeb !important;
+    border-color: #fde68a !important;
+}
+
+.form-footer {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 1.5rem;
+}
+
+@media (max-width: 768px) {
+    .med-table-header { display: none; }
+
+    .med-item-row {
         flex-direction: column;
+        align-items: stretch;
+        position: relative;
+        padding-top: 1rem;
     }
 
-    .col-span-2, .col-span-3 {
-        grid-column: span 1 !important;
-        width: 100% !important;
+    .med-field { width: 100%; }
+
+    .mobile-only {
+        display: block;
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: var(--text-muted);
+        margin-bottom: 0.2rem;
     }
 
-    .tratamiento-grid, .antecedentes-grid {
-        grid-template-columns: 1fr !important;
+    .med-action {
+        position: absolute;
+        top: 0.5rem;
+        right: 0.5rem;
+        width: auto;
     }
 }
-    
-   
         
 </style>
 </head>
