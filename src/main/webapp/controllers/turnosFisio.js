@@ -14,7 +14,12 @@ document.addEventListener('DOMContentLoaded', () => {
     
     const fechaInput = document.getElementById('fecha-agenda');
     if (fechaInput && !fechaInput.value) {
-        fechaInput.value = new Date().toISOString().split('T')[0];
+        // Formatear la fecha local sin problemas de zona horaria UTC
+        const hoy = new Date();
+        const anio = hoy.getFullYear();
+        const mes = String(hoy.getMonth() + 1).padStart(2, '0');
+        const dia = String(hoy.getDate()).padStart(2, '0');
+        fechaInput.value = `${anio}-${mes}-${dia}`;
     }
 
     if (fechaInput) {
@@ -44,9 +49,15 @@ function cambiarDia(delta) {
     const input = document.getElementById('fecha-agenda');
     if (!input || !input.value) return;
 
-    const fecha = new Date(input.value + 'T00:00:00');
+    const [anio, mes, dia] = input.value.split('-').map(Number);
+    const fecha = new Date(anio, mes - 1, dia);
     fecha.setDate(fecha.getDate() + delta);
-    input.value = fecha.toISOString().split('T')[0];
+
+    const nuevoAnio = fecha.getFullYear();
+    const nuevoMes = String(fecha.getMonth() + 1).padStart(2, '0');
+    const nuevoDia = String(fecha.getDate()).padStart(2, '0');
+
+    input.value = `${nuevoAnio}-${nuevoMes}-${nuevoDia}`;
     cargarTurnosDB();
 }
 
@@ -97,7 +108,7 @@ async function cargarTurnosDB() {
                 motivo: t.motivo || '',
                 fecha: t.fecha || fechaSeleccionada,
                 horaInicio: t.hora_inicio || t.horaInicio || '',
-                duracionMinutos: t.duracion_minutos || t.duracionMinutos || 30
+                duracionMinutos: t.duracion_minutos || t.duracionMinutos || 50
             }));
         } else {
             turnosDelDia = [];
@@ -235,7 +246,7 @@ function editarTurno(id) {
     if (document.getElementById('turnEmail')) document.getElementById('turnEmail').value = turno.email || '';
     if (document.getElementById('turnMotivo')) document.getElementById('turnMotivo').value = turno.motivo || '';
     
-    // 1. Panagpabaro ti fecha iti format a YYYY-MM-DD
+    // Normalizar la fecha a YYYY-MM-DD
     let fechaFormateada = turno.fecha || '';
     if (fechaFormateada.includes('T')) {
         fechaFormateada = fechaFormateada.split('T')[0];
@@ -254,7 +265,7 @@ function editarTurno(id) {
         document.getElementById('modal-fecha').value = fechaFormateada;
     }
 
-    // 2. Panagkortar iti segundos ti hora_inicio (kas pagarigan: "08:00:00" -> "08:00")
+    // Normalizar hora (remover segundos de HH:mm:ss)
     let horaInicio = turno.horaInicio || turno.hora_inicio || '';
     if (horaInicio.length > 5) {
         horaInicio = horaInicio.substring(0, 5);
@@ -262,7 +273,6 @@ function editarTurno(id) {
 
     const selectHora = document.getElementById('hora-inicio');
     if (selectHora) {
-        // Panangisigurado a adda ti option ti select
         let existeOpcion = Array.from(selectHora.options).some(opt => opt.value === horaInicio);
         if (!existeOpcion && horaInicio) {
             const opt = document.createElement('option');
@@ -274,7 +284,7 @@ function editarTurno(id) {
     }
 
     if (document.getElementById('duracion-minutos')) {
-        document.getElementById('duracion-minutos').value = turno.duracionMinutos || turno.duracion_min || '50';[cite: 10]
+        document.getElementById('duracion-minutos').value = turno.duracionMinutos || turno.duracion_min || '50';
     }
 
     const titulo = document.getElementById('modal-titulo');
@@ -306,7 +316,7 @@ async function guardarTurno(event) {
     const btnSubmit = document.querySelector('#form-turno button[type="submit"]');
 
     const params = new URLSearchParams();
-    params.append('accion', esEdicion ? 'editar' : 'guardar');
+    params.append('accion', esEdicion ? 'modificar' : 'guardar');
     params.append('id', idTurno);
     params.append('turnCedula', document.getElementById('turnCedula')?.value.trim() || '');
     params.append('turnNombres', document.getElementById('turnNombres')?.value.trim() || '');
@@ -314,11 +324,8 @@ async function guardarTurno(event) {
     params.append('turnEmail', document.getElementById('turnEmail')?.value.trim() || '');
     params.append('turnMotivo', document.getElementById('turnMotivo')?.value.trim() || '');
     params.append('horaInicio', document.getElementById('hora-inicio')?.value || '08:00');
-    params.append('duracionMinutos', document.getElementById('duracion-minutos')?.value || '30');
-    
-    // Enviar fecha bajo ambas denominaciones para evitar conflictos de nombres en el Backend
+    params.append('duracionMinutos', document.getElementById('duracion-minutos')?.value || '50');
     params.append('fecha', fechaFinal);
-    params.append('fechaTurno', fechaFinal);
 
     try {
         enviandoFormulario = true;
@@ -335,7 +342,6 @@ async function guardarTurno(event) {
             alert(esEdicion ? "Cita actualizada exitosamente." : "Cita agendada exitosamente.");
             cerrarModal();
 
-            // Mover el selector de fecha principal al nuevo día seleccionado en la edición
             const inputAgenda = document.getElementById('fecha-agenda');
             if (inputAgenda) {
                 inputAgenda.value = fechaFinal;
@@ -380,5 +386,4 @@ async function eliminarTurno(id) {
         alert("Error de conexión al eliminar.");
     }
 }
-
    
