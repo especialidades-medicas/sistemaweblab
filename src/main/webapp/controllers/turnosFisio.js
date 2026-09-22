@@ -6,7 +6,6 @@ const HORARIOS_AGENDA = [
     "20:00", "20:30", "21:00"
 ];
 
-
 let turnosDelDia = [];
 let enviandoFormulario = false;
 
@@ -21,12 +20,10 @@ document.addEventListener('DOMContentLoaded', () => {
     if (fechaInput) {
         fechaInput.addEventListener('change', cargarTurnosDB);
     }
-    
-    // Escuchadores para autocompletar al perder el foco (blur) o al escribir (input)
+
     const turnCedula = document.getElementById('turnCedula');
     if (turnCedula) {
         turnCedula.addEventListener('blur', (e) => buscarPacienteParaTurno(e.target.value.trim()));
-        turnCedula.addEventListener('input', (e) => buscarPacienteParaTurno(e.target.value.trim()));
     }
 
     const formTurno = document.getElementById('form-turno');
@@ -53,8 +50,6 @@ function cambiarDia(delta) {
     cargarTurnosDB();
 }
 
-
-// Función para autocompletar el modal de turnos al escribir la cédula
 async function buscarPacienteParaTurno(cedula) {
     if (!cedula || cedula.length < 5) return;
     
@@ -72,16 +67,6 @@ async function buscarPacienteParaTurno(cedula) {
         console.error("Error al buscar paciente para el turno:", error);
     }
 }
-
-// Escuchador de evento en el input de Cédula del Turno
-document.addEventListener('DOMContentLoaded', () => {
-    const inputTurnCedula = document.getElementById('turnCedula');
-    if (inputTurnCedula) {
-        inputTurnCedula.addEventListener('blur', (e) => buscarPacienteParaTurno(e.target.value.trim()));
-    }
-});
-
-
 
 async function cargarTurnosDB() {
     const tbody = document.getElementById('cuerpo-calendario');
@@ -134,11 +119,9 @@ function renderizarCalendario() {
 
     tbody.innerHTML = '';
 
-    // Obtener la fecha seleccionada actualmente en el input
     const inputFecha = document.getElementById('fecha-agenda');
     const fechaSeleccionada = inputFecha ? inputFecha.value : '';
     
-    // Formatear la fecha a DD/MM/YYYY para un mensaje más legible
     let fechaTexto = fechaSeleccionada;
     if (fechaSeleccionada && fechaSeleccionada.includes('-')) {
         const [anio, mes, dia] = fechaSeleccionada.split('-');
@@ -150,15 +133,11 @@ function renderizarCalendario() {
         const tr = document.createElement('tr');
 
         let tarjetasHTML = turnosEnBloque.map(t => {
-            // Limpiar el número de teléfono
             let celularLimpio = t.celular ? t.celular.replace(/\D/g, '') : '';
-            
-            // Formatear código de país para Ecuador (+593)
             if (celularLimpio.startsWith('0') && celularLimpio.length === 10) {
                 celularLimpio = '593' + celularLimpio.substring(1);
             }
 
-            // Usar la fecha formateada de la agenda seleccionada
             const fechaCita = fechaTexto || t.fecha || '';
             const mensajeWA = encodeURIComponent(`Hola saludos ${t.nombres}, le recordamos su cita de Fisioterapia programada para el ${fechaCita} a las ${t.horaInicio}.`);
             
@@ -222,7 +201,6 @@ function abrirModalNuevoTurno(horaInicio = '08:00') {
     const selectHora = document.getElementById('hora-inicio');
     if (selectHora) selectHora.value = horaInicio;
     
-    // Sincronizar fecha seleccionada
     const fechaAgenda = document.getElementById('fecha-agenda')?.value;
     const fechaModal = document.getElementById('modal-fecha');
     if (fechaAgenda && fechaModal) {
@@ -232,7 +210,6 @@ function abrirModalNuevoTurno(horaInicio = '08:00') {
     const modal = document.getElementById('modal-turno');
     if (modal) {
         modal.style.display = 'flex';
-        // Forzar renderizado previo para que la transición CSS funcione suavemente
         setTimeout(() => modal.classList.add('active'), 10);
     }
 }
@@ -243,7 +220,7 @@ function cerrarModal() {
         modal.classList.remove('active');
         setTimeout(() => {
             modal.style.display = 'none';
-        }, 300); // Espera 300ms mientras se realiza la animación de desvanecimiento
+        }, 300);
     }
 }
 
@@ -257,7 +234,19 @@ function editarTurno(id) {
     if (document.getElementById('turnCelular')) document.getElementById('turnCelular').value = turno.celular;
     if (document.getElementById('turnEmail')) document.getElementById('turnEmail').value = turno.email;
     if (document.getElementById('turnMotivo')) document.getElementById('turnMotivo').value = turno.motivo;
-    if (document.getElementById('modal-fecha')) document.getElementById('modal-fecha').value = turno.fecha;
+    
+    // Normalizar la fecha a formato obligatorio YYYY-MM-DD
+    let fechaFormateada = turno.fecha || '';
+    if (fechaFormateada.includes('T')) {
+        fechaFormateada = fechaFormateada.split('T')[0];
+    } else if (fechaFormateada.includes('/')) {
+        const partes = fechaFormateada.split('/');
+        if (partes.length === 3) {
+            fechaFormateada = `${partes[2]}-${partes[1].padStart(2, '0')}-${partes[0].padStart(2, '0')}`;
+        }
+    }
+
+    if (document.getElementById('modal-fecha')) document.getElementById('modal-fecha').value = fechaFormateada;
     if (document.getElementById('hora-inicio')) document.getElementById('hora-inicio').value = turno.horaInicio;
     if (document.getElementById('duracion-minutos')) document.getElementById('duracion-minutos').value = turno.duracionMinutos;
 
@@ -276,8 +265,6 @@ async function guardarTurno(event) {
 
     if (enviandoFormulario) return;
 
-    // 1. Priorizar la fecha seleccionada en el MODAL (#modal-fecha)
-    // Si no existe o está vacía, se toma la de la agenda principal (#fecha-agenda)
     const fechaModal = document.getElementById('modal-fecha')?.value;
     const fechaAgenda = document.getElementById('fecha-agenda')?.value;
     const fechaFinal = fechaModal || fechaAgenda;
@@ -292,6 +279,7 @@ async function guardarTurno(event) {
     const btnSubmit = document.querySelector('#form-turno button[type="submit"]');
 
     const params = new URLSearchParams();
+    params.append('accion', esEdicion ? 'editar' : 'guardar');
     params.append('id', idTurno);
     params.append('turnCedula', document.getElementById('turnCedula')?.value.trim() || '');
     params.append('turnNombres', document.getElementById('turnNombres')?.value.trim() || '');
@@ -301,8 +289,9 @@ async function guardarTurno(event) {
     params.append('horaInicio', document.getElementById('hora-inicio')?.value || '08:00');
     params.append('duracionMinutos', document.getElementById('duracion-minutos')?.value || '30');
     
-    // 2. Se envía la fecha elegida en el modal
+    // Enviar fecha bajo ambas denominaciones para evitar conflictos de nombres en el Backend
     params.append('fecha', fechaFinal);
+    params.append('fechaTurno', fechaFinal);
 
     try {
         enviandoFormulario = true;
@@ -319,9 +308,9 @@ async function guardarTurno(event) {
             alert(esEdicion ? "Cita actualizada exitosamente." : "Cita agendada exitosamente.");
             cerrarModal();
 
-            // 3. Sincronizar el selector principal de fecha para mostrar el día al que se movió la cita
+            // Mover el selector de fecha principal al nuevo día seleccionado en la edición
             const inputAgenda = document.getElementById('fecha-agenda');
-            if (inputAgenda && inputAgenda.value !== fechaFinal) {
+            if (inputAgenda) {
                 inputAgenda.value = fechaFinal;
             }
 
@@ -364,3 +353,5 @@ async function eliminarTurno(id) {
         alert("Error de conexión al eliminar.");
     }
 }
+
+   
