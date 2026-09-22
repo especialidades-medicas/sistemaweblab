@@ -5,7 +5,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -71,9 +70,10 @@ public class TurnosFisioterapiaDAO {
             setParamOrNull(ps, 4, turno.getEmail());
             setParamOrNull(ps, 5, turno.getMotivo());
             
+            // Validación estricta de fecha y hora
             ps.setString(6, normalizarFecha(turno.getFecha()));
             ps.setString(7, normalizarHora(turno.getHoraInicio()));
-            ps.setInt(8, turno.getDuracionMinutos() > 0 ? turno.getDuracionMinutos() : 30);
+            ps.setInt(8, turno.getDuracionMinutos() > 0 ? turno.getDuracionMinutos() : 50);
 
             if (esEdicion) {
                 ps.setInt(9, turno.getId());
@@ -82,12 +82,12 @@ public class TurnosFisioterapiaDAO {
             int filasAfectadas = ps.executeUpdate();
             
             if (filasAfectadas == 0) {
-                LOGGER.log(Level.WARNING, "No se actualizó ningún registro. ¿Existe el ID {0} en la BD?", turno.getId());
+                LOGGER.log(Level.WARNING, "No se realizó ninguna acción en la BD para el ID {0}", turno.getId());
             }
 
             return filasAfectadas > 0;
 
-        } catch (SQLException e) {
+        } catch (SQLException | IllegalArgumentException e) {
             LOGGER.log(Level.SEVERE, "Error al " + (esEdicion ? "actualizar" : "guardar") + " turno (ID: " + turno.getId() + "): " + e.getMessage(), e);
             return false;
         }
@@ -135,16 +135,34 @@ public class TurnosFisioterapiaDAO {
 
     private String normalizarFecha(String fecha) {
         if (fecha == null || fecha.trim().isEmpty()) {
-            return LocalDate.now().toString();
+            throw new IllegalArgumentException("La fecha es obligatoria y no fue enviada.");
         }
-        return fecha.trim();
+        
+        fecha = fecha.trim();
+        
+        // Si la fecha viene en formato DD/MM/YYYY, se convierte a YYYY-MM-DD
+        if (fecha.contains("/")) {
+            String[] partes = fecha.split("/");
+            if (partes.length == 3) {
+                if (partes[0].length() == 4) {
+                    return partes[0] + "-" + String.format("%02d", Integer.parseInt(partes[1])) + "-" + String.format("%02d", Integer.parseInt(partes[2]));
+                } else {
+                    return partes[2] + "-" + String.format("%02d", Integer.parseInt(partes[1])) + "-" + String.format("%02d", Integer.parseInt(partes[0]));
+                }
+            }
+        }
+        
+        return fecha;
     }
 
     private String normalizarHora(String hora) {
         if (hora == null || hora.trim().isEmpty()) {
-            return "08:00:00";
+            throw new IllegalArgumentException("La hora de inicio es obligatoria y no fue enviada.");
         }
+        
         hora = hora.trim();
+        
+        // Si viene en formato HH:mm (ej: 08:00), se ajusta a HH:mm:ss para MySQL
         if (hora.length() == 5) {
             return hora + ":00";
         }
