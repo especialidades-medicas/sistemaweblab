@@ -1,12 +1,16 @@
-// Manejo de Filas en Receta
+// ==========================================
+// MANEJO DE FILAS DINÁMICAS (RECETAS)
+// ==========================================
 function agregarFilaMed() {
     const container = document.getElementById('medicamentosContainer');
+    if (!container) return;
+
     const div = document.createElement('div');
     div.className = 'med-item-row';
     div.innerHTML = `
         <div class="med-field flex-grow-2">
             <label class="mobile-only">Medicamento / Presentación</label>
-            <input type="text" class="med-nombre" placeholder="Ej. Paracetamol 500mg">
+            <input type="text" class="med-nombre" placeholder="Ej. Ibuprofeno 400mg">
         </div>
         <div class="med-field">
             <label class="mobile-only">Dosis</label>
@@ -18,11 +22,11 @@ function agregarFilaMed() {
         </div>
         <div class="med-field">
             <label class="mobile-only">Duración</label>
-            <input type="text" class="med-duracion" placeholder="Ej. 5 días">
+            <input type="text" class="med-duracion" placeholder="Ej. 3 días">
         </div>
         <div class="med-action">
             <button type="button" class="btn-icon-delete" title="Eliminar medicamento" onclick="eliminarFilaMed(this)" aria-label="Eliminar fila">
-                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                ✕
             </button>
         </div>
     `;
@@ -32,14 +36,19 @@ function agregarFilaMed() {
 function eliminarFilaMed(btn) {
     const items = document.querySelectorAll('.med-item-row');
     if (items.length > 1) {
-        // Remueve la fila contenedora completa (.med-item-row)
-        btn.closest('.med-item-row').remove();
+        // Elimina el contenedor padre completo de la fila
+        const fila = btn.closest('.med-item-row');
+        if (fila) fila.remove();
     } else {
         alert("Debe mantener al menos un medicamento en la receta.");
     }
 }
 
-// Función auxiliar para cargar imagen como objeto antes de renderizar
+// ==========================================
+// GENERACIÓN DE PDF Y AUTOCOMPLETADO
+// ==========================================
+
+// Función auxiliar para cargar imagen como objeto antes de renderizar en PDF
 function cargarImagen(url) {
     return new Promise((resolve, reject) => {
         const img = new Image();
@@ -53,18 +62,17 @@ function cargarImagen(url) {
 async function generarPDFReceta(e) {
     e.preventDefault();
 
-    const fecha = document.getElementById('recFecha')?.value.trim() || '';
-    const cedula = document.getElementById('recCedula')?.value.trim() || '';
-    const nombres = document.getElementById('recNombres')?.value.trim() || '';
-    const edad = document.getElementById('recEdad')?.value.trim() || '';
-    const alergias = document.getElementById('recAlergias')?.value.trim() || '';
-    const diagnostico = document.getElementById('recDiagnostico')?.value.trim() || '';
-    const indicacionesElem = document.getElementById('recIndicaciones');
-    const indicaciones = indicacionesElem ? indicacionesElem.value.trim() : '';
+    // Comprobación de seguridad en lectura de inputs (evita que el código muera si falta un ID)
+    const fecha = document.getElementById('recFecha')?.value || '';
+    const cedula = document.getElementById('recCedula')?.value || '';
+    const nombres = document.getElementById('recNombres')?.value || '';
+    const edad = document.getElementById('recEdad')?.value || '';
+    const alergias = document.getElementById('recAlergias')?.value || '';
+    const diagnostico = document.getElementById('recDiagnostico')?.value || '';
+    const indicaciones = document.getElementById('recIndicaciones')?.value || '';
 
-    // Validación básica de datos obligatorios por JS
-    if (!cedula || !nombres) {
-        alert("Por favor completa los campos obligatorios del paciente (Cédula y Nombres).");
+    if (!window.jspdf) {
+        alert("La librería jsPDF no está cargada correctamente.");
         return;
     }
 
@@ -74,7 +82,6 @@ async function generarPDFReceta(e) {
     // --- ENCABEZADO CON LOGO ---
     try {
         const imgLogo = await cargarImagen('../img/logFisio.png');
-        // Renderiza el logo en (x: 15, y: 10, ancho: 22, alto: 22)
         doc.addImage(imgLogo, 'PNG', 15, 10, 22, 22);
     } catch (err) {
         console.warn("No se pudo cargar el logo, continuando sin imagen.", err);
@@ -97,12 +104,12 @@ async function generarPDFReceta(e) {
     doc.setFontSize(8.5);
     doc.setTextColor(30, 30, 30);
     doc.setFont("helvetica", "bold");
-    doc.text(`Paciente:`, 20, y + 8); doc.setFont("helvetica", "normal"); doc.text(nombres, 40, y + 8);
+    doc.text(`Paciente:`, 20, y + 8); doc.setFont("helvetica", "normal"); doc.text(nombres || '', 40, y + 8);
     doc.setFont("helvetica", "bold");
-    doc.text(`Cédula:`, 130, y + 8); doc.setFont("helvetica", "normal"); doc.text(cedula, 150, y + 8);
+    doc.text(`Cédula:`, 130, y + 8); doc.setFont("helvetica", "normal"); doc.text(cedula || '', 150, y + 8);
 
     doc.setFont("helvetica", "bold");
-    doc.text(`Fecha:`, 20, y + 15); doc.setFont("helvetica", "normal"); doc.text(fecha, 40, y + 15);
+    doc.text(`Fecha:`, 20, y + 15); doc.setFont("helvetica", "normal"); doc.text(fecha || '', 40, y + 15);
     doc.setFont("helvetica", "bold");
     doc.text(`Edad:`, 80, y + 15); doc.setFont("helvetica", "normal"); doc.text(edad || 'N/D', 95, y + 15);
     doc.setFont("helvetica", "bold");
@@ -133,15 +140,14 @@ async function generarPDFReceta(e) {
     doc.setFont("helvetica", "normal");
     doc.setFontSize(8.5);
 
-    // Selector estandarizado a .med-item-row
-    const medItems = document.querySelectorAll('#medicamentosContainer .med-item-row');
+    // Búsqueda unificada por clase .med-item-row (Sincronizado con HTML)
+    const medItems = document.querySelectorAll('.med-item-row');
     medItems.forEach(item => {
         const nombre = item.querySelector('.med-nombre')?.value || '';
         const dosis = item.querySelector('.med-dosis')?.value || '';
         const frec = item.querySelector('.med-frecuencia')?.value || '';
         const duracion = item.querySelector('.med-duracion')?.value || '';
 
-        // Control de ancho y división de texto para evitar encimamiento
         const splitNombre = doc.splitTextToSize(nombre, 78);
         const splitDosis = doc.splitTextToSize(dosis, 30);
         const splitFrec = doc.splitTextToSize(frec, 32);
@@ -218,20 +224,24 @@ async function generarPDFReceta(e) {
 }
 
 function autocompletarPacienteReceta() {
-    const cedula = document.getElementById('recCedula')?.value.trim() || '';
+    const elCedula = document.getElementById('recCedula');
+    if (!elCedula) return;
+
+    const cedula = elCedula.value.trim();
     if (cedula.length < 5) return;
 
     fetch(`../ControladorPacientes?accion=buscar&cedula=${cedula}`)
         .then(response => response.json())
         .then(p => {
             if (p && (p.cedula || p.nombres)) {
-                if (document.getElementById('recNombres')) {
-                    document.getElementById('recNombres').value = p.nombres || '';
-                }
+                const elNombres = document.getElementById('recNombres');
+                if (elNombres) elNombres.value = p.nombres || '';
                 
-                if (p.fechaNacimiento && document.getElementById('recEdad')) {
+                // Si tienes la función de edad en otro lado de tu proyecto:
+                if (p.fechaNacimiento && typeof calcularEdad === 'function') {
                     const edadCalculada = calcularEdad(p.fechaNacimiento);
-                    document.getElementById('recEdad').value = edadCalculada ? `${edadCalculada} años` : '';
+                    const elEdad = document.getElementById('recEdad');
+                    if (elEdad) elEdad.value = edadCalculada ? `${edadCalculada} años` : '';
                 }
             } else {
                 console.warn("Paciente no encontrado en la base de datos.");
