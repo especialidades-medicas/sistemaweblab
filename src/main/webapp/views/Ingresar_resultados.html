@@ -420,7 +420,7 @@
                                     <td class="fw-bold">F. ALCALINA</td>
                                     <td><input type="text" id="txtFAlcalina" class="form-control form-control-sm form-control-editable"></td>
                                     <td>U/L</td>
-                                    <td class="text-muted">80 - 306</td>
+                                    <td class="text-muted">Mujeres: 64 - 306 | Hombres: 80 - 306 | Niños < a 15 años: Hasta 644 | Niños hasta 17 años: Hasta 483</td>
                                 </tr>
                                 <tr>
                                     <td class="fw-bold">GAMA GT</td>
@@ -433,6 +433,12 @@
                                     <td><input type="text" id="txtAlbumina" class="form-control form-control-sm form-control-editable"></td>
                                     <td>g/dL</td>
                                     <td class="text-muted">Adultos y Niños: 3.50 - 5.50 / 60 - 90 años 3.50 - 4.90 / > 90 años 2.90 - 4.80</td>
+                                </tr>
+								<tr>
+                                    <td class="fw-bold">AMILASA</td>
+                                    <td><input type="text" id="txtAmilasa" class="form-control form-control-sm form-control-editable"></td>
+                                    <td>U/L</td>
+                                    <td class="text-muted">28 - 100</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -601,19 +607,19 @@
                                         FSH (H. Foliculoestimulante)
                                         <select class="form-select form-select-sm mt-1" id="metodoFSH" style="font-size: 10px;">
                                             <option value="" selected disabled>Método Analítico...</option>
+											<option value="Metódo: ELFA (Ensayo de fluorescencia ligado a enzimas)">Metódo: ELFA (Ensayo de fluorescencia ligado a enzimas)</option>
                                             <option value="Electroquimioluminiscencia">Electroquimioluminiscencia</option>
                                             <option value="Inmunofluorescencia">Inmunofluorescencia</option>
                                             <option value="Quimioluminiscencia">Quimioluminiscencia</option>
+											<option value="">-</option>
                                         </select>
                                     </td>
                                     <td><input type="text" class="form-control form-control-sm form-control-editable" id="resFSH"></td>
                                     <td><input type="text" class="form-control form-control-sm text-muted" value="mUI/mL"></td>
                                     <td>
                                         <select class="form-select form-select-sm mt-1" style="font-size: 10px;">                                            
-                                            <option value="Mujeres :
-
-                                                Fase Folicular: 2.7 - 15.4 / Fase Ovulatoria: 3.9 - 22.0 / Fase Lútea: 1.0 - 14.4 / Postmenopausia: 5.0 - 160.0 / Hombres adultos: 1.5 - 12.4 ">Fase Folicular: 2.7 - 15.4 / Fase Ovulatoria: 3.9 - 22.0 / Fase Lútea: 1.0 - 14.4 / Postmenopausia: 5.0 - 160.0 / Hombres adultos: 1.5 - 12.4</option>
-                                            
+                                            <option value="F. Folicular: 2.70 - 15.40 | F. Ovulatoria: 4.70 - 21.50 | F. Lutea: 1.00 - 14.40 | Postmenopausia: 25.00 - 160.00 | Niños: 0.20 - 3.80 | Hombres: 1.00 - 42.50">F. Folicular: 2.70 - 15.40 | F. Ovulatoria: 4.70 - 21.50 | F. Lutea: 1.00 - 14.40 | Postmenopausia: 25.00 - 160.00 | Niños: 0.20 - 3.80 | Hombres: 1.00 - 42.50</option>
+                                            <option value="">-</option>
                                          </select>
                                     </td>
                                 </tr>
@@ -623,9 +629,11 @@
                                         17 Beta Estradiol
                                         <select class="form-select form-select-sm mt-1" id="metodoEstradiol" style="font-size: 10px;">
                                             <option class="form-control form-control-sm mt-1 text-secondary" value="" selected disabled >Método Analítico...</option>
+											<option value="Metódo: ELFA (Ensayo de fluorescencia ligado a enzimas)">Metódo: ELFA (Ensayo de fluorescencia ligado a enzimas)</option>
                                             <option value="Electroquimioluminiscencia">Electroquimioluminiscencia</option>
                                             <option value="Inmunofluorescencia">Inmunofluorescencia</option>
                                             <option value="Quimioluminiscencia">Quimioluminiscencia</option>
+											<option value="">-</option>
                                         </select>
                                     </td>                                            
                                             <td><input type="text" class="form-control form-control-sm form-control-editable" id="resEstradiol"></td>
@@ -637,23 +645,36 @@
                                                 LH (Hormona Luteinizante)                                                
                                             <select class="form-select form-select-sm mt-1" id="metodoLH" style="font-size: 10px;">
                                             <option class="form-control form-control-sm mt-1 text-secondary" value="" selected disabled >Método Analítico...</option>
+												
+											<option value="Metódo: ELFA (Ensayo de fluorescencia ligado a enzimas)">Metódo: ELFA (Ensayo de fluorescencia ligado a enzimas)</option>
                                             <option value="Electroquimioluminiscencia">Electroquimioluminiscencia</option>
                                             <option value="Inmunofluorescencia">Inmunofluorescencia</option>
                                             <option value="Quimioluminiscencia">Quimioluminiscencia</option>
+											<option value="">-</option>
                                         </select>
                                             </td>
                                             <td><input type="text" class="form-control form-control-sm form-control-editable" id="resLH"></td>
                                             <td><input type="text" class="form-control form-control-sm text-muted" value="mUI/mL"></td>
-                                            <td><input type="text" class="form-control form-control-sm text-muted" value="F. Folicular: 2.4–12.6 | P. Ovulatorio: 14.0–95.6 | Lútea: 1.0–11.4"></td>
+                                            <td><input type="text" class="form-control form-control-sm text-muted" value="Fase Folicular: 1.70 - 13.30 | F. Ovulatoria: 18.40 - 61.20 | F. Lutea: 0.50 - 19.80 | Postmenopausia: 14.40 - 62.20 | Niños: 0.20 - 1.40 | Hombres: 1.70 - 11.20"></td>
                                         </tr>
                                         <tr>
                                             <td class="fw-bold">
-                                                Progesterona
-                                                <input type="text" class="form-control form-control-sm mt-1 text-secondary" id="metodoProgesterona" value="Método: Quimioluminiscencia" style="font-size: 10px;">
+                                                PROGESTERONA
+                                                <input type="text" class="form-control form-control-sm mt-1 text-secondary" id="metodoProgesterona" value="Metódo: ELFA (Ensayo de fluorescencia ligado a enzimas)" style="font-size: 10px;">
                                             </td>
                                             <td><input type="text" class="form-control form-control-sm form-control-editable" id="resProgesterona"></td>
                                             <td><input type="text" class="form-control form-control-sm text-muted" value="ng/mL"></td>
-                                            <td><input type="text" class="form-control form-control-sm text-muted" value="F. Folicular: 0.1–0.3 | Lútea: 1.2–15.9 | Embarazo: 10.0–44.0"></td>
+                                            <td><input type="text" class="form-control form-control-sm text-muted" value="F. Folicular: 0.15 - 1.40 | F. Ovulatoria 0.80 - 3.00 | Fase Lutea: 2.00 - 25.00 | Postmenopausia: 0.00 - 0.80 | Hombres 0.13 - 1.22 | EMBARAZO: 1er Trimestre 7.25 - 90.00 | 2do Trimestre 19.50 - 91.00 | 3er Trimestre 49.00 - 422.0"></td>
+                                        </tr>
+
+										 <tr>
+                                            <td class="fw-bold">
+                                                ESTROGENOS E2 (ESTRADIOL)
+                                                <input type="text" class="form-control form-control-sm mt-1 text-secondary" id="metodoEstrogeno" value="Metódo: ELFA (Ensayo de fluorescencia ligado a enzimas)" style="font-size: 10px;">
+                                            </td>
+                                            <td><input type="text" class="form-control form-control-sm form-control-editable" id="resEstrogeno"></td>
+                                            <td><input type="text" class="form-control form-control-sm text-muted" value="pg/mL"></td>
+                                            <td><input type="text" class="form-control form-control-sm text-muted" value="F. Folicular: 21.80 - 83.70 | F. Ovulatoria: 66.10 - 693.10 | F. Lutea 189.90 - 269.70 | Postmenopausia: 32.10 - 73.10 | Niños: 10.00 - 36.00 | Hombres: 20.00 - 75.00 | EMBARAZO: 1er Trimestre 786 - 4584 |  2do Trimestre 801 - 5763 |  3er Trimestre 1810 - 13890"></td>
                                         </tr>
                                         <!-- L.D.H -->
                                 <tr>
@@ -668,6 +689,21 @@
                                     <td><input type="text" class="form-control form-control-sm form-control-editable" id="resLDH"></td>
                                     <td><input type="text" class="form-control form-control-sm text-muted" value="U/L"></td>
                                     <td><input type="text" class="form-control form-control-sm text-muted" value="135 - 225"></td>
+                                </tr>
+										<!-- PROLACTINA -->
+                                <tr>
+                                    <td class="fw-bold">
+                                        PROLACTINA
+                                        <select class="form-select form-select-sm mt-1" style="font-size: 10px;">
+                                            <option value="" selected disabled>Método Analítico...</option>
+                                            <option value="Metódo: ELFA (Ensayo de fluorescencia ligado a enzimas)">Metódo: ELFA (Ensayo de fluorescencia ligado a enzimas)</option>
+                                            <option value="Espectrofotometría">Espectrofotometría</option>
+											<option value="">-</option>
+                                        </select>
+                                    </td>
+                                    <td><input type="text" class="form-control form-control-sm form-control-editable" id="resProlactina"></td>
+                                    <td><input type="text" class="form-control form-control-sm text-muted" value="ng/mL"></td>
+                                    <td><input type="text" class="form-control form-control-sm text-muted" value="Niños: 3.90 - 25.40 | Hombres: 1.80 - 17.00 | Mujeres: 1.20 - 24.10 | Postmenopausia: 1.50 - 18.50"></td>
                                 </tr>
                                     </tbody>
                                 </table>
@@ -704,7 +740,7 @@
                                         <td class="fw-bold text-success">ÍNDICE HOMA-IR</td>										
                                         <td><input type="text" class="form-control form-control-sm form-control-editable fw-bold text-success" id="resHomaFinal" readonly placeholder="Auto"></td>
                                         <td class="text-muted">-</td>
-                                        <td><input type="text" class="form-control form-control-sm text-muted" id="refHomaFinal" value="Niños < A 12 años: menor  a 3.6 / Adultos: menor a 2.5 / Resistencia: > 2.5"></td>
+                                        <td><input type="text" class="form-control form-control-sm text-muted" id="refHomaFinal" value="Niños < A 12 años: menor  a 3.6 | Adultos: menor a 2.5 | Resistencia: > 2.5"></td>
                                     </tr>
                                     
                                     <!-- Hb Glicosilada Corregido (Se agrupa el botón dentro de un input-group para mantener exactamente 4 columnas) -->
@@ -724,7 +760,7 @@
                                     <td class="fw-bold">INSULINA</td>
                                     <td><input type="text" class="form-control form-control-sm form-control-editable" id="resInsulina"></td>
                                     <td class="text-muted">uIU/mL</td>
-                                    <td><input type="text" class="form-control form-control-sm text-muted" id="refInsulina" value="Niños < a 12 años: menor  a 10,0 / Adultos: menor a 17.00 / Diabeticos: 5.00 - 15.00"></td>
+                                    <td><input type="text" class="form-control form-control-sm text-muted" id="refInsulina" value="Niños < a 12 años: menor  a 10,0 | Adultos: menor a 17.00 | Diabeticos: 5.00 - 15.00"></td>
                                     
                                 </tr>
                                 </tbody>
@@ -809,6 +845,7 @@
                                             <option value="Reactivo">Reactivo</option>
                                             <option value="Negativo">Negativo</option>
                                             <option value="Positivo">Positivo</option>
+											<option value="">-</option>
                                         </select>
                                     </td>
                                     <td class="text-muted">-</td>
@@ -824,6 +861,8 @@
                                             <option value="Reactivo">Reactivo</option>
                                             <option value="Negativo">Negativo</option>
                                             <option value="Positivo">Positivo</option>
+											<option value="">-</option>
+											
                                         </select>
                                     </td>
                                     <td class="text-muted">-</td>
@@ -839,6 +878,7 @@
                                             <option value="Reactivo">Reactivo</option>
                                             <option value="Negativo">Negativo</option>
                                             <option value="Positivo">Positivo</option>
+											<option value="">-</option>
                                         </select>
                                     </td>
                                     <td class="text-muted">-</td>
@@ -854,6 +894,7 @@
                                             <option value="Reactivo">Reactivo</option>
                                             <option value="Negativo">Negativo</option>
                                             <option value="Positivo">Positivo</option>
+											<option value="">-</option>
                                         </select>
                                     </td>
                                     <td class="text-muted">-</td>
@@ -869,10 +910,36 @@
                                             <option value="Reactivo">Reactivo</option>
                                             <option value="Negativo">Negativo</option>
                                             <option value="Positivo">Positivo</option>
+											<option value="">-</option>
                                         </select>
                                     </td>
                                     <td class="text-muted">-</td>
                                     <td class="text-muted">Cualitativo</td>
+                                </tr>
+								<!-- CHAGAS -->
+                                <tr>
+                                    <td class="fw-bold">CHAGAS (IgG anti-T. cruzi) Inmunocromatografía</td>
+                                    <td>
+                                        <select class="form-select form-select-sm form-control-editable" id="resHagasC">
+                                            <option value="" selected disabled>Seleccione...</option>
+                                            <option value="No Reactivo">No Reactivo</option>
+                                            <option value="Reactivo">Reactivo</option>
+                                            <option value="Negativo">Negativo</option>
+                                            <option value="Positivo">Positivo</option>
+											<option value="">-</option>
+                                        </select>
+                                    </td>
+                                    <td class="text-muted">-</td>
+                                    <td class="text-muted">Cualitativo</td>
+                                </tr>
+								<tr>
+                                        <td class="fw-bold">
+                                               <input type="text" class="form-control form-control-sm fw-bold mb-1" id="inmunoExamen1" placeholder="Ingrese nombre del examen ...">
+                                               <input type="text" class="form-control form-control-sm text-secondary" id="metodoinmuno1" placeholder="Método manual..." style="font-size: 10px;">
+                                        </td>
+                                        <td><input type="text" class="form-control form-control-sm form-control-editable" id="resinmuno1"></td>
+                                        <td><input type="text" class="form-control form-control-sm text-muted" id="unidadinmuno1" placeholder="Unidad"></td>
+                                        <td><input type="text" class="form-control form-control-sm text-muted" id="refinmuno1" placeholder="Valores de referencia"></td>
                                 </tr>
                             </tbody>
                         </table>
@@ -912,9 +979,9 @@
                                         INMUNOGLOBULINA E (IgE)
                                         <input type="text" class="form-control form-control-sm mt-1 text-secondary" id="metodoIge" placeholder="Método manual..." style="font-size: 10px;">
                                     </td>
-                                    <td><input type="text" class="form-control form-control-sm form-control-editable" id="resIge"></td>
+                                    <td><input type="text" class="form-control form-control-sm form-control-editable" id="resIge">UI/ml</td>
                                     <td class="text-muted">UI / ml</td>
-                                    <td><input type="text" class="form-control form-control-sm text-muted" id="refIge" value=""></td>
+                                    <td><input type="text" class="form-control form-control-sm text-muted" id="refIge" value="">0 - 12 MESES: 0.00 - 46.00 | 2 - 16 AÑOS: 0.00 - 280.00 | ADULTOS: 0.00 - 200.00</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -1087,6 +1154,15 @@
                                 <td class="text-muted">ug/ml</td>
                                 <td><input type="text" class="form-control form-control-sm text-muted" id="refDimero" value="Menor a: 0.50"></td>
                             </tr>
+								<tr>
+                                        <td class="fw-bold">
+                                               <input type="text" class="form-control form-control-sm fw-bold mb-1" id="cuaguExamen1" placeholder="Ingrese nombre del examen ...">
+                                               <input type="text" class="form-control form-control-sm text-secondary" id="metodocuagu1" placeholder="Método manual..." style="font-size: 10px;">
+                                        </td>
+                                        <td><input type="text" class="form-control form-control-sm form-control-editable" id="rescuagu"></td>
+                                        <td><input type="text" class="form-control form-control-sm text-muted" id="unidadcuagu1" placeholder="Unidad"></td>
+                                        <td><input type="text" class="form-control form-control-sm text-muted" id="refcuagu1" placeholder="Valores de referencia"></td>
+                                </tr>
                             </tbody>
                         </table>
                     </div>
@@ -1100,30 +1176,53 @@
         <table class="table table-sm table-bordered align-middle mb-0 small">
             <thead class="table-light text-muted"><tr><th>EXAMEN</th><th>RESULTADO</th><th>UNIDAD</th><th>V. REFERENCIA</th></tr></thead>
             <tbody>
+				<!-- ANTIGENO PROSTATICO ESPECIFICO -->
+                                <tr>
+                                    <td colspan="4" class="table-active fw-bold text-secondary" style="font-size: 9.5px;">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <span class="subcat-titulo">ANTIGENO PROSTATICO ESPECIFICO</span>                                            
+                                        </div>
+                                    </td>
+                                </tr>
                 <tr>
                     <td class="fw-bold">PSA TOTAL
                         <select class="form-select form-select-sm mt-1" id="metodoPsaT" style="font-size: 10px;">
                             <option value="" selected disabled>Método Analítico...</option>
-                            <option value="Cinético UV">Cinético UV</option>
+                            <option value="Metódo: ELFA (Ensayo de fluorescencia ligado a enzimas)">Metódo: ELFA (Ensayo de fluorescencia ligado a enzimas)</option>							
+							<option value="Cinético UV">Cinético UV</option>
                             <option value="Espectrofotometría">Espectrofotometría</option>
+							<option value=" ">-</option>
+							
                         </select>
                     </td>
                     <td><input type="text" class="form-control form-control-sm form-control-editable" id="resPsatotal"></td>
                     <td><input type="text" class="form-control form-control-sm text-muted" value="ng/mL"></td>
-                    <td><input type="text" class="form-control form-control-sm text-muted" value="0 - 4.0"></td>
+                    <td><input type="text" class="form-control form-control-sm text-muted" value="20 - 40 años: 0,16 - 1,5  | 40 - 50 años: 0,16 - 1,7  | 50 - 60 años: 0,24 - 3,0  | 60 - 70 años: 0,27 - 4,0 | Mayor a 70: Menor a 4.5"></td>
                 </tr>
+				
                 <tr>
                     <td class="fw-bold">PSA Libre
                         <select class="form-select form-select-sm mt-1" id="metodoPsaL" style="font-size: 10px;">
                             <option value="" selected disabled>Método Analítico...</option>
-                            <option value="Cinético UV">Cinético UV</option>
+                             <option value="Metódo: ELFA (Ensayo de fluorescencia ligado a enzimas)">Metódo: ELFA (Ensayo de fluorescencia ligado a enzimas)</option>							
+							<option value="Cinético UV">Cinético UV</option>
                             <option value="Espectrofotometría">Espectrofotometría</option>
+							<option value=" ">-</option>
                         </select>
                     </td>
                     <td><input type="text" class="form-control form-control-sm form-control-editable" id="resPsalibre"></td>
-                    <td><input type="text" class="form-control form-control-sm text-muted" value="ng/mL"></td>
-                    <td><input type="text" class="form-control form-control-sm text-muted" value="-"></td>
+                    <td><input type="text" class="form-control form-control-sm text-muted" value="ng/ml"></td>
+                    <td><input type="text" class="form-control form-control-sm text-muted" value="Menor a: 1.30"></td>				
                 </tr>
+				<tr>
+                    <td class="fw-bold">
+                    <input type="text" class="form-control form-control-sm fw-bold mb-1" id="cuaguOnco1" placeholder="Ingrese nombre del examen ...">
+                    <input type="text" class="form-control form-control-sm text-secondary" id="metodoOnco1" placeholder="Método manual..." style="font-size: 10px;">
+                    </td>
+                    <td><input type="text" class="form-control form-control-sm form-control-editable" id="resOnco"></td>
+                    <td><input type="text" class="form-control form-control-sm text-muted" id="unidadOnco1" placeholder="Unidad"></td>
+                    <td><input type="text" class="form-control form-control-sm text-muted" id="refOnco1" placeholder="Valores de referencia"></td>
+                 </tr>
             </tbody>
         </table>
     </div>
@@ -1283,6 +1382,15 @@
                                     <td><input type="text" class="form-control form-control-sm text-muted" value="ng/ml"></td>
                                     <td><input type="text" class="form-control form-control-sm text-muted" value="DEFICIENTE: < a 20.0 / INSUFICIENTE: Desde 20.0 hasta 29.0 / SUFICIENTE: Desde 30.0 a 100.0 / TOXICIDAD: > a 100.0"></td>
                                 </tr>
+								<tr>
+				                    <td class="fw-bold">
+				                    <input type="text" class="form-control form-control-sm fw-bold mb-1" id="cuaguVita1" placeholder="Ingrese nombre del examen ...">
+				                    <input type="text" class="form-control form-control-sm text-secondary" id="metodoVita1" placeholder="Método manual..." style="font-size: 10px;">
+				                    </td>
+				                    <td><input type="text" class="form-control form-control-sm form-control-editable" id="resVita"></td>
+				                    <td><input type="text" class="form-control form-control-sm text-muted" id="unidadVita1" placeholder="Unidad"></td>
+				                    <td><input type="text" class="form-control form-control-sm text-muted" id="refVita1" placeholder="Valores de referencia"></td>
+				                 </tr>
 								
 							</tbody>
                         </table>
@@ -2808,8 +2916,6 @@
                     </div>
                 </div>
             </div>
-
-
 		
             
             <!-- TABLA UNIFICADA DE RESULTADOS (Agrupa por categoría y oculta inputs al imprimir/PDF) -->
@@ -2977,6 +3083,7 @@
         </div>
         
     </div>
+
 
 
 
