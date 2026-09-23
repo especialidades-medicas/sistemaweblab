@@ -1197,7 +1197,7 @@
                     </td>
                     <td><input type="text" class="form-control form-control-sm form-control-editable" id="resPsatotal"></td>
                     <td><input type="text" class="form-control form-control-sm text-muted" value="ng/mL"></td>
-                    <td><input type="text" class="form-control form-control-sm text-muted" value="20 - 40 años: 0,16 - 1,5  | 40 - 50 años: 0,16 - 1,7  | 50 - 60 años: 0,24 - 3,0  | 60 - 70 años: 0,27 - 4,0 | Mayor a 70: Menor a 4.5"></td>
+                    <td><input type="text" class="form-control form-control-sm text-muted" value="20 - 40 años: 0,16 - 1,5 | 40 - 50 años: 0,16 - 1,7 | 50 - 60 años: 0,24 - 3,0 | 60 - 70 años: 0,27 - 4,0 | Mayor a 70: Menor a 4.5"></td>
                 </tr>
 				
                 <tr>
@@ -1261,7 +1261,7 @@
                     <td class="fw-bold">PRUEBA DE EMBARAZO BETA-HCG CUANTITATIVA</td>
                     <td><input type="text" class="form-control form-control-sm form-control-editable"></td>
                     <td>mIU/mL</td>
-                    <td class="text-muted">Negativo: Menor a 5 / Zona Gris: 5 a 25 / Positivo: Mayor a 25 / Semanas 3-4: 5-130 / Semanas 4-5: 75-2.600 / Semanas 5-6: 850-20.800 / Semanas 6-7: 4.000-100.200 / Semanas 7-12: 11.500-289.000</td>
+                    <td class="text-muted">Negativo: Menor a 5 | Zona Gris: 5 a 25 | Positivo: Mayor a 25 | Semanas 3-4: 5-130 | Semanas 4-5: 75-2.600 | Semanas 5-6: 850-20.800 | Semanas 6-7: 4.000-100.200 | Semanas 7-12: 11.500-289.000</td>
                 </tr>
             </tbody>
         </table>
@@ -1380,7 +1380,7 @@
                                     </td>
                                     <td><input type="text" class="form-control form-control-sm form-control-editable" id="vitaD"></td>
                                     <td><input type="text" class="form-control form-control-sm text-muted" value="ng/ml"></td>
-                                    <td><input type="text" class="form-control form-control-sm text-muted" value="DEFICIENTE: < a 20.0 / INSUFICIENTE: Desde 20.0 hasta 29.0 / SUFICIENTE: Desde 30.0 a 100.0 / TOXICIDAD: > a 100.0"></td>
+                                    <td><input type="text" class="form-control form-control-sm text-muted" value="DEFICIENTE: < a 20.0 | INSUFICIENTE: Desde 20.0 hasta 29.0 | SUFICIENTE: Desde 30.0 a 100.0 | TOXICIDAD: > a 100.0"></td>
                                 </tr>
 								<tr>
 				                    <td class="fw-bold">
@@ -1739,9 +1739,7 @@
                     <td>
                     <select class="form-select form-select-sm form-control-editable" id="orinaMoco">
                         <option value="" selected disabled>Seleccione...</option>                        
-                        <option value="+">+</option>
-                        <option value="++">++</option>
-                        <option value="+++">+++</option>
+                        <option value="Positivo (+)">Positivo (+)</option>                        
                         <option value=" ">Negativo</option>
 						<option value=""></option>
 
@@ -1811,6 +1809,18 @@
                     <td><input type="text" class="form-control form-control-sm form-control-editable" id="resMicroalbuminuria"></td>
                     <td class="text-muted">mg/L</td>
                     <td><input type="text" class="form-control form-control-sm text-muted" value="Menor a 20"></td>
+                </tr>
+				<tr>
+                    <td class="fw-bold ps-3">ALBUMINURIA</td>
+                    <td><input type="text" class="form-control form-control-sm form-control-editable" id="resAlbuminuria"></td>
+                    <td class="text-muted">g/dL</td>
+                    <td><input type="text" class="form-control form-control-sm text-muted" value="Recien nacidos:3.5 - 5.4 | Niños: 4.0 - 5.9 | Adultos: 3.5 - 5.4"></td>
+                </tr>
+					<tr>
+                    <td class="fw-bold ps-3">CREATININA EN ORINA</td>
+                    <td><input type="text" class="form-control form-control-sm form-control-editable" id="resCreatinina"></td>
+                    <td class="text-muted">g/dL</td>
+                    <td><input type="text" class="form-control form-control-sm text-muted" value="Hombres: 20 - 320 | Mujeres: 20 - 275"></td>
                 </tr>
                 <tr>
                     <td class="fw-bold ps-3">PROTEINURIA (24 HORAS)</td>
@@ -1919,100 +1929,7 @@
 
                 <!-- EXAMEN MICROSCÓPICO / PARASITOLÓGICO -->
                 <tr><td colspan="4" class="table-active fw-bold text-secondary" style="font-size: 9.5px;">EXAMEN MICROSCÓPICO (PARASITOLÓGICO)</td></tr>
-                <tr>
-                    <td class="fw-bold ps-3">RESTOS ALIMENTICIOS</td>
-                    <td>
-                        <select class="form-select form-select-sm form-control-editable" id="hecesRestos">
-                            <option value="" selected disabled>Seleccione...</option>
-                            <option value="Ausentes">Ausentes</option>
-                            <option value="Escasas(+)">Escasas</option>
-                            <option value="Moderadas(++)">Moderadas(++)</option>
-                            <option value="Numerosos(+++)">Numerosos(+++)</option>
-							<option value=""></option>
-                        </select>
-                    </td>
-                    <td class="text-muted">-</td>
-                    <td class="text-muted">-</td>
-                </tr>
-                <tr>
-                    <td class="fw-bold ps-3">GRASAS (Gotas de grasa)</td>
-                    <td>
-                        <select class="form-select form-select-sm form-control-editable" id="hecesGrasas">
-                            <option value="" selected disabled>Seleccione...</option>
-                            <option value="Ausentes">Ausentes</option>
-                            <option value="Escasas(+)">Escasas</option>
-                            <option value="Moderadas(++)">Moderadas(++)</option>
-                            <option value="Numerosos(+++)">Numerosos(+++)</option>
-							<option value=""></option>
-                        </select>
-                    </td>
-                    <td class="text-muted">-</td>
-                    <td class="text-muted">-</td>
-                </tr>
-                <tr>
-                    <td class="fw-bold ps-3">RESTOS VEGETALES</td>
-                    <td>
-                        <select class="form-select form-select-sm form-control-editable" id="hecesRestosVegetales">
-                            <option value="" selected disabled>Seleccione...</option>
-                            <option value="Ausentes">Ausentes</option>
-                            <option value="Escasas(+)">Escasas</option>
-                            <option value="Moderadas(++)">Moderadas(++)</option>
-                            <option value="Numerosos(+++)">Numerosos(+++)</option>
-							<option value=""></option>
-                        </select>
-                    </td>
-                    <td class="text-muted">-</td>
-                    <td class="text-muted">-</td>
-                </tr>
-                <tr>
-                    <td class="fw-bold ps-3">ALMIDONES (Gránulos de almidón)</td>
-                    <td>
-                        <select class="form-select form-select-sm form-control-editable" id="hecesAlmidones">                            
-                            <option value="" selected disabled>Seleccione...</option>
-                            <option value="Ausentes">Ausentes</option>
-                            <option value="Escasas(+)">Escasas</option>
-                            <option value="Moderadas(++)">Moderadas(++)</option>
-                            <option value="Numerosos(+++)">Numerosos(+++)</option>
-							<option value=""></option>
-                        </select>
-                    </td>
-                    <td class="text-muted">-</td>
-                    <td class="text-muted">-</td>
-                </tr>
-                <tr>
-                    <td class="fw-bold ps-3">LEVADURAS</td>
-                    <td>
-                        <select class="form-select form-select-sm form-control-editable" id="hecesLevaduras">
-                            <option value="" selected disabled>Seleccione...</option>
-                            <option value="Ausentes">Ausentes</option>
-                            <option value="Escasas(+)">Escasas</option>
-                            <option value="Moderadas(++)">Moderadas(++)</option>
-                            <option value="Numerosos(+++)">Numerosos(+++)</option>
-							<option value=""></option>
-                        </select>
-                    </td>
-                    <td class="text-muted">-</td>
-                    <td class="text-muted">-</td>
-                </tr>
-                <tr>
-                    <td class="fw-bold ps-3">LEUCOCITOS</td>
-                    <td><input type="text" class="form-control form-control-sm form-control-editable" id="hecesLeucocitos" placeholder="Ej: 0 - 2 x c."></td>
-                    <td class="text-muted">x c.</td>
-                    <td class="text-muted">-</td>
-                </tr>
-                <tr>
-                    <td class="fw-bold ps-3">HEMATÍES</td>
-                    <td><input type="text" class="form-control form-control-sm form-control-editable" id="hecesHematies" placeholder="Ej: Ausentes"></td>
-                    <td class="text-muted">x c.</td>
-                    <td class="text-muted">-</td>
-                </tr>
-                <tr>
-                    <td class="fw-bold ps-3">OTROS (Observaciones microscópicas)</td>
-                    <td><input type="text" class="form-control form-control-sm form-control-editable" id="hecesOtros" placeholder="Ej: Fibras musculares..."></td>
-                    <td class="text-muted">-</td>
-                    <td><input type="text" class="form-control form-control-sm text-muted" value="Ninguno"></td>
-                </tr>
-                <tr>
+				<tr>
                     <td class="fw-bold ps-3">PARÁSITOS (Quistes / Trofozoítos)</td>
                     <td>
                         <select class="form-select form-select-sm form-control-editable" id="hecesParasitos">
@@ -2138,6 +2055,100 @@
                     </td>
                     <td class="text-muted">-</td>                    
                 </tr>
+                <tr>
+                    <td class="fw-bold ps-3">RESTOS ALIMENTICIOS</td>
+                    <td>
+                        <select class="form-select form-select-sm form-control-editable" id="hecesRestos">
+                            <option value="" selected disabled>Seleccione...</option>
+                            <option value="Ausentes">Ausentes</option>
+                            <option value="Escasas(+)">Escasas(+)</option>
+                            <option value="Moderadas(++)">Moderadas(++)</option>
+                            <option value="Numerosos(+++)">Numerosos(+++)</option>
+							<option value=""></option>
+                        </select>
+                    </td>
+                    <td class="text-muted">-</td>
+                    <td class="text-muted">-</td>
+                </tr>
+                <tr>
+                    <td class="fw-bold ps-3">GRASAS (Gotas de grasa)</td>
+                    <td>
+                        <select class="form-select form-select-sm form-control-editable" id="hecesGrasas">
+                            <option value="" selected disabled>Seleccione...</option>
+                            <option value="Ausentes">Ausentes</option>
+                            <option value="Escasas(+)">Escasas(+)</option>
+                            <option value="Moderadas(++)">Moderadas(++)</option>
+                            <option value="Numerosos(+++)">Numerosos(+++)</option>
+							<option value=""></option>
+                        </select>
+                    </td>
+                    <td class="text-muted">-</td>
+                    <td class="text-muted">-</td>
+                </tr>
+                <tr>
+                    <td class="fw-bold ps-3">RESTOS VEGETALES</td>
+                    <td>
+                        <select class="form-select form-select-sm form-control-editable" id="hecesRestosVegetales">
+                            <option value="" selected disabled>Seleccione...</option>
+                            <option value="Ausentes">Ausentes</option>
+                            <option value="Escasas(+)">Escasas(+)</option>
+                            <option value="Moderadas(++)">Moderadas(++)</option>
+                            <option value="Numerosos(+++)">Numerosos(+++)</option>
+							<option value=""></option>
+                        </select>
+                    </td>
+                    <td class="text-muted">-</td>
+                    <td class="text-muted">-</td>
+                </tr>
+                <tr>
+                    <td class="fw-bold ps-3">ALMIDONES (Gránulos de almidón)</td>
+                    <td>
+                        <select class="form-select form-select-sm form-control-editable" id="hecesAlmidones">                            
+                            <option value="" selected disabled>Seleccione...</option>
+                            <option value="Ausentes">Ausentes</option>
+                            <option value="Escasas(+)">Escasas(+)</option>
+                            <option value="Moderadas(++)">Moderadas(++)</option>
+                            <option value="Numerosos(+++)">Numerosos(+++)</option>
+							<option value=""></option>
+                        </select>
+                    </td>
+                    <td class="text-muted">-</td>
+                    <td class="text-muted">-</td>
+                </tr>
+                <tr>
+                    <td class="fw-bold ps-3">LEVADURAS</td>
+                    <td>
+                        <select class="form-select form-select-sm form-control-editable" id="hecesLevaduras">
+                            <option value="" selected disabled>Seleccione...</option>
+                            <option value="Ausentes">Ausentes</option>
+                            <option value="Escasas(+)">Escasas(+)</option>
+                            <option value="Moderadas(++)">Moderadas(++)</option>
+                            <option value="Numerosos(+++)">Numerosos(+++)</option>
+							<option value=""></option>
+                        </select>
+                    </td>
+                    <td class="text-muted">-</td>
+                    <td class="text-muted">-</td>
+                </tr>
+                <tr>
+                    <td class="fw-bold ps-3">LEUCOCITOS</td>
+                    <td><input type="text" class="form-control form-control-sm form-control-editable" id="hecesLeucocitos" placeholder="Ej: 0 - 2 x c."></td>
+                    <td class="text-muted">x c.</td>
+                    <td class="text-muted">-</td>
+                </tr>
+                <tr>
+                    <td class="fw-bold ps-3">HEMATÍES</td>
+                    <td><input type="text" class="form-control form-control-sm form-control-editable" id="hecesHematies" placeholder="Ej: Ausentes"></td>
+                    <td class="text-muted">x c.</td>
+                    <td class="text-muted">-</td>
+                </tr>
+                <tr>
+                    <td class="fw-bold ps-3">OTROS (Observaciones microscópicas)</td>
+                    <td><input type="text" class="form-control form-control-sm form-control-editable" id="hecesOtros" placeholder="Ej: Fibras musculares..."></td>
+                    <td class="text-muted">-</td>
+                    <td><input type="text" class="form-control form-control-sm text-muted" value="Ninguno"></td>
+                </tr>
+                
                 <tr>
                     <td class="fw-bold ps-3">MICROBIOTA BACTERIANA</td>
                     <td>
