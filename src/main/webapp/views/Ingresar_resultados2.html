@@ -267,7 +267,8 @@
     <table class="table table-sm table-bordered align-middle mb-0 small">
         <thead class="table-light text-muted"><tr><th>EXAMEN</th><th>RESULTADO</th><th>UNIDAD</th><th>V. REFERENCIA</th></tr></thead>
         <tbody>
-            <tr><td class="fw-bold">VES (1ra Hora)</td><td><input type="text" class="form-control form-control-sm form-control-editable"></td><td>mm/h</td><td class="text-muted">0 – 20</td></tr>
+            <tr><td class="fw-bold">Velocidad de Sedimentación Globular (VSE / VSG)</td>
+				<td><input type="text" class="form-control form-control-sm form-control-editable"></td><td>mm/h</td><td class="text-muted">Hombres: 0 – 15 | Mujeres: 0 – 20</td></tr>
         </tbody>
     </table>
 </div>
@@ -296,16 +297,16 @@
                                     <td class="text-muted">70 - 125</td>
                                 </tr>
 								<tr>
-                                    <td class="fw-bold">GLUCOSA (1H POST-CARGA 75GR)</td>
+                                    <td class="fw-bold">GLUCOSA (1H POST-CARGA 50GR)</td>
                                     <td><input type="text" id="txtGlucosaCarga1h" class="form-control form-control-sm form-control-editable"></td>
                                     <td>mg/dL</td>
-                                    <td class="text-muted">Normal: < 180 / Gestacional > 180 </td>
+                                    <td class="text-muted">Normal: < 180 | Gestacional > 180 </td>
                                 </tr>
 								<tr>
                                     <td class="fw-bold">GLUCOSA (2H POST-CARGA 75GR)</td>
                                     <td><input type="text" id="txtGlucosaCarga2h" class="form-control form-control-sm form-control-editable"></td>
                                     <td>mg/dL</td>
-                                    <td class="text-muted">Normal: < - 140 / Prediabetes: 140 - 199 / Gestacional < 153 / Diabetes > 200</td>
+                                    <td class="text-muted">Normal: < - 140 | Prediabetes: 140 - 199 | Gestacional < 153 | Diabetes > 200</td>
                                 </tr>
                                 <tr>
                                     <td class="fw-bold">UREA</td>
@@ -784,9 +785,77 @@
                                 </div>
                             </div>
                         </div>
-                        
 
-                        <!-- Sección 3: Exámenes Adicionales en Blanco -->
+
+
+
+
+
+ <!-- Sección 3: Autoanticuerpos e Inmunológicos -->
+                        <div class="mb-3">
+                            <div class="section-title text-secondary fw-bold small border-bottom pb-1 mb-2" data-section-name="AUTOANTICUERPOS E INMUNOLÓGICOS" data-target="tablaAdicionales" style="cursor: pointer;">
+                                ▼ AUTOANTICUERPOS E INMUNOLÓGICOS
+                            </div>
+                            <div id="tablaAnticuerposRematologicos" class="seccion-contenido">
+                                <table class="table table-sm table-bordered align-middle mb-0 small">
+                                    <thead class="table-light text-muted">
+                                        <tr>
+                                            <th>EXAMEN</th><th style="width: 20%;">RESULTADO</th><th style="width: 15%;">UNIDAD</th><th>V. REFERENCIA</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td class="fw-bold">
+                                                <input type="text" class="form-control form-control-sm fw-bold mb-1" id="nombreExamenAr1" placeholder="ANA (Anticuerpos Antinucleares)">
+                                                <input type="text" class="form-control form-control-sm text-secondary" id="metodoExamenAr1" placeholder="Método manual..." style="font-size: 10px;">
+                                            </td>
+                                            <td><input type="text" class="form-control form-control-sm form-control-editable" id="resExamenAr1"></td>
+                                            <td><input type="text" class="form-control form-control-sm text-muted" id="unidadExamenAr1" placeholder="Unidad"></td>
+                                            <td><input type="text" class="form-control form-control-sm text-muted" id="refExamenAr1" placeholder="Valores de referencia" value="Negativo: < 1:80"></td>
+                                    
+                                        </tr>
+                                        <tr>
+                                            <td class="fw-bold">
+                                                <input type="text" class="form-control form-control-sm fw-bold mb-1" id="nombreExamenAr2" placeholder="Anti-dsDNA (Anti-ADN de doble cadena)">
+                                                <input type="text" class="form-control form-control-sm text-secondary" id="metodoExamenAr2" placeholder="Método manual..." style="font-size: 10px;">
+                                            </td>
+                                            <td><input type="text" class="form-control form-control-sm form-control-editable" id="resExamenAr2"></td>
+                                            <td><input type="text" class="form-control form-control-sm text-muted" id="unidadExamenAr2" placeholder="Unidad"></td>
+                                            <td><input type="text" class="form-control form-control-sm text-muted" id="refExamenAr2" placeholder="Valores de referencia"></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="fw-bold">
+                                                <input type="text" class="form-control form-control-sm fw-bold mb-1" id="nombreExamenAr3" placeholder="Anti-Fosfolípidos (IgG) / Anti-cardiolipinas">
+                                                <input type="text" class="form-control form-control-sm text-secondary" id="metodoExamenAr3" placeholder="Método manual..." style="font-size: 10px;">
+                                            </td>
+                                            <td><input type="text" class="form-control form-control-sm form-control-editable" id="resExamenAr3"></td>
+                                            <td><input type="text" class="form-control form-control-sm text-muted" id="unidadExamenAr3" placeholder="Unidad"></td>
+                                            <td><input type="text" class="form-control form-control-sm text-muted" id="refExamenAr3" placeholder="Valores de referencia"></td>
+                                        </tr>
+										<tr>
+                                            <td class="fw-bold">
+                                                <input type="text" class="form-control form-control-sm fw-bold mb-1" id="nombreExamenAr4" placeholder="Anti-Fosfolípidos (IgM) / Anti-cardiolipinas">
+                                                <input type="text" class="form-control form-control-sm text-secondary" id="metodoExamenAr4" placeholder="Método manual..." style="font-size: 10px;">
+                                            </td>
+                                            <td><input type="text" class="form-control form-control-sm form-control-editable" id="resExamenAr4"></td>
+                                            <td><input type="text" class="form-control form-control-sm text-muted" id="unidadExamenAr4" placeholder="Unidad"></td>
+                                            <td><input type="text" class="form-control form-control-sm text-muted" id="refExamenAr4" placeholder="Valores de referencia"></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+
+
+
+
+
+
+
+						
+
+                        <!-- Sección 4: Exámenes Adicionales en Blanco -->
                         <div class="mb-3">
                             <div class="section-title text-secondary fw-bold small border-bottom pb-1 mb-2" data-section-name="EXAMENES ADICIONALES" data-target="tablaAdicionales" style="cursor: pointer;">
                                 ▼ EXÁMENES ADICIONALES EN BLANCO
