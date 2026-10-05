@@ -787,74 +787,6 @@
                         </div>
 
 
-
-
-
-
- <!-- Sección 3: Autoanticuerpos e Inmunológicos -->
-                        <div class="mb-3">
-                            <div class="section-title text-secondary fw-bold small border-bottom pb-1 mb-2" data-section-name="AUTOANTICUERPOS E INMUNOLÓGICOS" data-target="tablaAdicionales" style="cursor: pointer;">
-                                ▼ AUTOANTICUERPOS E INMUNOLÓGICOS
-                            </div>
-                            <div id="tablaAnticuerposRematologicos" class="seccion-contenido">
-                                <table class="table table-sm table-bordered align-middle mb-0 small">
-                                    <thead class="table-light text-muted">
-                                        <tr>
-                                            <th>EXAMEN</th><th style="width: 20%;">RESULTADO</th><th style="width: 15%;">UNIDAD</th><th>V. REFERENCIA</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td class="fw-bold">
-                                                <input type="text" class="form-control form-control-sm fw-bold mb-1" id="nombreExamenAr1" placeholder="ANA (Anticuerpos Antinucleares)">
-                                                <input type="text" class="form-control form-control-sm text-secondary" id="metodoExamenAr1" placeholder="Método manual..." style="font-size: 10px;">
-                                            </td>
-                                            <td><input type="text" class="form-control form-control-sm form-control-editable" id="resExamenAr1"></td>
-                                            <td><input type="text" class="form-control form-control-sm text-muted" id="unidadExamenAr1" placeholder="Unidad"></td>
-                                            <td><input type="text" class="form-control form-control-sm text-muted" id="refExamenAr1" placeholder="Valores de referencia" value="Negativo: < 1:80"></td>
-                                    
-                                        </tr>
-                                        <tr>
-                                            <td class="fw-bold">
-                                                <input type="text" class="form-control form-control-sm fw-bold mb-1" id="nombreExamenAr2" placeholder="Anti-dsDNA (Anti-ADN de doble cadena)">
-                                                <input type="text" class="form-control form-control-sm text-secondary" id="metodoExamenAr2" placeholder="Método manual..." style="font-size: 10px;">
-                                            </td>
-                                            <td><input type="text" class="form-control form-control-sm form-control-editable" id="resExamenAr2"></td>
-                                            <td><input type="text" class="form-control form-control-sm text-muted" id="unidadExamenAr2" placeholder="Unidad"></td>
-                                            <td><input type="text" class="form-control form-control-sm text-muted" id="refExamenAr2" placeholder="Valores de referencia"></td>
-                                        </tr>
-                                        <tr>
-                                            <td class="fw-bold">
-                                                <input type="text" class="form-control form-control-sm fw-bold mb-1" id="nombreExamenAr3" placeholder="Anti-Fosfolípidos (IgG) / Anti-cardiolipinas">
-                                                <input type="text" class="form-control form-control-sm text-secondary" id="metodoExamenAr3" placeholder="Método manual..." style="font-size: 10px;">
-                                            </td>
-                                            <td><input type="text" class="form-control form-control-sm form-control-editable" id="resExamenAr3"></td>
-                                            <td><input type="text" class="form-control form-control-sm text-muted" id="unidadExamenAr3" placeholder="Unidad"></td>
-                                            <td><input type="text" class="form-control form-control-sm text-muted" id="refExamenAr3" placeholder="Valores de referencia"></td>
-                                        </tr>
-										<tr>
-                                            <td class="fw-bold">
-                                                <input type="text" class="form-control form-control-sm fw-bold mb-1" id="nombreExamenAr4" placeholder="Anti-Fosfolípidos (IgM) / Anti-cardiolipinas">
-                                                <input type="text" class="form-control form-control-sm text-secondary" id="metodoExamenAr4" placeholder="Método manual..." style="font-size: 10px;">
-                                            </td>
-                                            <td><input type="text" class="form-control form-control-sm form-control-editable" id="resExamenAr4"></td>
-                                            <td><input type="text" class="form-control form-control-sm text-muted" id="unidadExamenAr4" placeholder="Unidad"></td>
-                                            <td><input type="text" class="form-control form-control-sm text-muted" id="refExamenAr4" placeholder="Valores de referencia"></td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-
-
-
-
-
-
-
-
-						
-
                         <!-- Sección 4: Exámenes Adicionales en Blanco -->
                         <div class="mb-3">
                             <div class="section-title text-secondary fw-bold small border-bottom pb-1 mb-2" data-section-name="EXAMENES ADICIONALES" data-target="tablaAdicionales" style="cursor: pointer;">
@@ -1064,6 +996,43 @@
                                     <td class="text-muted">UI / ml</td>
                                     <td><input type="text" class="form-control form-control-sm text-muted" id="refIge" value="">0 - 12 MESES: 0.00 - 46.00 | 2 - 16 AÑOS: 0.00 - 280.00 | ADULTOS: 0.00 - 200.00</td>
                                 </tr>
+								<tr>
+                                    <td class="fw-bold">
+                                        ANA (Anticuerpos Antinucleares)
+                                        <input type="text" class="form-control form-control-sm mt-1 text-secondary" id="metodoAna" placeholder="Método manual..." style="font-size: 10px;">
+                                    </td>
+                                    <td><input type="text" class="form-control form-control-sm form-control-editable" id="resAna"></td>
+                                    <td class="text-muted">-</td>
+                                    <td><input type="text" class="form-control form-control-sm text-muted" id="refAna" value="">-</td>
+                                </tr>
+								<tr>
+                                    <td class="fw-bold">
+                                        Anti-dsDNA (Anti-ADN de doble cadena)
+                                        <input type="text" class="form-control form-control-sm mt-1 text-secondary" id="metodoAntDna" placeholder="Método manual..." style="font-size: 10px;">
+                                    </td>
+                                    <td><input type="text" class="form-control form-control-sm form-control-editable" id="resAntDna"></td>
+                                    <td class="text-muted">UI/ml</td>
+                                    <td><input type="text" class="form-control form-control-sm text-muted" id="refAntDna" value=""> </td>
+                                </tr>
+								<tr>
+                                    <td class="fw-bold">
+                                        Anti-Fosfolípidos (IgG) / Anti-cardiolipinas
+                                        <input type="text" class="form-control form-control-sm mt-1 text-secondary" id="metodoAntFosfoIgg" placeholder="Método manual..." style="font-size: 10px;">
+                                    </td>
+                                    <td><input type="text" class="form-control form-control-sm form-control-editable" id="resAntFosfoIgg"></td>
+                                    <td class="text-muted">U/mL</td>
+                                    <td><input type="text" class="form-control form-control-sm text-muted" id="refAntFosfoIgg" value=""> </td>
+                                </tr>
+								<tr>
+                                    <td class="fw-bold">
+                                        Anti-Fosfolípidos (IgM) / Anti-cardiolipinas
+                                        <input type="text" class="form-control form-control-sm mt-1 text-secondary" id="metodoAntFosfoIgm" placeholder="Método manual..." style="font-size: 10px;">
+                                    </td>
+                                    <td><input type="text" class="form-control form-control-sm form-control-editable" id="resAntFosfoIgm"></td>
+                                    <td class="text-muted">U/mL</td>
+                                    <td><input type="text" class="form-control form-control-sm text-muted" id="refAntFosfoIgm" value=""> </td>
+                                </tr>
+								
                             </tbody>
                         </table>
 
@@ -1716,9 +1685,9 @@
                     <select class="form-select form-select-sm form-control-editable" id="orinaBacterias">
                         <option value="" selected disabled>Seleccione...</option>
                         <option value="Escasas">Escasas</option>
-                        <option value="+">+</option>
-                        <option value="++">++</option>
-                        <option value="+++">+++</option>
+                        <option value="(+)">(+)</option>
+                        <option value="(++)">(++)</option>
+                        <option value="(+++)">(+++)</option>
                         <option value=""></option>
 
                     </select>
@@ -1754,10 +1723,10 @@
                     <td>
                         <select class="form-select form-select-sm form-control-editable">
                             <option value="" selected disabled>Seleccione...</option>                                                   
-                            <option value="+">+</option>
-                            <option value="++">++</option>
-                            <option value="+++">+++</option> 
-                            <option value=""></option>
+                            <option value="(+)">(+)</option>
+	                        <option value="(++)">(++)</option>
+	                        <option value="(+++)">(+++)</option>
+	                        <option value=""></option>
                         </select>
                     </td>
                    <td class="text-muted">-</td>
@@ -1790,10 +1759,10 @@
                     <td>
                         <select class="form-select form-select-sm form-control-editable">
                             <option value="" selected disabled>Seleccione...</option>                                                 
-                            <option value="+">+</option>
-                            <option value="++">++</option>
-                            <option value="+++">+++</option> 
-                            <option value=""></option>
+                            <option value="(+)">(+)</option>
+	                        <option value="(++)">(++)</option>
+	                        <option value="(+++)">(+++)</option>
+	                        <option value=""></option>
                         </select>
                     </td>
                    <td class="text-muted">-</td>
@@ -1817,10 +1786,10 @@
                     <td>
                         <select class="form-select form-select-sm form-control-editable">
                             <option value="" selected disabled>Seleccione...</option>                                                      
-                            <option value="+">+</option>
-                            <option value="++">++</option>
-                            <option value="+++">+++</option> 
-                            <option value=""></option>
+                            <option value="(+)">(+)</option>
+	                        <option value="(++)">(++)</option>
+	                        <option value="(+++)">(+++)</option>
+	                        <option value=""></option>
                         </select>
                     </td>
                    <td class="text-muted">-</td>
@@ -2088,10 +2057,10 @@
                     <td>
                         <select class="form-select form-select-sm form-control-editable" id="hecesParasitosCant1">
                             <option value="" selected disabled>Seleccione...</option>                            
-                            <option value="+">+</option>
-                            <option value="++">++</option>      
-                            <option value="+++">+++</option>   
-							<option value=""></option>
+                            <option value=""></option>
+                            <option value="(+)">(+)</option>
+	                        <option value="(++)">(++)</option>
+	                        <option value="(+++)">(+++)</option>
                         </select>
                     </td>
                     <td class="text-muted">-</td>
@@ -2131,9 +2100,10 @@
                         <select class="form-select form-select-sm form-control-editable" id="hecesParasitosCant2">
                             <option value="" selected disabled>Seleccione...</option>
                             <option value=""></option>
-                            <option value="+">+</option>
-                            <option value="++">++</option>      
-                            <option value="+++">+++</option>   
+                            <option value="(+)">(+)</option>
+	                        <option value="(++)">(++)</option>
+	                        <option value="(+++)">(+++)</option>
+	                         
                         </select>
                     </td>
                     <td class="text-muted">-</td>                    
@@ -2172,11 +2142,10 @@
                     <td>
                         <select class="form-select form-select-sm form-control-editable" id="hecesParasitosCant3">
                             <option value="" selected disabled>Seleccione...</option>
-                            
-                            <option value="+">+</option>
-                            <option value="++">++</option>      
-                            <option value="+++">+++</option>   
-							<option value=""></option>
+                            <option value=""></option>
+                            <option value="(+)">(+)</option>
+	                        <option value="(++)">(++)</option>
+	                        <option value="(+++)">(+++)</option>
                         </select>
                     </td>
                     <td class="text-muted">-</td>                    
