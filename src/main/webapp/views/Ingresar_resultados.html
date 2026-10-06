@@ -18,7 +18,7 @@
     <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
     
     <style>
-       /* Color Verde Azulado (Campos <input> cargados) */
+       /* Inputs cargados cambio de color*/
 .bg-verde-azulado {
     background-color: #e0f2f1 !important;
     border-color: #26a69a !important;
@@ -26,7 +26,7 @@
     font-weight: bold;
 }
 
-/* Color Rosado (2.º elemento) */
+/* Select: 2º elemento */
 .bg-rosado {
     background-color: #fce4ec !important;
     border-color: #f06292 !important;
@@ -34,7 +34,7 @@
     font-weight: bold;
 }
 
-/* Color Naranja (3.er elemento) */
+/* Select: 3º elemento */
 .bg-naranja {
     background-color: #fff3e0 !important;
     border-color: #ffb74d !important;
@@ -42,7 +42,7 @@
     font-weight: bold;
 }
 
-/* Color Rojo (4.º elemento) */
+/* Select: 4º elemento */
 .bg-rojo {
     background-color: #ffebee !important;
     border-color: #e57373 !important;
@@ -50,7 +50,7 @@
     font-weight: bold;
 }
 
-/* Color Celeste (5.º elemento en adelante) */
+/* Select: 5º elemento en adelante */
 .bg-celeste {
     background-color: #e1f5fe !important;
     border-color: #4fc3f7 !important;
@@ -4540,27 +4540,51 @@ function limpiarSecrecionVaginal() {
        
        
 document.addEventListener("DOMContentLoaded", function () {
-    // Selecciona todos los inputs y selects dentro del contenedor principal
     const camposEditable = document.querySelectorAll("#mainTabContent input, #mainTabContent select");
 
-    // Función para evaluar y aplicar/quitar la clase de resaltado
-    function actualizarColorResaltado(elemento) {
-        const valor = elemento.value ? elemento.value.trim() : "";
+    // Lista de todas las clases posibles para borrarlas de golpe sin dejar rastro de colores anteriores
+    const clasesColor = ["bg-verde-azulado", "bg-rosado", "bg-naranja", "bg-rojo", "bg-celeste"];
 
-        // Verifica si tiene contenido válido (ignorando los espacios o la opción vacía por defecto)
-        if (valor !== "" && valor !== "-" && valor !== " ") {
-            elemento.classList.add("bg-verde-azulado");
-        } else {
-            elemento.classList.remove("bg-verde-azulado");
+    function actualizarColorResaltado(elemento) {
+        // Quitamos cualquier color asignado previamente
+        elemento.classList.remove(...clasesColor);
+
+        // CASO 1: Si es un combo box (<select>)
+        if (elemento.tagName.toUpperCase() === "SELECT") {
+            const index = elemento.selectedIndex;
+            const valor = elemento.value ? elemento.value.trim() : "";
+
+            // Si no ha elegido nada válido o la primera opción no tiene valor real
+            if (index <= 0 || valor === "" || valor === "-" || valor === " ") {
+                return; // Se queda sin clase de color
+            }
+
+            // Asignación de colores por posición elegida (índice base 0)
+            if (index === 1) {        // 2º elemento de la lista
+                elemento.classList.add("bg-rosado");
+            } else if (index === 2) { // 3º elemento de la lista
+                elemento.classList.add("bg-naranja");
+            } else if (index === 3) { // 4º elemento de la lista
+                elemento.classList.add("bg-rojo");
+            } else if (index >= 4) { // 5º elemento en adelante
+                elemento.classList.add("bg-celeste");
+            }
+        } 
+        // CASO 2: Si es un campo de texto (<input>)
+        else {
+            const valor = elemento.value ? elemento.value.trim() : "";
+
+            if (valor !== "" && valor !== "-" && valor !== " ") {
+                elemento.classList.add("bg-verde-azulado");
+            }
         }
     }
 
-    // Recorre cada elemento para escuchar cuando el usuario escribe o selecciona algo
     camposEditable.forEach(function (elemento) {
-        // Ejecutar al cargar por si la vista trae datos previos
+        // Ejecución al cargar la página
         actualizarColorResaltado(elemento);
 
-        // Escuchar eventos de cambio de texto o de opción seleccionada
+        // Eventos para detectar cambios en tiempo real
         elemento.addEventListener("input", function () {
             actualizarColorResaltado(this);
         });
