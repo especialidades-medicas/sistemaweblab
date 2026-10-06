@@ -18,11 +18,43 @@
     <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
     
     <style>
-       /* Color de fondo verde azulado suave para resaltar los campos con datos */
+       /* Color Verde Azulado (Campos <input> cargados) */
 .bg-verde-azulado {
     background-color: #e0f2f1 !important;
     border-color: #26a69a !important;
     color: #004d40 !important;
+    font-weight: bold;
+}
+
+/* Color Rosado (2.º elemento) */
+.bg-rosado {
+    background-color: #fce4ec !important;
+    border-color: #f06292 !important;
+    color: #880e4f !important;
+    font-weight: bold;
+}
+
+/* Color Naranja (3.er elemento) */
+.bg-naranja {
+    background-color: #fff3e0 !important;
+    border-color: #ffb74d !important;
+    color: #e65100 !important;
+    font-weight: bold;
+}
+
+/* Color Rojo (4.º elemento) */
+.bg-rojo {
+    background-color: #ffebee !important;
+    border-color: #e57373 !important;
+    color: #b71c1c !important;
+    font-weight: bold;
+}
+
+/* Color Celeste (5.º elemento en adelante) */
+.bg-celeste {
+    background-color: #e1f5fe !important;
+    border-color: #4fc3f7 !important;
+    color: #01579b !important;
     font-weight: bold;
 }
 
@@ -267,7 +299,8 @@
     <table class="table table-sm table-bordered align-middle mb-0 small">
         <thead class="table-light text-muted"><tr><th>EXAMEN</th><th>RESULTADO</th><th>UNIDAD</th><th>V. REFERENCIA</th></tr></thead>
         <tbody>
-            <tr><td class="fw-bold">VES (1ra Hora)</td><td><input type="text" class="form-control form-control-sm form-control-editable"></td><td>mm/h</td><td class="text-muted">0 – 20</td></tr>
+            <tr><td class="fw-bold">Velocidad de Sedimentación Globular (VSE / VSG)</td>
+				<td><input type="text" class="form-control form-control-sm form-control-editable"></td><td>mm/h</td><td class="text-muted">Hombres: 0 – 15 | Mujeres: 0 – 20</td></tr>
         </tbody>
     </table>
 </div>
@@ -294,6 +327,18 @@
                                     <td><input type="text" id="txtGlucosaPos" class="form-control form-control-sm form-control-editable"></td>
                                     <td>mg/dL</td>
                                     <td class="text-muted">70 - 125</td>
+                                </tr>
+								<tr>
+                                    <td class="fw-bold">GLUCOSA (1H POST-CARGA 50GR)</td>
+                                    <td><input type="text" id="txtGlucosaCarga1h" class="form-control form-control-sm form-control-editable"></td>
+                                    <td>mg/dL</td>
+                                    <td class="text-muted">Normal: < 180 | Gestacional > 180 </td>
+                                </tr>
+								<tr>
+                                    <td class="fw-bold">GLUCOSA (2H POST-CARGA 75GR)</td>
+                                    <td><input type="text" id="txtGlucosaCarga2h" class="form-control form-control-sm form-control-editable"></td>
+                                    <td>mg/dL</td>
+                                    <td class="text-muted">Normal: < - 140 | Prediabetes: 140 - 199 | Gestacional < 153 | Diabetes > 200</td>
                                 </tr>
                                 <tr>
                                     <td class="fw-bold">UREA</td>
@@ -414,7 +459,7 @@
                                     <td class="fw-bold">PROTEÍNAS T.</td>
                                     <td><input type="text" id="txtProteinasT" class="form-control form-control-sm form-control-editable"></td>
                                     <td>g/dL</td>
-                                    <td class="text-muted">6.6 - 8.5</td>
+                                    <td class="text-muted">Recien Nacido: 5.30 - 8.90 | Prematuros: 3.60 - 6.00 | Niños 5.30 - 8.00 | Embarazadas: 6.10 - 6.90 | Adultos: 6.40 - 8.30 | Pacientes en reposo 6.00 - 7.80</td>
                                 </tr>
                                 <tr>
                                     <td class="fw-bold">F. ALCALINA</td>
@@ -543,44 +588,44 @@
                                             </td>
                                             <td><input type="text" class="form-control form-control-sm form-control-editable" id="resTSH"></td>
                                             <td><input type="text" class="form-control form-control-sm text-muted" value="UI/mL"></td>
-                                            <td><input type="text" class="form-control form-control-sm text-muted" value="Recien Nacido: 0.68 - 29.00 | 4 - 30 dias: 0.51 - 11.00 | Menor a 12 meses: 1.36 - 8.80 | 1 - 6 años: 0.85 - 6.50 | 7 - 12 años: 0.28 - 4.30 | Adultos: 0.43 - 6.16 / Mayor a 60 años: 0.40 - 8.00"></td>
+                                            <td><input type="text" class="form-control form-control-sm text-muted" value="Recien Nacido: 0.68-29.00 | 4 - 30 dias: 0.51 - 11.00 | < a 12 meses: 1.36 - 8.80 | 1 - 6 años: 0.85 - 6.50 | 7 - 12 años: 0.28 - 4.30 | Adultos: 0.43-6.16 | > 60 años: 0.40-8.00"></td>
                                         </tr>
                                         <tr>
                                             <td class="fw-bold">
                         T3 Total (Triiodotironina Total)
-                        <input type="text" class="form-control form-control-sm mt-1 text-secondary" id="metodoT3Total" value="Método: Quimioluminiscencia (CLIA)" style="font-size: 10px;">
+                        <input type="text" class="form-control form-control-sm mt-1 text-secondary" id="metodoT3Total" value="Metódo: ELFA (Ensayo de fluorescencia ligado a enzimas)" style="font-size: 10px;">
                     </td>
                     <td><input type="text" class="form-control form-control-sm form-control-editable" id="resT3Total"></td>
                     <td><input type="text" class="form-control form-control-sm text-muted" value="ng/mL"></td>
-                    <td><input type="text" class="form-control form-control-sm text-muted" value="Recien Nacido: 0.90 - 3.20 | 4 - 30 dias: 0.80 - 3.00 | Menor a 12 meses: 0.80 - 3.20 | 1 - 6 años: 0.90 - 4.00 | 7 - 12 años: 0.80 - 2.90 | Adultos: 0.52 - 1.85"></td>
+                    <td><input type="text" class="form-control form-control-sm text-muted" value="Recien Nacido: 0.90-3.20 | 4-30 dias: 0.80-3.00 | < a 12 meses: 0.80-3.20 | 1-6 años: 0.90-4.00 | 7-12 años: 0.80-2.90 | Adultos: 0.52-1.85"></td>
                 </tr>
                 <tr>
                     <td class="fw-bold">
                         T4 Total (Tiroxina Total)
-                        <input type="text" class="form-control form-control-sm mt-1 text-secondary" id="metodoT4Total" value="Método: Quimioluminiscencia (CLIA)" style="font-size: 10px;">
+                        <input type="text" class="form-control form-control-sm mt-1 text-secondary" id="metodoT4Total" value="Metódo: ELFA (Ensayo de fluorescencia ligado a enzimas)" style="font-size: 10px;">
                     </td>
                     <td><input type="text" class="form-control form-control-sm form-control-editable" id="resT4Total"></td>
                     <td><input type="text" class="form-control form-control-sm text-muted" value="ug/dl"></td>
-                    <td><input type="text" class="form-control form-control-sm text-muted" value="Menor a 3 dias: 8.60 - 21.80 | 4 - 30 dias: 6.20 - 18.70 | Menor a 12 meses: 9.70 - 19.0 | 1 - 6 años: 9.20 - 15.10 | 7 - 12 años: 7.60 - 13.70 | 3 - 16 años: 6.40 - 13.40 | Adultos: 4.80 - 11.60"></td>
+                    <td><input type="text" class="form-control form-control-sm text-muted" value="Menor a 3 dias: 8.60-21.80 | 4-30 dias: 6.20-18.70 | < a 12 meses: 9.70-19.0 | 1-6 años: 9.20-15.10 | 7-12 años: 7.60-13.70 | 3-16 años: 6.40-13.40 | Adultos: 4.80-11.60"></td>
                 </tr>
                                             <tr>
                     
                                             <td class="fw-bold">
                                                 T3 Libre (Triiodotironina Libre)
-                                                <input type="text" class="form-control form-control-sm mt-1 text-secondary" id="metodoT3Libre" value="Método: Quimioluminiscencia (CLIA)" style="font-size: 10px;">
+                                                <input type="text" class="form-control form-control-sm mt-1 text-secondary" id="metodoT3Libre" value="Metódo: ELFA (Ensayo de fluorescencia ligado a enzimas)" style="font-size: 10px;">
                                             </td>
                                             <td><input type="text" class="form-control form-control-sm form-control-editable" id="resT3Libre"></td>
                                             <td><input type="text" class="form-control form-control-sm text-muted" value="pg/mL"></td>
-                                            <td><input type="text" class="form-control form-control-sm text-muted" value="RECIEN NACIDOS 2.00 - 5.20 | 2 - 12 meses 1.50 - 6.40 | 2 - 6 años: 2.00 - 6.20 | 7 - 11 años: 2.70 - 5.20 | 12 - 19 años 2.30 - 5.00 | ADULTOS: 2.00 - 4.90"></td>
+                                            <td><input type="text" class="form-control form-control-sm text-muted" value="Recien Nacido: 2.00-5.20 | 2- 12 meses 1.50 - 6.40 | 2-6 años: 2.00-6.20 | 7-11 años: 2.70-5.20 | 12-19 años 2.30-5.00 | Adultos: 2.00-4.90"></td>
                                         </tr>
                                         <tr>
                                             <td class="fw-bold">
                                                 T4 Libre (Tiroxina Libre)
-                                                <input type="text" class="form-control form-control-sm mt-1 text-secondary" id="metodoT4Libre" value="Método: Quimioluminiscencia (CLIA)" style="font-size: 10px;">
+                                                <input type="text" class="form-control form-control-sm mt-1 text-secondary" id="metodoT4Libre" value="Metódo: ELFA (Ensayo de fluorescencia ligado a enzimas)" style="font-size: 10px;">
                                             </td>
                                             <td><input type="text" class="form-control form-control-sm form-control-editable" id="resT4Libre"></td>
                                             <td><input type="text" class="form-control form-control-sm text-muted" value="ng/dL"></td>
-                                            <td><input type="text" class="form-control form-control-sm text-muted" value="Recien Nacido: 1,10 - 3,00 | 4 - 30 dias: 0,90 - 2,80 | Menor A 12 meses: 1,10 - 2,40 | 1 - 6 años: 0,90 - 1,70 | 7 - 12 años: 1,10 - 1,70 | 13 - 17 años: 1,10 - 1,80 | Adultos: 0,80 - 2.00"></td>
+                                            <td><input type="text" class="form-control form-control-sm text-muted" value="Recien Nacido: 1.10-3.00 | 4- 30 dias: 0.90 - 2.80 | < a 12 meses: 1.10-2.40 | 1-6 años: 0.90-1.70 | 7-12 años: 1.10-1.70 | 13-17 años: 1.10-1.80 | Adultos: 0.80-2.00"></td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -772,9 +817,9 @@
                                 </div>
                             </div>
                         </div>
-                        
 
-                        <!-- Sección 3: Exámenes Adicionales en Blanco -->
+
+                        <!-- Sección 4: Exámenes Adicionales en Blanco -->
                         <div class="mb-3">
                             <div class="section-title text-secondary fw-bold small border-bottom pb-1 mb-2" data-section-name="EXAMENES ADICIONALES" data-target="tablaAdicionales" style="cursor: pointer;">
                                 ▼ EXÁMENES ADICIONALES EN BLANCO
@@ -983,6 +1028,43 @@
                                     <td class="text-muted">UI / ml</td>
                                     <td><input type="text" class="form-control form-control-sm text-muted" id="refIge" value="">0 - 12 MESES: 0.00 - 46.00 | 2 - 16 AÑOS: 0.00 - 280.00 | ADULTOS: 0.00 - 200.00</td>
                                 </tr>
+								<tr>
+                                    <td class="fw-bold">
+                                        ANA (Anticuerpos Antinucleares)
+                                        <input type="text" class="form-control form-control-sm mt-1 text-secondary" id="metodoAna" placeholder="Método manual..." style="font-size: 10px;">
+                                    </td>
+                                    <td><input type="text" class="form-control form-control-sm form-control-editable" id="resAna"></td>
+                                    <td class="text-muted">-</td>
+                                    <td><input type="text" class="form-control form-control-sm text-muted" id="refAna" value="">-</td>
+                                </tr>
+								<tr>
+                                    <td class="fw-bold">
+                                        Anti-dsDNA (Anti-ADN de doble cadena)
+                                        <input type="text" class="form-control form-control-sm mt-1 text-secondary" id="metodoAntDna" placeholder="Método manual..." style="font-size: 10px;">
+                                    </td>
+                                    <td><input type="text" class="form-control form-control-sm form-control-editable" id="resAntDna"></td>
+                                    <td class="text-muted">UI/ml</td>
+                                    <td><input type="text" class="form-control form-control-sm text-muted" id="refAntDna" value=""> </td>
+                                </tr>
+								<tr>
+                                    <td class="fw-bold">
+                                        Anti-Fosfolípidos (IgG) / Anti-cardiolipinas
+                                        <input type="text" class="form-control form-control-sm mt-1 text-secondary" id="metodoAntFosfoIgg" placeholder="Método manual..." style="font-size: 10px;">
+                                    </td>
+                                    <td><input type="text" class="form-control form-control-sm form-control-editable" id="resAntFosfoIgg"></td>
+                                    <td class="text-muted">U/mL</td>
+                                    <td><input type="text" class="form-control form-control-sm text-muted" id="refAntFosfoIgg" value=""> </td>
+                                </tr>
+								<tr>
+                                    <td class="fw-bold">
+                                        Anti-Fosfolípidos (IgM) / Anti-cardiolipinas
+                                        <input type="text" class="form-control form-control-sm mt-1 text-secondary" id="metodoAntFosfoIgm" placeholder="Método manual..." style="font-size: 10px;">
+                                    </td>
+                                    <td><input type="text" class="form-control form-control-sm form-control-editable" id="resAntFosfoIgm"></td>
+                                    <td class="text-muted">U/mL</td>
+                                    <td><input type="text" class="form-control form-control-sm text-muted" id="refAntFosfoIgm" value=""> </td>
+                                </tr>
+								
                             </tbody>
                         </table>
 
@@ -1300,18 +1382,28 @@
             </thead>
             <tbody>
                 <tr>
-                    <td class="fw-bold">GRUPO SANGUÍNEO Y FACTOR RH</td>
+                    <td class="fw-bold">GRUPO SANGUÍNEO</td>
                     <td>
                         <select class="form-select form-select-sm form-control-editable" id="resGrupoSanguineo">
                             <option value="" selected disabled>Seleccione Grupo...</option>
-                            <option value="A Positivo (A+)">A Positivo (A+)</option>
-                            <option value="A Negativo (A-)">A Negativo (A-)</option>
-                            <option value="B Positivo (B+)">B Positivo (B+)</option>
-                            <option value="B Negativo (B-)">B Negativo (B-)</option>
-                            <option value="AB Positivo (AB+)">AB Positivo (AB+)</option>
-                            <option value="AB Negativo (AB-)">AB Negativo (AB-)</option>
-                            <option value="O Positivo (O+)">O Positivo (O+)</option>
-                            <option value="O Negativo (O-)">O Negativo (O-)</option>
+                            <option value="A">A</option>
+                            <option value="B">B</option>
+                            <option value="AB">AB</option>
+                            <option value="O">O</option>
+							<option value="">-</option>
+                        </select>
+                    </td>
+                    <td class="text-muted">-</td>
+                    <td class="text-muted">-</td>					
+                </tr>
+				<tr>
+				<td class="fw-bold">FACTOR RH</td>
+                    <td>
+                        <select class="form-select form-select-sm form-control-editable" id="resGrupoSanguineoRh">
+                            <option value="" selected disabled>Seleccione Grupo...</option>
+                            <option value="RH Positivo">RH Positivo</option>
+                            <option value="RH Negativo">RH Negativo</option>                            
+                            <option value="">-</option>
                         </select>
                     </td>
                     <td class="text-muted">-</td>
@@ -1625,9 +1717,9 @@
                     <select class="form-select form-select-sm form-control-editable" id="orinaBacterias">
                         <option value="" selected disabled>Seleccione...</option>
                         <option value="Escasas">Escasas</option>
-                        <option value="+">+</option>
-                        <option value="++">++</option>
-                        <option value="+++">+++</option>
+                        <option value="(+)">(+)</option>
+                        <option value="(++)">(++)</option>
+                        <option value="(+++)">(+++)</option>
                         <option value=""></option>
 
                     </select>
@@ -1663,10 +1755,10 @@
                     <td>
                         <select class="form-select form-select-sm form-control-editable">
                             <option value="" selected disabled>Seleccione...</option>                                                   
-                            <option value="+">+</option>
-                            <option value="++">++</option>
-                            <option value="+++">+++</option> 
-                            <option value=""></option>
+                            <option value="(+)">(+)</option>
+	                        <option value="(++)">(++)</option>
+	                        <option value="(+++)">(+++)</option>
+	                        <option value=""></option>
                         </select>
                     </td>
                    <td class="text-muted">-</td>
@@ -1699,10 +1791,10 @@
                     <td>
                         <select class="form-select form-select-sm form-control-editable">
                             <option value="" selected disabled>Seleccione...</option>                                                 
-                            <option value="+">+</option>
-                            <option value="++">++</option>
-                            <option value="+++">+++</option> 
-                            <option value=""></option>
+                            <option value="(+)">(+)</option>
+	                        <option value="(++)">(++)</option>
+	                        <option value="(+++)">(+++)</option>
+	                        <option value=""></option>
                         </select>
                     </td>
                    <td class="text-muted">-</td>
@@ -1726,10 +1818,10 @@
                     <td>
                         <select class="form-select form-select-sm form-control-editable">
                             <option value="" selected disabled>Seleccione...</option>                                                      
-                            <option value="+">+</option>
-                            <option value="++">++</option>
-                            <option value="+++">+++</option> 
-                            <option value=""></option>
+                            <option value="(+)">(+)</option>
+	                        <option value="(++)">(++)</option>
+	                        <option value="(+++)">(+++)</option>
+	                        <option value=""></option>
                         </select>
                     </td>
                    <td class="text-muted">-</td>
@@ -1782,7 +1874,42 @@
                         <option value="Bacilos Gram Negativos">Bacilos Gram Negativos </option>
                         <option value="Cocos Gram Positivos">Cocos Gram Positivos</option>
                         <option value="Bacilos Gram Positivos">Bacilos Gram Positivos</option>
+						<option value="Bacilos Gram Negativos">Bacilos Gram Negativos / Bacilos Gram Positivos </option>
                         <option value="Cocos Gram Negativos">Cocos Gram Negativos</option>
+						<option value="Cocos Gram Negativos">Cocos Gram Negativos / Cocos Gram Positivos</option>
+                        <option value="Cocobacilos Gram Negativos">Cocobacilos Gram Negativos</option>
+                        <option value="Diplococos Gram Negativos">Diplococos Gram Negativos</option>
+                        <option value="Bacilos Gram positivos Esporulados">Bacilos Gram positivos Esporulados</option>
+                        <option value="Bacilos Gram positivos Filamentosos">Bacilos Gram positivos Filamentosos</option>
+                    	<option value=""></option>
+					</select>
+                    </td>
+                    <td>
+                    <select class="form-control form-control-sm form-control-editable">
+                        <option value="" selected disabled>Seleccione...</option>                        
+                        <option value=" ">-</option>
+                        <option value="Escasos">Escasos </option>
+                        <option value="Algunos">Algunos</option>
+                        <option value="Numerosos">Numerosos</option>
+						<option value=""></option>
+
+                    </select>
+                    </td>
+                    <td class="text-muted">-</td>
+                    
+                </tr>
+					<tr>
+                    <td class="fw-bold ps-3">GRAM </td>                    
+                    <td>
+                    <select class="form-control form-control-sm form-control-editable" id="resGramOrina2">
+                        <option value="" selected disabled>Seleccione...</option>
+                        <option value="Negativo">Negativo</option>
+                        <option value="Bacilos Gram Negativos">Bacilos Gram Negativos </option>
+                        <option value="Cocos Gram Positivos">Cocos Gram Positivos</option>
+                        <option value="Bacilos Gram Positivos">Bacilos Gram Positivos</option>
+						<option value="Bacilos Gram Negativos">Bacilos Gram Negativos / Bacilos Gram Positivos </option>
+                        <option value="Cocos Gram Negativos">Cocos Gram Negativos</option>
+						<option value="Cocos Gram Negativos">Cocos Gram Negativos / Cocos Gram Positivos</option>
                         <option value="Cocobacilos Gram Negativos">Cocobacilos Gram Negativos</option>
                         <option value="Diplococos Gram Negativos">Diplococos Gram Negativos</option>
                         <option value="Bacilos Gram positivos Esporulados">Bacilos Gram positivos Esporulados</option>
@@ -1962,10 +2089,10 @@
                     <td>
                         <select class="form-select form-select-sm form-control-editable" id="hecesParasitosCant1">
                             <option value="" selected disabled>Seleccione...</option>                            
-                            <option value="+">+</option>
-                            <option value="++">++</option>      
-                            <option value="+++">+++</option>   
-							<option value=""></option>
+                            <option value=""></option>
+                            <option value="(+)">(+)</option>
+	                        <option value="(++)">(++)</option>
+	                        <option value="(+++)">(+++)</option>
                         </select>
                     </td>
                     <td class="text-muted">-</td>
@@ -2005,9 +2132,10 @@
                         <select class="form-select form-select-sm form-control-editable" id="hecesParasitosCant2">
                             <option value="" selected disabled>Seleccione...</option>
                             <option value=""></option>
-                            <option value="+">+</option>
-                            <option value="++">++</option>      
-                            <option value="+++">+++</option>   
+                            <option value="(+)">(+)</option>
+	                        <option value="(++)">(++)</option>
+	                        <option value="(+++)">(+++)</option>
+	                         
                         </select>
                     </td>
                     <td class="text-muted">-</td>                    
@@ -2046,11 +2174,10 @@
                     <td>
                         <select class="form-select form-select-sm form-control-editable" id="hecesParasitosCant3">
                             <option value="" selected disabled>Seleccione...</option>
-                            
-                            <option value="+">+</option>
-                            <option value="++">++</option>      
-                            <option value="+++">+++</option>   
-							<option value=""></option>
+                            <option value=""></option>
+                            <option value="(+)">(+)</option>
+	                        <option value="(++)">(++)</option>
+	                        <option value="(+++)">(+++)</option>
                         </select>
                     </td>
                     <td class="text-muted">-</td>                    
@@ -2928,10 +3055,7 @@
                 </div>
             </div>
 
-<!-- Botón para guardar en la Base de Datos en la Nube 
-<button type="button" class="btn btn-primary btn-sm ms-2 no-print" onclick="guardarEnBaseDeDatos()">
-    <i class="bi bi-cloud-arrow-up-fill me-1"></i> Guardar en la Nube
-</button>-->
+
 		
             
             <!-- TABLA UNIFICADA DE RESULTADOS (Agrupa por categoría y oculta inputs al imprimir/PDF) -->
@@ -3387,55 +3511,6 @@ window.addEventListener('DOMContentLoaded', () => {
 
 
 
-// 1. Función para buscar y autocompletar paciente según la cédula (Cod/Doc)
-function buscarPaciente() {
-    const cedulaInput = document.getElementById('codDoc');
-    if (!cedulaInput) return;
-    
-    const cedulaBuscada = cedulaInput.value.trim();
-    if (!cedulaBuscada) return;
-
-    const pacientesGuardados = JSON.parse(localStorage.getItem('lab_pacientes')) || [];
-    const pacienteEncontrado = pacientesGuardados.find(p => p.cedula.trim() === cedulaBuscada);
-
-    if (pacienteEncontrado) {
-        // Asigna los valores de forma segura (si están vacíos, coloca espacios en blanco o valores por defecto)
-        if (document.getElementById('nombrePaciente')) {
-            document.getElementById('nombrePaciente').value = pacienteEncontrado.nombre || '';
-        }
-        if (document.getElementById('fechaNacimiento')) {
-            document.getElementById('fechaNacimiento').value = pacienteEncontrado.nacimiento || '';
-        }
-        if (document.getElementById('sexoPaciente')) {
-            document.getElementById('sexoPaciente').value = pacienteEncontrado.genero || ' - ';
-        }
-        if (document.getElementById('telefonoPaciente')) {
-            document.getElementById('telefonoPaciente').value = pacienteEncontrado.telefono || '';
-        }
-
-        cedulaInput.style.borderColor = "green";
-        
-        if (typeof sincronizarDatosImpresion === "function") {
-            sincronizarDatosImpresion();
-        }
-    } else {
-        cedulaInput.style.borderColor = "#ced4da";
-    }
-}
-
-// Activar la búsqueda automática al salir del campo (blur) o presionar Enter
-document.addEventListener("DOMContentLoaded", () => {
-    const inputCedula = document.getElementById('codDoc');
-    if (inputCedula) {
-        inputCedula.addEventListener('blur', buscarPaciente);
-        inputCedula.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                e.preventDefault();
-                buscarPaciente();
-            }
-        });
-    }
-});
 
 // 2. Almacenar o actualizar internamente al paciente
 function guardarPacienteInterno(paciente) {
@@ -4463,6 +4538,7 @@ function limpiarSecrecionVaginal() {
 
     
        
+       
 document.addEventListener("DOMContentLoaded", function () {
     // Selecciona todos los inputs y selects dentro del contenedor principal
     const camposEditable = document.querySelectorAll("#mainTabContent input, #mainTabContent select");
@@ -4494,6 +4570,7 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 });
+
 
 		
 		//flecha barra navergar nav examenes
