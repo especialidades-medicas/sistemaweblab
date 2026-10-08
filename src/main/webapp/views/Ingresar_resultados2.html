@@ -4588,37 +4588,40 @@ document.addEventListener("DOMContentLoaded", function () {
     // Clases estáticas definidas en el CSS
     const clasesColor = ["bg-verde-pastel", "bg-rosado", "bg-tomate", "bg-rojo"];
 
-    // Función para generar colores aleatorios pastel mediante HSL
+    // Función para generar y aplicar colores aleatorios pastel de forma forzada
     function aplicarColorPastelAleatorio(elemento) {
-        // Tono aleatorio (0-360), saturación media-alta (70%), luminosidad alta (90%)
+        // Tono aleatorio (0-360), saturación (75%), luminosidad alta para fondo pastel (88%)
         const hue = Math.floor(Math.random() * 360);
-        const bgColor = `hsl(${hue}, 70%, 90%)`;
-        const borderColor = `hsl(${hue}, 60%, 65%)`;
-        const textColor = `hsl(${hue}, 80%, 20%)`;
+        
+        const bgColor = `hsl(${hue}, 75%, 88%)`;
+        const borderColor = `hsl(${hue}, 65%, 60%)`;
+        const textColor = `hsl(${hue}, 85%, 15%)`;
 
-        elemento.style.backgroundColor = bgColor;
-        elemento.style.borderColor = borderColor;
-        elemento.style.color = textColor;
-        elemento.style.fontWeight = "bold";
+        // Se usa setProperty con '!important' para garantizar que aplique sobre el fondo
+        elemento.style.setProperty("background-color", bgColor, "important");
+        elemento.style.setProperty("border-color", borderColor, "important");
+        elemento.style.setProperty("color", textColor, "important");
+        elemento.style.setProperty("font-weight", "bold", "important");
     }
 
     function limpiarEstilos(elemento) {
         // Quita las clases estáticas
         elemento.classList.remove(...clasesColor);
-        // Quita los estilos inline asignados por la opción aleatoria
-        elemento.style.backgroundColor = "";
-        elemento.style.borderColor = "";
-        elemento.style.color = "";
-        elemento.style.fontWeight = "";
+        
+        // Limpia todos los estilos en línea aplicados manualmente
+        elemento.style.removeProperty("background-color");
+        elemento.style.removeProperty("border-color");
+        elemento.style.removeProperty("color");
+        elemento.style.removeProperty("font-weight");
     }
 
     function actualizarColorResaltado(elemento) {
-        // Limpiamos siempre primero antes de aplicar cualquier color
+        // Limpiamos siempre antes de validar
         limpiarEstilos(elemento);
 
         const valor = elemento.value ? elemento.value.trim() : "";
 
-        // Si no tiene un valor válido (vacío, guion o espacio), se queda sin color
+        // Si no tiene valor válido, se queda blanco / sin estilo
         if (valor === "" || valor === "-" || valor === " ") {
             return;
         }
@@ -4627,7 +4630,7 @@ document.addEventListener("DOMContentLoaded", function () {
         if (elemento.tagName.toUpperCase() === "SELECT") {
             const index = elemento.selectedIndex; // Índice de la opción elegida (0, 1, 2, 3...)
 
-            if (index === 0) {         // 1º elemento de la lista
+            if (index === 0) {         // 1º elemento
                 elemento.classList.add("bg-verde-pastel");
             } else if (index === 1) {  // 2º elemento
                 elemento.classList.add("bg-rosado");
@@ -4649,10 +4652,10 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     camposEditable.forEach(function (elemento) {
-        // Ejecución al cargar
+        // Ejecución al cargar la página
         actualizarColorResaltado(elemento);
 
-        // Escuchar eventos de cambio en tiempo real
+        // Escuchar cambios
         ["input", "change"].forEach(evento => {
             elemento.addEventListener(evento, function () {
                 actualizarColorResaltado(this);
