@@ -19,12 +19,37 @@
     
     <style>
        /* Color de fondo verde azulado suave para resaltar los campos con datos */
-.bg-verde-azulado {
-    background-color: #e0f2f1 !important;
-    border-color: #26a69a !important;
-    color: #004d40 !important;
-    font-weight: bold;
-}
+		/* Inputs de texto y 1º elemento de Select (Verde Pastel) */
+		.bg-verde-pastel {
+		    background-color: #e8f5e9 !important;
+		    border-color: #81c784 !important;
+		    color: #1b5e20 !important;
+		    font-weight: bold;
+		}
+		
+		/* Select: 2º elemento (Rosado) */
+		.bg-rosado {
+		    background-color: #fce4ec !important;
+		    border-color: #f06292 !important;
+		    color: #880e4f !important;
+		    font-weight: bold;
+		}
+		
+		/* Select: 3º elemento (Tomate) */
+		.bg-tomate {
+		    background-color: #fff3e0 !important;
+		    border-color: #ffb74d !important;
+		    color: #e65100 !important;
+		    font-weight: bold;
+		}
+		
+		/* Select: 4º elemento (Rojo) */
+		.bg-rojo {
+		    background-color: #ffebee !important;
+		    border-color: #e57373 !important;
+		    color: #b71c1c !important;
+		    font-weight: bold;
+		}
 
 		
     </style>
@@ -4558,36 +4583,84 @@ function limpiarSecrecionVaginal() {
     
        
 document.addEventListener("DOMContentLoaded", function () {
-    // Selecciona todos los inputs y selects dentro del contenedor principal
     const camposEditable = document.querySelectorAll("#mainTabContent input, #mainTabContent select");
 
-    // Función para evaluar y aplicar/quitar la clase de resaltado
+    // Clases estáticas definidas en el CSS
+    const clasesColor = ["bg-verde-pastel", "bg-rosado", "bg-tomate", "bg-rojo"];
+
+    // Función para generar colores aleatorios pastel mediante HSL
+    function aplicarColorPastelAleatorio(elemento) {
+        // Tono aleatorio (0-360), saturación media-alta (70%), luminosidad alta (90%)
+        const hue = Math.floor(Math.random() * 360);
+        const bgColor = `hsl(${hue}, 70%, 90%)`;
+        const borderColor = `hsl(${hue}, 60%, 65%)`;
+        const textColor = `hsl(${hue}, 80%, 20%)`;
+
+        elemento.style.backgroundColor = bgColor;
+        elemento.style.borderColor = borderColor;
+        elemento.style.color = textColor;
+        elemento.style.fontWeight = "bold";
+    }
+
+    function limpiarEstilos(elemento) {
+        // Quita las clases estáticas
+        elemento.classList.remove(...clasesColor);
+        // Quita los estilos inline asignados por la opción aleatoria
+        elemento.style.backgroundColor = "";
+        elemento.style.borderColor = "";
+        elemento.style.color = "";
+        elemento.style.fontWeight = "";
+    }
+
     function actualizarColorResaltado(elemento) {
+        // Limpiamos siempre primero antes de aplicar cualquier color
+        limpiarEstilos(elemento);
+
         const valor = elemento.value ? elemento.value.trim() : "";
 
-        // Verifica si tiene contenido válido (ignorando los espacios o la opción vacía por defecto)
-        if (valor !== "" && valor !== "-" && valor !== " ") {
-            elemento.classList.add("bg-verde-azulado");
-        } else {
-            elemento.classList.remove("bg-verde-azulado");
+        // Si no tiene un valor válido (vacío, guion o espacio), se queda sin color
+        if (valor === "" || valor === "-" || valor === " ") {
+            return;
+        }
+
+        // CASO 1: Si es un combo box (<select>)
+        if (elemento.tagName.toUpperCase() === "SELECT") {
+            const index = elemento.selectedIndex; // Índice de la opción elegida (0, 1, 2, 3...)
+
+            if (index === 0) {         // 1º elemento de la lista
+                elemento.classList.add("bg-verde-pastel");
+            } else if (index === 1) {  // 2º elemento
+                elemento.classList.add("bg-rosado");
+            } else if (index === 2) {  // 3º elemento (Tomate)
+                elemento.classList.add("bg-tomate");
+            } else if (index === 3) {  // 4º elemento (Rojo)
+                elemento.classList.add("bg-rojo");
+            } else if (index >= 4) {   // 5º elemento en adelante (Aleatorio)
+                aplicarColorPastelAleatorio(elemento);
+            }
+        } 
+        // CASO 2: Si es un campo de texto (<input>)
+        else {
+            const tiposOmitidos = ["checkbox", "radio", "submit", "button", "file"];
+            if (!tiposOmitidos.includes(elemento.type)) {
+                elemento.classList.add("bg-verde-pastel");
+            }
         }
     }
 
-    // Recorre cada elemento para escuchar cuando el usuario escribe o selecciona algo
     camposEditable.forEach(function (elemento) {
-        // Ejecutar al cargar por si la vista trae datos previos
+        // Ejecución al cargar
         actualizarColorResaltado(elemento);
 
-        // Escuchar eventos de cambio de texto o de opción seleccionada
-        elemento.addEventListener("input", function () {
-            actualizarColorResaltado(this);
-        });
-
-        elemento.addEventListener("change", function () {
-            actualizarColorResaltado(this);
+        // Escuchar eventos de cambio en tiempo real
+        ["input", "change"].forEach(evento => {
+            elemento.addEventListener(evento, function () {
+                actualizarColorResaltado(this);
+            });
         });
     });
 });
+		
 
 		
 		//flecha barra navergar nav examenes
