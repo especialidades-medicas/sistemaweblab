@@ -3637,18 +3637,19 @@ async function descargarPDFResultados() {
 
     let nombreArchivoFinal = `${orden}_${nombrePaciente}_${fechaFormateada}.pdf`;
 
-    const bloqueImpresion = document.getElementById("bloquePacienteImpresion");
-    if (bloqueImpresion) bloqueImpresion.classList.remove("d-none");
-
     const elementoOriginal = document.getElementById("pedidoContainer");
     if (!elementoOriginal) return;
+
+    // Clonación del elemento original
     const elementoClonado = elementoOriginal.cloneNode(true);
+
+    // INSERCIÓN: Se pueblan los campos del bloque de paciente en el elemento clonado
+    actualizarDatosPacienteClon(elementoClonado);
 
     if (typeof procesarSelectsParaImpresion === "function") {
         procesarSelectsParaImpresion(elementoClonado, true);
     }
     elementoClonado.querySelectorAll('.no-print').forEach(el => el.remove());
-    if (bloqueImpresion) bloqueImpresion.classList.add("d-none");
 
     const opciones = {
         margin:       5,
@@ -3711,8 +3712,6 @@ async function descargarPDFResultados() {
         } catch (error) {
             console.error("Error al generar el PDF:", error);
             alert("Ocurrió un error al descargar el archivo.");
-        } finally {
-            if (bloqueImpresion) bloqueImpresion.classList.add("d-none");
         }
     });
 }
@@ -3723,6 +3722,41 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 });
 
+// Función auxilia para actualizar los datos visuales del paciente en un contenedor dado
+function actualizarDatosPacienteClon(contenedor) {
+    const getVal = (id) => document.getElementById(id)?.value?.trim() || '';
+
+    const elIdOrden = contenedor.querySelector('#txtIdOrdenVisual');
+    const elCodDoc = contenedor.querySelector('#txtCodDocVisual');
+    const elNombre = contenedor.querySelector('#txtNombreVisual');
+    const elFechaNac = contenedor.querySelector('#txtFechaNacVisual');
+    const elEdad = contenedor.querySelector('#txtEdadVisual');
+    const elFechaActual = contenedor.querySelector('#txtFechaActualVisual');
+    const elSexo = contenedor.querySelector('#txtSexoVisual');
+    const elTel = contenedor.querySelector('#txtTelVisual');
+
+    const sexoSelect = document.getElementById('sexoPaciente');
+    const sexoText = sexoSelect && sexoSelect.selectedIndex !== -1 ? sexoSelect.options[sexoSelect.selectedIndex].text : '';
+
+    if (elIdOrden) elIdOrden.textContent = getVal('idOrden');
+    if (elCodDoc) elCodDoc.textContent = getVal('codDoc');
+    if (elNombre) elNombre.textContent = getVal('nombrePaciente');
+    if (elFechaNac) elFechaNac.textContent = getVal('fechaNacimiento');
+    if (elEdad) elEdad.textContent = getVal('edadPaciente') ? `${getVal('edadPaciente')} años` : '';
+    if (elFechaActual) elFechaActual.textContent = getVal('fechaActual');
+    if (elSexo) elSexo.textContent = sexoText;
+    if (elTel) elTel.textContent = getVal('telefonoPaciente');
+
+    // Asegurar que el bloque visual sea visible dentro del documento PDF clonado
+    const bloqueClonado = contenedor.querySelector("#bloquePacienteImpresion");
+    if (bloqueClonado) {
+        bloqueClonado.classList.remove("d-none");
+        bloqueClonado.classList.remove("d-print-block");
+    }
+}
+
+
+		
 
 function inicializarSeccionesColapsables() {
     // Inyectar estilos CSS dinámicamente para el efecto hover y diseño del título colapsable
@@ -3877,6 +3911,16 @@ async function enviarCorreoResultado() {
         alert("Ocurrió un error al preparar el documento adjunto.");
     }
 }
+
+// Función auxiliar en caso de que requieras programar la descarga del PDF del paciente
+function descargarPDFSoloPaciente() {
+    // Espacio reservado para lógica de generación PDF con jsPDF o html2pdf si se requiere
+    alert("Función de descarga de PDF para datos del paciente en proceso.");
+}
+
+
+
+	
 function enviarWhatsAppResultado() {
     // 1. Obtener los datos desde los inputs del formulario
     let telefonoInput = document.getElementById('telefonoPaciente')?.value.trim() || "";
@@ -4192,11 +4236,7 @@ function imprimirResultadosFiltrados() {
     window.print();
 }
 
-// Función auxiliar en caso de que requieras programar la descarga del PDF del paciente
-function descargarPDFSoloPaciente() {
-    // Espacio reservado para lógica de generación PDF con jsPDF o html2pdf si se requiere
-    alert("Función de descarga de PDF para datos del paciente en proceso.");
-}
+
 
 
 // Función para guardar o actualizar los datos del paciente según la cédula (Cod/Doc)
