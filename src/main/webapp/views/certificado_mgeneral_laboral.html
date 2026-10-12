@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Certificado Médico - Centro Médico BIOSALUD La Magdalena</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f1f5f9;
+            color: #1e293b;
+        }
+
+        /* Printable A4 Page setup */
+        .a4-page {
+            width: 210mm;
+            min-height: 297mm;
+            padding: 12mm 15mm;
+            margin: 0 auto;
+            background: white;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        @media print {
+            body {
+                background: white !important;
+                padding: 0 !important;
+            }
+            .no-print {
+                display: none !important;
+            }
+            .a4-page {
+                box-shadow: none !important;
+                width: 100% !important;
+                height: 100% !important;
+                padding: 10mm 12mm !important;
+                margin: 0 !important;
+            }
+            .page-break {
+                page-break-after: avoid;
+            }
+        }
+
+        /* Editable highlight styling */
+        [contenteditable="true"]:hover {
+            background-color: #f0f9ff;
+            outline: 1px dashed #0284c7;
+            border-radius: 2px;
+        }
+        [contenteditable="true"]:focus {
+            background-color: #e0f2fe;
+            outline: 2px solid #0284c7;
+            border-radius: 2px;
+        }
+    </style>
+</head>
+<body class="min-h-screen pb-12">
+
+    <!-- Control Bar / Header controls (Hidden during print) -->
+    <header class="no-print bg-slate-800 text-white shadow-md sticky top-0 z-50 mb-8 border-b border-slate-700">
+        <div class="max-w-7xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-4">
+            <div class="flex items-center gap-3">
+                <div class="bg-teal-500 text-white p-2 rounded-lg">
+                    <i class="fa-solid font-bold fa-file-medical text-xl"></i>
+                </div>
+                <div>
+                    <h1 class="font-bold text-lg leading-tight">Gestor de Certificados Médicos</h1>
+                    <p class="text-xs text-slate-300">Centro Médico BIOSALUD "La Magdalena"</p>
+                </div>
+            </div>
+
+            <!-- Quick Controls -->
+            <div class="flex flex-wrap items-center gap-2">
+                <button onclick="window.print()" class="bg-teal-600 hover:bg-teal-500 text-white px-4 py-2 rounded-lg font-medium shadow transition flex items-center gap-2 text-sm">
+                    <i class="fa-solid fa-print"></i> Imprimir / Guardar PDF
+                </button>
+                <button onclick="resetDefaults()" class="bg-slate-700 hover:bg-slate-600 text-slate-200 px-3 py-2 rounded-lg text-sm font-medium transition flex items-center gap-1.5">
+                    <i class="fa-solid fa-rotate-left"></i> Restablecer
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <div class="max-w-7xl mx-auto px-4 grid grid-cols-1 lg:grid-cols-12 gap-8">
+        
+        <!-- Form Editor Panel (Left side on desktop, hidden on print) -->
+        <aside class="no-print lg:col-span-4 bg-white rounded-xl shadow-sm border border-slate-200 p-5 h-fit space-y-6">
+            <div>
+                <h2 class="text-base font-semibold text-slate-800 border-b pb-2 flex items-center gap-2">
+                    <i class="fa-solid fa-pen-to-square text-teal-600"></i> Datos del Paciente
+                </h2>
+                <div class="space-y-3 mt-3 text-sm">
+                    <div>
+                        <label class="block text-xs font-medium text-slate-600 mb-1">Nombre Completo del Paciente</label>
+                        <input type="text" id="input-patient-name" value="FERNANDEZ JIMENEZ EDISON ALBERTO" oninput="updateField('patient-name', this.value)" class="w-full border border-slate-300 rounded p-2 focus:ring-2 focus:ring-teal-500 focus:outline-none">
+                    </div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-xs font-medium text-slate-600 mb-1">Cédula / C.I.</label>
+                            <input type="text" id="input-patient-id" value="1725289431" oninput="updateField('patient-id', this.value)" class="w-full border border-slate-300 rounded p-2 focus:ring-2 focus:ring-teal-500 focus:outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-slate-600 mb-1">Edad (Años)</label>
+                            <input type="number" id="input-patient-age" value="30" oninput="updateField('patient-age', this.value)" class="w-full border border-slate-300 rounded p-2 focus:ring-2 focus:ring-teal-500 focus:outline-none">
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-xs font-medium text-slate-600 mb-1">Fecha Evaluación</label>
+                            <input type="text" id="input-eval-date" value="09/10/2026" oninput="updateField('eval-date', this.value)" class="w-full border border-slate-300 rounded p-2 focus:ring-2 focus:ring-teal-500 focus:outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-slate-600 mb-1">Hora Evaluación</label>
+                            <input type="text" id="input-eval-time" value="08:30 am" oninput="updateField('eval-time', this.value)" class="w-full border border-slate-300 rounded p-2 focus:ring-2 focus:ring-teal-500 focus:outline-none">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Doctor Information -->
+            <div>
+                <h2 class="text-base font-semibold text-slate-800 border-b pb-2 flex items-center gap-2">
+                    <i class="fa-solid fa-user-doctor text-teal-600"></i> Datos del Médico
+                </h2>
+                <div class="space-y-3 mt-3 text-sm">
+                    <div>
+                        <label class="block text-xs font-medium text-slate-600 mb-1">Nombre del Médico</label>
+                        <input type="text" id="input-doc-name" value="DR. BRYAN JOEL CELI VIVANCO" oninput="updateField('doc-name', this.value)" class="w-full border border-slate-300 rounded p-2 focus:ring-2 focus:ring-teal-500 focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-slate-600 mb-1">Especialidad / Cargo</label>
+                        <input type="text" id="input-doc-specialty" value="Médico General de Primer Nivel" oninput="updateField('doc-specialty', this.value)" class="w-full border border-slate-300 rounded p-2 focus:ring-2 focus:ring-teal-500 focus:outline-none">
+                    </div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-xs font-medium text-slate-600 mb-1">C.I. / Registro</label>
+                            <input type="text" id="input-doc-id" value="1724064462" oninput="updateField('doc-id', this.value)" class="w-full border border-slate-300 rounded p-2 focus:ring-2 focus:ring-teal-500 focus:outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-slate-600 mb-1">Correo Electrónico</label>
+                            <input type="email" id="input-doc-email" value="bryancv25@gmail.com" oninput="updateField('doc-email', this.value)" class="w-full border border-slate-300 rounded p-2 focus:ring-2 focus:ring-teal-500 focus:outline-none">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Diagnostics List Controls -->
+            <div>
+                <div class="flex items-center justify-between border-b pb-2">
+                    <h2 class="text-base font-semibold text-slate-800 flex items-center gap-2">
+                        <i class="fa-solid fa-notes-medical text-teal-600"></i> Diagnósticos
+                    </h2>
+                    <button onclick="addDiagnosticRow()" class="text-xs bg-teal-50 text-teal-700 hover:bg-teal-100 px-2 py-1 rounded font-medium transition">
+                        + Añadir
+                    </button>
+                </div>
+                <div id="diagnostics-form-list" class="space-y-2 mt-3 text-sm">
+                    <!-- Dynamic diagnostic inputs -->
+                </div>
+            </div>
+
+            <!-- Document Details -->
+            <div>
+                <h2 class="text-base font-semibold text-slate-800 border-b pb-2 flex items-center gap-2">
+                    <i class="fa-solid fa-location-dot text-teal-600"></i> Encabezado y Emisión
+                </h2>
+                <div class="space-y-3 mt-3 text-sm">
+                    <div>
+                        <label class="block text-xs font-medium text-slate-600 mb-1">Fecha de Emisión del Documento</label>
+                        <input type="text" id="input-header-date" value="Quito, 09 de Octubre de 2026" oninput="updateField('header-date', this.value)" class="w-full border border-slate-300 rounded p-2 focus:ring-2 focus:ring-teal-500 focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-slate-600 mb-1">Observación / Comentario Adicional</label>
+                        <textarea id="input-comments" oninput="updateField('comments-field', this.value)" rows="2" class="w-full border border-slate-300 rounded p-2 focus:ring-2 focus:ring-teal-500 focus:outline-none text-xs" placeholder="Ingrese comentarios adicionales (opcional)..."></textarea>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Document Workspace (Printable Certificate A4) -->
+        <main class="lg:col-span-8 flex justify-center">
+            
+            <div class="a4-page text-slate-800 text-xs sm:text-sm leading-snug sm:leading-relaxed" id="certificate-document">
+                
+                <!-- TOP HEADER -->
+                <div>
+                    <div class="flex items-center justify-between border-b-2 border-teal-600 pb-3 mb-4">
+                        <!-- Branding & Logo Image -->
+                        <div class="flex items-center gap-3">
+                            <img src="../img/logFisio2.png" alt="Logo Centro Médico" class="h-10 w-auto object-contain">
+                            <div>
+                                <h1 class="text-sm font-bold tracking-tight text-teal-800 uppercase leading-none mb-0.5">CENTRO MÉDICO BIOSALUD</h1>
+                                <p class="text-[10px] font-semibold text-slate-600 tracking-wider">"LA MAGDALENA"</p>
+                                <p class="text-[9px] text-slate-500 font-medium">Atención Médica Integral & Diagnóstico</p>
+                            </div>
+                        </div>
+
+                        <!-- Top Contact details -->
+                        <div class="text-right text-[9.5px] text-slate-600 space-y-0.5">
+                            <p class="font-medium flex items-center justify-end gap-1"><i class="fa-solid fa-phone text-teal-600"></i> <span id="top-phone-preview">0995225612</span></p>
+                            <p class="flex items-center justify-end gap-1"><i class="fa-solid fa-envelope text-teal-600"></i> bryancv25@gmail.com</p>
+                            <p class="flex items-center justify-end gap-1"><i class="fa-solid fa-location-dot text-teal-600"></i> Quito, Ecuador</p>
+                        </div>
+                    </div>
+
+                    <!-- Date & Doctor Title Row -->
+                    <div class="flex justify-between items-start mb-4 text-slate-800 text-xs">
+                        <div>
+                            <p class="font-bold text-slate-900" id="doc-name-preview">MD. Bryan Joel Celi Vivanco</p>
+                            <p class="italic text-slate-600" id="doc-title-top">Médico General</p>
+                        </div>
+                        <div class="text-right font-semibold text-slate-900" id="header-date-preview" contenteditable="true" onblur="syncInput('input-header-date', this.innerText)">
+                            Quito, 09 de Octubre de 2026
+                        </div>
+                    </div>
+
+                    <!-- CERTIFICO TITLE -->
+                    <div class="text-center my-4 sm:my-5">
+                        <h2 class="text-base sm:text-lg font-extrabold tracking-widest text-slate-900 uppercase">C E R T I F I C O</h2>
+                    </div>
+
+                    <!-- CERTIFICATE BODY CONTENT -->
+                    <div class="space-y-3 text-justify leading-relaxed text-slate-800 text-[13px] sm:text-[14px]">
+                        <p>
+                            Que el día <span id="eval-date-preview" class="font-bold" contenteditable="true" onblur="syncInput('input-eval-date', this.innerText)">09/10/2026</span> 
+                            a las <span id="eval-time-preview" class="font-bold" contenteditable="true" onblur="syncInput('input-eval-time', this.innerText)">08:30 am</span> 
+                            he realizado una evaluación médica general al paciente 
+                            <span id="patient-name-preview" class="font-bold uppercase" contenteditable="true" onblur="syncInput('input-patient-name', this.innerText)">FERNANDEZ JIMENEZ EDISON ALBERTO</span>, 
+                            con CI <span id="patient-id-preview" class="font-bold" contenteditable="true" onblur="syncInput('input-patient-id', this.innerText)">1725289431</span> 
+                            de <span id="patient-age-preview" class="font-bold" contenteditable="true" onblur="syncInput('input-patient-age', this.innerText)">30</span> AÑOS de edad.
+                        </p>
+
+                        <p>
+                            Luego de la valoración clínica realizada, se deja constancia de que el paciente presenta un estado general de salud acorde con los hallazgos obtenidos durante la evaluación médica, sin evidencias clínicas de alteraciones que contraindiquen las actividades habituales para las cuales se solicita el presente certificado, según corresponda.
+                        </p>
+
+                        <!-- DIAGNOSTICS SECTION -->
+                        <div class="pt-1">
+                            <p class="font-bold text-slate-900 mb-1 text-xs sm:text-sm">DIAGNÓSTICO:</p>
+                            <ul id="diagnostics-list-preview" class="list-disc pl-6 space-y-0.5 font-semibold italic text-slate-800 text-xs sm:text-sm">
+                                <!-- Rendered dynamically -->
+                            </ul>
+                        </div>
+
+                        <!-- ADDITIONAL COMMENTS FIELD (Dynamic display) -->
+                        <div id="comments-container" class="pt-1 hidden">
+                            <p class="font-bold text-slate-900 mb-0.5 text-xs sm:text-sm">OBSERVACIONES ADICIONALES:</p>
+                            <p id="comments-preview" class="pl-3 italic text-slate-700 bg-slate-50 p-1.5 border-l-2 border-teal-500 rounded-r text-xs sm:text-sm">
+                                
+                            </p>
+                        </div>
+
+                        <!-- CLOSING CLAUSE -->
+                        <p class="pt-2">
+                            Es todo cuanto puedo certificar en honor a la verdad, facultando al interesado hacer uso del presente documento en lo que se estime conveniente.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- BOTTOM FOOTER & SIGNATURE SECTION -->
+                <div class="pt-6 sm:pt-8 mt-auto">
+                    
+                    <!-- Doctor Signature Line -->
+                    <div class="text-center mx-auto max-w-xs mb-4">
+                        <!-- Simulated Digital Signature / Stamp Space -->
+                        <div class="h-10 flex items-end justify-center mb-0.5">
+                            <span class="text-slate-300 italic text-[11px] font-light">(Firma y Sello Médico)</span>
+                        </div>
+                        <div class="border-t border-slate-900 pt-1.5">
+                            <p class="font-bold text-slate-900 uppercase text-[11px] tracking-wider" id="doc-signature-name">DR. BRYAN JOEL CELI VIVANCO</p>
+                            <p class="text-[11px] font-semibold text-slate-700" id="doc-signature-id">1724064462</p>
+                            <p class="text-[10px] text-slate-600" id="doc-signature-specialty">Médico General de Primer Nivel</p>
+                            <p class="text-[10px] text-teal-700 underline" id="doc-signature-email">bryancv25@gmail.com</p>
+                        </div>
+                    </div>
+
+                    <!-- Legal Disclaimer Note -->
+                    <p class="text-[9px] text-slate-400 italic text-center mb-3 leading-tight">
+                        El presente documento debe ser admitido acorde a los requisitos y análisis médico solicitado. En caso de información falsa o alteración se procederá de acuerdo con el Código Orgánico Integral Penal (Art. 328).
+                    </p>
+
+                    <!-- Footer Contact Banner -->
+                    <div class="bg-teal-700 text-white rounded-md p-2 text-[11px] flex flex-wrap items-center justify-around gap-2 text-center shadow-inner">
+                        <div class="flex items-center gap-1">
+                            <i class="fa-solid fa-location-dot text-teal-300"></i>
+                            <span>Solanda, Calle Benedicto Rincón y Gaspar Esparza</span>
+                        </div>
+                        <div class="flex items-center gap-1">
+                            <i class="fa-solid fa-phone text-teal-300"></i>
+                            <span id="footer-phone-preview">0995225612</span>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </main>
+    </div>
+
+    <script>
+        // Default Diagnostics Data State
+        let diagnostics = [
+            "EXAMEN MÉDICO GENERAL (Z000)",
+            "SOBREPESO (E663)"
+        ];
+
+        // Sync field updates from inputs to document text
+        function updateField(fieldId, value) {
+            switch(fieldId) {
+                case 'patient-name':
+                    document.getElementById('patient-name-preview').innerText = value || '______________________';
+                    break;
+                case 'patient-id':
+                    document.getElementById('patient-id-preview').innerText = value || '__________';
+                    break;
+                case 'patient-age':
+                    document.getElementById('patient-age-preview').innerText = value || '0';
+                    break;
+                case 'eval-date':
+                    document.getElementById('eval-date-preview').innerText = value || 'DD/MM/AAAA';
+                    break;
+                case 'eval-time':
+                    document.getElementById('eval-time-preview').innerText = value || '00:00';
+                    break;
+                case 'doc-name':
+                    document.getElementById('doc-name-preview').innerText = value || 'MD. Médico Tratante';
+                    document.getElementById('doc-signature-name').innerText = value || 'DR. MÉDICO TRATANTE';
+                    break;
+                case 'doc-specialty':
+                    document.getElementById('doc-title-top').innerText = value || 'Médico General';
+                    document.getElementById('doc-signature-specialty').innerText = value || 'Médico General';
+                    break;
+                case 'doc-id':
+                    document.getElementById('doc-signature-id').innerText = value || '';
+                    break;
+                case 'doc-email':
+                    document.getElementById('doc-signature-email').innerText = value || '';
+                    break;
+                case 'header-date':
+                    document.getElementById('header-date-preview').innerText = value || '';
+                    break;
+                case 'comments-field':
+                    const container = document.getElementById('comments-container');
+                    const textSpan = document.getElementById('comments-preview');
+                    if (value.trim()) {
+                        textSpan.innerText = value;
+                        container.classList.remove('hidden');
+                    } else {
+                        container.classList.add('hidden');
+                    }
+                    break;
+            }
+        }
+
+        // Two-way synchronization when editing directly on document text
+        function syncInput(inputId, val) {
+            const inputElem = document.getElementById(inputId);
+            if (inputElem) {
+                inputElem.value = val.trim();
+            }
+        }
+
+        // Render Diagnostics List in Sidebar Forms and Document Preview
+        function renderDiagnostics() {
+            const formContainer = document.getElementById('diagnostics-form-list');
+            const previewContainer = document.getElementById('diagnostics-list-preview');
+
+            formContainer.innerHTML = '';
+            previewContainer.innerHTML = '';
+
+            diagnostics.forEach((diag, index) => {
+                // Form Row
+                const row = document.createElement('div');
+                row.className = 'flex items-center gap-2';
+                row.innerHTML = `
+                    <input type="text" value="${diag}" oninput="updateDiagnostic(${index}, this.value)" class="w-full border border-slate-300 rounded p-1.5 text-xs focus:ring-1 focus:ring-teal-500 focus:outline-none">
+                    <button onclick="removeDiagnosticRow(${index})" class="text-rose-500 hover:text-rose-700 p-1 rounded" title="Eliminar">
+                        <i class="fa-solid fa-trash-can"></i>
+                    </button>
+                `;
+                formContainer.appendChild(row);
+
+                // Preview Item
+                const li = document.createElement('li');
+                li.setAttribute('contenteditable', 'true');
+                li.onblur = function() { updateDiagnostic(index, this.innerText); };
+                li.innerText = diag;
+                previewContainer.appendChild(li);
+            });
+        }
+
+        function addDiagnosticRow() {
+            diagnostics.push("NUEVO DIAGNÓSTICO (CÓDIGO)");
+            renderDiagnostics();
+        }
+
+        function removeDiagnosticRow(index) {
+            if (diagnostics.length <= 1) {
+                alert("El certificado debe tener al menos un diagnóstico registrado.");
+                return;
+            }
+            diagnostics.splice(index, 1);
+            renderDiagnostics();
+        }
+
+        function updateDiagnostic(index, value) {
+            diagnostics[index] = value;
+            const previewItems = document.getElementById('diagnostics-list-preview').children;
+            if (previewItems[index] && previewItems[index].innerText !== value) {
+                previewItems[index].innerText = value;
+            }
+        }
+
+        function resetDefaults() {
+            document.getElementById('input-patient-name').value = "FERNANDEZ JIMENEZ EDISON ALBERTO";
+            document.getElementById('input-patient-id').value = "1725289431";
+            document.getElementById('input-patient-age').value = "30";
+            document.getElementById('input-eval-date').value = "09/10/2026";
+            document.getElementById('input-eval-time').value = "08:30 am";
+
+            document.getElementById('input-doc-name').value = "DR. BRYAN JOEL CELI VIVANCO";
+            document.getElementById('input-doc-specialty').value = "Médico General de Primer Nivel";
+            document.getElementById('input-doc-id').value = "1724064462";
+            document.getElementById('input-doc-email').value = "bryancv25@gmail.com";
+            document.getElementById('input-header-date').value = "Quito, 09 de Octubre de 2026";
+            document.getElementById('input-comments').value = "";
+
+            diagnostics = ["EXAMEN MÉDICO GENERAL (Z000)", "SOBREPESO (E663)"];
+
+            // Sync all fields back
+            updateField('patient-name', "FERNANDEZ JIMENEZ EDISON ALBERTO");
+            updateField('patient-id', "1725289431");
+            updateField('patient-age', "30");
+            updateField('eval-date', "09/10/2026");
+            updateField('eval-time', "08:30 am");
+            updateField('doc-name', "DR. BRYAN JOEL CELI VIVANCO");
+            updateField('doc-specialty', "Médico General de Primer Nivel");
+            updateField('doc-id', "1724064462");
+            updateField('doc-email', "bryancv25@gmail.com");
+            updateField('header-date', "Quito, 09 de Octubre de 2026");
+            updateField('comments-field', "");
+
+            renderDiagnostics();
+        }
+
+        // Initialize view on load
+        window.onload = function() {
+            renderDiagnostics();
+        };
+    </script>
+</body>
+</html>
