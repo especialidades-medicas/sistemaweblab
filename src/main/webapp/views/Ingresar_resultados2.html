@@ -1594,10 +1594,10 @@
                 <select class="form-select form-select-sm form-control-editable" id="orinaProteinas">
                     <option value="" selected disabled>Seleccione...</option>
                     <option value="Negativo">Negativo</option>                    
-                    <option value="30 mg/dL (+)">30 mg/dL (+)</option>
-                    <option value="100 mg/dL (++)">100 mg/dL (++)</option>
-                    <option value="300 mg/dL (+++)">300 mg/dL (+++)</option>
-                    <option value="Mayor a 1000 mg/dL (++++)">Mayor a 1000 mg/dL (++++)</option>
+                    <option value="(+)">(+)</option>
+                    <option value="(++)">(++)</option>
+                    <option value="(+++)">(+++)</option>
+                    <option value="(++++)">(++++)</option>
                     <option value="Trazas">Trazas</option>
                     <option value=""></option>
                 </select>
@@ -4533,9 +4533,7 @@ function nuevoPaciente() {
     // EXÁMEN QUÍMICO
     document.getElementById('orinaProteinas').value = "Negativo";
     document.getElementById('orinaGlucosa').value = "Negativo";
-    document.getElementById('orinaCetonas').value = "Negativo";
-    document.getElementById('orinaBilirrubina').value = "Negativo";
-    document.getElementById('orinaUrobilinogeno').value = ""; // Si no hay valor específico en la imagen, se deja libre o estándar
+    document.getElementById('orinaCetonas').value = "Negativo";      
     document.getElementById('orinaSangre').value = "Negativo";
     document.getElementById('orinaNitritos').value = "Negativo";
     document.getElementById('orinaLeucocitesterasa').value = "Negativo";
@@ -4545,10 +4543,9 @@ function nuevoPaciente() {
     document.getElementById('orinaLeucocitos').value = "0 - 2";
     document.getElementById('orinaHematies').value = "0 - 1";
     document.getElementById('orinaBacterias').value = "Escasas";
-    document.getElementById('orinaCristales').value = "Negativo";
-    document.getElementById('orinaCristales2').value = "Negativo";
+    document.getElementById('orinaCristales').value = "Negativo";    
     document.getElementById('orinaCilindros').value = "Negativo";
-    document.getElementById('orinaMoco').value = " "; // Negativo en tu select
+    
 }
 
 function llenarInfeccion() {
@@ -4561,9 +4558,7 @@ function llenarInfeccion() {
     // EXÁMEN QUÍMICO
     document.getElementById('orinaProteinas').value = "Negativo";
     document.getElementById('orinaGlucosa').value = "Negativo";
-    document.getElementById('orinaCetonas').value = "Negativo";
-    document.getElementById('orinaBilirrubina').value = "Negativo";
-    document.getElementById('orinaUrobilinogeno').value = "";
+    document.getElementById('orinaCetonas').value = "Negativo";    
     document.getElementById('orinaSangre').value = "Negativo";
     document.getElementById('orinaNitritos').value = "Positivo";
     document.getElementById('orinaLeucocitesterasa').value = "Positivo (+)";
@@ -4573,8 +4568,7 @@ function llenarInfeccion() {
     document.getElementById('orinaLeucocitos').value = "0 - 2";
     document.getElementById('orinaHematies').value = "0 - 1";
     document.getElementById('orinaBacterias').value = "(+++)";
-    document.getElementById('orinaCristales').value = "Negativo";
-    document.getElementById('orinaCristales2').value = "Negativo";
+    document.getElementById('orinaCristales').value = "Negativo";    
     document.getElementById('orinaCilindros').value = "Negativo";
     document.getElementById('orinaMoco').value = "Positivo (+)";
 }
