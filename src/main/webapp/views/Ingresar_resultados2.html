@@ -1495,16 +1495,18 @@
     <div class="border p-3 rounded bg-white shadow-sm">
         
         <!-- TÍTULO PRINCIPAL ÚNICO PARA QUE EL SCRIPT DETECTE TODA LA SECCIÓN -->
-        <div class="section-title text-primary fw-bold border-bottom pb-1 mb-2 small" data-section-name="ELEMENTAL Y MICROSCOPICO">ELEMENTAL Y MICROSCOPICO / EXAMEN ESPECIAL ORINA</div>
-        
-		<div class="mb-3 d-flex gap-2">
-		    <button type="button" class="btn btn-outline-success btn-sm no-print" onclick="llenarOrinaNormal()">
-		        <i class="bi bi-check-circle"></i> Orina Normal
-		    </button>
-		    <button type="button" class="btn btn-outline-danger btn-sm no-print" onclick="llenarInfeccion()">
-		        <i class="bi bi-exclamation-triangle"></i> Infección
-		    </button>
-		</div>
+        <div class="section-title text-primary fw-bold border-bottom pb-1 mb-2 small" data-section-name="ELEMENTAL Y MICROSCOPICO">ELEMENTAL Y MICROSCOPICO / EXAMEN ESPECIAL ORINA
+		<button type="button" class="btn btn-outline-success py-0 px-2 rounded-pill no-print"" style="font-size: 11px;" onclick="llenarOrinaNormal()">
+            <i class="bi bi-check-circle"></i> Normal
+        </button>
+        <button type="button" class="btn btn-outline-danger py-0 px-2 rounded-pill no-print"" style="font-size: 11px;" onclick="llenarInfeccion()">
+            <i class="bi bi-exclamation-triangle"></i> Infección
+        </button>
+        <!-- BOTÓN BORRAR ORINA -->
+        <button type="button" class="btn btn-outline-secondary py-0 px-2 rounded-pill ms-1 no-print"" style="font-size: 11px;" onclick="limpiarOrina()" title="Limpiar campos de Orina">
+            <i class="bi bi-trash"></i> Limpiar
+        </button>
+		</div>      
 		
         <table class="table table-sm table-bordered align-middle mb-0 small bg-white">
             <thead class="table-light text-muted">
@@ -1981,14 +1983,18 @@
         <!-- Subtítulo 1: Prueba  -->
         <div class="section-title text-primary fw-bold border-bottom pb-1 mb-2 small" data-section-name="EXAMEN COPROPARASITARIO">	
             EXAMEN COPROPARASITARIO</div>
-		<div class="mb-3 d-flex gap-2">
-    <button type="button" class="btn btn-outline-success btn-sm" onclick="llenarHecesNormal()">
-        <i class="bi bi-check-circle"></i> Heces Normal
-    </button>
-    <button type="button" class="btn btn-outline-warning btn-sm" onclick="llenarHecesParasito()">
-        <i class="bi bi-bug"></i> Parásito (Q. Histolytica)
-    </button>
-</div>
+		<button type="button" class="btn btn-outline-success py-0 px-2 rounded-pill" style="font-size: 11px;" onclick="llenarHecesNormal()">
+            <i class="bi bi-check-circle"></i> Normal
+        </button>
+        <button type="button" class="btn btn-outline-warning py-0 px-2 rounded-pill" style="font-size: 11px;" onclick="llenarHecesParasito()">
+            <i class="bi bi-bug"></i> Q. Histolytica
+        </button>
+        <!-- BOTÓN BORRAR HECES -->
+        <button type="button" class="btn btn-outline-secondary py-0 px-2 rounded-pill ms-1" style="font-size: 11px;" onclick="limpiarHeces()" title="Limpiar campos de Heces">
+            <i class="bi bi-trash"></i> Limpiar
+        </button>
+		
+		
         <table class="table table-sm table-bordered align-middle mb-0 small">		 
             <thead class="table-light text-muted">
                 <tr><th>EXAMEN</th><th>RESULTADO</th><th>UNIDAD</th><th>V. REFERENCIA</th></tr>
@@ -4583,7 +4589,29 @@ function llenarInfeccion() {
     document.getElementById('orinaCilindros').value = "Negativo";
     document.getElementById('orinaMoco').value = "Positivo (+)";
 }
+function limpiarOrina() {
+    // Lista de todos los select e input de la sección de Orina
+    const idsOrina = [
+        'orinaColor', 'orinaAspecto', 'orinaDensidad', 'orinaPh',
+        'orinaProteinas', 'orinaGlucosa', 'orinaCetonas', 'orinaBilirrubina',
+        'orinaUrobilinogeno', 'orinaSangre', 'orinaNitritos', 'orinaLeucocitesterasa',
+        'orinaEpiteliales', 'orinaLeucocitos', 'orinaHematies', 'orinaBacterias',
+        'orinaCristales', 'orinaCristales2', 'orinaCilindros', 'orinaMoco'
+    ];
 
+    idsOrina.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+            if (el.tagName === 'SELECT') {
+                el.selectedIndex = 0; // Regresa al "Seleccione..."
+            } else {
+                el.value = ''; // Vacía los inputs
+            }
+        }
+    });
+}
+
+		
 // heces boton
 		// Function para Heces Normal (basado en la Imagen 1)
 function llenarHecesNormal() {
@@ -4641,6 +4669,28 @@ function llenarHecesParasito() {
     document.getElementById('hecesFlora').value = "Lig. Aumentada";
 }
 
+function limpiarHeces() {
+    // Lista de todos los select e input de la sección de Heces
+    const idsHeces = [
+        'hecesColor', 'hecesAspecto', 'hecesConsistencia', 'hecesMoco', 'hecesSangre',
+        'hecesParasitos', 'hecesParasitosCant1', 'hecesParasitos2', 'hecesParasitosCant2',
+        'hecesParasitos3', 'hecesParasitosCant3', 'hecesRestos', 'hecesGrasas',
+        'hecesRestosVegetales', 'hecesAlmidones', 'hecesLevaduras', 'hecesLeucocitos',
+        'hecesHematies', 'hecesOtros', 'hecesFlora'
+    ];
+
+    idsHeces.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+            if (el.tagName === 'SELECT') {
+                el.selectedIndex = 0; // Regresa al "Seleccione..."
+            } else {
+                el.value = ''; // Vacía los inputs
+            }
+        }
+    });
+}
+		
        // s vaginal boton
         function cargarPatronNormal() {
     const selects = document.querySelectorAll('#collapseVaginalContent select');
