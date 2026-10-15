@@ -1497,20 +1497,21 @@
         <!-- TÍTULO PRINCIPAL ÚNICO PARA QUE EL SCRIPT DETECTE TODA LA SECCIÓN -->
         <div class="section-title text-primary fw-bold border-bottom pb-1 mb-2 small" data-section-name="ELEMENTAL Y MICROSCOPICO">ELEMENTAL Y MICROSCOPICO / EXAMEN ESPECIAL ORINA</div>
         
+		<div class="mb-3 d-flex gap-2">
+		    <button type="button" class="btn btn-outline-success btn-sm no-print" onclick="llenarOrinaNormal()">
+		        <i class="bi bi-check-circle"></i> Orina Normal
+		    </button>
+		    <button type="button" class="btn btn-outline-danger btn-sm no-print" onclick="llenarInfeccion()">
+		        <i class="bi bi-exclamation-triangle"></i> Infección
+		    </button>
+		</div>
+		
         <table class="table table-sm table-bordered align-middle mb-0 small bg-white">
             <thead class="table-light text-muted">
                 <tr><th>EXÁMEN / ELEMENTO</th><th style="width: 25%;">RESULTADO</th><th style="width: 15%;">UNIDAD</th><th>V. REFERENCIA</th></tr>
             </thead>
             <tbody>
 				<!-- Botones de Autocompletado Rápido -->
-<div class="mb-3 d-flex gap-2">
-    <button type="button" class="btn btn-outline-success btn-sm no-print" onclick="llenarOrinaNormal()">
-        <i class="bi bi-check-circle"></i> Orina Normal
-    </button>
-    <button type="button" class="btn btn-outline-danger btn-sm no-print" onclick="llenarInfeccion()">
-        <i class="bi bi-exclamation-triangle"></i> Infección
-    </button>
-</div>
 				
                 <!-- EXÁMEN FÍSICO -->
 <tr><td colspan="4" class="table-active fw-bold text-secondary" style="font-size: 9.5px;">EXÁMEN FÍSICO</td></tr>
@@ -1980,11 +1981,21 @@
         <!-- Subtítulo 1: Prueba  -->
         <div class="section-title text-primary fw-bold border-bottom pb-1 mb-2 small" data-section-name="EXAMEN COPROPARASITARIO">	
             EXAMEN COPROPARASITARIO</div>
+		<div class="mb-3 d-flex gap-2">
+    <button type="button" class="btn btn-outline-success btn-sm" onclick="llenarHecesNormal()">
+        <i class="bi bi-check-circle"></i> Heces Normal
+    </button>
+    <button type="button" class="btn btn-outline-warning btn-sm" onclick="llenarHecesParasito()">
+        <i class="bi bi-bug"></i> Parásito (Q. Histolytica)
+    </button>
+</div>
         <table class="table table-sm table-bordered align-middle mb-0 small">		 
             <thead class="table-light text-muted">
                 <tr><th>EXAMEN</th><th>RESULTADO</th><th>UNIDAD</th><th>V. REFERENCIA</th></tr>
             </thead>
-            <tbody>            
+            <tbody>
+				<!-- Botones de Autocompletado Rápido Coproparasitario -->
+
                 <tr><td colspan="4" class="table-active fw-bold text-secondary" style="font-size: 9.5px;">EXAMEN MACROSCÓPICO</td></tr>
                 <tr>
                     <td class="fw-bold ps-3">COLOR</td>
@@ -4572,7 +4583,63 @@ function llenarInfeccion() {
     document.getElementById('orinaCilindros').value = "Negativo";
     document.getElementById('orinaMoco').value = "Positivo (+)";
 }
-        
+
+// heces boton
+		// Function para Heces Normal (basado en la Imagen 1)
+function llenarHecesNormal() {
+    // EXAMEN MACROSCÓPICO
+    document.getElementById('hecesColor').value = "Marrón / Café";
+    document.getElementById('hecesAspecto').value = "Homogénea";
+    document.getElementById('hecesConsistencia').value = "Blanda";
+    document.getElementById('hecesMoco').value = "Ausentes";
+    document.getElementById('hecesSangre').value = "Ausente";
+
+    // EXAMEN MICROSCÓPICO (PARASITOLÓGICO)
+    document.getElementById('hecesParasitos').value = "Negativo / Sin parásitos";
+    document.getElementById('hecesParasitosCant1').value = "";
+    document.getElementById('hecesParasitos2').value = "";
+    document.getElementById('hecesParasitosCant2').value = "";
+    document.getElementById('hecesParasitos3').value = "";
+    document.getElementById('hecesParasitosCant3').value = "";
+
+    document.getElementById('hecesRestos').value = "";
+    document.getElementById('hecesGrasas').value = "Ausentes";
+    document.getElementById('hecesRestosVegetales').value = "Ausentes";
+    document.getElementById('hecesAlmidones').value = "Escasas(+)";
+    document.getElementById('hecesLevaduras').value = "Escasas(+)";
+    document.getElementById('hecesLeucocitos').value = "-";
+    document.getElementById('hecesHematies').value = "-";
+    document.getElementById('hecesOtros').value = "";
+    document.getElementById('hecesFlora').value = "Normal";
+}
+
+// Function para Parásito Q. Histolytica (basado en la Imagen 2)
+function llenarHecesParasito() {
+    // EXAMEN MACROSCÓPICO
+    document.getElementById('hecesColor').value = "Marrón / Café";
+    document.getElementById('hecesAspecto').value = "Homogénea";
+    document.getElementById('hecesConsistencia').value = "Blanda";
+    document.getElementById('hecesMoco').value = "Ausentes";
+    document.getElementById('hecesSangre').value = "Ausente";
+
+    // EXAMEN MICROSCÓPICO (PARASITOLÓGICO)
+    document.getElementById('hecesParasitos').value = "Quistes de Entamoeba histolytica / dispar";
+    document.getElementById('hecesParasitosCant1').value = "(+)";
+    document.getElementById('hecesParasitos2').value = "";
+    document.getElementById('hecesParasitosCant2').value = "";
+    document.getElementById('hecesParasitos3').value = "";
+    document.getElementById('hecesParasitosCant3').value = "";
+
+    document.getElementById('hecesRestos').value = "";
+    document.getElementById('hecesGrasas').value = "Ausentes";
+    document.getElementById('hecesRestosVegetales').value = "Ausentes";
+    document.getElementById('hecesAlmidones').value = "Moderadas(++)";
+    document.getElementById('hecesLevaduras').value = "Moderadas(++)";
+    document.getElementById('hecesLeucocitos').value = "-";
+    document.getElementById('hecesHematies').value = "-";
+    document.getElementById('hecesOtros').value = "";
+    document.getElementById('hecesFlora').value = "Lig. Aumentada";
+}
 
        // s vaginal boton
         function cargarPatronNormal() {
