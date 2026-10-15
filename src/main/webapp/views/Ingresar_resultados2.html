@@ -1502,6 +1502,16 @@
                 <tr><th>EXÁMEN / ELEMENTO</th><th style="width: 25%;">RESULTADO</th><th style="width: 15%;">UNIDAD</th><th>V. REFERENCIA</th></tr>
             </thead>
             <tbody>
+				<!-- Botones de Autocompletado Rápido -->
+<div class="mb-3 d-flex gap-2">
+    <button type="button" class="btn btn-outline-success btn-sm no-print" onclick="llenarOrinaNormal()">
+        <i class="bi bi-check-circle"></i> Orina Normal
+    </button>
+    <button type="button" class="btn btn-outline-danger btn-sm no-print" onclick="llenarInfeccion()">
+        <i class="bi bi-exclamation-triangle"></i> Infección
+    </button>
+</div>
+				
                 <!-- EXÁMEN FÍSICO -->
 <tr><td colspan="4" class="table-active fw-bold text-secondary" style="font-size: 9.5px;">EXÁMEN FÍSICO</td></tr>
 <tr>
@@ -4512,10 +4522,65 @@ function nuevoPaciente() {
 }
 
 
+// Orina boton
+		function llenarOrinaNormal() {
+    // EXÁMEN FÍSICO
+    document.getElementById('orinaColor').value = "Amarillo";
+    document.getElementById('orinaAspecto').value = "Límpido"; // Transparente
+    document.getElementById('orinaDensidad').value = "1020";
+    document.getElementById('orinaPh').value = "6";
 
+    // EXÁMEN QUÍMICO
+    document.getElementById('orinaProteinas').value = "Negativo";
+    document.getElementById('orinaGlucosa').value = "Negativo";
+    document.getElementById('orinaCetonas').value = "Negativo";
+    document.getElementById('orinaBilirrubina').value = "Negativo";
+    document.getElementById('orinaUrobilinogeno').value = ""; // Si no hay valor específico en la imagen, se deja libre o estándar
+    document.getElementById('orinaSangre').value = "Negativo";
+    document.getElementById('orinaNitritos').value = "Negativo";
+    document.getElementById('orinaLeucocitesterasa').value = "Negativo";
+
+    // EXAMEN MICROSCÓPICO
+    document.getElementById('orinaEpiteliales').value = "0 - 2";
+    document.getElementById('orinaLeucocitos').value = "0 - 2";
+    document.getElementById('orinaHematies').value = "0 - 1";
+    document.getElementById('orinaBacterias').value = "Escasas";
+    document.getElementById('orinaCristales').value = "Negativo";
+    document.getElementById('orinaCristales2').value = "Negativo";
+    document.getElementById('orinaCilindros').value = "Negativo";
+    document.getElementById('orinaMoco').value = " "; // Negativo en tu select
+}
+
+function llenarInfeccion() {
+    // EXÁMEN FÍSICO
+    document.getElementById('orinaColor').value = "Amarillo";
+    document.getElementById('orinaAspecto').value = "Turbio";
+    document.getElementById('orinaDensidad').value = "1020";
+    document.getElementById('orinaPh').value = "6";
+
+    // EXÁMEN QUÍMICO
+    document.getElementById('orinaProteinas').value = "Negativo";
+    document.getElementById('orinaGlucosa').value = "Negativo";
+    document.getElementById('orinaCetonas').value = "Negativo";
+    document.getElementById('orinaBilirrubina').value = "Negativo";
+    document.getElementById('orinaUrobilinogeno').value = "";
+    document.getElementById('orinaSangre').value = "Negativo";
+    document.getElementById('orinaNitritos').value = "Positivo";
+    document.getElementById('orinaLeucocitesterasa').value = "Positivo (+)";
+
+    // EXAMEN MICROSCÓPICO
+    document.getElementById('orinaEpiteliales').value = "0 - 2";
+    document.getElementById('orinaLeucocitos').value = "0 - 2";
+    document.getElementById('orinaHematies').value = "0 - 1";
+    document.getElementById('orinaBacterias').value = "(+++)";
+    document.getElementById('orinaCristales').value = "Negativo";
+    document.getElementById('orinaCristales2').value = "Negativo";
+    document.getElementById('orinaCilindros').value = "Negativo";
+    document.getElementById('orinaMoco').value = "Positivo (+)";
+}
         
 
-       // s vaginal
+       // s vaginal boton
         function cargarPatronNormal() {
     const selects = document.querySelectorAll('#collapseVaginalContent select');
     const valoresNormal = [
