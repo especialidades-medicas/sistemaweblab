@@ -3360,7 +3360,19 @@ function actualizarTablaDinamica() {
                         }
                     } else {
                         valor = elemento.value ? elemento.value.trim() : "";
-                    }
+                        
+                        // --- INICIO DEL CAMBIO: Capturar la flecha si existe ---
+                        if (valor !== "") {
+                            let contenedorInput = elemento.parentElement;
+                            let badgeFlecha = contenedorInput ? contenedorInput.querySelector(".badge-flecha") : null;
+                            if (badgeFlecha && badge.textContent) { // Mantiene el símbolo de la flecha con su color o espacio
+                                let colorFlecha = badgeFlecha.style.color || "";
+                                // Añadimos el símbolo HTML estilizado para que se refleje con su color (rojo/azul) en la tabla unificada
+                                valor += ` <span style="font-weight:bold; color:${colorFlecha};">${badgeFlecha.textContent}</span>`;
+                            }
+                        }
+
+		
                     
                     if (valor !== "") {
                         let nombreExamen = "";
@@ -3887,6 +3899,7 @@ function inicializarSeccionesColapsables() {
         });
     });
 }
+		
 // Función para enviar el resultado en PDF por correo utilizando el campo txtMail
 async function enviarCorreoResultado() {
     const txtMail = document.getElementById('txtMail');
@@ -3977,6 +3990,7 @@ async function enviarCorreoResultado() {
         alert("Ocurrió un error al preparar el documento adjunto.");
     }
 }
+		
 function enviarWhatsAppResultado() {
     // 1. Obtener los datos desde los inputs del formulario
     let telefonoInput = document.getElementById('telefonoPaciente')?.value.trim() || "";
@@ -4595,7 +4609,8 @@ function nuevoPaciente() {
     // EXÁMEN QUÍMICO
     document.getElementById('orinaProteinas').value = "Negativo";
     document.getElementById('orinaGlucosa').value = "Negativo";
-    document.getElementById('orinaCetonas').value = "Negativo";      
+    document.getElementById('orinaCetonas').value = "";    
+	document.getElementById('orinaBilirrubina').value = "";     
     document.getElementById('orinaSangre').value = "Negativo";
     document.getElementById('orinaNitritos').value = "Negativo";
     document.getElementById('orinaLeucocitesterasa').value = "Negativo";
@@ -4605,8 +4620,10 @@ function nuevoPaciente() {
     document.getElementById('orinaLeucocitos').value = "0 - 2";
     document.getElementById('orinaHematies').value = "0 - 1";
     document.getElementById('orinaBacterias').value = "Escasas";
-    document.getElementById('orinaCristales').value = "Negativo";    
+    document.getElementById('orinaCristales').value = "Negativo";  
+	document.getElementById('orinaCristales2').value = ""; 
     document.getElementById('orinaCilindros').value = "Negativo";
+	document.getElementById('orinaMoco').value = "";
     
 }
 
@@ -4620,7 +4637,8 @@ function llenarInfeccion() {
     // EXÁMEN QUÍMICO
     document.getElementById('orinaProteinas').value = "Negativo";
     document.getElementById('orinaGlucosa').value = "Negativo";
-    document.getElementById('orinaCetonas').value = "Negativo";    
+    document.getElementById('orinaCetonas').value = "";    
+	document.getElementById('orinaBilirrubina').value = "";
     document.getElementById('orinaSangre').value = "Negativo";
     document.getElementById('orinaNitritos').value = "Positivo";
     document.getElementById('orinaLeucocitesterasa').value = "Positivo (+)";
@@ -4631,6 +4649,7 @@ function llenarInfeccion() {
     document.getElementById('orinaHematies').value = "0 - 1";
     document.getElementById('orinaBacterias').value = "(+++)";
     document.getElementById('orinaCristales').value = "Negativo";    
+	document.getElementById('orinaCristales2').value = ""; 
     document.getElementById('orinaCilindros').value = "Negativo";
     document.getElementById('orinaMoco').value = "Positivo (+)";
 }
@@ -5081,6 +5100,21 @@ function removerIndicador(input) {
         badge.remove();
     }
     input.style.paddingRight = "";
+}
+		function obtenerResultadoConFlecha(input) {
+    let valor = input.value.trim();
+    if (valor === "") return "";
+
+    // Verificar si el contenedor del input tiene un badge con la flecha
+    let contenedor = input.parentElement;
+    let badge = contenedor ? contenedor.querySelector(".badge-flecha") : null;
+
+    if (badge && badge.textContent) {
+        // Concatenamos el valor con la flecha (ejemplo: "11 ↓" o "20 ↓")
+        return `${valor} ${badge.textContent}`;
+    }
+
+    return valor;
 }
 		
 									
