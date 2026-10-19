@@ -3361,18 +3361,16 @@ function actualizarTablaDinamica() {
                     } else {
                         valor = elemento.value ? elemento.value.trim() : "";
                         
-                        // --- INICIO DEL CAMBIO: Capturar la flecha si existe ---
+                        // --- INTEGRACIÓN CORRECTA DE LA FLECHA ---
                         if (valor !== "") {
                             let contenedorInput = elemento.parentElement;
                             let badgeFlecha = contenedorInput ? contenedorInput.querySelector(".badge-flecha") : null;
-                            if (badgeFlecha && badge.textContent) { // Mantiene el símbolo de la flecha con su color o espacio
+                            if (badgeFlecha && badgeFlecha.textContent) {
                                 let colorFlecha = badgeFlecha.style.color || "";
-                                // Añadimos el símbolo HTML estilizado para que se refleje con su color (rojo/azul) en la tabla unificada
                                 valor += ` <span style="font-weight:bold; color:${colorFlecha};">${badgeFlecha.textContent}</span>`;
                             }
                         }
-
-		
+                    }
                     
                     if (valor !== "") {
                         let nombreExamen = "";
@@ -3380,6 +3378,7 @@ function actualizarTablaDinamica() {
                         let referencia = "Ver referencia estándar";
                         let subtituloAsociado = "GENERAL";
                         let textoMetodoFila = ""; // Variable para capturar el método específico de la fila
+						
 
                         let filaOriginal = elemento.closest("tr");
                         if (filaOriginal && filaOriginal.closest("table")) {
