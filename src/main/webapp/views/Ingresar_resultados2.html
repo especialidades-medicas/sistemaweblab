@@ -4978,6 +4978,112 @@ function cerrarModalSobre() {
         if (instance) instance.hide();
     }
 }
+
+		 // PARAMETROS PARA SABER SI ESTA ELEVADO O NO
+document.addEventListener("DOMContentLoaded", function() {
+    // Seleccionamos todos los inputs de resultado dentro de las tablas de exámenes
+    const inputsResultados = document.querySelectorAll("table.table input.form-control-editable");
+
+    inputsResultados.forEach(input => {
+        // Escuchamos cuando el usuario escriba o cambie el valor
+        input.addEventListener("input", function() {
+            evaluarReferencia(this);
+        });
+        
+        // También evaluamos al cargar la página por si ya hay datos precargados
+        if (input.value.trim() !== "") {
+            evaluarReferencia(input);
+        }
+    });
+});
+
+function evaluarReferencia(input) {
+    const fila = input.closest("tr");
+    if (!fila) return;
+
+    // Obtenemos la celda de referencia (última celda de la fila con clase text-muted)
+    const celdaReferencia = fila.querySelector("td.text-muted");
+    if (!celdaReferencia) return;
+
+    const textoRef = celdaReferencia.textContent.trim();
+    
+    // Limpiamos el valor ingresado (reemplazando comas por puntos para que JS lo entienda)
+    const valorStr = input.value.trim().replace(",", ".");
+    
+    // Si el campo está vacío o tiene texto no numérico (ej: "Ver Nota"), limpiamos indicadores previos
+    if (valorStr === "" || isNaN(parseFloat(valorStr))) {
+        removerIndicador(input);
+        return;
+    }
+
+    const valorNum = parseFloat(valorStr);
+    const rangos = extraerRangos(textoRef);
+
+    if (!rangos) return; // Si el formato de referencia es complejo (ej: textos largos de ferritina), no aplicamos flecha automática.
+
+    // Comparamos con el mínimo y el máximo
+    removerIndicador(input); // Limpiamos indicador anterior
+
+    if (valorNum < rangos.min) {
+        // Bajo de lo normal
+        agregarIndicador(input, "↓", "#0284c7"); // Azul o color a elección
+    } else if (valorNum > rangos.max) {
+        // Elevado / Alto
+        agregarIndicador(input, "↑", "#dc3545"); // Rojo de alerta
+    }
+    // Si está dentro del rango, no se coloca nada.
+}
+
+// Función auxiliar para extraer el valor mínimo y máximo de cadenas como "4.50 – 11.00" o "150 – 400"
+function extraerRangos(texto) {
+    // Buscamos patrones numéricos separados por guion (admite espacios y guiones largos o cortos)
+    const regex = /([\d.]+)\s*[-–]\s*([\d.]+)/;
+    const match = texto.match(regex);
+
+    if (match) {
+        return {
+            min: parseFloat(match[1]),
+            max: parseFloat(match[2])
+        };
+    }
+    return null;
+}
+
+// Funciones para inyectar o remover visualmente la flecha dentro del input o a su lado
+function agregarIndicador(input, flecha, color) {
+    let contenedor = input.parentElement;
+    // Asegurarnos de que el contenedor sea relativo para posicionar la flecha
+    contenedor.style.position = "relative";
+
+    let badge = contenedor.querySelector(".badge-flecha");
+    if (!badge) {
+        badge = document.createElement("span");
+        badge.className = "badge-flecha";
+        badge.style.position = "absolute";
+        badge.style.right = "8px";
+        badge.style.top = "50%";
+        badge.style.transform = "translateY(-50%)";
+        badge.style.fontWeight = "bold";
+        badge.style.pointerEvents = "none"; // Para que no estorbe al hacer clic en el input
+        contenedor.appendChild(badge);
+    }
+
+    badge.textContent = flecha;
+    badge.style.color = color;
+    
+    // Añadimos un pequeño padding derecho al input para que el texto no choque con la flecha
+    input.style.paddingRight = "24px";
+}
+
+function removerIndicador(input) {
+    let contenedor = input.parentElement;
+    let badge = contenedor.querySelector(".badge-flecha");
+    if (badge) {
+        badge.remove();
+    }
+    input.style.paddingRight = "";
+}
+									
     </script>
 	<!-- Modal para Gestión e Impresión de Sobres (Tu modal original) -->
 <div class="modal fade" id="modalSobre" tabindex="-1" aria-labelledby="modalSobreLabel" aria-hidden="true">
