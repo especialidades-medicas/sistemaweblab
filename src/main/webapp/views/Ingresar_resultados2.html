@@ -331,7 +331,7 @@
                                     <td class="fw-bold">GLUCOSA (2H POST-CARGA 75GR)</td>
                                     <td><input type="text" id="txtGlucosaCarga2h" class="form-control form-control-sm form-control-editable"></td>
                                     <td>mg/dL</td>
-                                    <td class="text-muted">Normal: < - 140 | Prediabetes: 140 - 199 | Gestacional < 153 | Diabetes > 200</td>
+                                    <td class="text-muted">Normal: < 140 | Prediabetes: 140 - 199 | Gestacional < 153 | Diabetes > 200</td>
                                 </tr>
                                 <tr>
                                     <td class="fw-bold">UREA</td>
@@ -390,6 +390,17 @@
                                     <td><input type="text" id="txtLDL" class="form-control form-control-sm form-control-editable"></td>
                                     <td>mg/dL</td>
                                     <td class="text-muted">50 - 140</td>
+                                </tr>
+										<tr>
+                                    <td class="fw-bold">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <span>VLDL</span>
+                                            <button type="button" id="btnCalcularvLDL" class="btn btn-outline-secondary btn-sm py-0 px-1 ms-2 no-print" style="font-size: 10px;">Calcular</button>
+                                        </div>
+                                    </td>
+                                    <td><input type="text" id="txtvLDL" class="form-control form-control-sm form-control-editable"></td>
+                                    <td>mg/dL</td>
+                                    <td class="text-muted">2 - 30</td>
                                 </tr>
 								<tr><td class="fw-bold">
                                         <div class="d-flex justify-content-between align-items-center">
@@ -4127,6 +4138,21 @@ document.addEventListener("DOMContentLoaded", function() {
             } catch (e) {
                 alert("Asegúrese de ingresar únicamente números válidos en los campos de texto.");
             }
+        });
+    }
+
+	// 4. CÁLCULO DE VLDL (VLDL = Triglicéridos / 5)
+    const btnVLDL = document.getElementById('btnCalcularvLDL');
+    if (btnVLDL) {
+        btnVLDL.addEventListener('click', function() {
+            const trig = parseFloat(document.getElementById('txtTrigliceridos')?.value.replace(',', '.'));
+            const inputVLDL = document.getElementById('txtvLDL');
+            
+            if (isNaN(trig) || trig <= 0) {
+                alert('Ingrese un valor válido de Triglicéridos.');
+                return;
+            }
+            inputVLDL.value = (trig / 5).toFixed(2);
         });
     }
 });
