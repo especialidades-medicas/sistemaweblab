@@ -36,12 +36,19 @@
 }
 
 .liquid-nav {
-    position: relative;
-    display: flex;             /* Cambiado de inline-flex a flex */
-    justify-content: center;   /* Centra el contenido interno si es necesario */
-    margin: 20px auto;         /* Centra la barra horizontalmente en la página */
+    position: fixed !important;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    margin: 0 !important;
+    z-index: 1000 !important;
+
+    display: flex;
+    justify-content: center;
     align-items: center;
-    flex-wrap: wrap;
+    flex-wrap: nowrap !important; /* <--- Fuerza una sola fila */
+    max-width: 95vw;               /* <--- Previene que sobrepase el ancho de la pantalla */
+    overflow-x: auto;              /* <--- Permite desplazamiento suave si la pantalla es pequeña */
     gap: 6px;
     padding: 10px 14px;
     border-radius: 24px;
@@ -55,8 +62,8 @@
         inset 0 -2px 4px -1px var(--glass-caustic),
         inset 0 0 0 1px var(--glass-border);
     transition: all 0.5s ease;
-    z-index: 10;
 }
+
 
 .liquid-nav::before {
     content: '';
@@ -90,12 +97,13 @@
     opacity: 1;
 }
 
+
 .nav-items {
     position: relative;
     display: flex;
     align-items: center;
     gap: 6px;
-    flex-wrap: wrap;
+    flex-wrap: nowrap !important; /* <--- Fuerza una sola fila en el contenedor interno */
     z-index: 3;
 }
 
