@@ -4981,16 +4981,16 @@ function cerrarModalSobre() {
 
 		 // PARAMETROS PARA SABER SI ESTA ELEVADO O NO
 document.addEventListener("DOMContentLoaded", function() {
-    // Seleccionamos todos los inputs de resultado dentro de las tablas de exámenes
+    // Seleccionamos todos los inputs de resultado en las tablas
     const inputsResultados = document.querySelectorAll("table.table input.form-control-editable");
 
     inputsResultados.forEach(input => {
-        // Escuchamos cuando el usuario escriba o cambie el valor
+        // Escuchamos los cambios en tiempo real
         input.addEventListener("input", function() {
             evaluarReferencia(this);
         });
         
-        // También evaluamos al cargar la página por si ya hay datos precargados
+        // Evaluación inicial para datos precargados
         if (input.value.trim() !== "") {
             evaluarReferencia(input);
         }
@@ -5001,42 +5001,45 @@ function evaluarReferencia(input) {
     const fila = input.closest("tr");
     if (!fila) return;
 
-    // Obtenemos la celda de referencia (última celda de la fila con clase text-muted)
     const celdaReferencia = fila.querySelector("td.text-muted");
     if (!celdaReferencia) return;
 
     const textoRef = celdaReferencia.textContent.trim();
     
-    // Limpiamos el valor ingresado (reemplazando comas por puntos para que JS lo entienda)
+    // Convertimos comas a puntos para la lectura numérica de decimales
     const valorStr = input.value.trim().replace(",", ".");
     
-    // Si el campo está vacío o tiene texto no numérico (ej: "Ver Nota"), limpiamos indicadores previos
-    if (valorStr === "" || isNaN(parseFloat(valorStr))) {
+    // VALIDACIÓN ROBUSTA: Si está vacío, contiene letras o texto no numérico,
+    // simplemente se quita cualquier flecha y NO se altera nada en el input.
+    const valorNum = parseFloat(valorStr);
+    
+    if (valorStr === "" || isNaN(valorNum) || !isFinite(valorNum)) {
         removerIndicador(input);
         return;
     }
 
-    const valorNum = parseFloat(valorStr);
     const rangos = extraerRangos(textoRef);
+    if (!rangos) return; // Si la referencia es texto complejo (ej: Ferritina), no hace nada.
 
-    if (!rangos) return; // Si el formato de referencia es complejo (ej: textos largos de ferritina), no aplicamos flecha automática.
-
-    // Comparamos con el mínimo y el máximo
-    removerIndicador(input); // Limpiamos indicador anterior
+    // Evaluación de rangos
+    removerIndicador(input);
 
     if (valorNum < rangos.min) {
-        // Bajo de lo normal
-        agregarIndicador(input, "↓", "#0284c7"); // Azul o color a elección
+        agregarIndicador(input, "↓", "#0284c7"); // Bajo de lo normal (Azul)
     } else if (valorNum > rangos.max) {
-        // Elevado / Alto
-        agregarIndicador(input, "↑", "#dc3545"); // Rojo de alerta
+        agregarIndicador(input, "↑", "#dc3545"); // Elevado / Alto (Rojo)
     }
-    // Si está dentro del rango, no se coloca nada.
 }
 
-// Función auxiliar para extraer el valor mínimo y máximo de cadenas como "4.50 – 11.00" o "150 – 400"
+
 function extraerRangos(texto) {
-    // Buscamos patrones numéricos separados por guion (admite espacios y guiones largos o cortos)
+    // Si la referencia es larga, contiene barras de separación (|) o clasificaciones múltiples,
+    // se descarta la evaluación automática para evitar flechas incorrectas.
+    if (texto.includes("|") || texto.toUpperCase().includes("NIÑOS") || texto.toUpperCase().includes("HOMBRES") || texto.toUpperCase().includes("MUJERES")) {
+        return null;
+    }
+
+    // Busca patrones simples de números separados por guion (ej: "2 - 30" o "70 - 110")
     const regex = /([\d.]+)\s*[-–]\s*([\d.]+)/;
     const match = texto.match(regex);
 
@@ -5048,11 +5051,9 @@ function extraerRangos(texto) {
     }
     return null;
 }
-
-// Funciones para inyectar o remover visualmente la flecha dentro del input o a su lado
+		
 function agregarIndicador(input, flecha, color) {
     let contenedor = input.parentElement;
-    // Asegurarnos de que el contenedor sea relativo para posicionar la flecha
     contenedor.style.position = "relative";
 
     let badge = contenedor.querySelector(".badge-flecha");
@@ -5064,14 +5065,12 @@ function agregarIndicador(input, flecha, color) {
         badge.style.top = "50%";
         badge.style.transform = "translateY(-50%)";
         badge.style.fontWeight = "bold";
-        badge.style.pointerEvents = "none"; // Para que no estorbe al hacer clic en el input
+        badge.style.pointerEvents = "none"; // Evita interferir con la selección del input
         contenedor.appendChild(badge);
     }
 
     badge.textContent = flecha;
     badge.style.color = color;
-    
-    // Añadimos un pequeño padding derecho al input para que el texto no choque con la flecha
     input.style.paddingRight = "24px";
 }
 
@@ -5083,6 +5082,7 @@ function removerIndicador(input) {
     }
     input.style.paddingRight = "";
 }
+		
 									
     </script>
 	<!-- Modal para Gestión e Impresión de Sobres (Tu modal original) -->
