@@ -110,10 +110,17 @@ body {
    3. BARRA DE NAVEGACIÓN FLOTANTE (LIQUID GLASS)
    -------------------------------------------------------------------------- */
 .liquid-nav {
-    position: relative;
+    /* --- CAMBIOS PARA FIJAR ABAJO --- */
+    position: fixed !important;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    margin: 0 !important;
+    z-index: 1000 !important;
+    /* ------------------------------- */
+
     display: flex;
     justify-content: center;
-    margin: 20px auto;
     align-items: center;
     flex-wrap: wrap;
     gap: 6px;
@@ -129,7 +136,6 @@ body {
         inset 0 -2px 4px -1px var(--glass-caustic),
         inset 0 0 0 1px var(--glass-border);
     transition: all 0.5s ease;
-    z-index: 10;
 }
 
 .liquid-nav::before {
