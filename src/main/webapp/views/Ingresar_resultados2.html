@@ -4141,18 +4141,30 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     }
 
-	// 4. CÁLCULO DE VLDL (VLDL = Triglicéridos / 5)
+	// 4. CÁLCULO DE VLDL (VLDL = Triglicéridos / 5) - Optimizado con dispatchEvent
     const btnVLDL = document.getElementById('btnCalcularvLDL');
     if (btnVLDL) {
         btnVLDL.addEventListener('click', function() {
-            const trig = parseFloat(document.getElementById('txtTrigliceridos')?.value.replace(',', '.'));
-            const inputVLDL = document.getElementById('txtvLDL');
-            
-            if (isNaN(trig) || trig <= 0) {
-                alert('Ingrese un valor válido de Triglicéridos.');
-                return;
+            try {
+                let trigStr = document.getElementById('txtTrigliceridos').value.trim().replace(',', '.');
+                if (trigStr === "") {
+                    alert("Por favor, ingrese el valor de los Triglicéridos.");
+                    return;
+                }
+                
+                let trig = parseFloat(trigStr);
+                if (isNaN(trig) || trig <= 0) {
+                    alert('Ingrese un valor válido de Triglicéridos.');
+                    return;
+                }
+
+                let inputVLDL = document.getElementById('txtvLDL');
+                inputVLDL.value = (trig / 5).toFixed(2);
+                inputVLDL.dispatchEvent(new Event('input', { bubbles: true })); // <-- Añadido para actualizar la vista en tiempo real
+
+            } catch (e) {
+                alert("Ocurrió un error al calcular el VLDL.");
             }
-            inputVLDL.value = (trig / 5).toFixed(2);
         });
     }
 });
