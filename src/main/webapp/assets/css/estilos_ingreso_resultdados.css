@@ -138,14 +138,7 @@ body {
     transition: all 0.5s ease;
 }
 
-.nav-items {
-    position: relative;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    flex-wrap: nowrap !important; /* <--- Fuerza una sola fila en el contenedor interno */
-    z-index: 3;
-}
+
 
 .liquid-nav::before {
     content: '';
@@ -179,12 +172,13 @@ body {
     opacity: 1;
 }
 
+
 .nav-items {
     position: relative;
     display: flex;
     align-items: center;
     gap: 6px;
-    flex-wrap: wrap;
+    flex-wrap: nowrap !important; /* <--- Fuerza una sola fila en el contenedor interno */
     z-index: 3;
 }
 
