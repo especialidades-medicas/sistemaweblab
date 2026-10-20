@@ -5248,6 +5248,14 @@ function cargarEspermatogramaNormal() {
 
     // Recuento
     document.getElementById('resEspRecuento').value = '120';
+
+    // Disparar evento change en los inputs si la tabla dinámica escucha eventos
+    notificarCambiosEspermatograma();
+
+    // Actualizar la tabla dinámica
+    if (typeof actualizarTablaDinamica === 'function') {
+        actualizarTablaDinamica();
+    }
 }
 
 // Cargar valores para una Muestra con Esterilidad / Azoospermia
@@ -5260,7 +5268,7 @@ function cargarEspermatogramaEsterilidad() {
     document.getElementById('resEspLicuefaccion').value = '15 minutos';
     document.getElementById('resEspFilancia').value = 'NORMAL';
 
-    // Examen Microscópico (Sin movilidad / Inertes)
+    // Examen Microscópico
     document.getElementById('resEspMoviles').value = '0';
     document.getElementById('resEspMovilesRelativos').value = '0';
     document.getElementById('resEspInertes').value = '100';
@@ -5271,8 +5279,16 @@ function cargarEspermatogramaEsterilidad() {
     document.getElementById('resEspMicrocefalicos').value = '0';
     document.getElementById('resEspOtrasFormas').value = '0';
 
-    // Recuento (Azoospermia / Ausencia de espermatozoides)
+    // Recuento
     document.getElementById('resEspRecuento').value = '0';
+
+    // Disparar evento change en los inputs si la tabla dinámica escucha eventos
+    notificarCambiosEspermatograma();
+
+    // Actualizar la tabla dinámica
+    if (typeof actualizarTablaDinamica === 'function') {
+        actualizarTablaDinamica();
+    }
 }
 
 // Limpiar todos los campos del Espermatograma
@@ -5298,11 +5314,36 @@ function limpiarEspermatograma() {
         const el = document.getElementById(id);
         if (el) el.value = '';
     });
+
+    // Disparar evento change en los inputs si la tabla dinámica escucha eventos
+    notificarCambiosEspermatograma();
+
+    // Actualizar la tabla dinámica
+    if (typeof actualizarTablaDinamica === 'function') {
+        actualizarTablaDinamica();
+    }
 }
 
+// Función auxiliar para forzar la emisión del evento 'change' y 'input'
+function notificarCambiosEspermatograma() {
+    const listaIds = [
+        'resEspMuestra', 'resEspColor', 'resEspAspecto', 'resEspLicuefaccion', 'resEspFilancia',
+        'resEspHoraRecoleccion', 'resEspHoraRealizacion', 'resEspPh', 'resEspVolumen', 
+        'resEspMoviles', 'resEspMovilesRelativos', 'resEspInertes', 'resEspNorfocefalicos', 
+        'resEspMacrocefalicos', 'resEspMicrocefalicos', 'resEspOtrasFormas', 'resEspRecuento'
+    ];
+
+    listaIds.forEach(id => {
+        const elemento = document.getElementById(id);
+        if (elemento) {
+            elemento.dispatchEvent(new Event('change', { bubbles: true }));
+            elemento.dispatchEvent(new Event('input', { bubbles: true }));
+        }
+    });
+}
 		
     
-       
+     // colores 
 document.addEventListener("DOMContentLoaded", function () {
     const camposEditable = document.querySelectorAll("#mainTabContent input, #mainTabContent select");
 
