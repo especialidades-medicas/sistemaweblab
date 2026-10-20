@@ -3167,6 +3167,201 @@
                 </div>
             </div>
 
+			<!-- Subtítulo 6: Espermatograma -->
+<div class="section-title text-primary fw-bold border-bottom pb-1 mb-2 small" data-section-name="ESPERMATOGRAMA">
+    ESPERMATOGRAMA
+</div>
+			<div class="btn-group btn-group-sm" role="group">
+            <button type="button" class="btn btn-outline-success btn-sm" onclick="cargarEspermatogramaNormal()" style="font-size: 10px;">
+                ✓ Normal
+            </button>
+            <button type="button" class="btn btn-outline-warning btn-sm" onclick="cargarEspermatogramaEsterilidad()" style="font-size: 10px;">
+                ⚠ Esterilidad
+            </button>
+            <button type="button" class="btn btn-outline-danger btn-sm" onclick="limpiarEspermatograma()" style="font-size: 10px;">
+                ✕ Limpiar
+            </button>
+        </div>
+
+<!-- Datos iniciales de la muestra -->
+<table class="table table-sm table-bordered align-middle mb-2 small">
+    <thead class="table-light text-muted">
+        <tr>
+            <th>PARAMETRO DE MUESTRA</th>
+            <th>VALOR</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td class="fw-bold">MUESTRA</td>
+            <td>
+                <select class="form-select form-select-sm form-control-editable" id="resEspMuestra">
+                    <option value="" selected disabled>Seleccione...</option>
+                    <option value="SEMEN">SEMEN</option>
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td class="fw-bold">HORA DE RECOLECCION</td>
+            <td><input type="time" class="form-control form-control-sm form-control-editable" id="resEspHoraRecoleccion"></td>
+        </tr>
+        <tr>
+            <td class="fw-bold">HORA DE REALIZACION</td>
+            <td><input type="time" class="form-control form-control-sm form-control-editable" id="resEspHoraRealizacion"></td>
+        </tr>
+    </tbody>
+</table>
+
+<!-- Examen Físico, Microscópico, Morfología y Recuento -->
+<table class="table table-sm table-bordered align-middle mb-3 small">
+    <thead class="table-light text-muted">
+        <tr>
+            <th>EXAMEN</th>
+            <th>RESULTADO</th>
+            <th>UNIDAD</th>
+            <th>V. REFERENCIA</th>
+        </tr>
+    </thead>
+    <tbody>
+        <!-- EXAMEN FISICO -->
+        <tr class="table-secondary fw-bold">
+            <td colspan="4" class="text-uppercase">EXAMEN FISICO</td>
+        </tr>
+        <tr>
+            <td class="fw-bold">COLOR</td>
+            <td>
+                <select class="form-select form-select-sm form-control-editable" id="resEspColor">
+                    <option value="" selected disabled>Seleccione...</option>
+                    <option value="CREMOSO">CREMOSO</option>
+                    <option value="BLANCO BLANQUECINO">BLANCO BLANQUECINO</option>
+                    <option value="AMARILLENTO">AMARILLENTO</option>
+                    <option value="ROJIZO">ROJIZO</option>
+                </select>
+            </td>
+            <td class="text-muted">-</td>
+            <td class="text-muted">-</td>
+        </tr>
+        <tr>
+            <td class="fw-bold">PH</td>
+            <td><input type="number" step="0.1" class="form-control form-control-sm form-control-editable" id="resEspPh"></td>
+            <td class="text-muted">-</td>
+            <td class="text-muted">-</td>
+        </tr>
+        <tr>
+            <td class="fw-bold">ASPECTO</td>
+            <td>
+                <select class="form-select form-select-sm form-control-editable" id="resEspAspecto">
+                    <option value="" selected disabled>Seleccione...</option>
+                    <option value="OPALECENTE">OPALECENTE</option>
+                    <option value="HOMOGENEO">HOMOGÉNEO</option>
+                    <option value="HETEROGENEO">HETEROGÉNEO</option>
+                    <option value="LIGERO OPALESCENTE">LIGERO OPALESCENTE</option>
+                </select>
+            </td>
+            <td class="text-muted">-</td>
+            <td class="text-muted">-</td>
+        </tr>
+        <tr>
+            <td class="fw-bold">VOLUMEN</td>
+            <td><input type="number" step="0.1" class="form-control form-control-sm form-control-editable" id="resEspVolumen"></td>
+            <td class="text-muted">ml</td>
+            <td class="text-muted">3 - 5 ml</td>
+        </tr>
+        <tr>
+            <td class="fw-bold">LICUEFACCION</td>
+            <td>
+                <select class="form-select form-select-sm form-control-editable" id="resEspLicuefaccion">
+                    <option value="" selected disabled>Seleccione...</option>
+                    <option value="15 minutos">15 minutos</option>
+                    <option value="20 minutos">20 minutos</option>
+                    <option value="30 minutos">30 minutos</option>
+                    <option value="45 minutos">45 minutos</option>
+                    <option value="60 minutos">60 minutos</option>
+                </select>
+            </td>
+            <td class="text-muted">minutos</td>
+            <td class="text-muted">HASTA 30 minutos</td>
+        </tr>
+        <tr>
+            <td class="fw-bold">FILANCIA</td>
+            <td>
+                <select class="form-select form-select-sm form-control-editable" id="resEspFilancia">
+                    <option value="" selected disabled>Seleccione...</option>
+                    <option value="NORMAL">NORMAL</option>
+                    <option value="MUY FILANTE">MUY FILANTE</option>
+                    <option value="AUMENTADA">AUMENTADA</option>
+                    <option value="DISMINUIDA">DISMINUIDA</option>
+                </select>
+            </td>
+            <td class="text-muted">-</td>
+            <td class="text-muted">-</td>
+        </tr>
+
+        <!-- EXAMEN MICROSCOPICO -->
+        <tr class="table-secondary fw-bold">
+            <td colspan="4" class="text-uppercase">EXAMEN MICROSCOPICO</td>
+        </tr>
+        <tr>
+            <td class="fw-bold">MOVILES</td>
+            <td><input type="number" class="form-control form-control-sm form-control-editable" id="resEspMoviles"></td>
+            <td class="text-muted">%</td>
+            <td class="text-muted">60 - 70 %</td>
+        </tr>
+        <tr>
+            <td class="fw-bold">MOVILES RELATIVOS</td>
+            <td><input type="number" class="form-control form-control-sm form-control-editable" id="resEspMovilesRelativos"></td>
+            <td class="text-muted">%</td>
+            <td class="text-muted">10 - 20 %</td>
+        </tr>
+        <tr>
+            <td class="fw-bold">INERTES</td>
+            <td><input type="number" class="form-control form-control-sm form-control-editable" id="resEspInertes"></td>
+            <td class="text-muted">%</td>
+            <td class="text-muted">20 - 30 %</td>
+        </tr>
+
+        <!-- MORFOLOGIA -->
+        <tr class="table-secondary fw-bold">
+            <td colspan="4" class="text-uppercase">MORFOLOGIA</td>
+        </tr>
+        <tr>
+            <td class="fw-bold">NORFOCEVALICOS</td>
+            <td><input type="number" class="form-control form-control-sm form-control-editable" id="resEspNorfocefalicos"></td>
+            <td class="text-muted">%</td>
+            <td class="text-muted">70%</td>
+        </tr>
+        <tr>
+            <td class="fw-bold">MACROCEFALICOS</td>
+            <td><input type="number" class="form-control form-control-sm form-control-editable" id="resEspMacrocefalicos"></td>
+            <td class="text-muted">%</td>
+            <td class="text-muted">10%</td>
+        </tr>
+        <tr>
+            <td class="fw-bold">MICROCEFALICOS</td>
+            <td><input type="number" class="form-control form-control-sm form-control-editable" id="resEspMicrocefalicos"></td>
+            <td class="text-muted">%</td>
+            <td class="text-muted">10%</td>
+        </tr>
+        <tr>
+            <td class="fw-bold">OTRAS FORMAS</td>
+            <td><input type="number" class="form-control form-control-sm form-control-editable" id="resEspOtrasFormas"></td>
+            <td class="text-muted">%</td>
+            <td class="text-muted">10%</td>
+        </tr>
+
+        <!-- RECUENTO -->
+        <tr class="table-secondary fw-bold">
+            <td colspan="4" class="text-uppercase">RECUENTO</td>
+        </tr>
+        <tr>
+            <td class="fw-bold">RECUENTO</td>
+            <td><input type="number" class="form-control form-control-sm form-control-editable" id="resEspRecuento"></td>
+            <td class="text-muted">millones/ml</td>
+            <td class="text-muted">50 - 150 millones/ ml</td>
+        </tr>
+    </tbody>
+</table>
+
         </div>
     </div>
 </div>
@@ -5005,6 +5200,84 @@ function limpiarSecrecionVaginal() {
     });
 });    
 
+		
+ // botones para espermatograma
+// Cargar valores para una Muestra Normal
+function cargarEspermatogramaNormal() {
+    document.getElementById('resEspMuestra').value = 'SEMEN';
+    document.getElementById('resEspColor').value = 'CREMOSO';
+    document.getElementById('resEspPh').value = '8.0';
+    document.getElementById('resEspAspecto').value = 'OPALECENTE';
+    document.getElementById('resEspVolumen').value = '3.5';
+    document.getElementById('resEspLicuefaccion').value = '20 minutos';
+    document.getElementById('resEspFilancia').value = 'MUY FILANTE';
+
+    // Examen Microscópico
+    document.getElementById('resEspMoviles').value = '65';
+    document.getElementById('resEspMovilesRelativos').value = '15';
+    document.getElementById('resEspInertes').value = '20';
+
+    // Morfología
+    document.getElementById('resEspNorfocefalicos').value = '70';
+    document.getElementById('resEspMacrocefalicos').value = '10';
+    document.getElementById('resEspMicrocefalicos').value = '10';
+    document.getElementById('resEspOtrasFormas').value = '10';
+
+    // Recuento
+    document.getElementById('resEspRecuento').value = '120';
+}
+
+// Cargar valores para una Muestra con Esterilidad / Azoospermia
+function cargarEspermatogramaEsterilidad() {
+    document.getElementById('resEspMuestra').value = 'SEMEN';
+    document.getElementById('resEspColor').value = 'BLANCO BLANQUECINO';
+    document.getElementById('resEspPh').value = '7.2';
+    document.getElementById('resEspAspecto').value = 'LIGERO OPALESCENTE';
+    document.getElementById('resEspVolumen').value = '1.0';
+    document.getElementById('resEspLicuefaccion').value = '15 minutos';
+    document.getElementById('resEspFilancia').value = 'NORMAL';
+
+    // Examen Microscópico (Sin movilidad / Inertes)
+    document.getElementById('resEspMoviles').value = '0';
+    document.getElementById('resEspMovilesRelativos').value = '0';
+    document.getElementById('resEspInertes').value = '100';
+
+    // Morfología
+    document.getElementById('resEspNorfocefalicos').value = '0';
+    document.getElementById('resEspMacrocefalicos').value = '0';
+    document.getElementById('resEspMicrocefalicos').value = '0';
+    document.getElementById('resEspOtrasFormas').value = '0';
+
+    // Recuento (Azoospermia / Ausencia de espermatozoides)
+    document.getElementById('resEspRecuento').value = '0';
+}
+
+// Limpiar todos los campos del Espermatograma
+function limpiarEspermatograma() {
+    const camposSelect = [
+        'resEspMuestra', 'resEspColor', 'resEspAspecto', 
+        'resEspLicuefaccion', 'resEspFilancia'
+    ];
+
+    const camposInput = [
+        'resEspHoraRecoleccion', 'resEspHoraRealizacion', 'resEspPh', 
+        'resEspVolumen', 'resEspMoviles', 'resEspMovilesRelativos', 
+        'resEspInertes', 'resEspNorfocefalicos', 'resEspMacrocefalicos', 
+        'resEspMicrocefalicos', 'resEspOtrasFormas', 'resEspRecuento'
+    ];
+
+    camposSelect.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = '';
+    });
+
+    camposInput.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = '';
+    });
+}
+
+		
     
        
 document.addEventListener("DOMContentLoaded", function () {
