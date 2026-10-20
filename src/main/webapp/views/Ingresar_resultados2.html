@@ -4991,7 +4991,9 @@ function nuevoPaciente() {
 }
 
 
-// Orina boton
+// Orina boton		
+// SECCIÓN: ORINA
+// ==========================================
 		function llenarOrinaNormal() {
     // EXÁMEN FÍSICO
     document.getElementById('orinaColor').value = "Amarillo";
@@ -5017,7 +5019,8 @@ function nuevoPaciente() {
 	document.getElementById('orinaCristales2').value = ""; 
     document.getElementById('orinaCilindros').value = "Negativo";
 	document.getElementById('orinaMoco').value = "";
-    
+ notificarCambiosOrina();
+    if (typeof actualizarTablaDinamica === 'function') actualizarTablaDinamica();
 }
 
 function llenarInfeccion() {
@@ -5045,7 +5048,10 @@ function llenarInfeccion() {
 	document.getElementById('orinaCristales2').value = ""; 
     document.getElementById('orinaCilindros').value = "Negativo";
     document.getElementById('orinaMoco').value = "Positivo (+)";
+notificarCambiosOrina();
+    if (typeof actualizarTablaDinamica === 'function') actualizarTablaDinamica();
 }
+		
 function limpiarOrina() {
     // Lista de todos los select e input de la sección de Orina
     const idsOrina = [
@@ -5066,11 +5072,33 @@ function limpiarOrina() {
             }
         }
     });
+
+    notificarCambiosOrina();
+    if (typeof actualizarTablaDinamica === 'function') actualizarTablaDinamica();
 }
 
 		
-// heces boton
-		// Function para Heces Normal (basado en la Imagen 1)
+function notificarCambiosOrina() {
+    const idsOrina = [
+        'orinaColor', 'orinaAspecto', 'orinaDensidad', 'orinaPh',
+        'orinaProteinas', 'orinaGlucosa', 'orinaCetonas', 'orinaBilirrubina',
+        'orinaUrobilinogeno', 'orinaSangre', 'orinaNitritos', 'orinaLeucocitesterasa',
+        'orinaEpiteliales', 'orinaLeucocitos', 'orinaHematies', 'orinaBacterias',
+        'orinaCristales', 'orinaCristales2', 'orinaCilindros', 'orinaMoco'
+    ];
+    idsOrina.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+            el.dispatchEvent(new Event('change', { bubbles: true }));
+            el.dispatchEvent(new Event('input', { bubbles: true }));
+        }
+    });
+}
+
+
+// ==========================================
+// SECCIÓN: HECES BOTON
+// ==========================================
 function llenarHecesNormal() {
     // EXAMEN MACROSCÓPICO
     document.getElementById('hecesColor').value = "Marrón / Café";
@@ -5096,6 +5124,8 @@ function llenarHecesNormal() {
     document.getElementById('hecesHematies').value = "-";
     document.getElementById('hecesOtros').value = "";
     document.getElementById('hecesFlora').value = "Normal";
+notificarCambiosHeces();
+    if (typeof actualizarTablaDinamica === 'function') actualizarTablaDinamica();
 }
 
 // Function para Parásito Q. Histolytica (basado en la Imagen 2)
@@ -5124,6 +5154,8 @@ function llenarHecesParasito() {
     document.getElementById('hecesHematies').value = "-";
     document.getElementById('hecesOtros').value = "";
     document.getElementById('hecesFlora').value = "Lig. Aumentada";
+notificarCambiosHeces();
+    if (typeof actualizarTablaDinamica === 'function') actualizarTablaDinamica();
 }
 
 function limpiarHeces() {
@@ -5146,9 +5178,29 @@ function limpiarHeces() {
             }
         }
     });
+notificarCambiosHeces();
+    if (typeof actualizarTablaDinamica === 'function') actualizarTablaDinamica();
+}
+		function notificarCambiosHeces() {
+    const idsHeces = [
+        'hecesColor', 'hecesAspecto', 'hecesConsistencia', 'hecesMoco', 'hecesSangre',
+        'hecesParasitos', 'hecesParasitosCant1', 'hecesParasitos2', 'hecesParasitosCant2',
+        'hecesParasitos3', 'hecesParasitosCant3', 'hecesRestos', 'hecesGrasas',
+        'hecesRestosVegetales', 'hecesAlmidones', 'hecesLevaduras', 'hecesLeucocitos',
+        'hecesHematies', 'hecesOtros', 'hecesFlora'
+    ];
+    idsHeces.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+            el.dispatchEvent(new Event('change', { bubbles: true }));
+            el.dispatchEvent(new Event('input', { bubbles: true }));
+        }
+    });
 }
 		
-       // s vaginal boton
+      // ==========================================
+// SECCIÓN: SECRECIÓN VAGINAL BOTON
+// ==========================================
         function cargarPatronNormal() {
     const selects = document.querySelectorAll('#collapseVaginalContent select');
     const valoresNormal = [
@@ -5187,6 +5239,9 @@ function cargarPatronGardnerella() {
         "Tipo Gardnerella Vaginalis / Cocobacilos Gram variables"     // MICROORGANISMO / HALLAZGO
     ];
     selects.forEach((select, i) => { if (valoresGardnerella[i] !== undefined) select.value = valoresGardnerella[i]; });
+    
+    notificarCambiosSecrecion();
+    if (typeof actualizarTablaDinamica === 'function') actualizarTablaDinamica();
 }
 
 function cargarPatronHongos() {
@@ -5207,23 +5262,26 @@ function cargarPatronHongos() {
         "Levaduras y/o Pseudohifas compatibles con Candida spp."       // MICROORGANISMO / HALLAZGO
     ];
     selects.forEach((select, i) => { if (valoresHongos[i] !== undefined) select.value = valoresHongos[i]; });
+    
+    notificarCambiosSecrecion();
+    if (typeof actualizarTablaDinamica === 'function') actualizarTablaDinamica();
 }
 
 function limpiarSecrecionVaginal() {
     const selects = document.querySelectorAll('#collapseVaginalContent select');
     selects.forEach(select => select.value = "");
+    
+    notificarCambiosSecrecion();
+    if (typeof actualizarTablaDinamica === 'function') actualizarTablaDinamica();
 }
 
-    document.querySelectorAll('.table input').forEach(input => {
-    input.addEventListener('input', function() {
-        if (this.value.trim() !== '') {
-            this.classList.add('con-dato');
-        } else {
-            this.classList.remove('con-dato');
-        }
+function notificarCambiosSecrecion() {
+    const selects = document.querySelectorAll('#collapseVaginalContent select');
+    selects.forEach(el => {
+        el.dispatchEvent(new Event('change', { bubbles: true }));
+        el.dispatchEvent(new Event('input', { bubbles: true }));
     });
-});    
-
+}
 		
  // botones para espermatograma
 // Cargar valores para una Muestra Normal
