@@ -1003,12 +1003,14 @@
 								    <td class="fw-bold ps-3">TÍFICO O (EO)</td>
 								    <td>
 								        <select id="cboAglutinaEO" class="form-select form-select-sm form-control-editable">
+											<option value="" selected disabled>Seleccione...</option>
 								            <option value="NEGATIVO" selected>NEGATIVO</option>
 								            <option value="1:20">1:20</option>
 								            <option value="1:40">1:40</option>
 								            <option value="1:80">1:80</option>
 								            <option value="1:160">1:160</option>
 								            <option value="1:320">1:320</option>
+											<option value="" selected>-</option>
 								        </select>
 								    </td>
 								    <td>Dilución</td>
@@ -1020,12 +1022,14 @@
 								    <td class="fw-bold ps-3">TÍFICO H (EH)</td>
 								    <td>
 								        <select id="cboAglutinaEH" class="form-select form-select-sm form-control-editable">
+								            <option value="" selected disabled>Seleccione...</option>
 								            <option value="NEGATIVO" selected>NEGATIVO</option>
 								            <option value="1:20">1:20</option>
 								            <option value="1:40">1:40</option>
 								            <option value="1:80">1:80</option>
 								            <option value="1:160">1:160</option>
 								            <option value="1:320">1:320</option>
+											<option value="" selected>-</option>
 								        </select>
 								    </td>
 								    <td>Dilución</td>
@@ -1037,12 +1041,14 @@
 								    <td class="fw-bold ps-3">PARATÍFICO A (PA)</td>
 								    <td>
 								        <select id="cboAglutinaPA" class="form-select form-select-sm form-control-editable">
+								            <option value="" selected disabled>Seleccione...</option>
 								            <option value="NEGATIVO" selected>NEGATIVO</option>
 								            <option value="1:20">1:20</option>
 								            <option value="1:40">1:40</option>
 								            <option value="1:80">1:80</option>
 								            <option value="1:160">1:160</option>
 								            <option value="1:320">1:320</option>
+											<option value="" selected>-</option>
 								        </select>
 								    </td>
 								    <td>Dilución</td>
@@ -1054,12 +1060,14 @@
 								    <td class="fw-bold ps-3">PARATÍFICO B (PB)</td>
 								    <td>
 								        <select id="cboAglutinaPB" class="form-select form-select-sm form-control-editable">
+								            <option value="" selected disabled>Seleccione...</option>
 								            <option value="NEGATIVO" selected>NEGATIVO</option>
 								            <option value="1:20">1:20</option>
 								            <option value="1:40">1:40</option>
 								            <option value="1:80">1:80</option>
 								            <option value="1:160">1:160</option>
 								            <option value="1:320">1:320</option>
+											<option value="" selected>-</option>
 								        </select>
 								    </td>
 								    <td>Dilución</td>
@@ -1071,12 +1079,14 @@
 								    <td class="fw-bold ps-3">PROTEUS OX-19 (POX19)</td>
 								    <td>
 								        <select id="cboAglutinaPOX19" class="form-select form-select-sm form-control-editable">
+								            <option value="" selected disabled>Seleccione...</option>
 								            <option value="NEGATIVO" selected>NEGATIVO</option>
 								            <option value="1:20">1:20</option>
 								            <option value="1:40">1:40</option>
 								            <option value="1:80">1:80</option>
 								            <option value="1:160">1:160</option>
 								            <option value="1:320">1:320</option>
+											<option value="" selected>-</option>
 								        </select>
 								    </td>
 								    <td>Dilución</td>
@@ -1088,12 +1098,14 @@
 								    <td class="fw-bold ps-3">BRUCELLA ABORTUS (BA)</td>
 								    <td>
 								        <select id="cboAglutinaBA" class="form-select form-select-sm form-control-editable">
+								            <option value="" selected disabled>Seleccione...</option>
 								            <option value="NEGATIVO" selected>NEGATIVO</option>
 								            <option value="1:20">1:20</option>
 								            <option value="1:40">1:40</option>
 								            <option value="1:80">1:80</option>
 								            <option value="1:160">1:160</option>
 								            <option value="1:320">1:320</option>
+											<option value="" selected>-</option>
 								        </select>
 								    </td>
 								    <td>Dilución</td>
@@ -2284,12 +2296,31 @@
                     <td class="text-muted">g/dL</td>
                     <td><input type="text" class="form-control form-control-sm text-muted" value="Hombres: 20 - 320 | Mujeres: 20 - 275"></td>
                 </tr>
-                <tr>
-                    <td class="fw-bold ps-3">PROTEINURIA (24 HORAS)</td>
-                    <td><input type="text" class="form-control form-control-sm form-control-editable" id="resProteinuria24"></td>
-                    <td class="text-muted">mg/24h</td>
-                    <td><input type="text" class="form-control form-control-sm text-muted" value="Menor a 150"></td>
-                </tr>
+					
+					<!-- Proteínas en Orina de 24 Horas -->
+					<tr>
+					    <td colspan="4" class="table-active fw-bold text-secondary" style="font-size: 9.5px;">
+					        <div class="d-flex justify-content-between align-items-center">
+					            <span class="subcat-titulo">PROTEINAS EN ORINA DE 24 HORAS</span>
+					        </div>
+					    </td>
+					</tr>
+					
+					<!-- Fila de Volumen en 24 horas -->
+					<tr>
+					    <td class="fw-bold ps-3">Volumen orina en 24 horas</td>
+					    <td><input type="text" class="form-control form-control-sm form-control-editable" id="resVolumenOrina24"></td>
+					    <td class="text-muted">ml</td>
+					    <td class="text-muted"></td>
+					</tr>
+					
+					<!-- Fila de Proteínas en orina de 24 h -->
+					<tr>
+					    <td class="fw-bold ps-3">Proteínas en orina de 24 h.</td>
+					    <td><input type="text" class="form-control form-control-sm form-control-editable" id="resProteinuria24"></td>
+					    <td class="text-muted">mg / 24 h</td>
+					    <td><input type="text" class="form-control form-control-sm text-muted" value="28 - 140"></td>
+					</tr>
             </tbody>
         </table>
 		</div>
