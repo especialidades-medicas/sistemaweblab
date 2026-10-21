@@ -3552,11 +3552,13 @@
     </div>
 </div>
 
-<!-- 16. COVID -->
-<div class="accordion" id="covidExamenesAccordion">
+<!-- 16. COVID (Pestaña principal independiente) -->
+<div class="tab-pane fade" id="covidContent" role="tabpanel">
     
-    <!-- 16. COVID - PRUEBAS COVID-19 HISOPADO NASAL -->
-    <div class="tab-pane fade show active" id="covidContent" role="tabpanel">
+    <!-- Acordeón general para los exámenes de COVID -->
+    <div class="accordion" id="covidExamenesAccordion">
+        
+        <!-- BLOQUE 1: Tu código original de Hisopado Nasal funcionando exactamente igual -->
         <div class="border rounded bg-white shadow-sm mb-2">
             <div class="section-title text-primary fw-bold border-bottom p-2 bg-light small" data-bs-toggle="collapse" data-bs-target="#collapseCovidNasal" style="cursor: pointer;" data-section-name="PRUEBAS COVID-19">
                 ▼ PRUEBAS COVID-19 HISOPADO NASAL
@@ -3656,83 +3658,83 @@
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- SECCIÓN SEPARADA: PRUEBAS COVID-19 ANTÍGENO E INMUNOLOGÍA (IGG / IGM) -->
-    <div class="border rounded bg-white shadow-sm">
-        <div class="section-title text-primary fw-bold border-bottom p-2 bg-light small" data-bs-toggle="collapse" data-bs-target="#collapseCovidInmuno" style="cursor: pointer;" data-section-name="PRUEBAS COVID-19 INMUNOLOGIA">
-            ▼ PRUEBAS COVID-19 ANTÍGENO E INMUNOLOGÍA (IGG / IGM)
-        </div>
-        
-        <div id="collapseCovidInmuno" class="collapse" data-bs-parent="#covidExamenesAccordion">
-            <div class="p-2">
-                <table class="table table-sm table-bordered align-middle mb-0 small bg-white">
-                    <thead class="table-light text-muted">
-                        <tr>
-                            <th>EXAMEN</th>
-                            <th style="width: 25%;">RESULTADO</th>
-                            <th style="width: 15%;">UNIDAD</th>
-                            <th>V. REFERENCIA</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <!-- SARS-CoV-2 IgG -->
-                        <tr>
-                            <td colspan="4" class="table-active fw-bold text-secondary" style="font-size: 9.5px;">
-                                <div>
-                                    EL MÉTODO MICROELISA ES DE ALTA SENSIBILIDAD QUE DETERMINA LOS ANTICUERPOS CIRCULANTES EN UNA REACCIÓN DE COLOR PROPORCIONAL A LA CONCENTRACIÓN EN SANGRE.
-                                </div>
-                            </td>
-                        </tr>
-                        <tr class="fila-resultado" data-examen="SARS-CoV-2 IgG">
-                            <td class="fw-bold">SARS-CoV-2 IgG</td>
-                            <td>
-                                <input type="text" class="form-control form-control-sm form-control-editable" id="resCovidIgg" placeholder="Ej. 5.01">
-                            </td>
-                            <td class="text-muted">AU/mL</td>
-                            <td class="text-muted" style="font-size: 9px;">
-                                MÉTODO EIA<br>
-                                Positivo: Mayor a 10.0<br>
-                                Indeterminado: Entre 9.0 - 9.9<br>
-                                Negativo: Menor a 9.0<br>
-                                Sensibilidad: 98.00%<br>
-                                Especificidad: 98.00%
-                            </td>
-                        </tr>
+        <!-- BLOQUE 2: El examen separado de Inmunología (IgG / IgM) en su propio acordeón -->
+        <div class="border rounded bg-white shadow-sm">
+            <div class="section-title text-primary fw-bold border-bottom p-2 bg-light small" data-bs-toggle="collapse" data-bs-target="#collapseCovidInmuno" style="cursor: pointer;" data-section-name="PRUEBAS COVID-19 INMUNOLOGIA">
+                ▼ PRUEBAS COVID-19 ANTÍGENO E INMUNOLOGÍA (IGG / IGM)
+            </div>
+            
+            <div id="collapseCovidInmuno" class="collapse" data-bs-parent="#covidExamenesAccordion">
+                <div class="p-2">
+                    <table class="table table-sm table-bordered align-middle mb-0 small bg-white">
+                        <thead class="table-light text-muted">
+                            <tr>
+                                <th>EXAMEN</th>
+                                <th style="width: 25%;">RESULTADO</th>
+                                <th style="width: 15%;">UNIDAD</th>
+                                <th>V. REFERENCIA</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- SARS-CoV-2 IgG -->
+                            <tr>
+                                <td colspan="4" class="table-active fw-bold text-secondary" style="font-size: 9.5px;">
+                                    <div>
+                                        EL MÉTODO MICROELISA ES DE ALTA SENSIBILIDAD QUE DETERMINA LOS ANTICUERPOS CIRCULANTES EN UNA REACCIÓN DE COLOR PROPORCIONAL A LA CONCENTRACIÓN EN SANGRE.
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="fila-resultado" data-examen="SARS-CoV-2 IgG">
+                                <td class="fw-bold">SARS-CoV-2 IgG</td>
+                                <td>
+                                    <input type="text" class="form-control form-control-sm form-control-editable" id="resCovidIgg" placeholder="Ej. 5.01">
+                                </td>
+                                <td class="text-muted">AU/mL</td>
+                                <td class="text-muted" style="font-size: 9px;">
+                                    MÉTODO EIA<br>
+                                    Positivo: Mayor a 10.0<br>
+                                    Indeterminado: Entre 9.0 - 9.9<br>
+                                    Negativo: Menor a 9.0<br>
+                                    Sensibilidad: 98.00%<br>
+                                    Especificidad: 98.00%
+                                </td>
+                            </tr>
 
-                        <tr><td colspan="4" class="border-0 py-1"></td></tr>
+                            <tr><td colspan="4" class="border-0 py-1"></td></tr>
 
-                        <!-- SARS-CoV-2 IgM -->
-                        <tr>
-                            <td colspan="4" class="table-active fw-bold text-secondary" style="font-size: 9.5px;">
-                                <div>
-                                    EL MÉTODO MICROELISA ES DE ALTA SENSIBILIDAD QUE DETERMINA LOS ANTICUERPOS CIRCULANTES EN UNA REACCIÓN DE COLOR PROPORCIONAL A LA CONCENTRACIÓN EN SANGRE. <br>
-                                    ESTE RESULTADO DEBE SER CONSIDERADO COMO AYUDA PRELIMINAR Y DEBE CORRELACIONARSE CON DATOS EPIDEMIOLÓGICOS Y CLÍNICOS DEL PACIENTE. <br>
-                                    RECOMENDACIÓN PARA LOS RESULTADOS INDETERMINADOS REPETICIÓN EN LOS DÍAS QUE EL MÉDICO PRESCRIBA.
-                                </div>
-                            </td>
-                        </tr>
-                        <tr class="fila-resultado" data-examen="SARS-CoV-2 IgM">
-                            <td class="fw-bold">SARS-CoV-2 IgM</td>
-                            <td>
-                                <input type="text" class="form-control form-control-sm form-control-editable" id="resCovidIgm" placeholder="Ej. 3.05">
-                            </td>
-                            <td class="text-muted">AU/mL</td>
-                            <td class="text-muted" style="font-size: 9px;">
-                                MÉTODO EIA<br>
-                                Positivo: Mayor a 10.0<br>
-                                Indeterminado: Entre 9.0 - 9.9<br>
-                                Negativo: Menor a 9.0<br>
-                                Sensibilidad: 98.00%<br>
-                                Especificidad: 98.00%
-                            </td>
-                        </tr>
-                    </tbody> 
-                </table> 
+                            <!-- SARS-CoV-2 IgM -->
+                            <tr>
+                                <td colspan="4" class="table-active fw-bold text-secondary" style="font-size: 9.5px;">
+                                    <div>
+                                        EL MÉTODO MICROELISA ES DE ALTA SENSIBILIDAD QUE DETERMINA LOS ANTICUERPOS CIRCULANTES EN UNA REACCIÓN DE COLOR PROPORCIONAL A LA CONCENTRACIÓN EN SANGRE. <br>
+                                        ESTE RESULTADO DEBE SER CONSIDERADO COMO AYUDA PRELIMINAR Y DEBE CORRELACIONARSE CON DATOS EPIDEMIOLÓGICOS Y CLÍNICOS DEL PACIENTE. <br>
+                                        RECOMENDACIÓN PARA LOS RESULTADOS INDETERMINADOS REPETICIÓN EN LOS DÍAS QUE EL MÉDICO PRESCRIBA.
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="fila-resultado" data-examen="SARS-CoV-2 IgM">
+                                <td class="fw-bold">SARS-CoV-2 IgM</td>
+                                <td>
+                                    <input type="text" class="form-control form-control-sm form-control-editable" id="resCovidIgm" placeholder="Ej. 3.05">
+                                </td>
+                                <td class="text-muted">AU/mL</td>
+                                <td class="text-muted" style="font-size: 9px;">
+                                    MÉTODO EIA<br>
+                                    Positivo: Mayor a 10.0<br>
+                                    Indeterminado: Entre 9.0 - 9.9<br>
+                                    Negativo: Menor a 9.0<br>
+                                    Sensibilidad: 98.00%<br>
+                                    Especificidad: 98.00%
+                                </td>
+                            </tr>
+                        </tbody> 
+                    </table> 
+                </div>
             </div>
         </div>
-    </div>
 
+    </div>
 </div>
                 
                 <!-- 17. Comentario -->
