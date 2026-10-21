@@ -18,45 +18,38 @@
     <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
     
     <style>
-       /* Inputs cargados cambio de color*/
-.bg-verde-azulado {
-    background-color: #e0f2f1 !important;
-    border-color: #26a69a !important;
-    color: #004d40 !important;
-    font-weight: bold;
-}
-
-/* Select: 2º elemento */
-.bg-rosado {
-    background-color: #fce4ec !important;
-    border-color: #f06292 !important;
-    color: #880e4f !important;
-    font-weight: bold;
-}
-
-/* Select: 3º elemento */
-.bg-naranja {
-    background-color: #fff3e0 !important;
-    border-color: #ffb74d !important;
-    color: #e65100 !important;
-    font-weight: bold;
-}
-
-/* Select: 4º elemento */
-.bg-rojo {
-    background-color: #ffebee !important;
-    border-color: #e57373 !important;
-    color: #b71c1c !important;
-    font-weight: bold;
-}
-
-/* Select: 5º elemento en adelante */
-.bg-celeste {
-    background-color: #e1f5fe !important;
-    border-color: #4fc3f7 !important;
-    color: #01579b !important;
-    font-weight: bold;
-}
+       /* Color de fondo verde azulado suave para resaltar los campos con datos */
+		/* Inputs de texto y 1º elemento de Select (Verde Pastel) */
+		.bg-verde-pastel {
+		    background-color: #e8f5e9 !important;
+		    border-color: #81c784 !important;
+		    color: #1b5e20 !important;
+		    font-weight: bold;
+		}
+		
+		/* Select: 2º elemento (Rosado) */
+		.bg-rosado {
+		    background-color: #fce4ec !important;
+		    border-color: #f06292 !important;
+		    color: #880e4f !important;
+		    font-weight: bold;
+		}
+		
+		/* Select: 3º elemento (Tomate) */
+		.bg-tomate {
+		    background-color: #fff3e0 !important;
+		    border-color: #ffb74d !important;
+		    color: #e65100 !important;
+		    font-weight: bold;
+		}
+		
+		/* Select: 4º elemento (Rojo) */
+		.bg-rojo {
+		    background-color: #ffebee !important;
+		    border-color: #e57373 !important;
+		    color: #b71c1c !important;
+		    font-weight: bold;
+		}
 
 		
     </style>
@@ -338,7 +331,7 @@
                                     <td class="fw-bold">GLUCOSA (2H POST-CARGA 75GR)</td>
                                     <td><input type="text" id="txtGlucosaCarga2h" class="form-control form-control-sm form-control-editable"></td>
                                     <td>mg/dL</td>
-                                    <td class="text-muted">Normal: < - 140 | Prediabetes: 140 - 199 | Gestacional < 153 | Diabetes > 200</td>
+                                    <td class="text-muted">Normal: < 140 | Prediabetes: 140 - 199 | Gestacional < 153 | Diabetes > 200</td>
                                 </tr>
                                 <tr>
                                     <td class="fw-bold">UREA</td>
@@ -398,6 +391,26 @@
                                     <td>mg/dL</td>
                                     <td class="text-muted">50 - 140</td>
                                 </tr>
+										<tr>
+                                    <td class="fw-bold">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <span>VLDL</span>
+                                            <button type="button" id="btnCalcularvLDL" class="btn btn-outline-secondary btn-sm py-0 px-1 ms-2 no-print" style="font-size: 10px;">Calcular</button>
+                                        </div>
+                                    </td>
+                                    <td><input type="text" id="txtvLDL" class="form-control form-control-sm form-control-editable"></td>
+                                    <td>mg/dL</td>
+                                    <td class="text-muted">2 - 30</td>
+                                </tr>
+								<tr><td class="fw-bold">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <span>FERRITINA (Metódo: ELFA (Ensayo de fluorescencia ligado a enzimas))</span>
+                                        </div></td>
+                                    <td><input type="text" id="txtFerri" class="form-control form-control-sm form-control-editable"></td>
+                                    <td>ng/mL</td>
+                                    <td class="text-muted">NIÑOS: 7.0 - 140.0 | HOMBRES: 20.0 - 415.0 | MUJERES: 7.0 - 205.0 | FERROPENIA ABSOLUTA: Mujeres < a 20.0 / Hombres < a 30.0 | DEFICIT HIERRO: Inferior a 100.0</td>
+                               	</tr>
+
                             </tbody>
                         </table>
                     </div>
@@ -416,13 +429,13 @@
                                     <td class="fw-bold ps-3">TGO</td>
                                     <td><input type="text" id="txtTGO" class="form-control form-control-sm form-control-editable"></td>
                                     <td>U/L</td>
-                                    <td class="text-muted">10 - 38</td>
+                                    <td class="text-muted">Hombres: Hasta 38.0 | Mujeres: Hasta 31.0</td>
                                 </tr>
                                 <tr>
                                     <td class="fw-bold ps-3">TGP</td>
                                     <td><input type="text" id="txtTGP" class="form-control form-control-sm form-control-editable"></td>
                                     <td>U/L</td>
-                                    <td class="text-muted">10 - 40</td>
+                                    <td class="text-muted">Hombres: Hasta 40.0 | Mujeres: Hasta 32.0 </td>
                                 </tr>
 
                                 <!-- Bilirrubinas -->
@@ -552,8 +565,7 @@
                     <div class="border p-3 rounded bg-white shadow-sm">
                         
                         <!-- Cabecera general -->
-                        <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-3">
-                            <div class="text-primary fw-bold small">ENDOCRINOLOGÍA (GENERAL)</div>
+                        <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-3">                            
                             <div class="w-50">
                                 <!--<select class="form-select form-select-sm" id="metodoEndocrinologia">
                                     <option value="" selected disabled>Seleccione Método Analítico General...</option>
@@ -977,6 +989,130 @@
                                     <td class="text-muted">-</td>
                                     <td class="text-muted">Cualitativo</td>
                                 </tr>
+								<tr><td colspan="4" class="border-0 py-1"></td></tr>
+								<!-- Aglutinaciones Febriles -->
+								<tr>
+								    <td colspan="4" class="table-active fw-bold text-secondary" style="font-size: 9.5px;">
+								        <div class="d-flex justify-content-between align-items-center">
+								            <span class="subcat-titulo">AGLUTINACIONES FEBRILES</span>
+								        </div>
+								    </td>
+								</tr>
+								
+								<!-- Tífico O (EO / Salmonella typhi O) -->
+								<tr>
+								    <td class="fw-bold ps-3">TÍFICO O (EO)</td>
+								    <td>
+								        <select id="cboAglutinaEO" class="form-select form-select-sm form-control-editable">
+											<option value="" selected disabled>Seleccione...</option>
+								            <option value="NEGATIVO" selected>NEGATIVO</option>
+								            <option value="1:20">1:20</option>
+								            <option value="1:40">1:40</option>
+								            <option value="1:80">1:80</option>
+								            <option value="1:160">1:160</option>
+								            <option value="1:320">1:320</option>
+											<option value="" selected>-</option>
+								        </select>
+								    </td>
+								    <td>Dilución</td>
+								    <td class="text-muted">NEGATIVO (&lt; 1:80)</td>
+								</tr>
+								
+								<!-- Tífico H (EH / Salmonella typhi H) -->
+								<tr>
+								    <td class="fw-bold ps-3">TÍFICO H (EH)</td>
+								    <td>
+								        <select id="cboAglutinaEH" class="form-select form-select-sm form-control-editable">
+								            <option value="" selected disabled>Seleccione...</option>
+								            <option value="NEGATIVO" selected>NEGATIVO</option>
+								            <option value="1:20">1:20</option>
+								            <option value="1:40">1:40</option>
+								            <option value="1:80">1:80</option>
+								            <option value="1:160">1:160</option>
+								            <option value="1:320">1:320</option>
+											<option value="" selected>-</option>
+								        </select>
+								    </td>
+								    <td>Dilución</td>
+								    <td class="text-muted">NEGATIVO (&lt; 1:80)</td>
+								</tr>
+								
+								<!-- Paratífico A (PA / Salmonella paratyphi A) -->
+								<tr>
+								    <td class="fw-bold ps-3">PARATÍFICO A (PA)</td>
+								    <td>
+								        <select id="cboAglutinaPA" class="form-select form-select-sm form-control-editable">
+								            <option value="" selected disabled>Seleccione...</option>
+								            <option value="NEGATIVO" selected>NEGATIVO</option>
+								            <option value="1:20">1:20</option>
+								            <option value="1:40">1:40</option>
+								            <option value="1:80">1:80</option>
+								            <option value="1:160">1:160</option>
+								            <option value="1:320">1:320</option>
+											<option value="" selected>-</option>
+								        </select>
+								    </td>
+								    <td>Dilución</td>
+								    <td class="text-muted">NEGATIVO (&lt; 1:80)</td>
+								</tr>
+								
+								<!-- Paratífico B (PB / Salmonella paratyphi B) -->
+								<tr>
+								    <td class="fw-bold ps-3">PARATÍFICO B (PB)</td>
+								    <td>
+								        <select id="cboAglutinaPB" class="form-select form-select-sm form-control-editable">
+								            <option value="" selected disabled>Seleccione...</option>
+								            <option value="NEGATIVO" selected>NEGATIVO</option>
+								            <option value="1:20">1:20</option>
+								            <option value="1:40">1:40</option>
+								            <option value="1:80">1:80</option>
+								            <option value="1:160">1:160</option>
+								            <option value="1:320">1:320</option>
+											<option value="" selected>-</option>
+								        </select>
+								    </td>
+								    <td>Dilución</td>
+								    <td class="text-muted">NEGATIVO (&lt; 1:80)</td>
+								</tr>
+								
+								<!-- Proteus OX-19 (POX19 / Rickettsia) -->
+								<tr>
+								    <td class="fw-bold ps-3">PROTEUS OX-19 (POX19)</td>
+								    <td>
+								        <select id="cboAglutinaPOX19" class="form-select form-select-sm form-control-editable">
+								            <option value="" selected disabled>Seleccione...</option>
+								            <option value="NEGATIVO" selected>NEGATIVO</option>
+								            <option value="1:20">1:20</option>
+								            <option value="1:40">1:40</option>
+								            <option value="1:80">1:80</option>
+								            <option value="1:160">1:160</option>
+								            <option value="1:320">1:320</option>
+											<option value="" selected>-</option>
+								        </select>
+								    </td>
+								    <td>Dilución</td>
+								    <td class="text-muted">NEGATIVO (&lt; 1:80)</td>
+								</tr>
+								
+								<!-- Brucella Abortus (BA / Brucelosis) -->
+								<tr>
+								    <td class="fw-bold ps-3">BRUCELLA ABORTUS (BA)</td>
+								    <td>
+								        <select id="cboAglutinaBA" class="form-select form-select-sm form-control-editable">
+								            <option value="" selected disabled>Seleccione...</option>
+								            <option value="NEGATIVO" selected>NEGATIVO</option>
+								            <option value="1:20">1:20</option>
+								            <option value="1:40">1:40</option>
+								            <option value="1:80">1:80</option>
+								            <option value="1:160">1:160</option>
+								            <option value="1:320">1:320</option>
+											<option value="" selected>-</option>
+								        </select>
+								    </td>
+								    <td>Dilución</td>
+								    <td class="text-muted">NEGATIVO (&lt; 1:80)</td>
+								</tr>
+								<tr><td colspan="4" class="border-0 py-1"></td></tr>
 								<tr>
                                         <td class="fw-bold">
                                                <input type="text" class="form-control form-control-sm fw-bold mb-1" id="inmunoExamen1" placeholder="Ingrese nombre del examen ...">
@@ -1267,7 +1403,7 @@
                                     </td>
                                 </tr>
                 <tr>
-                    <td class="fw-bold">PSA TOTAL
+                    <td class="fw-bold">PSA Total
                         <select class="form-select form-select-sm mt-1" id="metodoPsaT" style="font-size: 10px;">
                             <option value="" selected disabled>Método Analítico...</option>
                             <option value="Metódo: ELFA (Ensayo de fluorescencia ligado a enzimas)">Metódo: ELFA (Ensayo de fluorescencia ligado a enzimas)</option>							
@@ -1364,6 +1500,7 @@
                             <option value="" selected disabled>Seleccione...</option>
                             <option value="Negativo">Negativo</option>
                             <option value="Positivo">Positivo</option>
+							<option value="">-</option>
                         </select>
                     </td>
                     <td class="text-muted">-</td>
@@ -1452,6 +1589,201 @@
                 </tr>
             </tbody>
         </table>
+
+		<!-- Subtítulo 5: Toxicología (Panel de Drogas en Orina) -->
+<!-- Sub-panel Toxicología -->
+<div class="section-title text-primary fw-bold border-bottom pb-1 mb-2 small" data-section-name="TOXICOLOGIA (PANEL DE DROGAS EN ORINA)">TOXICOLOGÍA (PANEL DE DROGAS EN ORINA)</div>
+
+<!-- CONTENEDOR COLAPSABLE -->
+<div class="collapse show" id="collapseToxicologiaContent">
+    
+    <!-- BARRA DE BOTONES DE ACCIÓN RÁPIDA -->
+    <div class="d-flex justify-content-between align-items-center mb-2 pb-1 border-bottom">
+        <span class="text-secondary fw-bold small">DETERMINACIÓN DE SUSTANCIAS</span>
+        <div class="btn-group btn-group-sm" role="group">
+            <button type="button" class="btn btn-outline-success btn-sm" onclick="llenarPanel6Drogas()" style="font-size: 10px;">
+                ✓ Panel 6 Drogas
+            </button>
+            <button type="button" class="btn btn-outline-warning btn-sm" onclick="llenarPanel12Drogas()" style="font-size: 10px;">
+                ⚠ Panel 12 Drogas
+            </button>
+            <button type="button" class="btn btn-outline-danger btn-sm" onclick="limpiarToxicologia()" style="font-size: 10px;">
+                ✕ Limpiar
+            </button>
+        </div>
+    </div>
+
+    <!-- TABLA DE EXÁMENES -->
+    <table class="table table-sm table-bordered align-middle mb-3 small">
+        <thead class="table-light text-muted">
+            <tr>
+                <th>EXAMEN</th>
+                <th>RESULTADO</th>
+                <th>UNIDAD</th>
+                <th>V. REFERENCIA</th>
+            </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td class="fw-bold">MORFINA (MOP)</td>
+            <td>
+                <select class="form-select form-select-sm form-control-editable" id="resMorfina">
+                    <option value="" selected disabled>Seleccione...</option>
+                    <option value="Negativo">Negativo</option>
+                    <option value="Positivo">Positivo</option>
+					<option value="">-</option>
+                </select>
+            </td>
+            <td class="text-muted">ng/mL</td>
+            <td class="text-muted">Positivo &gt; 300</td>
+        </tr>
+        <tr>
+            <td class="fw-bold">OPIÁCEOS (OPI)</td>
+            <td>
+                <select class="form-select form-select-sm form-control-editable" id="resOpiaceos">
+                    <option value="" selected disabled>Seleccione...</option>
+                    <option value="Negativo">Negativo</option>
+                    <option value="Positivo">Positivo</option>
+					<option value="">-</option>
+                </select>
+            </td>
+            <td class="text-muted">ng/mL</td>
+            <td class="text-muted">Positivo &gt; 2000</td>
+        </tr>
+        <tr>
+            <td class="fw-bold">ÉXTASIS (MDMA)</td>
+            <td>
+                <select class="form-select form-select-sm form-control-editable" id="resExtasis">
+                    <option value="" selected disabled>Seleccione...</option>
+                    <option value="Negativo">Negativo</option>
+                    <option value="Positivo">Positivo</option>
+					<option value="">-</option>
+                </select>
+            </td>
+            <td class="text-muted">ng/mL</td>
+            <td class="text-muted">Positivo &gt; 500</td>
+        </tr>
+        <tr>
+            <td class="fw-bold">OXICODONA (OXY)</td>
+            <td>
+                <select class="form-select form-select-sm form-control-editable" id="resOxicodona">
+                    <option value="" selected disabled>Seleccione...</option>
+                    <option value="Negativo">Negativo</option>
+                    <option value="Positivo">Positivo</option>
+					<option value="">-</option>
+                </select>
+            </td>
+            <td class="text-muted">ng/mL</td>
+            <td class="text-muted">Positivo &gt; 100</td>
+        </tr>
+        <tr>
+            <td class="fw-bold">FENCICLIDINA (PCP)</td>
+            <td>
+                <select class="form-select form-select-sm form-control-editable" id="resFenciclidina">
+                    <option value="" selected disabled>Seleccione...</option>
+                    <option value="Negativo">Negativo</option>
+                    <option value="Positivo">Positivo</option>
+					<option value="">-</option>
+                </select>
+            </td>
+            <td class="text-muted">ng/mL</td>
+            <td class="text-muted">Positivo &gt; 25</td>
+        </tr>
+        <tr>
+            <td class="fw-bold">COCAÍNA (COC)</td>
+            <td>
+                <select class="form-select form-select-sm form-control-editable" id="resCocaina">
+                    <option value="" selected disabled>Seleccione...</option>
+                    <option value="Negativo">Negativo</option>
+                    <option value="Positivo">Positivo</option>
+					<option value="">-</option>
+                </select>
+            </td>
+            <td class="text-muted">ng/mL</td>
+            <td class="text-muted">Positivo &gt; 300</td>
+        </tr>
+        <tr>
+            <td class="fw-bold">METADONA (MTD)</td>
+            <td>
+                <select class="form-select form-select-sm form-control-editable" id="resMetadona">
+                    <option value="" selected disabled>Seleccione...</option>
+                    <option value="Negativo">Negativo</option>
+                    <option value="Positivo">Positivo</option>
+					<option value="">-</option>
+                </select>
+            </td>
+            <td class="text-muted">ng/mL</td>
+            <td class="text-muted">Positivo &gt; 300</td>
+        </tr>
+        <tr>
+            <td class="fw-bold">BARBITÚRICOS (BAR)</td>
+            <td>
+                <select class="form-select form-select-sm form-control-editable" id="resBarbituricos">
+                    <option value="" selected disabled>Seleccione...</option>
+                    <option value="Negativo">Negativo</option>
+                    <option value="Positivo">Positivo</option>
+					<option value="">-</option>
+                </select>
+            </td>
+            <td class="text-muted">ng/mL</td>
+            <td class="text-muted">Positivo &gt; 300</td>
+        </tr>
+        <tr>
+            <td class="fw-bold">BENZODIAZEPINAS (BZO)</td>
+            <td>
+                <select class="form-select form-select-sm form-control-editable" id="resBenzodiazepinas">
+                    <option value="" selected disabled>Seleccione...</option>
+                    <option value="Negativo">Negativo</option>
+                    <option value="Positivo">Positivo</option>
+					<option value="">-</option>
+                </select>
+            </td>
+            <td class="text-muted">ng/mL</td>
+            <td class="text-muted">Positivo &gt; 300</td>
+        </tr>
+        <tr>
+            <td class="fw-bold">ANFETAMINAS (AMP)</td>
+            <td>
+                <select class="form-select form-select-sm form-control-editable" id="resAnfetaminas">
+                    <option value="" selected disabled>Seleccione...</option>
+                    <option value="Negativo">Negativo</option>
+                    <option value="Positivo">Positivo</option>
+					<option value="">-</option>
+                </select>
+            </td>
+            <td class="text-muted">ng/mL</td>
+            <td class="text-muted">Positivo &gt; 1000</td>
+        </tr>
+        <tr>
+            <td class="fw-bold">METANFETAMINAS (MET)</td>
+            <td>
+                <select class="form-select form-select-sm form-control-editable" id="resMetanfetaminas">
+                    <option value="" selected disabled>Seleccione...</option>
+                    <option value="Negativo">Negativo</option>
+                    <option value="Positivo">Positivo</option>
+					<option value="">-</option>
+                </select>
+            </td>
+            <td class="text-muted">ng/mL</td>
+            <td class="text-muted">Positivo &gt; 1000</td>
+        </tr>
+        <tr>
+            <td class="fw-bold">MARIHUANA (THC)</td>
+            <td>
+                <select class="form-select form-select-sm form-control-editable" id="resMarihuana">
+                    <option value="" selected disabled>Seleccione...</option>
+                    <option value="Negativo">Negativo</option>
+                    <option value="Positivo">Positivo</option>
+					<option value="">-</option>
+                </select>
+            </td>
+            <td class="text-muted">ng/mL</td>
+            <td class="text-muted">Positivo &gt; 50</td>
+        </tr>
+    </tbody>
+</table>
+</div>
+		
     </div>
 </div>
 
@@ -1494,13 +1826,29 @@
     <div class="border p-3 rounded bg-white shadow-sm">
         
         <!-- TÍTULO PRINCIPAL ÚNICO PARA QUE EL SCRIPT DETECTE TODA LA SECCIÓN -->
-        <div class="section-title text-primary fw-bold border-bottom pb-1 mb-2 small" data-section-name="ELEMENTAL Y MICROSCOPICO">ELEMENTAL Y MICROSCOPICO / EXAMEN ESPECIAL ORINA</div>
-        
+        <div class="section-title text-primary fw-bold border-bottom pb-1 mb-2 small" data-section-name="ELEMENTAL Y MICROSCOPICO">ELEMENTAL Y MICROSCOPICO / EXAMEN ESPECIAL ORINA
+		</div>   
+		<div class="section-body">
+			<div class="d-flex justify-content-end align-items-center gap-1 mb-2">
+		<button type="button" class="btn btn-outline-success py-0 px-2 rounded-pill no-print"" style="font-size: 11px;" onclick="llenarOrinaNormal()">
+            <i class="bi bi-check-circle"></i> Normal
+        </button>
+        <button type="button" class="btn btn-outline-danger py-0 px-2 rounded-pill no-print"" style="font-size: 11px;" onclick="llenarInfeccion()">
+            <i class="bi bi-exclamation-triangle"></i> Infección
+        </button>
+        <!-- BOTÓN BORRAR ORINA -->
+        <button type="button" class="btn btn-outline-secondary py-0 px-2 rounded-pill ms-1 no-print"" style="font-size: 11px;" onclick="limpiarOrina()" title="Limpiar campos de Orina">
+            <i class="bi bi-trash"></i> Limpiar
+        </button>
+		</div>      
+		
         <table class="table table-sm table-bordered align-middle mb-0 small bg-white">
             <thead class="table-light text-muted">
                 <tr><th>EXÁMEN / ELEMENTO</th><th style="width: 25%;">RESULTADO</th><th style="width: 15%;">UNIDAD</th><th>V. REFERENCIA</th></tr>
             </thead>
             <tbody>
+				<!-- Botones de Autocompletado Rápido -->
+				
                 <!-- EXÁMEN FÍSICO -->
 <tr><td colspan="4" class="table-active fw-bold text-secondary" style="font-size: 9.5px;">EXÁMEN FÍSICO</td></tr>
 <tr>
@@ -1583,10 +1931,10 @@
                 <select class="form-select form-select-sm form-control-editable" id="orinaProteinas">
                     <option value="" selected disabled>Seleccione...</option>
                     <option value="Negativo">Negativo</option>                    
-                    <option value="30 mg/dL (+)">30 mg/dL (+)</option>
-                    <option value="100 mg/dL (++)">100 mg/dL (++)</option>
-                    <option value="300 mg/dL (+++)">300 mg/dL (+++)</option>
-                    <option value="Mayor a 1000 mg/dL (++++)">Mayor a 1000 mg/dL (++++)</option>
+                    <option value="(+)">(+)</option>
+                    <option value="(++)">(++)</option>
+                    <option value="(+++)">(+++)</option>
+                    <option value="(++++)">(++++)</option>
                     <option value="Trazas">Trazas</option>
                     <option value=""></option>
                 </select>
@@ -1843,6 +2191,7 @@
 				</tbody>
             </table>
         </div>
+		</div>  
 
                 <!-- EXÁMENES ESPECIALES DE ORINA -->
                 <!-- AQUÍ INICIA CAMBIO 2: NUEVO SUBTÍTULO PARA EXÁMENES ESPECIALES -->
@@ -1888,9 +2237,9 @@
                     <select class="form-control form-control-sm form-control-editable">
                         <option value="" selected disabled>Seleccione...</option>                        
                         <option value=" ">-</option>
-                        <option value="Escasos">Escasos </option>
-                        <option value="Algunos">Algunos</option>
-                        <option value="Numerosos">Numerosos</option>
+                        <option value="(Escasos)">(Escasos) </option>
+                        <option value="Algunos">(Algunos)</option>
+                        <option value="(Numerosos)">(Numerosos)</option>
 						<option value=""></option>
 
                     </select>
@@ -1921,9 +2270,9 @@
                     <select class="form-control form-control-sm form-control-editable">
                         <option value="" selected disabled>Seleccione...</option>                        
                         <option value=" ">-</option>
-                        <option value="Escasos">Escasos </option>
-                        <option value="Algunos">Algunos</option>
-                        <option value="Numerosos">Numerosos</option>
+                        <option value="(Escasos)">(Escasos) </option>
+                        <option value="Algunos">(Algunos)</option>
+                        <option value="(Numerosos)">(Numerosos)</option>
 						<option value=""></option>
 
                     </select>
@@ -1949,12 +2298,31 @@
                     <td class="text-muted">g/dL</td>
                     <td><input type="text" class="form-control form-control-sm text-muted" value="Hombres: 20 - 320 | Mujeres: 20 - 275"></td>
                 </tr>
-                <tr>
-                    <td class="fw-bold ps-3">PROTEINURIA (24 HORAS)</td>
-                    <td><input type="text" class="form-control form-control-sm form-control-editable" id="resProteinuria24"></td>
-                    <td class="text-muted">mg/24h</td>
-                    <td><input type="text" class="form-control form-control-sm text-muted" value="Menor a 150"></td>
-                </tr>
+					
+					<!-- Proteínas en Orina de 24 Horas -->
+					<tr>
+					    <td colspan="4" class="table-active fw-bold text-secondary" style="font-size: 9.5px;">
+					        <div class="d-flex justify-content-between align-items-center">
+					            <span class="subcat-titulo">PROTEINAS EN ORINA DE 24 HORAS</span>
+					        </div>
+					    </td>
+					</tr>
+					
+					<!-- Fila de Volumen en 24 horas -->
+					<tr>
+					    <td class="fw-bold ps-3">Volumen orina en 24 horas</td>
+					    <td><input type="text" class="form-control form-control-sm form-control-editable" id="resVolumenOrina24"></td>
+					    <td class="text-muted">ml</td>
+					    <td class="text-muted"></td>
+					</tr>
+					
+					<!-- Fila de Proteínas en orina de 24 h -->
+					<tr>
+					    <td class="fw-bold ps-3">Proteínas en orina de 24 h.</td>
+					    <td><input type="text" class="form-control form-control-sm form-control-editable" id="resProteinuria24"></td>
+					    <td class="text-muted">mg / 24 h</td>
+					    <td><input type="text" class="form-control form-control-sm text-muted" value="28 - 140"></td>
+					</tr>
             </tbody>
         </table>
 		</div>
@@ -1969,11 +2337,27 @@
         <!-- Subtítulo 1: Prueba  -->
         <div class="section-title text-primary fw-bold border-bottom pb-1 mb-2 small" data-section-name="EXAMEN COPROPARASITARIO">	
             EXAMEN COPROPARASITARIO</div>
+		<div class="section-body">
+			<div class="d-flex justify-content-end align-items-center gap-1 mb-2">
+		<button type="button" class="btn btn-outline-success py-0 px-2 rounded-pill" style="font-size: 11px;" onclick="llenarHecesNormal()">
+            <i class="bi bi-check-circle"></i> Normal
+        </button>
+        <button type="button" class="btn btn-outline-warning py-0 px-2 rounded-pill" style="font-size: 11px;" onclick="llenarHecesParasito()">
+            <i class="bi bi-bug"></i> Q. Histolytica
+        </button>
+        <!-- BOTÓN BORRAR HECES -->
+        <button type="button" class="btn btn-outline-secondary py-0 px-2 rounded-pill ms-1" style="font-size: 11px;" onclick="limpiarHeces()" title="Limpiar campos de Heces">
+            <i class="bi bi-trash"></i> Limpiar
+        </button>
+		</div>
+		
         <table class="table table-sm table-bordered align-middle mb-0 small">		 
             <thead class="table-light text-muted">
                 <tr><th>EXAMEN</th><th>RESULTADO</th><th>UNIDAD</th><th>V. REFERENCIA</th></tr>
             </thead>
-            <tbody>            
+            <tbody>
+				<!-- Botones de Autocompletado Rápido Coproparasitario -->
+
                 <tr><td colspan="4" class="table-active fw-bold text-secondary" style="font-size: 9.5px;">EXAMEN MACROSCÓPICO</td></tr>
                 <tr>
                     <td class="fw-bold ps-3">COLOR</td>
@@ -2260,7 +2644,7 @@
                 <tr>
                     <td class="fw-bold ps-3">LEUCOCITOS</td>
                     <td><input type="text" class="form-control form-control-sm form-control-editable" id="hecesLeucocitos" placeholder="Ej: 0 - 2 x c."></td>
-                    <td class="text-muted">x c.</td>
+                    <td class="text-muted">Positivo / Negativo</td>
                     <td class="text-muted">-</td>
                 </tr>
                 <tr>
@@ -2292,6 +2676,7 @@
                 </tr>
               </tbody>
              </table>
+			</div>
 
 
         <!-- Subtítulo 2:  EXÁMENES ESPECIALES DE HECES  -->
@@ -2607,6 +2992,10 @@
             <li class="nav-item" role="presentation">
                 <button class="nav-link btn-sm fw-bold py-1 px-2 ms-2" id="esputo-subtab" data-bs-toggle="pill" data-bs-target="#esputoSubContent" type="button" role="tab">Esputo BAAR</button>
             </li>
+			<li class="nav-item" role="presentation">
+                <button class="nav-link btn-sm fw-bold py-1 px-2 ms-2" id="espermatograma-subtab" data-bs-toggle="pill" data-bs-target="#espermatogramaSubContent" type="button" role="tab">Espermatograma</button>
+            </li>
+			
         </ul>
 
         <div class="tab-content" id="secrecionesSubContentContainer">
@@ -2829,7 +3218,9 @@
                                 <option value="Tipo Gardnerella Vaginalis / Cocobacilos Gram variables">Tipo Gardnerella Vaginalis / Cocobacilos Gram variables</option>
                                 <option value="Levaduras y/o Pseudohifas compatibles con Candida spp.">Levaduras y/o Pseudohifas compatibles con Candida spp.</option>
                                 <option value="Cocos Gram Positivos">Cocos Gram Positivos</option>
+								<option value="Cocos Gram Negativos">Cocos Gram Negativos</option>
                                 <option value="Bacilos Gram Negativos">Bacilos Gram Negativos</option>
+								<option value="Bacilos Gram Positivos">Bacilos Gram Positivos</option>
                                 <option value="Diplococos Gram Negativos intramicrobianos/extramicrobianos">Diplococos Gram Negativos</option>
                                 <option value="Flora Mixta">Flora Mixta</option>
                             </select>
@@ -2944,6 +3335,220 @@
                 </div>
             </div>
 
+			<!-- Subtítulo 6: Espermatograma -->
+<div class="tab-pane fade" id="espermatogramaSubContent" role="tabpanel">
+                
+                <!-- Título / Botón de colapso -->
+                <div class="section-title text-center text-primary fw-bold border-bottom pb-2 mb-3" 
+                     style="font-size: 13px; cursor: pointer;" 
+                     data-bs-toggle="collapse" 
+                     data-bs-target="#collapseEspermatogramaContent" 
+                     aria-expanded="true" 
+                     aria-controls="collapseEspermatogramaContent"
+                     data-section-name="ESPERMATOGRAMA">
+                    ▲ ESPERMATOGRAMA
+                </div>
+
+                <!-- CONTENEDOR COLAPSABLE -->
+                <div class="collapse show" id="collapseEspermatogramaContent">
+                    
+                    <!-- BARRA DE BOTONES DE ACCIÓN RÁPIDA -->
+                    <div class="d-flex justify-content-between align-items-center mb-2 pb-1 border-bottom">
+                        <span class="text-secondary fw-bold small">ANALISIS DE SEMEN</span>
+                        <div class="btn-group btn-group-sm" role="group">
+                            <button type="button" class="btn btn-outline-success btn-sm" onclick="cargarEspermatogramaNormal()" style="font-size: 10px;">
+                                ✓ Normal
+                            </button>
+                            <button type="button" class="btn btn-outline-warning btn-sm" onclick="cargarEspermatogramaEsterilidad()" style="font-size: 10px;">
+                                ⚠ Esterilidad
+                            </button>
+                            <button type="button" class="btn btn-outline-danger btn-sm" onclick="limpiarEspermatograma()" style="font-size: 10px;">
+                                ✕ Limpiar
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Datos iniciales de la muestra -->
+                    <table class="table table-sm table-bordered align-middle mb-2 small">
+                        <thead class="table-light text-muted">
+                            <tr>
+                                <th>PARAMETRO DE MUESTRA</th>
+                                <th>VALOR</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="fw-bold">MUESTRA</td>
+                                <td>
+                                    <select class="form-select form-select-sm form-control-editable" id="resEspMuestra">
+                                        <option value="" selected disabled>Seleccione...</option>
+                                        <option value="SEMEN">SEMEN</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="fw-bold">HORA DE RECOLECCION</td>
+                                <td><input type="time" class="form-control form-control-sm form-control-editable" id="resEspHoraRecoleccion"></td>
+                            </tr>
+                            <tr>
+                                <td class="fw-bold">HORA DE REALIZACION</td>
+                                <td><input type="time" class="form-control form-control-sm form-control-editable" id="resEspHoraRealizacion"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <!-- Examen Físico, Microscópico, Morfología y Recuento -->
+                    <table class="table table-sm table-bordered align-middle mb-3 small">
+                        <thead class="table-light text-muted">
+                            <tr>
+                                <th>EXAMEN</th>
+                                <th>RESULTADO</th>
+                                <th>UNIDAD</th>
+                                <th>V. REFERENCIA</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- EXAMEN FISICO -->
+                            <tr class="table-secondary fw-bold">
+                                <td colspan="4" class="text-uppercase">EXAMEN FISICO</td>
+                            </tr>
+                            <tr>
+                                <td class="fw-bold">COLOR</td>
+                                <td>
+                                    <select class="form-select form-select-sm form-control-editable" id="resEspColor">
+                                        <option value="" selected disabled>Seleccione...</option>
+                                        <option value="CREMOSO">CREMOSO</option>
+                                        <option value="BLANCO BLANQUECINO">BLANCO BLANQUECINO</option>
+                                        <option value="AMARILLENTO">AMARILLENTO</option>
+                                        <option value="ROJIZO">ROJIZO</option>
+                                    </select>
+                                </td>
+                                <td class="text-muted">-</td>
+                                <td class="text-muted">-</td>
+                            </tr>
+                            <tr>
+                                <td class="fw-bold">PH</td>
+                                <td><input type="number" step="0.1" class="form-control form-control-sm form-control-editable" id="resEspPh"></td>
+                                <td class="text-muted">-</td>
+                                <td class="text-muted">-</td>
+                            </tr>
+                            <tr>
+                                <td class="fw-bold">ASPECTO</td>
+                                <td>
+                                    <select class="form-select form-select-sm form-control-editable" id="resEspAspecto">
+                                        <option value="" selected disabled>Seleccione...</option>
+                                        <option value="OPALECENTE">OPALECENTE</option>
+                                        <option value="HOMOGENEO">HOMOGÉNEO</option>
+                                        <option value="HETEROGENEO">HETEROGÉNEO</option>
+                                        <option value="LIGERO OPALESCENTE">LIGERO OPALESCENTE</option>
+                                    </select>
+                                </td>
+                                <td class="text-muted">-</td>
+                                <td class="text-muted">-</td>
+                            </tr>
+                            <tr>
+                                <td class="fw-bold">VOLUMEN</td>
+                                <td><input type="number" step="0.1" class="form-control form-control-sm form-control-editable" id="resEspVolumen"></td>
+                                <td class="text-muted">ml</td>
+                                <td class="text-muted">3 - 5 ml</td>
+                            </tr>
+                            <tr>
+                                <td class="fw-bold">LICUEFACCION</td>
+                                <td>
+                                    <select class="form-select form-select-sm form-control-editable" id="resEspLicuefaccion">
+                                        <option value="" selected disabled>Seleccione...</option>
+                                        <option value="15 minutos">15 minutos</option>
+                                        <option value="20 minutos">20 minutos</option>
+                                        <option value="30 minutos">30 minutos</option>
+                                        <option value="45 minutos">45 minutos</option>
+                                        <option value="60 minutos">60 minutos</option>
+                                    </select>
+                                </td>
+                                <td class="text-muted">minutos</td>
+                                <td class="text-muted">HASTA 30 minutos</td>
+                            </tr>
+                            <tr>
+                                <td class="fw-bold">FILANCIA</td>
+                                <td>
+                                    <select class="form-select form-select-sm form-control-editable" id="resEspFilancia">
+                                        <option value="" selected disabled>Seleccione...</option>
+                                        <option value="NORMAL">NORMAL</option>
+                                        <option value="MUY FILANTE">MUY FILANTE</option>
+                                        <option value="AUMENTADA">AUMENTADA</option>
+                                        <option value="DISMINUIDA">DISMINUIDA</option>
+                                    </select>
+                                </td>
+                                <td class="text-muted">-</td>
+                                <td class="text-muted">-</td>
+                            </tr>
+
+                            <!-- EXAMEN MICROSCOPICO -->
+                            <tr class="table-secondary fw-bold">
+                                <td colspan="4" class="text-uppercase">EXAMEN MICROSCOPICO</td>
+                            </tr>
+                            <tr>
+                                <td class="fw-bold">MOVILES</td>
+                                <td><input type="number" class="form-control form-control-sm form-control-editable" id="resEspMoviles"></td>
+                                <td class="text-muted">%</td>
+                                <td class="text-muted">60 - 70 %</td>
+                            </tr>
+                            <tr>
+                                <td class="fw-bold">MOVILES RELATIVOS</td>
+                                <td><input type="number" class="form-control form-control-sm form-control-editable" id="resEspMovilesRelativos"></td>
+                                <td class="text-muted">%</td>
+                                <td class="text-muted">10 - 20 %</td>
+                            </tr>
+                            <tr>
+                                <td class="fw-bold">INERTES</td>
+                                <td><input type="number" class="form-control form-control-sm form-control-editable" id="resEspInertes"></td>
+                                <td class="text-muted">%</td>
+                                <td class="text-muted">20 - 30 %</td>
+                            </tr>
+
+                            <!-- MORFOLOGIA -->
+                            <tr class="table-secondary fw-bold">
+                                <td colspan="4" class="text-uppercase">MORFOLOGIA</td>
+                            </tr>
+                            <tr>
+                                <td class="fw-bold">NORFOCEVALICOS</td>
+                                <td><input type="number" class="form-control form-control-sm form-control-editable" id="resEspNorfocefalicos"></td>
+                                <td class="text-muted">%</td>
+                                <td class="text-muted">70%</td>
+                            </tr>
+                            <tr>
+                                <td class="fw-bold">MACROCEFALICOS</td>
+                                <td><input type="number" class="form-control form-control-sm form-control-editable" id="resEspMacrocefalicos"></td>
+                                <td class="text-muted">%</td>
+                                <td class="text-muted">10%</td>
+                            </tr>
+                            <tr>
+                                <td class="fw-bold">MICROCEFALICOS</td>
+                                <td><input type="number" class="form-control form-control-sm form-control-editable" id="resEspMicrocefalicos"></td>
+                                <td class="text-muted">%</td>
+                                <td class="text-muted">10%</td>
+                            </tr>
+                            <tr>
+                                <td class="fw-bold">OTRAS FORMAS</td>
+                                <td><input type="number" class="form-control form-control-sm form-control-editable" id="resEspOtrasFormas"></td>
+                                <td class="text-muted">%</td>
+                                <td class="text-muted">10%</td>
+                            </tr>
+
+                            <!-- RECUENTO -->
+                            <tr class="table-secondary fw-bold">
+                                <td colspan="4" class="text-uppercase">RECUENTO</td>
+                            </tr>
+                            <tr>
+                                <td class="fw-bold">RECUENTO</td>
+                                <td><input type="number" class="form-control form-control-sm form-control-editable" id="resEspRecuento"></td>
+                                <td class="text-muted">millones/ml</td>
+                                <td class="text-muted">50 - 150 millones/ ml</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
         </div>
     </div>
 </div>
@@ -2967,10 +3572,7 @@
             <tbody>
                 <tr>
                     <td colspan="4" class="table-active fw-bold text-secondary" style="font-size: 9.5px;">
-                        <div>
-                            INTERPRETACIÓN DE RESULTADOS: <br>
-                            <strong>NEGATIVO:</strong> Indica ausencia del Antígeno SARS-CoV-2. <br>
-                            <strong>POSITIVO:</strong> Indica la presencia del Antígeno SARS-CoV-2. <br>
+                        <div>                            
                             NOTA: Esta prueba debe solicitarse para la detección del virus de SARS-CoV-2 en individuos que cumplen con criterios clínicos y/o epidemiológicos.
                         </div>
                     </td>                                     
@@ -3020,6 +3622,16 @@
                     <td class="text-muted">-</td>
                     <td class="text-muted">-</td>
                 </tr>
+				<tr><td colspan="4" class="border-0 py-1"></td></tr>
+				<tr>
+                    <td colspan="4" class="table-active fw-bold text-secondary" style="font-size: 9.5px;">
+                        <div>
+                            INTERPRETACIÓN DE RESULTADOS: <br>
+                            <strong>NEGATIVO:</strong> Indica ausencia del Antígeno SARS-CoV-2. <br>
+                            <strong>POSITIVO:</strong> Indica la presencia del Antígeno SARS-CoV-2. <br>
+                    	 </div>
+                    </td>                                     
+                </tr>
 
                 <!-- Fila Principal de Resultado -->
                 <tr class="fila-resultado" data-examen="ANTÍGENO SARS-CoV-2 (COVID-19)">
@@ -3055,7 +3667,6 @@
                 </div>
             </div>
 
-
 		
             
             <!-- TABLA UNIFICADA DE RESULTADOS (Agrupa por categoría y oculta inputs al imprimir/PDF) -->
@@ -3073,15 +3684,7 @@
                 </table>
             </div>
 
-            <!-- Sección de Firmas 
-            <div class="card p-3 mb-3 bg-light no-print">
-                <div class="form-check form-switch">
-                    <input class="form-check-input" type="checkbox" id="chkIncluirFirmas" checked>
-                    <label class="form-check-label fw-bold text-dark" for="chkIncluirFirmas">
-                        Incluir Firmas Digitales (Desmarcar para dejar espacio y firmar a mano)
-                    </label>
-                </div>
-            </div>-->
+            
 
             <!-- Contenedor de las Firmas (Respetando el espacio) -->
            <!-- Panel de Control de Firmas (Opciones dinámicas - No visible en impresión) -->
@@ -3309,6 +3912,16 @@ function actualizarTablaDinamica() {
                         }
                     } else {
                         valor = elemento.value ? elemento.value.trim() : "";
+                        
+                        // --- INTEGRACIÓN CORRECTA DE LA FLECHA ---
+                        if (valor !== "") {
+                            let contenedorInput = elemento.parentElement;
+                            let badgeFlecha = contenedorInput ? contenedorInput.querySelector(".badge-flecha") : null;
+                            if (badgeFlecha && badgeFlecha.textContent) {
+                                let colorFlecha = badgeFlecha.style.color || "";
+                                valor += ` <span style="font-weight:bold; color:${colorFlecha};">${badgeFlecha.textContent}</span>`;
+                            }
+                        }
                     }
                     
                     if (valor !== "") {
@@ -3317,6 +3930,7 @@ function actualizarTablaDinamica() {
                         let referencia = "Ver referencia estándar";
                         let subtituloAsociado = "GENERAL";
                         let textoMetodoFila = ""; // Variable para capturar el método específico de la fila
+						
 
                         let filaOriginal = elemento.closest("tr");
                         if (filaOriginal && filaOriginal.closest("table")) {
@@ -3511,6 +4125,55 @@ window.addEventListener('DOMContentLoaded', () => {
 
 
 
+// 1. Función para buscar y autocompletar paciente según la cédula (Cod/Doc)
+function buscarPaciente() {
+    const cedulaInput = document.getElementById('codDoc');
+    if (!cedulaInput) return;
+    
+    const cedulaBuscada = cedulaInput.value.trim();
+    if (!cedulaBuscada) return;
+
+    const pacientesGuardados = JSON.parse(localStorage.getItem('lab_pacientes')) || [];
+    const pacienteEncontrado = pacientesGuardados.find(p => p.cedula.trim() === cedulaBuscada);
+
+    if (pacienteEncontrado) {
+        // Asigna los valores de forma segura (si están vacíos, coloca espacios en blanco o valores por defecto)
+        if (document.getElementById('nombrePaciente')) {
+            document.getElementById('nombrePaciente').value = pacienteEncontrado.nombre || '';
+        }
+        if (document.getElementById('fechaNacimiento')) {
+            document.getElementById('fechaNacimiento').value = pacienteEncontrado.nacimiento || '';
+        }
+        if (document.getElementById('sexoPaciente')) {
+            document.getElementById('sexoPaciente').value = pacienteEncontrado.genero || ' - ';
+        }
+        if (document.getElementById('telefonoPaciente')) {
+            document.getElementById('telefonoPaciente').value = pacienteEncontrado.telefono || '';
+        }
+
+        cedulaInput.style.borderColor = "green";
+        
+        if (typeof sincronizarDatosImpresion === "function") {
+            sincronizarDatosImpresion();
+        }
+    } else {
+        cedulaInput.style.borderColor = "#ced4da";
+    }
+}
+
+// Activar la búsqueda automática al salir del campo (blur) o presionar Enter
+document.addEventListener("DOMContentLoaded", () => {
+    const inputCedula = document.getElementById('codDoc');
+    if (inputCedula) {
+        inputCedula.addEventListener('blur', buscarPaciente);
+        inputCedula.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                buscarPaciente();
+            }
+        });
+    }
+});
 
 // 2. Almacenar o actualizar internamente al paciente
 function guardarPacienteInterno(paciente) {
@@ -3637,19 +4300,18 @@ async function descargarPDFResultados() {
 
     let nombreArchivoFinal = `${orden}_${nombrePaciente}_${fechaFormateada}.pdf`;
 
+    const bloqueImpresion = document.getElementById("bloquePacienteImpresion");
+    if (bloqueImpresion) bloqueImpresion.classList.remove("d-none");
+
     const elementoOriginal = document.getElementById("pedidoContainer");
     if (!elementoOriginal) return;
-
-    // Clonación del elemento original
     const elementoClonado = elementoOriginal.cloneNode(true);
-
-    // INSERCIÓN: Se pueblan los campos del bloque de paciente en el elemento clonado
-    actualizarDatosPacienteClon(elementoClonado);
 
     if (typeof procesarSelectsParaImpresion === "function") {
         procesarSelectsParaImpresion(elementoClonado, true);
     }
     elementoClonado.querySelectorAll('.no-print').forEach(el => el.remove());
+    if (bloqueImpresion) bloqueImpresion.classList.add("d-none");
 
     const opciones = {
         margin:       5,
@@ -3712,6 +4374,8 @@ async function descargarPDFResultados() {
         } catch (error) {
             console.error("Error al generar el PDF:", error);
             alert("Ocurrió un error al descargar el archivo.");
+        } finally {
+            if (bloqueImpresion) bloqueImpresion.classList.add("d-none");
         }
     });
 }
@@ -3722,41 +4386,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 });
 
-// Función auxilia para actualizar los datos visuales del paciente en un contenedor dado
-function actualizarDatosPacienteClon(contenedor) {
-    const getVal = (id) => document.getElementById(id)?.value?.trim() || '';
-
-    const elIdOrden = contenedor.querySelector('#txtIdOrdenVisual');
-    const elCodDoc = contenedor.querySelector('#txtCodDocVisual');
-    const elNombre = contenedor.querySelector('#txtNombreVisual');
-    const elFechaNac = contenedor.querySelector('#txtFechaNacVisual');
-    const elEdad = contenedor.querySelector('#txtEdadVisual');
-    const elFechaActual = contenedor.querySelector('#txtFechaActualVisual');
-    const elSexo = contenedor.querySelector('#txtSexoVisual');
-    const elTel = contenedor.querySelector('#txtTelVisual');
-
-    const sexoSelect = document.getElementById('sexoPaciente');
-    const sexoText = sexoSelect && sexoSelect.selectedIndex !== -1 ? sexoSelect.options[sexoSelect.selectedIndex].text : '';
-
-    if (elIdOrden) elIdOrden.textContent = getVal('idOrden');
-    if (elCodDoc) elCodDoc.textContent = getVal('codDoc');
-    if (elNombre) elNombre.textContent = getVal('nombrePaciente');
-    if (elFechaNac) elFechaNac.textContent = getVal('fechaNacimiento');
-    if (elEdad) elEdad.textContent = getVal('edadPaciente') ? `${getVal('edadPaciente')} años` : '';
-    if (elFechaActual) elFechaActual.textContent = getVal('fechaActual');
-    if (elSexo) elSexo.textContent = sexoText;
-    if (elTel) elTel.textContent = getVal('telefonoPaciente');
-
-    // Asegurar que el bloque visual sea visible dentro del documento PDF clonado
-    const bloqueClonado = contenedor.querySelector("#bloquePacienteImpresion");
-    if (bloqueClonado) {
-        bloqueClonado.classList.remove("d-none");
-        bloqueClonado.classList.remove("d-print-block");
-    }
-}
-
-
-		
 
 function inicializarSeccionesColapsables() {
     // Inyectar estilos CSS dinámicamente para el efecto hover y diseño del título colapsable
@@ -3821,6 +4450,7 @@ function inicializarSeccionesColapsables() {
         });
     });
 }
+		
 // Función para enviar el resultado en PDF por correo utilizando el campo txtMail
 async function enviarCorreoResultado() {
     const txtMail = document.getElementById('txtMail');
@@ -3911,16 +4541,7 @@ async function enviarCorreoResultado() {
         alert("Ocurrió un error al preparar el documento adjunto.");
     }
 }
-
-// Función auxiliar en caso de que requieras programar la descarga del PDF del paciente
-function descargarPDFSoloPaciente() {
-    // Espacio reservado para lógica de generación PDF con jsPDF o html2pdf si se requiere
-    alert("Función de descarga de PDF para datos del paciente en proceso.");
-}
-
-
-
-	
+		
 function enviarWhatsAppResultado() {
     // 1. Obtener los datos desde los inputs del formulario
     let telefonoInput = document.getElementById('telefonoPaciente')?.value.trim() || "";
@@ -4084,6 +4705,33 @@ document.addEventListener("DOMContentLoaded", function() {
             }
         });
     }
+
+	// 4. CÁLCULO DE VLDL (VLDL = Triglicéridos / 5) - Optimizado con dispatchEvent
+    const btnVLDL = document.getElementById('btnCalcularvLDL');
+    if (btnVLDL) {
+        btnVLDL.addEventListener('click', function() {
+            try {
+                let trigStr = document.getElementById('txtTrigliceridos').value.trim().replace(',', '.');
+                if (trigStr === "") {
+                    alert("Por favor, ingrese el valor de los Triglicéridos.");
+                    return;
+                }
+                
+                let trig = parseFloat(trigStr);
+                if (isNaN(trig) || trig <= 0) {
+                    alert('Ingrese un valor válido de Triglicéridos.');
+                    return;
+                }
+
+                let inputVLDL = document.getElementById('txtvLDL');
+                inputVLDL.value = (trig / 5).toFixed(2);
+                inputVLDL.dispatchEvent(new Event('input', { bubbles: true })); // <-- Añadido para actualizar la vista en tiempo real
+
+            } catch (e) {
+                alert("Ocurrió un error al calcular el VLDL.");
+            }
+        });
+    }
 });
 
 // 4. Cálculo Automático de Bilirrubinas (Pruebas Hepáticas)
@@ -4236,7 +4884,11 @@ function imprimirResultadosFiltrados() {
     window.print();
 }
 
-
+// Función auxiliar en caso de que requieras programar la descarga del PDF del paciente
+function descargarPDFSoloPaciente() {
+    // Espacio reservado para lógica de generación PDF con jsPDF o html2pdf si se requiere
+    alert("Función de descarga de PDF para datos del paciente en proceso.");
+}
 
 
 // Función para guardar o actualizar los datos del paciente según la cédula (Cod/Doc)
@@ -4497,10 +5149,216 @@ function nuevoPaciente() {
 }
 
 
+// Orina boton		
+// SECCIÓN: ORINA
+// ==========================================
+		function llenarOrinaNormal() {
+    // EXÁMEN FÍSICO
+    document.getElementById('orinaColor').value = "Amarillo";
+    document.getElementById('orinaAspecto').value = "Límpido"; // Transparente
+    document.getElementById('orinaDensidad').value = "1020";
+    document.getElementById('orinaPh').value = "6";
 
-        
+    // EXÁMEN QUÍMICO
+    document.getElementById('orinaProteinas').value = "Negativo";
+    document.getElementById('orinaGlucosa').value = "Negativo";
+    document.getElementById('orinaCetonas').value = "";    
+	document.getElementById('orinaBilirrubina').value = "";     
+    document.getElementById('orinaSangre').value = "Negativo";
+    document.getElementById('orinaNitritos').value = "Negativo";
+    document.getElementById('orinaLeucocitesterasa').value = "Negativo";
 
-       // s vaginal
+    // EXAMEN MICROSCÓPICO
+    document.getElementById('orinaEpiteliales').value = "0 - 2";
+    document.getElementById('orinaLeucocitos').value = "0 - 2";
+    document.getElementById('orinaHematies').value = "0 - 1";
+    document.getElementById('orinaBacterias').value = "Escasas";
+    document.getElementById('orinaCristales').value = "Negativo";  
+	document.getElementById('orinaCristales2').value = ""; 
+    document.getElementById('orinaCilindros').value = "Negativo";
+	document.getElementById('orinaMoco').value = "";
+ notificarCambiosOrina();
+    if (typeof actualizarTablaDinamica === 'function') actualizarTablaDinamica();
+}
+
+function llenarInfeccion() {
+    // EXÁMEN FÍSICO
+    document.getElementById('orinaColor').value = "Amarillo";
+    document.getElementById('orinaAspecto').value = "Turbio";
+    document.getElementById('orinaDensidad').value = "1020";
+    document.getElementById('orinaPh').value = "6";
+
+    // EXÁMEN QUÍMICO
+    document.getElementById('orinaProteinas').value = "Negativo";
+    document.getElementById('orinaGlucosa').value = "Negativo";
+    document.getElementById('orinaCetonas').value = "";    
+	document.getElementById('orinaBilirrubina').value = "";
+    document.getElementById('orinaSangre').value = "Negativo";
+    document.getElementById('orinaNitritos').value = "Positivo";
+    document.getElementById('orinaLeucocitesterasa').value = "Positivo (+)";
+
+    // EXAMEN MICROSCÓPICO
+    document.getElementById('orinaEpiteliales').value = "0 - 2";
+    document.getElementById('orinaLeucocitos').value = "0 - 2";
+    document.getElementById('orinaHematies').value = "0 - 1";
+    document.getElementById('orinaBacterias').value = "(+++)";
+    document.getElementById('orinaCristales').value = "Negativo";    
+	document.getElementById('orinaCristales2').value = ""; 
+    document.getElementById('orinaCilindros').value = "Negativo";
+    document.getElementById('orinaMoco').value = "Positivo (+)";
+notificarCambiosOrina();
+    if (typeof actualizarTablaDinamica === 'function') actualizarTablaDinamica();
+}
+		
+function limpiarOrina() {
+    // Lista de todos los select e input de la sección de Orina
+    const idsOrina = [
+        'orinaColor', 'orinaAspecto', 'orinaDensidad', 'orinaPh',
+        'orinaProteinas', 'orinaGlucosa', 'orinaCetonas', 'orinaBilirrubina',
+        'orinaUrobilinogeno', 'orinaSangre', 'orinaNitritos', 'orinaLeucocitesterasa',
+        'orinaEpiteliales', 'orinaLeucocitos', 'orinaHematies', 'orinaBacterias',
+        'orinaCristales', 'orinaCristales2', 'orinaCilindros', 'orinaMoco'
+    ];
+
+    idsOrina.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+            if (el.tagName === 'SELECT') {
+                el.selectedIndex = 0; // Regresa al "Seleccione..."
+            } else {
+                el.value = ''; // Vacía los inputs
+            }
+        }
+    });
+
+    notificarCambiosOrina();
+    if (typeof actualizarTablaDinamica === 'function') actualizarTablaDinamica();
+}
+
+		
+function notificarCambiosOrina() {
+    const idsOrina = [
+        'orinaColor', 'orinaAspecto', 'orinaDensidad', 'orinaPh',
+        'orinaProteinas', 'orinaGlucosa', 'orinaCetonas', 'orinaBilirrubina',
+        'orinaUrobilinogeno', 'orinaSangre', 'orinaNitritos', 'orinaLeucocitesterasa',
+        'orinaEpiteliales', 'orinaLeucocitos', 'orinaHematies', 'orinaBacterias',
+        'orinaCristales', 'orinaCristales2', 'orinaCilindros', 'orinaMoco'
+    ];
+    idsOrina.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+            el.dispatchEvent(new Event('change', { bubbles: true }));
+            el.dispatchEvent(new Event('input', { bubbles: true }));
+        }
+    });
+}
+
+
+// ==========================================
+// SECCIÓN: HECES BOTON
+// ==========================================
+function llenarHecesNormal() {
+    // EXAMEN MACROSCÓPICO
+    document.getElementById('hecesColor').value = "Marrón / Café";
+    document.getElementById('hecesAspecto').value = "Homogénea";
+    document.getElementById('hecesConsistencia').value = "Blanda";
+    document.getElementById('hecesMoco').value = "Ausentes";
+    document.getElementById('hecesSangre').value = "Ausente";
+
+    // EXAMEN MICROSCÓPICO (PARASITOLÓGICO)
+    document.getElementById('hecesParasitos').value = "Negativo / Sin parásitos";
+    document.getElementById('hecesParasitosCant1').value = "";
+    document.getElementById('hecesParasitos2').value = "";
+    document.getElementById('hecesParasitosCant2').value = "";
+    document.getElementById('hecesParasitos3').value = "";
+    document.getElementById('hecesParasitosCant3').value = "";
+
+    document.getElementById('hecesRestos').value = "";
+    document.getElementById('hecesGrasas').value = "Ausentes";
+    document.getElementById('hecesRestosVegetales').value = "Ausentes";
+    document.getElementById('hecesAlmidones').value = "Escasas(+)";
+    document.getElementById('hecesLevaduras').value = "Escasas(+)";
+    document.getElementById('hecesLeucocitos').value = "-";
+    document.getElementById('hecesHematies').value = "-";
+    document.getElementById('hecesOtros').value = "";
+    document.getElementById('hecesFlora').value = "Normal";
+notificarCambiosHeces();
+    if (typeof actualizarTablaDinamica === 'function') actualizarTablaDinamica();
+}
+
+// Function para Parásito Q. Histolytica (basado en la Imagen 2)
+function llenarHecesParasito() {
+    // EXAMEN MACROSCÓPICO
+    document.getElementById('hecesColor').value = "Marrón / Café";
+    document.getElementById('hecesAspecto').value = "Homogénea";
+    document.getElementById('hecesConsistencia').value = "Blanda";
+    document.getElementById('hecesMoco').value = "Ausentes";
+    document.getElementById('hecesSangre').value = "Ausente";
+
+    // EXAMEN MICROSCÓPICO (PARASITOLÓGICO)
+    document.getElementById('hecesParasitos').value = "Quistes de Entamoeba histolytica / dispar";
+    document.getElementById('hecesParasitosCant1').value = "(+)";
+    document.getElementById('hecesParasitos2').value = "";
+    document.getElementById('hecesParasitosCant2').value = "";
+    document.getElementById('hecesParasitos3').value = "";
+    document.getElementById('hecesParasitosCant3').value = "";
+
+    document.getElementById('hecesRestos').value = "";
+    document.getElementById('hecesGrasas').value = "Ausentes";
+    document.getElementById('hecesRestosVegetales').value = "Ausentes";
+    document.getElementById('hecesAlmidones').value = "Moderadas(++)";
+    document.getElementById('hecesLevaduras').value = "Moderadas(++)";
+    document.getElementById('hecesLeucocitos').value = "-";
+    document.getElementById('hecesHematies').value = "-";
+    document.getElementById('hecesOtros').value = "";
+    document.getElementById('hecesFlora').value = "Lig. Aumentada";
+notificarCambiosHeces();
+    if (typeof actualizarTablaDinamica === 'function') actualizarTablaDinamica();
+}
+
+function limpiarHeces() {
+    // Lista de todos los select e input de la sección de Heces
+    const idsHeces = [
+        'hecesColor', 'hecesAspecto', 'hecesConsistencia', 'hecesMoco', 'hecesSangre',
+        'hecesParasitos', 'hecesParasitosCant1', 'hecesParasitos2', 'hecesParasitosCant2',
+        'hecesParasitos3', 'hecesParasitosCant3', 'hecesRestos', 'hecesGrasas',
+        'hecesRestosVegetales', 'hecesAlmidones', 'hecesLevaduras', 'hecesLeucocitos',
+        'hecesHematies', 'hecesOtros', 'hecesFlora'
+    ];
+
+    idsHeces.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+            if (el.tagName === 'SELECT') {
+                el.selectedIndex = 0; // Regresa al "Seleccione..."
+            } else {
+                el.value = ''; // Vacía los inputs
+            }
+        }
+    });
+notificarCambiosHeces();
+    if (typeof actualizarTablaDinamica === 'function') actualizarTablaDinamica();
+}
+		function notificarCambiosHeces() {
+    const idsHeces = [
+        'hecesColor', 'hecesAspecto', 'hecesConsistencia', 'hecesMoco', 'hecesSangre',
+        'hecesParasitos', 'hecesParasitosCant1', 'hecesParasitos2', 'hecesParasitosCant2',
+        'hecesParasitos3', 'hecesParasitosCant3', 'hecesRestos', 'hecesGrasas',
+        'hecesRestosVegetales', 'hecesAlmidones', 'hecesLevaduras', 'hecesLeucocitos',
+        'hecesHematies', 'hecesOtros', 'hecesFlora'
+    ];
+    idsHeces.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+            el.dispatchEvent(new Event('change', { bubbles: true }));
+            el.dispatchEvent(new Event('input', { bubbles: true }));
+        }
+    });
+}
+		
+      // ==========================================
+// SECCIÓN: SECRECIÓN VAGINAL BOTON
+// ==========================================
         function cargarPatronNormal() {
     const selects = document.querySelectorAll('#collapseVaginalContent select');
     const valoresNormal = [
@@ -4539,6 +5397,9 @@ function cargarPatronGardnerella() {
         "Tipo Gardnerella Vaginalis / Cocobacilos Gram variables"     // MICROORGANISMO / HALLAZGO
     ];
     selects.forEach((select, i) => { if (valoresGardnerella[i] !== undefined) select.value = valoresGardnerella[i]; });
+    
+    notificarCambiosSecrecion();
+    if (typeof actualizarTablaDinamica === 'function') actualizarTablaDinamica();
 }
 
 function cargarPatronHongos() {
@@ -4559,63 +5420,286 @@ function cargarPatronHongos() {
         "Levaduras y/o Pseudohifas compatibles con Candida spp."       // MICROORGANISMO / HALLAZGO
     ];
     selects.forEach((select, i) => { if (valoresHongos[i] !== undefined) select.value = valoresHongos[i]; });
+    
+    notificarCambiosSecrecion();
+    if (typeof actualizarTablaDinamica === 'function') actualizarTablaDinamica();
 }
 
 function limpiarSecrecionVaginal() {
     const selects = document.querySelectorAll('#collapseVaginalContent select');
     selects.forEach(select => select.value = "");
+    
+    notificarCambiosSecrecion();
+    if (typeof actualizarTablaDinamica === 'function') actualizarTablaDinamica();
 }
 
-    document.querySelectorAll('.table input').forEach(input => {
-    input.addEventListener('input', function() {
-        if (this.value.trim() !== '') {
-            this.classList.add('con-dato');
-        } else {
-            this.classList.remove('con-dato');
+function notificarCambiosSecrecion() {
+    const selects = document.querySelectorAll('#collapseVaginalContent select');
+    selects.forEach(el => {
+        el.dispatchEvent(new Event('change', { bubbles: true }));
+        el.dispatchEvent(new Event('input', { bubbles: true }));
+    });
+}
+		
+ // botones para espermatograma
+// Cargar valores para una Muestra Normal
+function cargarEspermatogramaNormal() {
+    document.getElementById('resEspMuestra').value = 'SEMEN';
+    document.getElementById('resEspColor').value = 'CREMOSO';
+    document.getElementById('resEspPh').value = '8.0';
+    document.getElementById('resEspAspecto').value = 'OPALECENTE';
+    document.getElementById('resEspVolumen').value = '3.5';
+    document.getElementById('resEspLicuefaccion').value = '20 minutos';
+    document.getElementById('resEspFilancia').value = 'MUY FILANTE';
+
+    // Examen Microscópico
+    document.getElementById('resEspMoviles').value = '65';
+    document.getElementById('resEspMovilesRelativos').value = '15';
+    document.getElementById('resEspInertes').value = '20';
+
+    // Morfología
+    document.getElementById('resEspNorfocefalicos').value = '70';
+    document.getElementById('resEspMacrocefalicos').value = '10';
+    document.getElementById('resEspMicrocefalicos').value = '10';
+    document.getElementById('resEspOtrasFormas').value = '10';
+
+    // Recuento
+    document.getElementById('resEspRecuento').value = '120';
+
+    // Disparar evento change en los inputs si la tabla dinámica escucha eventos
+    notificarCambiosEspermatograma();
+
+    // Actualizar la tabla dinámica
+    if (typeof actualizarTablaDinamica === 'function') {
+        actualizarTablaDinamica();
+    }
+}
+
+// Cargar valores para una Muestra con Esterilidad / Azoospermia
+function cargarEspermatogramaEsterilidad() {
+    document.getElementById('resEspMuestra').value = 'SEMEN';
+    document.getElementById('resEspColor').value = 'BLANCO BLANQUECINO';
+    document.getElementById('resEspPh').value = '7.2';
+    document.getElementById('resEspAspecto').value = 'LIGERO OPALESCENTE';
+    document.getElementById('resEspVolumen').value = '1.0';
+    document.getElementById('resEspLicuefaccion').value = '15 minutos';
+    document.getElementById('resEspFilancia').value = 'NORMAL';
+
+    // Examen Microscópico
+    document.getElementById('resEspMoviles').value = '0';
+    document.getElementById('resEspMovilesRelativos').value = '0';
+    document.getElementById('resEspInertes').value = '100';
+
+    // Morfología
+    document.getElementById('resEspNorfocefalicos').value = '0';
+    document.getElementById('resEspMacrocefalicos').value = '0';
+    document.getElementById('resEspMicrocefalicos').value = '0';
+    document.getElementById('resEspOtrasFormas').value = '0';
+
+    // Recuento
+    document.getElementById('resEspRecuento').value = '0';
+
+    // Disparar evento change en los inputs si la tabla dinámica escucha eventos
+    notificarCambiosEspermatograma();
+
+    // Actualizar la tabla dinámica
+    if (typeof actualizarTablaDinamica === 'function') {
+        actualizarTablaDinamica();
+    }
+}
+
+// Limpiar todos los campos del Espermatograma
+function limpiarEspermatograma() {
+    const camposSelect = [
+        'resEspMuestra', 'resEspColor', 'resEspAspecto', 
+        'resEspLicuefaccion', 'resEspFilancia'
+    ];
+
+    const camposInput = [
+        'resEspHoraRecoleccion', 'resEspHoraRealizacion', 'resEspPh', 
+        'resEspVolumen', 'resEspMoviles', 'resEspMovilesRelativos', 
+        'resEspInertes', 'resEspNorfocefalicos', 'resEspMacrocefalicos', 
+        'resEspMicrocefalicos', 'resEspOtrasFormas', 'resEspRecuento'
+    ];
+
+    camposSelect.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = '';
+    });
+
+    camposInput.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = '';
+    });
+
+    // Disparar evento change en los inputs si la tabla dinámica escucha eventos
+    notificarCambiosEspermatograma();
+
+    // Actualizar la tabla dinámica
+    if (typeof actualizarTablaDinamica === 'function') {
+        actualizarTablaDinamica();
+    }
+}
+
+// Función auxiliar para forzar la emisión del evento 'change' y 'input'
+function notificarCambiosEspermatograma() {
+    const listaIds = [
+        'resEspMuestra', 'resEspColor', 'resEspAspecto', 'resEspLicuefaccion', 'resEspFilancia',
+        'resEspHoraRecoleccion', 'resEspHoraRealizacion', 'resEspPh', 'resEspVolumen', 
+        'resEspMoviles', 'resEspMovilesRelativos', 'resEspInertes', 'resEspNorfocefalicos', 
+        'resEspMacrocefalicos', 'resEspMicrocefalicos', 'resEspOtrasFormas', 'resEspRecuento'
+    ];
+
+    listaIds.forEach(id => {
+        const elemento = document.getElementById(id);
+        if (elemento) {
+            elemento.dispatchEvent(new Event('change', { bubbles: true }));
+            elemento.dispatchEvent(new Event('input', { bubbles: true }));
         }
     });
-});    
+}
+		
+// Rellenar Panel de 6 Drogas (Basado en la imagen de referencia: Marihuana, Cocaína, Éxtasis, Opiáceos, Anfetaminas, Benzodiazepinas)
+function llenarPanel6Drogas() {
+    // 6 Drogas del panel activo como Negativo
+    document.getElementById('resMarihuana').value = "Negativo";
+    document.getElementById('resCocaina').value = "Negativo";
+    document.getElementById('resExtasis').value = "Negativo";
+    document.getElementById('resOpiaceos').value = "Negativo";
+    document.getElementById('resAnfetaminas').value = "Negativo";
+    document.getElementById('resBenzodiazepinas').value = "Negativo";
 
-    
-       
-       
+    // Las otras 6 drogas del panel completo se dejan vacías (-)
+    document.getElementById('resMorfina').value = "";
+    document.getElementById('resOxicodona').value = "";
+    document.getElementById('resFenciclidina').value = "";
+    document.getElementById('resMetadona').value = "";
+    document.getElementById('resBarbituricos').value = "";
+    document.getElementById('resMetanfetaminas').value = "";
+
+    notificarCambiosToxicologia();
+    if (typeof actualizarTablaDinamica === 'function') actualizarTablaDinamica();
+}
+
+// Rellenar Panel de 12 Drogas (Todas las sustancias como Negativo)
+function llenarPanel12Drogas() {
+    const idsToxicologia = [
+        'resMorfina', 'resOpiaceos', 'resExtasis', 'resOxicodona', 
+        'resFenciclidina', 'resCocaina', 'resMetadona', 'resBarbituricos', 
+        'resBenzodiazepinas', 'resAnfetaminas', 'resMetanfetaminas', 'resMarihuana'
+    ];
+
+    idsToxicologia.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = "Negativo";
+    });
+
+    notificarCambiosToxicologia();
+    if (typeof actualizarTablaDinamica === 'function') actualizarTablaDinamica();
+}
+
+// Limpiar todos los campos de Toxicología
+function limpiarToxicologia() {
+    const idsToxicologia = [
+        'resMorfina', 'resOpiaceos', 'resExtasis', 'resOxicodona', 
+        'resFenciclidina', 'resCocaina', 'resMetadona', 'resBarbituricos', 
+        'resBenzodiazepinas', 'resAnfetaminas', 'resMetanfetaminas', 'resMarihuana'
+    ];
+
+    idsToxicologia.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.selectedIndex = 0; // Regresa a "Seleccione..." o valor vacío
+    });
+
+    notificarCambiosToxicologia();
+    if (typeof actualizarTablaDinamica === 'function') actualizarTablaDinamica();
+}
+
+// Notificar cambios al DOM para que la tabla dinámica los detecte
+function notificarCambiosToxicologia() {
+    const idsToxicologia = [
+        'resMorfina', 'resOpiaceos', 'resExtasis', 'resOxicodona', 
+        'resFenciclidina', 'resCocaina', 'resMetadona', 'resBarbituricos', 
+        'resBenzodiazepinas', 'resAnfetaminas', 'resMetanfetaminas', 'resMarihuana'
+    ];
+
+    idsToxicologia.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+            el.dispatchEvent(new Event('change', { bubbles: true }));
+            el.dispatchEvent(new Event('input', { bubbles: true }));
+        }
+    });
+}
+
+
+		
+     // colores 
 document.addEventListener("DOMContentLoaded", function () {
     const camposEditable = document.querySelectorAll("#mainTabContent input, #mainTabContent select");
 
-    // Lista de todas las clases posibles para borrarlas de golpe sin dejar rastro de colores anteriores
-    const clasesColor = ["bg-verde-azulado", "bg-rosado", "bg-naranja", "bg-rojo", "bg-celeste"];
+    // Clases estáticas definidas en el CSS
+    const clasesColor = ["bg-verde-pastel", "bg-rosado", "bg-tomate", "bg-rojo"];
+
+    // Función para generar y aplicar colores aleatorios pastel de forma forzada
+    function aplicarColorPastelAleatorio(elemento) {
+        // Tono aleatorio (0-360), saturación (75%), luminosidad alta para fondo pastel (88%)
+        const hue = Math.floor(Math.random() * 360);
+        
+        const bgColor = `hsl(${hue}, 75%, 88%)`;
+        const borderColor = `hsl(${hue}, 65%, 60%)`;
+        const textColor = `hsl(${hue}, 85%, 15%)`;
+
+        // Se usa setProperty con '!important' para garantizar que aplique sobre el fondo
+        elemento.style.setProperty("background-color", bgColor, "important");
+        elemento.style.setProperty("border-color", borderColor, "important");
+        elemento.style.setProperty("color", textColor, "important");
+        elemento.style.setProperty("font-weight", "bold", "important");
+    }
+
+    function limpiarEstilos(elemento) {
+        // Quita las clases estáticas
+        elemento.classList.remove(...clasesColor);
+        
+        // Limpia todos los estilos en línea aplicados manualmente
+        elemento.style.removeProperty("background-color");
+        elemento.style.removeProperty("border-color");
+        elemento.style.removeProperty("color");
+        elemento.style.removeProperty("font-weight");
+    }
 
     function actualizarColorResaltado(elemento) {
-        // Quitamos cualquier color asignado previamente
-        elemento.classList.remove(...clasesColor);
+        // Limpiamos siempre antes de validar
+        limpiarEstilos(elemento);
+
+        const valor = elemento.value ? elemento.value.trim() : "";
+
+        // Si no tiene valor válido, se queda blanco / sin estilo
+        if (valor === "" || valor === "-" || valor === " ") {
+            return;
+        }
 
         // CASO 1: Si es un combo box (<select>)
         if (elemento.tagName.toUpperCase() === "SELECT") {
-            const index = elemento.selectedIndex;
-            const valor = elemento.value ? elemento.value.trim() : "";
+            const index = elemento.selectedIndex; // Índice de la opción elegida (0, 1, 2, 3...)
 
-            // Si no ha elegido nada válido o la primera opción no tiene valor real
-            if (index <= 0 || valor === "" || valor === "-" || valor === " ") {
-                return; // Se queda sin clase de color
-            }
-
-            // Asignación de colores por posición elegida (índice base 0)
-            if (index === 1) {        // 2º elemento de la lista
+            if (index === 0) {         // 1º elemento
+                elemento.classList.add("bg-verde-pastel");
+            } else if (index === 1) {  // 2º elemento
                 elemento.classList.add("bg-rosado");
-            } else if (index === 2) { // 3º elemento de la lista
-                elemento.classList.add("bg-naranja");
-            } else if (index === 3) { // 4º elemento de la lista
+            } else if (index === 2) {  // 3º elemento (Tomate)
+                elemento.classList.add("bg-tomate");
+            } else if (index === 3) {  // 4º elemento (Rojo)
                 elemento.classList.add("bg-rojo");
-            } else if (index >= 4) { // 5º elemento en adelante
-                elemento.classList.add("bg-celeste");
+            } else if (index >= 4) {   // 5º elemento en adelante (Aleatorio)
+                aplicarColorPastelAleatorio(elemento);
             }
         } 
         // CASO 2: Si es un campo de texto (<input>)
         else {
-            const valor = elemento.value ? elemento.value.trim() : "";
-
-            if (valor !== "" && valor !== "-" && valor !== " ") {
-                elemento.classList.add("bg-verde-azulado");
+            const tiposOmitidos = ["checkbox", "radio", "submit", "button", "file"];
+            if (!tiposOmitidos.includes(elemento.type)) {
+                elemento.classList.add("bg-verde-pastel");
             }
         }
     }
@@ -4624,17 +5708,15 @@ document.addEventListener("DOMContentLoaded", function () {
         // Ejecución al cargar la página
         actualizarColorResaltado(elemento);
 
-        // Eventos para detectar cambios en tiempo real
-        elemento.addEventListener("input", function () {
-            actualizarColorResaltado(this);
-        });
-
-        elemento.addEventListener("change", function () {
-            actualizarColorResaltado(this);
+        // Escuchar cambios
+        ["input", "change"].forEach(evento => {
+            elemento.addEventListener(evento, function () {
+                actualizarColorResaltado(this);
+            });
         });
     });
 });
-
+		
 
 		
 		//flecha barra navergar nav examenes
@@ -4717,6 +5799,127 @@ function cerrarModalSobre() {
         if (instance) instance.hide();
     }
 }
+
+		 // PARAMETROS PARA SABER SI ESTA ELEVADO O NO
+document.addEventListener("DOMContentLoaded", function() {
+    // Seleccionamos todos los inputs de resultado en las tablas
+    const inputsResultados = document.querySelectorAll("table.table input.form-control-editable");
+
+    inputsResultados.forEach(input => {
+        // Escuchamos los cambios en tiempo real
+        input.addEventListener("input", function() {
+            evaluarReferencia(this);
+        });
+        
+        // Evaluación inicial para datos precargados
+        if (input.value.trim() !== "") {
+            evaluarReferencia(input);
+        }
+    });
+});
+
+function evaluarReferencia(input) {
+    const fila = input.closest("tr");
+    if (!fila) return;
+
+    const celdaReferencia = fila.querySelector("td.text-muted");
+    if (!celdaReferencia) return;
+
+    const textoRef = celdaReferencia.textContent.trim();
+    
+    // Convertimos comas a puntos para la lectura numérica de decimales
+    const valorStr = input.value.trim().replace(",", ".");
+    
+    // VALIDACIÓN ROBUSTA: Si está vacío, contiene letras o texto no numérico,
+    // simplemente se quita cualquier flecha y NO se altera nada en el input.
+    const valorNum = parseFloat(valorStr);
+    
+    if (valorStr === "" || isNaN(valorNum) || !isFinite(valorNum)) {
+        removerIndicador(input);
+        return;
+    }
+
+    const rangos = extraerRangos(textoRef);
+    if (!rangos) return; // Si la referencia es texto complejo (ej: Ferritina), no hace nada.
+
+    // Evaluación de rangos
+    removerIndicador(input);
+
+    if (valorNum < rangos.min) {
+        agregarIndicador(input, "↓", "#0284c7"); // Bajo de lo normal (Azul)
+    } else if (valorNum > rangos.max) {
+        agregarIndicador(input, "↑", "#dc3545"); // Elevado / Alto (Rojo)
+    }
+}
+
+
+function extraerRangos(texto) {
+    // Si la referencia es larga, contiene barras de separación (|) o clasificaciones múltiples,
+    // se descarta la evaluación automática para evitar flechas incorrectas.
+    if (texto.includes("|") || texto.toUpperCase().includes("NIÑOS") || texto.toUpperCase().includes("HOMBRES") || texto.toUpperCase().includes("MUJERES")) {
+        return null;
+    }
+
+    // Busca patrones simples de números separados por guion (ej: "2 - 30" o "70 - 110")
+    const regex = /([\d.]+)\s*[-–]\s*([\d.]+)/;
+    const match = texto.match(regex);
+
+    if (match) {
+        return {
+            min: parseFloat(match[1]),
+            max: parseFloat(match[2])
+        };
+    }
+    return null;
+}
+		
+function agregarIndicador(input, flecha, color) {
+    let contenedor = input.parentElement;
+    contenedor.style.position = "relative";
+
+    let badge = contenedor.querySelector(".badge-flecha");
+    if (!badge) {
+        badge = document.createElement("span");
+        badge.className = "badge-flecha";
+        badge.style.position = "absolute";
+        badge.style.right = "8px";
+        badge.style.top = "50%";
+        badge.style.transform = "translateY(-50%)";
+        badge.style.fontWeight = "bold";
+        badge.style.pointerEvents = "none"; // Evita interferir con la selección del input
+        contenedor.appendChild(badge);
+    }
+
+    badge.textContent = flecha;
+    badge.style.color = color;
+    input.style.paddingRight = "24px";
+}
+
+function removerIndicador(input) {
+    let contenedor = input.parentElement;
+    let badge = contenedor.querySelector(".badge-flecha");
+    if (badge) {
+        badge.remove();
+    }
+    input.style.paddingRight = "";
+}
+		function obtenerResultadoConFlecha(input) {
+    let valor = input.value.trim();
+    if (valor === "") return "";
+
+    // Verificar si el contenedor del input tiene un badge con la flecha
+    let contenedor = input.parentElement;
+    let badge = contenedor ? contenedor.querySelector(".badge-flecha") : null;
+
+    if (badge && badge.textContent) {
+        // Concatenamos el valor con la flecha (ejemplo: "11 ↓" o "20 ↓")
+        return `${valor} ${badge.textContent}`;
+    }
+
+    return valor;
+}
+		
+									
     </script>
 	<!-- Modal para Gestión e Impresión de Sobres (Tu modal original) -->
 <div class="modal fade" id="modalSobre" tabindex="-1" aria-labelledby="modalSobreLabel" aria-hidden="true">
