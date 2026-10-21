@@ -989,6 +989,116 @@
                                     <td class="text-muted">-</td>
                                     <td class="text-muted">Cualitativo</td>
                                 </tr>
+								<!-- Aglutinaciones Febriles -->
+								<tr>
+								    <td colspan="4" class="table-active fw-bold text-secondary" style="font-size: 9.5px;">
+								        <div class="d-flex justify-content-between align-items-center">
+								            <span class="subcat-titulo">AGLUTINACIONES FEBRILES</span>
+								        </div>
+								    </td>
+								</tr>
+								
+								<!-- Tífico O (EO / Salmonella typhi O) -->
+								<tr>
+								    <td class="fw-bold ps-3">TÍFICO O (EO)</td>
+								    <td>
+								        <select id="cboAglutinaEO" class="form-select form-select-sm form-control-editable">
+								            <option value="NEGATIVO" selected>NEGATIVO</option>
+								            <option value="1:20">1:20</option>
+								            <option value="1:40">1:40</option>
+								            <option value="1:80">1:80</option>
+								            <option value="1:160">1:160</option>
+								            <option value="1:320">1:320</option>
+								        </select>
+								    </td>
+								    <td>Dilución</td>
+								    <td class="text-muted">NEGATIVO (&lt; 1:80)</td>
+								</tr>
+								
+								<!-- Tífico H (EH / Salmonella typhi H) -->
+								<tr>
+								    <td class="fw-bold ps-3">TÍFICO H (EH)</td>
+								    <td>
+								        <select id="cboAglutinaEH" class="form-select form-select-sm form-control-editable">
+								            <option value="NEGATIVO" selected>NEGATIVO</option>
+								            <option value="1:20">1:20</option>
+								            <option value="1:40">1:40</option>
+								            <option value="1:80">1:80</option>
+								            <option value="1:160">1:160</option>
+								            <option value="1:320">1:320</option>
+								        </select>
+								    </td>
+								    <td>Dilución</td>
+								    <td class="text-muted">NEGATIVO (&lt; 1:80)</td>
+								</tr>
+								
+								<!-- Paratífico A (PA / Salmonella paratyphi A) -->
+								<tr>
+								    <td class="fw-bold ps-3">PARATÍFICO A (PA)</td>
+								    <td>
+								        <select id="cboAglutinaPA" class="form-select form-select-sm form-control-editable">
+								            <option value="NEGATIVO" selected>NEGATIVO</option>
+								            <option value="1:20">1:20</option>
+								            <option value="1:40">1:40</option>
+								            <option value="1:80">1:80</option>
+								            <option value="1:160">1:160</option>
+								            <option value="1:320">1:320</option>
+								        </select>
+								    </td>
+								    <td>Dilución</td>
+								    <td class="text-muted">NEGATIVO (&lt; 1:80)</td>
+								</tr>
+								
+								<!-- Paratífico B (PB / Salmonella paratyphi B) -->
+								<tr>
+								    <td class="fw-bold ps-3">PARATÍFICO B (PB)</td>
+								    <td>
+								        <select id="cboAglutinaPB" class="form-select form-select-sm form-control-editable">
+								            <option value="NEGATIVO" selected>NEGATIVO</option>
+								            <option value="1:20">1:20</option>
+								            <option value="1:40">1:40</option>
+								            <option value="1:80">1:80</option>
+								            <option value="1:160">1:160</option>
+								            <option value="1:320">1:320</option>
+								        </select>
+								    </td>
+								    <td>Dilución</td>
+								    <td class="text-muted">NEGATIVO (&lt; 1:80)</td>
+								</tr>
+								
+								<!-- Proteus OX-19 (POX19 / Rickettsia) -->
+								<tr>
+								    <td class="fw-bold ps-3">PROTEUS OX-19 (POX19)</td>
+								    <td>
+								        <select id="cboAglutinaPOX19" class="form-select form-select-sm form-control-editable">
+								            <option value="NEGATIVO" selected>NEGATIVO</option>
+								            <option value="1:20">1:20</option>
+								            <option value="1:40">1:40</option>
+								            <option value="1:80">1:80</option>
+								            <option value="1:160">1:160</option>
+								            <option value="1:320">1:320</option>
+								        </select>
+								    </td>
+								    <td>Dilución</td>
+								    <td class="text-muted">NEGATIVO (&lt; 1:80)</td>
+								</tr>
+								
+								<!-- Brucella Abortus (BA / Brucelosis) -->
+								<tr>
+								    <td class="fw-bold ps-3">BRUCELLA ABORTUS (BA)</td>
+								    <td>
+								        <select id="cboAglutinaBA" class="form-select form-select-sm form-control-editable">
+								            <option value="NEGATIVO" selected>NEGATIVO</option>
+								            <option value="1:20">1:20</option>
+								            <option value="1:40">1:40</option>
+								            <option value="1:80">1:80</option>
+								            <option value="1:160">1:160</option>
+								            <option value="1:320">1:320</option>
+								        </select>
+								    </td>
+								    <td>Dilución</td>
+								    <td class="text-muted">NEGATIVO (&lt; 1:80)</td>
+								</tr>
 								<tr>
                                         <td class="fw-bold">
                                                <input type="text" class="form-control form-control-sm fw-bold mb-1" id="inmunoExamen1" placeholder="Ingrese nombre del examen ...">
@@ -1467,19 +1577,47 @@
         </table>
 
 		<!-- Subtítulo 5: Toxicología (Panel de Drogas en Orina) -->
-<div class="section-title text-primary fw-bold border-bottom pb-1 mb-2 small" data-section-name="TOXICOLOGIA (PANEL DE DROGAS EN ORINA)">
-    TOXICOLOGÍA (PANEL DE DROGAS EN ORINA)
+<!-- Sub-panel Toxicología -->
+<div class="section-title text-center text-primary fw-bold border-bottom pb-2 mb-3" 
+     style="font-size: 13px; cursor: pointer;" 
+     data-bs-toggle="collapse" 
+     data-bs-target="#collapseToxicologiaContent" 
+     aria-expanded="true" 
+     aria-controls="collapseToxicologiaContent"
+     data-section-name="TOXICOLOGIA (PANEL DE DROGAS EN ORINA)">
+    ▲ TOXICOLOGÍA (PANEL DE DROGAS EN ORINA)
 </div>
-<table class="table table-sm table-bordered align-middle mb-3 small">
-    <thead class="table-light text-muted">
-        <tr>
-            <th>EXAMEN</th>
-            <th>RESULTADO</th>
-            <th>UNIDAD</th>
-            <th>V. REFERENCIA</th>
-        </tr>
-    </thead>
-    <tbody>
+
+<!-- CONTENEDOR COLAPSABLE -->
+<div class="collapse show" id="collapseToxicologiaContent">
+    
+    <!-- BARRA DE BOTONES DE ACCIÓN RÁPIDA -->
+    <div class="d-flex justify-content-between align-items-center mb-2 pb-1 border-bottom">
+        <span class="text-secondary fw-bold small">DETERMINACIÓN DE SUSTANCIAS</span>
+        <div class="btn-group btn-group-sm" role="group">
+            <button type="button" class="btn btn-outline-success btn-sm" onclick="llenarPanel6Drogas()" style="font-size: 10px;">
+                ✓ Panel 6 Drogas
+            </button>
+            <button type="button" class="btn btn-outline-warning btn-sm" onclick="llenarPanel12Drogas()" style="font-size: 10px;">
+                ⚠ Panel 12 Drogas
+            </button>
+            <button type="button" class="btn btn-outline-danger btn-sm" onclick="limpiarToxicologia()" style="font-size: 10px;">
+                ✕ Limpiar
+            </button>
+        </div>
+    </div>
+
+    <!-- TABLA DE EXÁMENES -->
+    <table class="table table-sm table-bordered align-middle mb-3 small">
+        <thead class="table-light text-muted">
+            <tr>
+                <th>EXAMEN</th>
+                <th>RESULTADO</th>
+                <th>UNIDAD</th>
+                <th>V. REFERENCIA</th>
+            </tr>
+        </thead>
+        <tbody>
         <tr>
             <td class="fw-bold">MORFINA (MOP)</td>
             <td>
@@ -5401,7 +5539,81 @@ function notificarCambiosEspermatograma() {
     });
 }
 		
-    
+// Rellenar Panel de 6 Drogas (Basado en la imagen de referencia: Marihuana, Cocaína, Éxtasis, Opiáceos, Anfetaminas, Benzodiazepinas)
+function llenarPanel6Drogas() {
+    // 6 Drogas del panel activo como Negativo
+    document.getElementById('resMarihuana').value = "Negativo";
+    document.getElementById('resCocaina').value = "Negativo";
+    document.getElementById('resExtasis').value = "Negativo";
+    document.getElementById('resOpiaceos').value = "Negativo";
+    document.getElementById('resAnfetaminas').value = "Negativo";
+    document.getElementById('resBenzodiazepinas').value = "Negativo";
+
+    // Las otras 6 drogas del panel completo se dejan vacías (-)
+    document.getElementById('resMorfina').value = "";
+    document.getElementById('resOxicodona').value = "";
+    document.getElementById('resFenciclidina').value = "";
+    document.getElementById('resMetadona').value = "";
+    document.getElementById('resBarbituricos').value = "";
+    document.getElementById('resMetanfetaminas').value = "";
+
+    notificarCambiosToxicologia();
+    if (typeof actualizarTablaDinamica === 'function') actualizarTablaDinamica();
+}
+
+// Rellenar Panel de 12 Drogas (Todas las sustancias como Negativo)
+function llenarPanel12Drogas() {
+    const idsToxicologia = [
+        'resMorfina', 'resOpiaceos', 'resExtasis', 'resOxicodona', 
+        'resFenciclidina', 'resCocaina', 'resMetadona', 'resBarbituricos', 
+        'resBenzodiazepinas', 'resAnfetaminas', 'resMetanfetaminas', 'resMarihuana'
+    ];
+
+    idsToxicologia.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = "Negativo";
+    });
+
+    notificarCambiosToxicologia();
+    if (typeof actualizarTablaDinamica === 'function') actualizarTablaDinamica();
+}
+
+// Limpiar todos los campos de Toxicología
+function limpiarToxicologia() {
+    const idsToxicologia = [
+        'resMorfina', 'resOpiaceos', 'resExtasis', 'resOxicodona', 
+        'resFenciclidina', 'resCocaina', 'resMetadona', 'resBarbituricos', 
+        'resBenzodiazepinas', 'resAnfetaminas', 'resMetanfetaminas', 'resMarihuana'
+    ];
+
+    idsToxicologia.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.selectedIndex = 0; // Regresa a "Seleccione..." o valor vacío
+    });
+
+    notificarCambiosToxicologia();
+    if (typeof actualizarTablaDinamica === 'function') actualizarTablaDinamica();
+}
+
+// Notificar cambios al DOM para que la tabla dinámica los detecte
+function notificarCambiosToxicologia() {
+    const idsToxicologia = [
+        'resMorfina', 'resOpiaceos', 'resExtasis', 'resOxicodona', 
+        'resFenciclidina', 'resCocaina', 'resMetadona', 'resBarbituricos', 
+        'resBenzodiazepinas', 'resAnfetaminas', 'resMetanfetaminas', 'resMarihuana'
+    ];
+
+    idsToxicologia.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+            el.dispatchEvent(new Event('change', { bubbles: true }));
+            el.dispatchEvent(new Event('input', { bubbles: true }));
+        }
+    });
+}
+
+
+		
      // colores 
 document.addEventListener("DOMContentLoaded", function () {
     const camposEditable = document.querySelectorAll("#mainTabContent input, #mainTabContent select");
