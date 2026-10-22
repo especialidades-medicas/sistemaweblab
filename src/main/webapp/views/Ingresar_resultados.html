@@ -3886,7 +3886,7 @@ function actualizarTablaDinamica() {
         const titulosSeccion = pane.querySelectorAll('.section-title');
 
         titulosSeccion.forEach(tituloElem => {
-            const tituloSeccion = tituloElem.getAttribute('data-section-name');
+            const tituloSeccion = tituloElem.getAttribute('data-section-name') || "EXÁMENES";
             
             let siguiente = tituloElem.nextElementSibling;
             let contenedorSeccion = [];
@@ -3902,138 +3902,157 @@ function actualizarTablaDinamica() {
             contenedorSeccion.forEach(el => {
                 let elementosEditables = el.querySelectorAll('.form-control-editable');
 
-                // También incluimos los inputs de resultados personalizados por si no tienen la clase form-control-editable pero sí un id de resultado
-                let filasTabla = el.tagName.toLowerCase() === 'table' ? el.querySelectorAll('tbody tr') : [];
-                
-                filasTabla.forEach(filaOriginal => {
-                    // Verificamos si la fila contiene elementos editables o inputs personalizados
-                    let elementosFila = filaOriginal.querySelectorAll('.form-control-editable, input[id^="resinmuno"], input[id^="resinm"], input[id^="res"]');
-                    
-                    elementosFila.forEach(elemento => {
-                        let valor = "";
-                        if (elemento.tagName.toLowerCase() === 'select') {
-                            valor = elemento.selectedIndex >= 0 ? elemento.options[elemento.selectedIndex].text.trim() : "";
-                            if (valor.includes("Seleccione") || valor === "" || valor === "-") {
-                                valor = "";
-                            }
-                        } else {
-                            valor = elemento.value ? elemento.value.trim() : "";
-                            
-                            // --- INTEGRACIÓN CORRECTA DE LA FLECHA ---
-                            if (valor !== "") {
-                                let contenedorInput = elemento.parentElement;
-                                let badgeFlecha = contenedorInput ? contenedorInput.querySelector(".badge-flecha") : null;
-                                if (badgeFlecha && badgeFlecha.textContent) {
-                                    let colorFlecha = badgeFlecha.style.color || "";
-                                    valor += ` <span style="font-weight:bold; color:${colorFlecha};">${badgeFlecha.textContent}</span>`;
-                                }
-                            }
+                elementosEditables.forEach(elemento => {
+                    let valor = "";
+                    if (elemento.tagName.toLowerCase() === 'select') {
+                        valor = elemento.selectedIndex >= 0 ? elemento.options[elemento.selectedIndex].text.trim() : "";
+                        if (valor.includes("Seleccione") || valor === "" || valor === "-") {
+                            valor = "";
                         }
+                    } else {
+                        valor = elemento.value ? elemento.value.trim() : "";
                         
-                        // Si la celda de resultado tiene valor O es una fila de examen personalizado donde el input de nombre tiene texto aunque el resultado esté pendiente
-                        let inputNombreCustom = filaOriginal.querySelector('input[id^="nombreExamen"], input[id^="inmunoExamen"]');
-                        let tieneNombreCustomValido = inputNombreCustom && inputNombreCustom.value.trim() !== "";
-
-                        if (valor !== "" || tieneNombreCustomValido) {
-                            let nombreExamen = "";
-                            let unidad = "-";
-                            let referencia = "Ver referencia estándar";
-                            let subtituloAsociado = "GENERAL";
-                            let textoMetodoFila = "";
-
-                            if (filaOriginal && filaOriginal.closest("table")) {
-                                let prevRow = filaOriginal.previousElementSibling;
-                                while (prevRow) {
-                                    if (prevRow.querySelector('td[colspan]')) {
-                                        let clonPrev = prevRow.cloneNode(true);
-                                        clonPrev.querySelectorAll('button').forEach(btn => btn.remove());
-                                        subtituloAsociado = clonPrev.innerText.trim();
-                                        break;
-                                    }
-                                    prevRow = prevRow.previousElementSibling;
-                                }
-
-                                // Buscar método específico de la fila
-                                let selectMetodoFila = filaOriginal.querySelector('select[id*="metodo"]');
-                                if (selectMetodoFila && selectMetodoFila.selectedIndex > 0) {
-                                    let optText = selectMetodoFila.options[selectMetodoFila.selectedIndex].text;
-                                    if (!optText.toLowerCase().includes("seleccione") && !optText.toLowerCase().includes("método analítico")) {
-                                        textoMetodoFila = optText.trim();
-                                    }
-                                }
-
-                                let inputMetodoFila = filaOriginal.querySelector('input[id*="metodo"]');
-                                if (inputMetodoFila && inputMetodoFila.value.trim() !== "") {
-                                    textoMetodoFila = inputMetodoFila.value.trim();
-                                }
-
-                                let celdas = filaOriginal.querySelectorAll("td");
-                                if (celdas.length >= 2) {
-                                    if (inputNombreCustom) {
-                                        let nombreVal = inputNombreCustom.value.trim();
-                                        nombreExamen = (nombreVal !== "" ? nombreVal : "");
-                                    } else {
-                                        let clonCelda = celdas[0].cloneNode(true);
-                                        clonCelda.querySelectorAll('input, select, button').forEach(inp => inp.remove());
-                                        nombreExamen = clonCelda.innerText.trim();
-                                    }
-
-                                    if (nombreExamen !== "") {
-                                        if (textoMetodoFila !== "") {
-                                            nombreExamen += ` <i style="font-size: 0.9em; color: #555;">(${textoMetodoFila})</i>`;
-                                        }
-
-                                        if (celdas.length >= 3) {
-                                            let celdaUnidad = celdas[2];
-                                            let inputUnidad = celdaUnidad.querySelector("input");
-                                            let selectUnidad = celdaUnidad.querySelector("select");
-
-                                            if (inputUnidad && inputUnidad.value.trim() !== "") {
-                                                unidad = inputUnidad.value.trim();
-                                            } else if (selectUnidad && selectUnidad.selectedIndex >= 0) {
-                                                let textoOpt = selectUnidad.options[selectUnidad.selectedIndex].text.trim();
-                                                if (!textoOpt.toLowerCase().includes("método") && !textoOpt.toLowerCase().includes("seleccione") && textoOpt !== "") {
-                                                    unidad = textoOpt;
-                                                }
-                                            } else {
-                                                let textoCelda = celdaUnidad.innerText.trim();
-                                                if (textoCelda !== "") unidad = textoCelda;
-                                            }
-                                        }
-
-                                        referencia = celdas[3] ? (celdas[3].querySelector("input")?.value.trim() || celdas[3].innerText.trim()) : "";
-                                    }
-                                }
-                            }
-
-                            if (nombreExamen !== "") {
-                                let claveUnica = tituloSeccion + "_" + subtituloAsociado + "_" + nombreExamen;
-                                
-                                if (!clavesGlobalesUnicas.has(claveUnica)) {
-                                    clavesGlobalesUnicas.add(claveUnica);
-                                    
-                                    if (!subgruposSeccion[subtituloAsociado]) {
-                                        subgruposSeccion[subtituloAsociado] = [];
-                                    }
-                                    
-                                    subgruposSeccion[subtituloAsociado].push({
-                                        examen: nombreExamen,
-                                        resultado: valor !== "" ? valor : "Pendiente",
-                                        unidad: unidad,
-                                        referencia: referencia
-                                    });
-
-                                    filasValidasDeSeccion.push(true);
-                                }
+                        // --- INTEGRACIÓN CORRECTA DE LA FLECHA ---
+                        if (valor !== "") {
+                            let contenedorInput = elemento.parentElement;
+                            let badgeFlecha = contenedorInput ? contenedorInput.querySelector(".badge-flecha") : null;
+                            if (badgeFlecha && badgeFlecha.textContent) {
+                                let colorFlecha = badgeFlecha.style.color || "";
+                                valor += ` <span style="font-weight:bold; color:${colorFlecha};">${badgeFlecha.textContent}</span>`;
                             }
                         }
-                    });
+                    }
+                    
+                    if (valor !== "") {
+                        let nombreExamen = "";
+                        let unidad = "-";
+                        let referencia = "Ver referencia estándar";
+                        let subtituloAsociado = "GENERAL";
+                        let textoMetodoFila = "";
+
+                        let filaOriginal = elemento.closest("tr");
+                        if (filaOriginal && filaOriginal.closest("table")) {
+                            let prevRow = filaOriginal.previousElementSibling;
+                            while (prevRow) {
+                                if (prevRow.querySelector('td[colspan]')) {
+                                    let clonPrev = prevRow.cloneNode(true);
+                                    clonPrev.querySelectorAll('button').forEach(btn => btn.remove());
+                                    subtituloAsociado = clonPrev.innerText.trim();
+                                    break;
+                                }
+                                prevRow = prevRow.previousElementSibling;
+                            }
+
+                            // Buscar método analítico integrado
+                            let selectMetodoFila = filaOriginal.querySelector('select[id*="metodo"], select[id*="Metodo"]');
+                            if (selectMetodoFila && selectMetodoFila.selectedIndex > 0) {
+                                let optText = selectMetodoFila.options[selectMetodoFila.selectedIndex].text;
+                                if (!optText.toLowerCase().includes("seleccione") && !optText.toLowerCase().includes("método analítico")) {
+                                    textoMetodoFila = optText.trim();
+                                }
+                            }
+
+                            let inputMetodoFila = filaOriginal.querySelector('input[id*="metodo"], input[id*="Metodo"]');
+                            if (inputMetodoFila && inputMetodoFila.value.trim() !== "") {
+                                textoMetodoFila = inputMetodoFila.value.trim();
+                            }
+
+                            let celdas = filaOriginal.querySelectorAll("td");
+                            if (celdas.length >= 2) {
+                                // Soporte mejorado para inputs de nombre de examen personalizados (ej. Inmuno)
+                                let inputNombreCustom = celdas[0].querySelector('input[type="text"]');
+                                if (inputNombreCustom && inputNombreCustom.value.trim() !== "") {
+                                    nombreExamen = inputNombreCustom.value.trim();
+                                } else {
+                                    let clonCelda = celdas[0].cloneNode(true);
+                                    clonCelda.querySelectorAll('input, select, button').forEach(inp => inp.remove());
+                                    nombreExamen = clonCelda.innerText.trim();
+                                }
+
+                                if (nombreExamen === "" && inputNombreCustom) {
+                                    nombreExamen = "Examen Personalizado";
+                                }
+
+                                if (textoMetodoFila !== "") {
+                                    nombreExamen += ` <i style="font-size: 0.9em; color: #555;">(${textoMetodoFila})</i>`;
+                                }
+
+                                if (celdas.length >= 3) {
+                                    let celdaUnidad = celdas[2];
+                                    let inputUnidad = celdaUnidad.querySelector("input");
+                                    let selectUnidad = celdaUnidad.querySelector("select");
+
+                                    if (inputUnidad && inputUnidad.value.trim() !== "") {
+                                        unidad = inputUnidad.value.trim();
+                                    } else if (selectUnidad && selectUnidad.selectedIndex >= 0) {
+                                        let textoOpt = selectUnidad.options[selectUnidad.selectedIndex].text.trim();
+                                        if (!textoOpt.toLowerCase().includes("método") && !textoOpt.toLowerCase().includes("seleccione") && textoOpt !== "") {
+                                            unidad = textoOpt;
+                                        }
+                                    } else {
+                                        let textoCelda = celdaUnidad.innerText.trim();
+                                        if (textoCelda !== "") unidad = textoCelda;
+                                    }
+                                }
+
+                                referencia = celdas[3] ? (celdas[3].querySelector("input")?.value.trim() || celdas[3].innerText.trim()) : "";
+                            }
+                        } 
+                        else {
+                            let contenedorCol = elemento.closest(".col-12") || elemento.closest(".mb-2") || elemento.closest(".card");
+                            if (contenedorCol) {
+                                let labelDiv = contenedorCol.querySelector(".fw-bold, label");
+                                if (labelDiv) nombreExamen = labelDiv.innerText.trim();
+                            }
+
+                            let hermano = elemento.parentElement;
+                            while (hermano) {
+                                if (hermano.classList && (hermano.classList.contains('text-secondary') || hermano.classList.contains('fw-bold'))) {
+                                    subtituloAsociado = hermano.innerText.trim();
+                                    break;
+                                }
+                                hermano = hermano.previousElementSibling || hermano.parentElement;
+                            }
+
+                            // Detección genérica por contenido o atributos de la pestaña para cultivos/secreciones
+                            let paneId = pane.id.toLowerCase();
+                            if (paneId.includes("cultivo") || paneId.includes("secrecion") || paneId.includes("copro")) {
+                                if (elemento.closest("table")) {
+                                    subtituloAsociado = "PRUEBA DE SENSIBILIDAD ANTIMICROBIANA (ANTIBIOGRAMA)";
+                                    let filaAnti = elemento.closest("tr");
+                                    if (filaAnti) {
+                                        let celdaAnti = filaAnti.querySelector("td");
+                                        if (celdaAnti) nombreExamen = `» Antibiótico: ${celdaAnti.innerText.trim()}`;
+                                    }
+                                } else if (!subtituloAsociado || subtituloAsociado === "GENERAL") {
+                                    subtituloAsociado = "DATOS BACTERIOLÓGICOS";
+                                }
+                                referencia = "Negativo / Sin desarrollo";
+                            }
+                        }
+
+                        if (nombreExamen !== "") {
+                            // Clave única más flexible para evitar bloqueos en exámenes repetitivos
+                            let claveUnica = tituloSeccion + "_" + subtituloAsociado + "_" + nombreExamen + "_" + Math.random();
+                            
+                            if (!subgruposSeccion[subtituloAsociado]) {
+                                subgruposSeccion[subtituloAsociado] = [];
+                            }
+                            
+                            subgruposSeccion[subtituloAsociado].push({
+                                examen: nombreExamen,
+                                resultado: valor,
+                                unidad: unidad,
+                                referencia: referencia
+                            });
+
+                            filasValidasDeSeccion.push(true);
+                        }
+                    }
                 });
             });
 
             if (filasValidasDeSeccion.length > 0) {
-                totalValidados += filasValidasDeSeccion.length;
-
                 let filaTitulo = document.createElement("tr");
                 filaTitulo.innerHTML = `<td colspan="4" class="text-primary fw-bold bg-light text-center" style="font-size: 13px;">${tituloSeccion}</td>`;
                 tbody.appendChild(filaTitulo);
@@ -4060,7 +4079,7 @@ function actualizarTablaDinamica() {
         });
     });
 
-    if (totalValidados === 0) {
+    if (tbody.children.length === 0) {
         let filaVacia = document.createElement("tr");
         filaVacia.innerHTML = `<td colspan="4" class="text-center text-muted">No hay exámenes con resultados ingresados.</td>`;
         tbody.appendChild(filaVacia);
