@@ -1,0 +1,826 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TikTok LIVE Pokémon Battle Simulator</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Outfit:wght@400;600;800;900&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Outfit', sans-serif;
+            user-select: none;
+            background-color: #0f172a;
+            color: #f8fafc;
+        }
+        .font-pixel {
+            font-family: 'Press Start 2P', monospace;
+        }
+        
+        /* Custom scrollbars */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(15, 23, 42, 0.6);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(99, 102, 241, 0.5);
+            border-radius: 4px;
+        }
+
+        /* Floating combat text animation */
+        @keyframes floatUp {
+            0% { opacity: 1; transform: translateY(0) scale(1); }
+            50% { transform: translateY(-35px) scale(1.2); }
+            100% { opacity: 0; transform: translateY(-70px) scale(0.9); }
+        }
+        .float-text {
+            animation: floatUp 1.2s cubic-bezier(0.18, 0.89, 0.32, 1.28) forwards;
+            pointer-events: none;
+        }
+
+        /* Sprite pulse & evolution effects */
+        @keyframes glowPulse {
+            0% { filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.8)) brightness(1); }
+            50% { filter: drop-shadow(0 0 25px rgba(236, 72, 153, 1)) brightness(1.8) scale(1.1); }
+            100% { filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.8)) brightness(1); }
+        }
+        .evolving {
+            animation: glowPulse 1.8s infinite ease-in-out;
+        }
+
+        @keyframes hitShake {
+            0%, 100% { transform: translateX(0); }
+            20% { transform: translateX(-12px) rotate(-3deg); }
+            40% { transform: translateX(12px) rotate(3deg); }
+            60% { transform: translateX(-8px); }
+            80% { transform: translateX(8px); }
+        }
+        .hit-shake {
+            animation: hitShake 0.4s ease-in-out;
+        }
+
+        @keyframes attackDashLeft {
+            0% { transform: translateX(0); }
+            40% { transform: translateX(60px) scale(1.1); }
+            100% { transform: translateX(0); }
+        }
+        .dash-attack-left {
+            animation: attackDashLeft 0.4s ease-out;
+        }
+
+        @keyframes attackDashRight {
+            0% { transform: translateX(0); }
+            40% { transform: translateX(-60px) scale(1.1); }
+            100% { transform: translateX(0); }
+        }
+        .dash-attack-right {
+            animation: attackDashRight 0.4s ease-out;
+        }
+
+        /* Particle styles */
+        .particle {
+            position: absolute;
+            pointer-events: none;
+            border-radius: 50%;
+            animation: particleFade 0.8s ease-out forwards;
+        }
+        @keyframes particleFade {
+            0% { opacity: 1; transform: translate(0, 0) scale(1); }
+            100% { opacity: 0; transform: translate(var(--dx), var(--dy)) scale(0); }
+        }
+
+        /* TikTok Live overlay badges */
+        .badge-live {
+            background: linear-gradient(90deg, #ff0050, #00f2fe);
+        }
+    </style>
+</head>
+<body class="h-screen w-screen overflow-hidden flex flex-col lg:flex-row bg-slate-950">
+
+    <!-- MAIN STREAM CANVAS / DISPLAY AREA -->
+    <main class="relative flex-1 h-full flex flex-col justify-between overflow-hidden bg-gradient-to-b from-slate-900 via-indigo-950 to-slate-950 border-r border-slate-800">
+        
+        <!-- STREAM OVERLAY TOP HUD -->
+        <header class="absolute top-0 left-0 right-0 z-30 p-4 flex justify-between items-center bg-gradient-to-b from-slate-950/80 to-transparent pointer-events-none">
+            <div class="flex items-center gap-3 pointer-events-auto">
+                <div class="badge-live text-white font-extrabold px-3 py-1 rounded-full text-xs flex items-center gap-1.5 shadow-lg tracking-wider">
+                    <span class="w-2 h-2 rounded-full bg-white animate-ping"></span> LIVE
+                </div>
+                <div class="bg-slate-900/80 backdrop-blur-md border border-slate-700/60 rounded-full px-3 py-1 text-xs text-slate-200 flex items-center gap-2">
+                    <i class="fa-solid fa-users text-pink-400"></i>
+                    <span id="viewer-count" class="font-bold">1,420</span> Espectadores
+                </div>
+            </div>
+
+            <!-- STREAM HUD RULES / GUIDE -->
+            <div class="bg-slate-900/90 backdrop-blur-md border border-indigo-500/30 rounded-2xl p-2.5 shadow-2xl flex items-center gap-4 pointer-events-auto text-xs">
+                <div class="flex items-center gap-1.5 text-emerald-400 font-bold">
+                    <i class="fa-solid fa-hand-pointer text-sm animate-bounce"></i> Tap-Tap = +1 HP
+                </div>
+                <div class="h-4 w-px bg-slate-700"></div>
+                <div class="flex items-center gap-1.5 text-rose-400 font-bold">
+                    <span>🌹 Rosa</span> = Ataque
+                </div>
+                <div class="h-4 w-px bg-slate-700"></div>
+                <div class="flex items-center gap-1.5 text-amber-400 font-bold">
+                    <span>🍩 Dónut</span> = Evolucionar
+                </div>
+                <div class="h-4 w-px bg-slate-700"></div>
+                <div class="flex items-center gap-1.5 text-purple-400 font-bold">
+                    <span>🏰 Castillo</span> = Ulti (Ataque Final)
+                </div>
+            </div>
+        </header>
+
+        <!-- CONTAINER FOR FLOATING COMBAT TEXT & VFX -->
+        <div id="vfx-container" class="absolute inset-0 pointer-events-none z-40 overflow-hidden"></div>
+
+        <!-- ==================== SCREEN 1: LOBBY / MENU SCREEN ==================== -->
+        <section id="lobby-screen" class="relative z-10 h-full w-full flex flex-col items-center justify-center p-6 transition-all duration-500">
+            <div class="text-center mb-6">
+                <div class="inline-block px-4 py-1.5 rounded-full bg-indigo-500/10 border border-indigo-500/30 text-indigo-400 text-xs font-semibold mb-2">
+                    <i class="fa-solid fa-gamepad mr-1.5"></i> Batalla Pokémon TikTok
+                </div>
+                <h1 class="text-3xl md:text-5xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-pink-500 via-indigo-300 to-cyan-400 drop-shadow-md">
+                    ¡ELIGE TU POKÉMON EN EL CHAT!
+                </h1>
+                <p class="text-slate-400 text-sm md:text-base mt-2">
+                    Escribe tu número de Pokédex en el chat (Ej: <span class="text-amber-400 font-bold">#25</span>, <span class="text-rose-400 font-bold">#4</span>, <span class="text-emerald-400 font-bold">#1</span>)
+                </p>
+            </div>
+
+            <!-- PLAYERS MATCHUP CARDS -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-4xl my-4">
+                
+                <!-- PLAYER 1 LOBBY CARD -->
+                <div id="p1-card" class="relative bg-slate-900/80 backdrop-blur-md border-2 border-indigo-500/40 rounded-3xl p-6 flex flex-col items-center justify-between shadow-2xl transition-all duration-300 hover:border-indigo-400">
+                    <div class="absolute -top-3.5 left-6 bg-indigo-600 text-white font-extrabold text-xs px-3 py-1 rounded-full shadow">
+                        JUGADOR 1 (ROJO)
+                    </div>
+                    
+                    <div class="w-full flex justify-between items-center mt-2">
+                        <span id="p1-lobby-username" class="text-sm font-bold text-indigo-300">
+                            <i class="fa-solid fa-user-circle mr-1"></i> Esperando jugador...
+                        </span>
+                        <span id="p1-lobby-dex" class="text-xs font-pixel text-slate-400">#---</span>
+                    </div>
+
+                    <div class="relative w-40 h-40 flex items-center justify-center my-4 group">
+                        <div class="absolute inset-0 bg-indigo-500/10 rounded-full filter blur-xl group-hover:bg-indigo-500/20 transition-all"></div>
+                        <div id="p1-sprite-container" class="relative z-10 transition-transform duration-300 transform hover:scale-110">
+                            <!-- SVG Sprite rendered dynamically -->
+                        </div>
+                    </div>
+
+                    <div class="text-center w-full">
+                        <h2 id="p1-lobby-name" class="text-2xl font-black text-white tracking-wide">¿?</h2>
+                        <div class="flex justify-center gap-2 mt-2" id="p1-lobby-types">
+                            <span class="bg-slate-800 text-slate-400 text-xs px-2.5 py-0.5 rounded-full">Sin Selección</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PLAYER 2 LOBBY CARD -->
+                <div id="p2-card" class="relative bg-slate-900/80 backdrop-blur-md border-2 border-pink-500/40 rounded-3xl p-6 flex flex-col items-center justify-between shadow-2xl transition-all duration-300 hover:border-pink-400">
+                    <div class="absolute -top-3.5 left-6 bg-pink-600 text-white font-extrabold text-xs px-3 py-1 rounded-full shadow">
+                        JUGADOR 2 (AZUL)
+                    </div>
+
+                    <div class="w-full flex justify-between items-center mt-2">
+                        <span id="p2-lobby-username" class="text-sm font-bold text-pink-300">
+                            <i class="fa-solid fa-user-circle mr-1"></i> Esperando jugador...
+                        </span>
+                        <span id="p2-lobby-dex" class="text-xs font-pixel text-slate-400">#---</span>
+                    </div>
+
+                    <div class="relative w-40 h-40 flex items-center justify-center my-4 group">
+                        <div class="absolute inset-0 bg-pink-500/10 rounded-full filter blur-xl group-hover:bg-pink-500/20 transition-all"></div>
+                        <div id="p2-sprite-container" class="relative z-10 transition-transform duration-300 transform hover:scale-110">
+                            <!-- SVG Sprite rendered dynamically -->
+                        </div>
+                    </div>
+
+                    <div class="text-center w-full">
+                        <h2 id="p2-lobby-name" class="text-2xl font-black text-white tracking-wide">¿?</h2>
+                        <div class="flex justify-center gap-2 mt-2" id="p2-lobby-types">
+                            <span class="bg-slate-800 text-slate-400 text-xs px-2.5 py-0.5 rounded-full">Sin Selección</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- START BATTLE ACTION BUTTON -->
+            <button id="btn-start-battle" onclick="startBattle()" class="mt-4 px-10 py-4 bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 hover:from-emerald-400 hover:to-cyan-400 text-slate-950 font-black text-xl rounded-2xl shadow-xl hover:shadow-emerald-500/25 transition-all transform hover:scale-105 active:scale-95 flex items-center gap-3">
+                <i class="fa-solid fa-swords"></i> ¡INICIAR BATALLA EN VIVO!
+            </button>
+        </section>
+
+
+        <!-- ==================== SCREEN 2: BATTLE ARENA ==================== -->
+        <section id="battle-screen" class="hidden relative z-10 h-full w-full flex flex-col justify-between p-4 md:p-8">
+            
+            <!-- TOP BATTLE HEALTH BARS & STATUS HUD -->
+            <div class="w-full grid grid-cols-2 gap-4 md:gap-8 max-w-5xl mx-auto pt-12">
+                
+                <!-- P1 HEALTH CARD -->
+                <div class="bg-slate-900/90 backdrop-blur-md border border-slate-700/80 rounded-2xl p-3 md:p-4 shadow-xl">
+                    <div class="flex justify-between items-start mb-1">
+                        <div>
+                            <div class="flex items-center gap-2">
+                                <h3 id="b-p1-name" class="font-extrabold text-lg md:text-xl text-white">Pikachu</h3>
+                                <span id="b-p1-level" class="text-xs bg-indigo-500/30 text-indigo-300 px-2 py-0.5 rounded font-bold">Niv. 1</span>
+                            </div>
+                            <p id="b-p1-user" class="text-xs text-indigo-400 font-semibold truncate max-w-[120px] md:max-w-[200px]">@Entrenador1</p>
+                        </div>
+                        <span id="b-p1-hp-text" class="font-pixel text-xs md:text-sm text-emerald-400">100/100 HP</span>
+                    </div>
+
+                    <!-- HP BAR -->
+                    <div class="w-full bg-slate-800 h-4 rounded-full overflow-hidden p-0.5 border border-slate-700">
+                        <div id="b-p1-hp-bar" class="bg-gradient-to-r from-emerald-500 to-teal-400 h-full rounded-full transition-all duration-300 w-full"></div>
+                    </div>
+                </div>
+
+                <!-- P2 HEALTH CARD -->
+                <div class="bg-slate-900/90 backdrop-blur-md border border-slate-700/80 rounded-2xl p-3 md:p-4 shadow-xl">
+                    <div class="flex justify-between items-start mb-1">
+                        <div>
+                            <div class="flex items-center gap-2">
+                                <h3 id="b-p2-name" class="font-extrabold text-lg md:text-xl text-white">Charmander</h3>
+                                <span id="b-p2-level" class="text-xs bg-pink-500/30 text-pink-300 px-2 py-0.5 rounded font-bold">Niv. 1</span>
+                            </div>
+                            <p id="b-p2-user" class="text-xs text-pink-400 font-semibold truncate max-w-[120px] md:max-w-[200px]">@Entrenador2</p>
+                        </div>
+                        <span id="b-p2-hp-text" class="font-pixel text-xs md:text-sm text-emerald-400">100/100 HP</span>
+                    </div>
+
+                    <!-- HP BAR -->
+                    <div class="w-full bg-slate-800 h-4 rounded-full overflow-hidden p-0.5 border border-slate-700">
+                        <div id="b-p2-hp-bar" class="bg-gradient-to-r from-emerald-500 to-teal-400 h-full rounded-full transition-all duration-300 w-full"></div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- BATTLEFIELD SPRITES DISPLAY AREA -->
+            <div class="relative flex-1 w-full max-w-5xl mx-auto flex items-center justify-between px-6 md:px-16 my-4">
+                
+                <!-- P1 BATTLE SPRITE PLATFORM -->
+                <div class="relative flex flex-col items-center">
+                    <!-- Ground Shadow Platform -->
+                    <div class="w-36 md:w-56 h-10 bg-indigo-500/10 rounded-full border border-indigo-500/20 blur-xs flex items-center justify-center"></div>
+                    
+                    <div id="b-p1-sprite" class="absolute bottom-3 w-32 h-32 md:w-48 md:h-48 flex items-center justify-center transition-transform duration-300">
+                        <!-- Dynamic Sprite -->
+                    </div>
+                </div>
+
+                <!-- VS BADGE CENTER -->
+                <div class="relative z-10 flex flex-col items-center">
+                    <span class="font-pixel text-2xl md:text-4xl italic text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-rose-500 drop-shadow-lg animate-pulse">
+                        VS
+                    </span>
+                </div>
+
+                <!-- P2 BATTLE SPRITE PLATFORM -->
+                <div class="relative flex flex-col items-center">
+                    <!-- Ground Shadow Platform -->
+                    <div class="w-36 md:w-56 h-10 bg-pink-500/10 rounded-full border border-pink-500/20 blur-xs flex items-center justify-center"></div>
+                    
+                    <div id="b-p2-sprite" class="absolute bottom-3 w-32 h-32 md:w-48 md:h-48 flex items-center justify-center transition-transform duration-300">
+                        <!-- Dynamic Sprite -->
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- BOTTOM BATTLE LOG BANNER -->
+            <div class="w-full max-w-4xl mx-auto mb-2">
+                <div class="bg-slate-900/90 backdrop-blur-md border border-slate-700/80 rounded-2xl p-3 shadow-2xl flex items-center gap-3">
+                    <div class="bg-amber-500/20 text-amber-400 p-2 rounded-xl text-lg flex items-center justify-center">
+                        <i class="fa-solid fa-scroll"></i>
+                    </div>
+                    <div id="battle-log" class="text-sm font-semibold text-slate-200 truncate flex-1">
+                        ¡La batalla está por comenzar! Los regalos desatan ataques mortales.
+                    </div>
+                    <button onclick="resetToLobby()" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-1.5 rounded-lg border border-slate-700 transition-all">
+                        <i class="fa-solid fa-rotate-right mr-1"></i> Reiniciar
+                    </button>
+                </div>
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!-- ==================== SIDEBAR: TIKTOK LIVE CONTROL PANEL ==================== -->
+    <aside class="w-full lg:w-96 bg-slate-900 border-t lg:border-t-0 lg:border-l border-slate-800 flex flex-col h-auto lg:h-full z-40 shadow-2xl">
+        
+        <!-- SIDEBAR HEADER -->
+        <div class="p-4 border-b border-slate-800 flex justify-between items-center bg-slate-950">
+            <div class="flex items-center gap-2">
+                <i class="fa-brands fa-tiktok text-pink-500 text-xl"></i>
+                <h2 class="font-black text-slate-100 text-base">Panel TikTok LIVE</h2>
+            </div>
+            <span class="text-xs bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-2 py-0.5 rounded-full font-bold">
+                Conectado
+            </span>
+        </div>
+
+        <div class="p-4 flex-1 overflow-y-auto space-y-6">
+
+            <!-- CONTROL 1: SIMULATE CHAT POKEDEX CHOICE -->
+            <div class="bg-slate-800/60 border border-slate-700/70 rounded-2xl p-4 space-y-3">
+                <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider">
+                    <i class="fa-solid fa-comments text-cyan-400 mr-1"></i> Simular Chat (Pokédex #)
+                </label>
+                
+                <div class="grid grid-cols-2 gap-2">
+                    <select id="chat-player-target" class="bg-slate-900 border border-slate-700 text-xs rounded-xl p-2.5 text-slate-200 focus:outline-none focus:border-indigo-500">
+                        <option value="p1">Jugador 1 (Rojo)</option>
+                        <option value="p2">Jugador 2 (Azul)</option>
+                    </select>
+                    <input type="text" id="chat-user-input" placeholder="@Usuario" value="@TrainerX" class="bg-slate-900 border border-slate-700 text-xs rounded-xl p-2.5 text-slate-200 focus:outline-none focus:border-indigo-500">
+                </div>
+
+                <div class="flex gap-2">
+                    <input type="text" id="chat-dex-input" placeholder="Ej: 25, 4, 1, 150..." class="flex-1 bg-slate-900 border border-slate-700 text-xs rounded-xl p-2.5 text-slate-200 focus:outline-none focus:border-indigo-500">
+                    <button onclick="sendChatMessage()" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold px-4 text-xs rounded-xl transition-all shadow">
+                        Enviar
+                    </button>
+                </div>
+                <p class="text-[11px] text-slate-400">Tip: Si el número no existe en la BD, elegirá uno aleatorio.</p>
+            </div>
+
+            <!-- CONTROL 2: TAP-TAP (LIKE / HEAL) BUTTON -->
+            <div class="bg-slate-800/60 border border-slate-700/70 rounded-2xl p-4 space-y-3">
+                <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider">
+                    <i class="fa-solid fa-heart text-pink-500 mr-1"></i> Tap-Tap (Likes de Pantalla)
+                </label>
+                <div class="grid grid-cols-2 gap-2">
+                    <button onclick="triggerTapTap('p1')" class="bg-gradient-to-r from-pink-600 to-rose-600 hover:from-pink-500 hover:to-rose-500 text-white font-extrabold py-3 px-2 rounded-xl text-xs shadow transition-all transform active:scale-95 flex items-center justify-center gap-1.5">
+                        <i class="fa-solid fa-hand-pointer"></i> Tap P1 (+1 HP)
+                    </button>
+                    <button onclick="triggerTapTap('p2')" class="bg-gradient-to-r from-pink-600 to-rose-600 hover:from-pink-500 hover:to-rose-500 text-white font-extrabold py-3 px-2 rounded-xl text-xs shadow transition-all transform active:scale-95 flex items-center justify-center gap-1.5">
+                        <i class="fa-solid fa-hand-pointer"></i> Tap P2 (+1 HP)
+                    </button>
+                </div>
+            </div>
+
+            <!-- CONTROL 3: GIFTS / SPECIAL EVENTS -->
+            <div class="bg-slate-800/60 border border-slate-700/70 rounded-2xl p-4 space-y-3">
+                <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider">
+                    <i class="fa-solid fa-gift text-amber-400 mr-1"></i> Simular Regalos de TikTok
+                </label>
+
+                <!-- TARGET SELECTOR FOR GIFTS -->
+                <div class="flex items-center gap-2 mb-2">
+                    <span class="text-xs text-slate-400">Destino:</span>
+                    <select id="gift-target" class="flex-1 bg-slate-900 border border-slate-700 text-xs rounded-xl p-2 text-slate-200">
+                        <option value="p1">Ataca Jugador 1 ➔ hacia P2</option>
+                        <option value="p2">Ataca Jugador 2 ➔ hacia P1</option>
+                    </select>
+                </div>
+
+                <div class="grid grid-cols-1 gap-2">
+                    
+                    <!-- GIFT: ROSA (ATTACK 1) -->
+                    <button onclick="triggerGift('rose')" class="bg-slate-900 hover:bg-slate-700 border border-rose-500/40 p-2.5 rounded-xl flex items-center justify-between text-xs transition-all group">
+                        <div class="flex items-center gap-2">
+                            <span class="text-xl">🌹</span>
+                            <div class="text-left">
+                                <p class="font-bold text-rose-300">Regalo: Rosa</p>
+                                <p class="text-[10px] text-slate-400">Activa Habilidad Básica (-15 HP)</p>
+                            </div>
+                        </div>
+                        <span class="bg-rose-500/20 text-rose-300 font-bold px-2 py-1 rounded-lg">Enviar</span>
+                    </button>
+
+                    <!-- GIFT: DONUT (EVOLUTION / REROLL) -->
+                    <button onclick="triggerGift('donut')" class="bg-slate-900 hover:bg-slate-700 border border-amber-500/40 p-2.5 rounded-xl flex items-center justify-between text-xs transition-all group">
+                        <div class="flex items-center gap-2">
+                            <span class="text-xl">🍩</span>
+                            <div class="text-left">
+                                <p class="font-bold text-amber-300">Regalo: Dónut</p>
+                                <p class="text-[10px] text-slate-400">Lobby: Reroll | Batalla: Evolución</p>
+                            </div>
+                        </div>
+                        <span class="bg-amber-500/20 text-amber-300 font-bold px-2 py-1 rounded-lg">Enviar</span>
+                    </button>
+
+                    <!-- GIFT: CASTLE (ULTIMATE ATTACK) -->
+                    <button onclick="triggerGift('castle')" class="bg-slate-900 hover:bg-slate-700 border border-purple-500/40 p-2.5 rounded-xl flex items-center justify-between text-xs transition-all group">
+                        <div class="flex items-center gap-2">
+                            <span class="text-xl">🏰</span>
+                            <div class="text-left">
+                                <p class="font-bold text-purple-300">Regalo: Castillo</p>
+                                <p class="text-[10px] text-slate-400">Ataque Definitivo Ulti (-40 HP)</p>
+                            </div>
+                        </div>
+                        <span class="bg-purple-500/20 text-purple-300 font-bold px-2 py-1 rounded-lg">Enviar</span>
+                    </button>
+
+                </div>
+            </div>
+
+            <!-- CHAT FEED SIMULATION -->
+            <div class="bg-slate-950 border border-slate-800 rounded-2xl p-3 h-40 flex flex-col justify-between">
+                <span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest block mb-1">
+                    Feed de TikTok Live
+                </span>
+                <div id="live-chat-feed" class="overflow-y-auto space-y-1.5 text-xs pr-1 flex-1">
+                    <p class="text-slate-400"><span class="text-pink-400 font-bold">@FanPokemon:</span> ¡VAMOS PIKACHU! ⚡</p>
+                </div>
+            </div>
+
+        </div>
+    </aside>
+
+    <!-- JAVASCRIPT LOGIC & DATABASE -->
+    <script>
+        // ==========================================
+        // 1. POKÉMON DATABASE (Custom Pixel Art Sprites)
+        // ==========================================
+        const POKEMON_IMAGES = {
+            bulbasaur_front: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAgAAAAICCAYAAACm/sq0AAAACXBIWXMAAAsTAAALEwEAmpwYAAAgAElEQVR4nO3dfZBd913f8fe5d7/e1X43XkmW5A8R2/Jh3mBjsA1sXAI0kM4M05mSppPhA0knSZn/mGknSSdhOkx5mnSShCEQ0iSTmQ4mISThDTA1TpwYSGxCwAnG1mDJmBfJkS2vd3X35/eX52XlXZ/d1T5X5/x834/Z390+v0+fXdmX1/dzPud8f/f964I/3A4AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgG6Y6g4AAAAAAAAAAAAAAAAAALfBvS9/+/3qLgMAAAAAAABwC3m/ussAAAAAAAAAAIAt/4mP7qvuMgAAAAAAAAAAt/xP/L2O6i4DAAAAAAAAgO73//Sj34z4/7826xYBAAAAAAAA3I3/vR8L2jYf344S100DAAAAAAAAgG72f6P8m3/v19Gf/8v/20p3IQAAAAAAAAAAm/99s+pOAQAAAAAAAAAAm9E/3+lOAAAAAAAAAAAAtvyPfPj5m+M/a9s9f//3vO313i0IAAAAAACAE3L/y0+/H/G7u26p6w45K3f90QdfqLsUAAAAAACA4/Y/A/3p95+49oIe819b5v+tO00AAAAAAAAAm/3/5l996e3/s//+b3/v4rN/7p733X7Rff+z4T/f2430AQAAAAAAAAA/sfeXn3vvxX3+81I+r9S4Yf7/q/fM/1t3LgAAAAAAAAA2f/9vvdP/eLvvX3b3f2v7/91P/O0/vfA0v3/u9197p/6/53/78sU988u68wUAAAAAAAD4id6f//V4xG29+/3f7v9f+o4X8+N/3+f85072/1f3+Nve6A4dAAAAAAAAALbMv/XpD5r5/T//3j4ffuS+yS/+7uOvuM89q3e56O954pGv/+mXfv2vXn35D7/3m28N85m/f/0nfu1f7m8/AgAAAAAAAAA33/1/65333f4fv+/fP//mrz363L//6K+/sN3f/9Lffef9p4S/5o/9r6/+yA38vgEAAAAAAAAAZ/q/5q4//eL//PevPfb1//T/PfHst/6fT//m3s3+vn/nJ98e/e/fe/1X3+tOPAEAAAAAAAAAD/v3vfS/eP2nvvtL/1k4Nf7i3eL+u99///v/wvdX/49/vXGqXwsAAAAAAAAAm/7vL91/9/3v+/b32wX/5c23/s3/55m/2q321//f/yv/lR31xS/t+4f86f+U1/0DAAAAAAAAAA38b1/93I9f+613/+L9P/z4S//f//3e7/+Hvf+iH7/7214e/m7m8/3/EAAAAAAAAMDt6f/b33/v+08v/6X//o/943d3P323+4+L/s3f8tI9/u8v3vf/ffq3vvAftwL+9p9/f8M5P9NfAAAAAAAA3Pze/9t3/+89fvfRjzx0P+u7I2/x2S/G1/53//47//mrr37tC1/5g7/aOfrbfS8/ev99S//3e9f+/f+/Nvf1e598/+Kx/3k3/r++7z2X3sI7AwAAAAAAAGz2333yA+u//xM/9cMXX9h632v9xO3/z1/o/X/bL3/3P0c38y8X/Z/64o/+R3/yP7k/AAAAAACA03X/e8392S+f/kU47P4/8kdf+P1v/i/3313XmC/u6772733971R3A3L/vfe++L/f0r9vfvXf/a8/GZ/8/e+f/v9x+74fXQ4AAAAAAICbvf4Xf+iL/32v+/13e+/7R5/6wA//+f2e+VvvfO6/X43f/3df+4vR/3P/m/L0D9x3f9011X/L0v34b9vbfv1ff6vud5e7m14AAAAA4Lp7dM+H626i2v2nS989/4u+/91X55/5N9v8/tI50X/xxf/1t37sD568/aL73Sffv8xvd173o5fv4v7mF3/x16vuJAD3xM1/46924j8BAAAAAA46013gH83/m3ef+a339f7v3jS+92/944uP3P17X+79n5v3mS8fe+6/28LbfS93/4e/95d+yA4fAAAAgJ2d2+fO9A/9m++e86fvfuK9i7vvdC/iXpfe/f4fve+8i3vudO/63OvfO9f/80vf3H58739O/j8AAAAAcC3d7S590f23f/+s+72428VvdJ++0b3e5Nvf/J8BAADAT3e5G3/23f/6/S/d7f+X7jI/8a3udff48+/uL+/33+o+/14/Sve4y94+/19/8Zf3e0984a0v398OAgAAAACe4d4+/9l7dO/fv+i2u/e781y3X3K/+95/n1t8t9vft/7v/N6/f3f+O0vv7r13++s/AAAAAOD3m33/2ft34I68++L/7v8PAAAAAP93v/P2l+4/bne/+91f2//29e/y/d/40fuv/t7/v839f37+e/7Xf9j999ve0z9//w//2v3/2X1vdO39d3/3d/f58693//+Vv83f/d8BAAAAAF3N/49z9/322//6v911x0/c9+jH/y/f2P/j//qvv3b342//919v/m/L//8//8e/3Pv/S+f3e//+m1/78k8t/m3dNQkAAAAAcM7ev3/n114/43/+rQ/95f/57m3m8aXvPvnR99z05wEAAAAAN9u///1vdR/iC/cf3Xvvd985+yN//vBf/A334S+2+2ff2P3eJ///0f1/73fvffI3/u8/+05XAgAAAAA2e3/x25/e/9H/4fM/84v3/fD/fPfb//fX/1f5f3e/+IeP/O0/vvDs//vBf4L7S//mG5/6/p//73/1yT9/e35Z+4lfeeeNl+43I80XBAAAAAA+qvdv8/GqOwQAAAAA4Paa/Oa5T/7I+T3x5T/+s/9xOebf//ePvvK7//VzX/r0H0x/pfsL/f1x5p//S3/7q19/6YefeeInrv+X2+67a6L38Vd+6i8//e4f+4/u/m/9x7/747ee+5f3333R3e9/87/42f/+z175o6999L35/0f/6Xff/cR/f8f//V3/9R3fvfh/AAAAAACA/5fe/Oxf3fXoN/7IXXf//c/+/Pveuvve77/ve+//5+/9m/f/43+/S+67S/iXz9//L966y4X+81d+/6f2L/sL3U04X7v3jX/4l5970A1w56N//sTzX4r8O/3fO/v39z8x//v53733jfe7E090333/7d/53Ym/40v5/f6/3v7uO/lvd8eX3eM4f/7m/11/9H1/3w0EAAAAAADA5f/u3U//9S33/Ie//+5/f/3vv3m3D/7lJ/8H6z+yAAAAAPiIe//8rde2/Pz3nL7j+x9/6C+vvvL//q2ffO53+e13/+p96Z/851d/9y/+yU+d819e99+Xv/f5D37s0U/sfv7d637/6lOf+stf+5kvdqX+i4vf//43X/3U/S//sS+eefwffPLl4//2ySfe/pUv/+vPvfg3+zL48y/8zL/7m4/cecfdr/3O+p+654mH3/3aI+9e/8X1G32791N3/e9ffv27v/7v/f54pL9+0L//xO88+eQ3//sP3/2v3/eOtx79+iO/sffFp+4/dvdv/8x///uPvvt//3f/+P/79K/O6m743f/33m36O4E3AAAAAAAA3I7//Y7X//s//2+v/s4X/53fM/8A/t2X/vO/3f2vf9/iX3a763cBAAAAwA03++PvfOHj3176o5f+/4+0f+Y/s+v/k/j2f33LqX7/r8I/v/Oa3/vd7R//f69t8+dff//iYvdvS/y29f+N9a/7v/T//+34pSfe9X9e9qU/3233q8X/10fe/4N/4l35c/38P+W3I/71o39u43f721v93xf9G+rf/4vf2f0I/N3bX/2D+P89/m0v33433Pff2L+A+3a3733/2o//a+s/9t1fv192A0L3AAAAADzstt87612f8a4fcfunfM+/8f/d/yfe8aGvLd23e59f42/d2I3d7Xf/4492S0f//fA/L33yM8sX96yG5f8v6i3ffS/vS/vd7+62y+7/73v5r2vX+I//fPfbff95S6/ffev5xS8tfbfpffS13/v65/m1y//d3e4z+f65f/1m9O9vTfw///f2/+3cbf2b12/1v73/2b0fvff9Lz71oQ3m9L7dff+6/+Lq/+/+68V3vf22137/s77/0e+/fL337d12+UvL9289ftn/z2mX4/84/x//r38xL/m75971y381ff/v/7sT3fn+e/9l2Q36O3uI5O6b57vv1y/u4P39t3/3U198+b25+/73pSde/9r3//z3fvffv4k/10/+9787u51/d9/bX//X/a97Ld127m3e+z5z261e+e77/f7j//n//2j3919v7f9vvO+/vI7910ffetp/uP/G+93/3yX+b0f/T2/9d18bXz///bfddpff85fO+m0vvt312pA/EAAAAAAArv/s3e/8mbfm//x/e/x9/+ePz18/ePInnrj3S4++/u/+86eef/d/X/zO6Ue/+L7/6w4/7m/+i1//yqf/8bcf+u+/2G3/L/30P/i5v//i537wveL076U/39f997tfvud3f/r2/7z5r33+0S988QsvfeD5+/+yT/7S1//kK/fd/9t+Ofr//fXf/2v3/e638L9O/4fL6G+f+8tP33/fO0//y35w+oE/3fz//M33vOfnfn/5xPee+9Mv/+d9P3/9099955e/f+f/1H376c9///e+fvpv//E//O1vfvWd33rm5Yee+iuffun/edv/o3/11370b39z3f+vf/r+141/0//+vU//zE2//73Xn/rm9/7s1fN/cO9f+4k///4Xvv2v//U7vvdj/3b99L9576/+4aOvPfL0j9/3p5ceevrvP/sTdz/y7vveefevvvvO33333Xefuf/ed565+89/9/3vftf8I/i5Z3//s2feve/eey+654k7v/Gjv/b5Tz5081f++f3vP3n/+/p///jP/4fvvuv212/5C8l3v/7O/s8BAAAAAGB5f/3f3/Gv3//3v/1vvvu/3fn5u5/4969/8Eev3nX3/U/e+b//wR3vuv/Jd5++653ffvv03e/s/3/54P/9oTvve/+T//oN71L/X34m3v0/vPj0998a/xS+/r3Xv/z/P33p2/m9N9e+dfS3/8xL27/6L3/z+Z/o3/+349N33XP3f/f4p771j/c/+653ffm3fuvhL/zW87ed16O///Cfv/7Mvf91e3e+7Zfvf9vtd7/vl77/bV/46y+e/vj373nf6c9/9M9eetv/21e/9vX3/uCXPvvP/q+f+0T/f5s+84/u/m+3f/r+X32X5Xp65t8//uBf+L0vvvT9b997z9vf9r1f/3cvvu///f2v3f9nv/S+d5z58+vf/2Nf+rMfe/0PPfXf/uDtvf1+S+/7/ne/f3X///T9f3z/G+f9x397759deNtdv//47U+846/90l/sPszu++ybf+/8y9/41/N23/p23/nCew/a6xUFAAAAADa73e6f5v/t3O5//a2fuf/88dud48vv2e++0Xm3pW637L1v2x1fG+f6323+3/33/c+/u++3e6++yfe/+5b0rU998IOP59/1x839u4//4ePPvf1jH7v4f+t50d+mffx/+0e/sflfL7vfvj79o+/eet6X3vn8o99/98/95pXjL9974jO//PnfvPTaO332Pfd94L5nnvr41578s++e3P43+M72z/S3vfTffvjDdz30/h8/+e+/+6b5f9392/d/5/X0f77S+/4rv+ed9z1294mHvve+f23v8Sceun/vf+jdfb/b/3v++8a/8s9Xnvf/d2/e/r5vXv191/3+yN4+P6r0f/Xev3+/e/0333Pnk/fed9edX/ro37n3sUfe93/e/bbfuudtr/3Ea0d/+mX3v116+sMf/u79e5/4q29d3G/v3//y/Ufe/8S/ffpze5v9Aftz/P/m33/w7972+sPvfv3fvvqD//v44vX9T7/vnSc//bZ3/b/e49t+s94v3b+8LwkAAAAA/J7u/s9a6A20P/vR/X9mS4v33x33m229a3/c/33m4y8u/v33fuy+/f3//+9c3O+3vfXbLd28++9//Gvvvf/M2945+s7pX/9rHzn12G++f41/d3Xvd3vfvveb98n8f9p4x49d11mO38x3/+vO9d/x49cf/A/u2e+/9p2zO8x56aLbr331l4/++P/2o7dfdMeb73//v/iTv/H5d379n7/51q2d46e9+/359X/p3fO/6b+X/P++6+13vP32l3/y48fvftfX5jO3m/eS7e3355be336n/8m53+/0X1/r/v2p6/f3724L/4P40A2ff9Xl13/b/X+Mv9m///b12I23Xf4j99//A7s+S8d/7i/m3f/c2/u+4U48f/338vcfvfu++97/xH/8l9O42w4v9d11//7f/P75//a2+f80d7vdff+mewAAAAAAt+b0+5+/++S/ev+295X33+u35S//1a27e/L6f93d/s9Nvv2219e/6p2X/s1N32252/e/v126/f6L70ffftvr/c//+/pft985e1v//aN7fXn//fbdO84svf/p2/f/+9z77X//x/s73+s/774bv2/vf93N3X2Xbv/85v2z7rfvd3vbv3Pfnff9fLq++y/qff45f+/t/rO///+vef/X3/+vf5//e+P17O5vLve71b3e++f9P9z/9O43y3+6++xdd6yv/3x85Xvvv++d/9t/9d4/fO+/+f88cfefXXvf/bfdeO2+/9+6/r9vd8vP3ff6X3v//f67f+32S3+/2S7//+4BAAAAAMBDd33yS2/7p9/7z/sO28f9d85/4vnvvvjU3a/mfeJ/x+W53+G+8d++45Z/5s35f//A7fO//m/ee/0v3d/+/sV//zvu+z/ve/e/vf/3n3j333/m4q/+8m13/4fv/3fe9w/fv/t99d3//3y/3Xfx/qf3/dG2297/+j3+/a8///L33vf+e7sL/N39/v71S//++N2nvnr/e/L/m1+L1+/f3e3Xv9/72+/9wfs/fOeb537b/L83/r21N+1/6K6bfX5uXvf7+/3e/Zbf/9qN/n7a+u8324X85X/+xYvv+8vff8/m9759X9p+13636Xv3vP8vdv827xve/+e6//2+2/f3eA0AAAAAAL53/e/f412vf59s8m7/+O9v91f8xX7S8f/37f39I+78t/N+51v6ff/p2//fL//m977/L3/3P/+xT9z3H73p8+99y+L+nS++t+/2e9/e/T///j3v+/22+/6T/Xb//+b/s0v81Yvu+9f9/y56t5s44a/u/1v333bfW9/kX92y21136b/d1j3eO493y2355o4X//15/i//m5/+yX/611/8R+3fufv//3f790ffftt9S3vf5Puv3P/v92+//v1/b/15u7/5qS/e+73v3vf++9793//eA/d36+8vfXv7L+Lz3S0/u/9X+e//8Tf//s1//f//l4vvv++vff+73/7o3v+3+7dJ/4n5v93f1Xbvv99/86y28H/+1N32AQAAAADALf6/+28//dJ3+O7+5s/v/n/S+a3L3337f743X3S/e98v3v1/2P3/b3L7m41/eAef49r/0f/f/0d9/L//2q9+83f+L/33/2O251fe/T+s/P6e959/I339/m/+28/+799Xvvt/O/+fePvf5/tf//u/3m9P++//m2f/x/f32mX/S/e5e/+/43eL+5bS/e++p///1u13+d/5m+9/a+X9/9X/m/932a3f7sve/e722L/j0v5vvX1v/8T3l+/973f5t/278/847zbdv/f/fNfd7i/93b4f5353523f/+zS393+H+/9P03a+I83/t23/uL/fO31P/e2373l/3qXAQAAAAC4eT/+R7/2N/43X+t/P/9v/c0fvfd9P9v3x5ve8i3vvn5dZl32X8z5b+157Sfe/93f+4N/vXvf9S+U/+N9v3956T83921355m/+dY3Xv39X33760/f/3p/i79x/v/v/3q/vvz/7i3+7X9z03/p9Xb+w5eeef/f/f3/849+8R/05r/O7+a53+/23+/9e0s//60f/xvv/J3/7xvf//v8e1a/8p3P/o9//1++4S/6S309fv2eN3e83Xvf9q39x9u63/m+zff9d3329S/f8Ue+/S+++J6f+rX/49bfvvNrf/2F+/7/21//3nS/N95mff+v7v9/X+C3+12X3vfdL/xVd2E48u2/vv56f+pD3//a5//22L3//hO/2e/X7/evrD984v+6/uS32t3y/ffc8y++8G9a98/f/f/kP3//G+8/vN9//75/+5//9U+3L97u+5N7/+9f/Aef/4Vfeef/fcevfOf19+/f84UfXfvT1v7l/+/7//Xf/+qD37/+R87u/z1+0d//3i9vO9+/vPn2y/i/+7e3f+s/vfn0939v4484AADAaet+84v731l1hwAAAAAAbC/84A/8rfd591sff3Xm/Tf5l4ve5d03/6e/8fA998393S/+4v+y9/vf+/1X/u1/sPTp7v/f57/p5m/e3/3q9/e06fuvf+t130X3ff+/1z7yS9/9z0++/S9s7+/1p1v64d5p/O43X3r4w19/d3/18c8/+cW/e3/y/s4/8+4n/sXbv9f5e3+/v33v3P//P3rfy9/ffm+53//p98++6d33f+D+/3659m/3/x+8+/p/f+mrf/j0R3/+83f9/1//L/Xm/v+S33/v73+/f7O+P9z18e772++//s/+/S/d/S/vv4S/v/a/vfT44w988sff/+S//292fv3u+//i3x49+KOPf/f0vXf/1f/9vS++f6u/v/Oa3/+p969/8Xvef6e3u7f/vP+fX9r+S++/O/e9//l+63/+f323+/5//Yefevz1f/e9N7fP7f1+24fuvPf/fO9f7p0m9X/m/Ufeffy792+879/2L40/tN9133Xf3W+u/81733j26/d++P5vvv3tX1v826521/13/4e/95d+yA4fAOBkfP/11264j668/T4AAAAAnJ37f/M799zzt//vveef3n/v//p+v937r9N3f+/Svvfdf3/v//PvuveD3/nO/f+81f69N/3522/2m/f36f014e365268Ofe87/b/5u632e8f15d/N3P+m3vv4z2+t43//b5Xfv1vPvdX/++PPvP1n/r63+y/6f3v//e6m1+i+7ffX95m37/f3Xf5+3tffP1mN3G39d89953+pT/N7m4AABz83v+83fSBAwAAAAAAAAAAAAAAAADX1P3/Lz5e3X3g4G/53i2/5y6q7jIAAAAAAODmP/54fG2qX98z0e0EAAAAAAAAnMLXp34f/y8/fvv/qzsL/sP9v/Tvv3vdf/a32/8f/xGqf+c7AAAAAADAyej/67m6u1301e89f/2P33mXv08vP/Xk3e/5u35w8R9c6/++sD5f3VUBAAAAAAC33Eeff6y6y3/28v9I73/kK1s7+6S9v2GfO3/1R/+w7qLpLpL3v/S34l83Lw8AAAAAAAAf/Mdf/L7/f+fI47f/9f/h93+/x+s9ceS2v/A/m/8/n4mS+w8/2b2+/x59pA/wS/v19f/8e8yv+eL8H6p/4s//S+7/4f5f/vM36q83/1/PftoH+I32qrsPAAAAAAAAwA7/m6+/p677AQAAAAAArsnfufjM++98m8/m5e/+179373/5X292l3n2M09++e3//u2/Nn8Xffb3v75/P1X3743+u//6W/X/I/yXv/1S3fnC11v+e1e/I9//X/+jX/3e7/315//N//J/f+x//OvvvfH5/+Mv3XfX/m/9x/O/yYvf+93/+dff8x++919/8Zf/3QeuvxH+L/43/8PXP37//f/h6j/e73/0h66v94v/5f3S//pX8eX/pbrrA86f3/3oK++ru2j33e//e3X/3f/kI93p5/14d0EAAAAAYEv/4l/8a/v7+c/+y89X346f+/x//bXnn272X3r8I3/wL6rv//r/f+S1jX32a/4+eP3340+27+/+y5++331//R9Xf2snn0f//v5fe/H3I2K3f15//m3+/sI1/m/I8X//p3X3+Y73/m691c303f/i49//+iO///S/P4r4vR/7b/++iMff3v3/3Sfej0e/9623I0a3X7u5x4j+O9/1f3fXf+9/fvXj03//t7uL8S3e/9J3InZ7m/3vv/pY3UUD/E6vvvz92/fX199+e3z5/fNvfL3u/0cAAAAAAA+9p/rf321/i1d+4UdvX/69m//y2s/e7e9/8i1/m/3+5Xf3P/m/rT8+/I6/+Z4j3/u8//2d3/qrf5L4r+/++T/c/iPfvf3I+L+v/p6v6e/d6H/Nf4f69yD/L3e/++Ovv6e/+C/jP4h39yvE//Jm/2t/I35/+1//+/iN9+Pbfz//xXvE219/c3/8O//e9kP/u+/E8X+/++e3S+L//0m+/U3m49sfL4mIeJv4519/J776V9/a//3b+33X3v4G+e4jD9//f/1f/v4tN989+r8fve/+f/+X/qfGf9i//X7p34tf34oI3x3xG++Xm/x//y0vL995/yX/8J/1l6G750vX/5v6d19/x1s/v/tYx4j+3bfjt379p3t50X9/s/f412+3r0X/n4mI8b/s/eP7m/9x/C8f//z8t31/m/8f8v9j+oE3AAAAAADAPeIbf/fTf6m6y8DzeO/X344X//HftS4S4y3yv04+1xG/0m/1R+/+8+c+/W/f+3vf+Y//u+3/84998A//0o//a3P/26533/v7/92ffmU5/vCj9y8+/7v/p/f+/v3xze/s/v+f/o/ff/m79S9/SfyN/618/uN/+b/2/x7fv//z41147v/+v3/8wS3/515/+8/e+fW/vvyN+s+/vv7A/qf/44v/Xn/xR1//3Pvf/3++pT/8e3/qJ95e/+21L/50+/e//v3Xv/S39u95s2+z85I/3f4A/H5f/xee+Olv/r1//f6P9/852d2f73v+/5a639y+2/1x6b3PfeFvb/635z+P313mI90e6LvvXv52/I+/+Z3333fv352P7Sfv3X/8l6/f+r7/1k+/d/v/SfdN/vFv/X30x6f/3/a/b7f/+MffXf0T1//g613++r7Yfn/tY32f/3d83//x8fveN9r5iX+s9/79xP/44490ew4AAAAAwFn0f/zLz+59/P3rftvdP833v/S3v22/S///0s4s32z/A/H//cW///tXq7sI6S//XvfM924O/4/q+352+/0/2P+n/S+8O34335/O+/28340+U//3+y/67m5/uI+vf33/3y/5m4i3/q/5m+Mv/4X9eP/2j9uPf/2P9z+N21//i1++9+139D///tff/eXvv//lffH26N0v/fvvvPT4+/3v257mH3/3a/0X99/t/vO9f//f9S/3R/s3vffv9d3X0t/a1a196G7/2b1f/6+7eX++9X4cv/2/8v3pXf1s/v33f2pve9/2iO/sffFp/2X4/S/+r/mI7//d26Pv/yS6y3/209X/71239y+3+b0X75f/Xf/T5L54737+q//b0f2yAAAAANww403u/eX33v71/X/2R7fe+3i93/3+U++f+cxf3/t3z/yLfxRvtq/Nf/+3z+/95Oa/+sV7X/f/3fn47XfdfS+e+f7t33j1I/883l5XyvE/S5f6/Nf98eL//p/cff/Jp/904m8z4f796H9z/189/lff3H3t//v4D23953f+/s33v//3+/70//f4/o343Z+f+c33//mPfb3++1fXf2b86v8S8fS/rP7A902/5e4/3fn42zeqf+zFp3//v/8/vf9m8+k/2f/v1v28ffm2v//1N3v/+NOf/8mI1v/xR/7x+94xG92/9mX/5XyG8aL0k+3e3f/d/y77b/+f/43o/rLfv39j0/d//Sff873/93/f+0773f32rS3S3332s/02AAAAABv197s/2xS68wff//fO56e/d+I3/9o9P/S+L/ze+q//9z/49A9sflO39f4X/eL/0T0P/1v58fe/v/n/S0++/8/cf//bX/0Tf/uHf/P67ff7+N/++I8/eP/m/4e6+07X734f/y8/frs/+X//3Rve8s1X/u9/+O2/3//fN38X/0/9v//05X//i1/a83+/S//sS/9m3f0AAAAAvFmU7m2S/zvv2/9f9z+f22XfX74L5/vXl/+882fTff939f+v3nfx39185sX/qP2d9//u2z/y/p//r933T3z953/48Xvvvudv/sWp3z46/e+/dse/+8uXX38T5v34wS2/58x26P742q0I/+u/1v3G1u//203+P7f/L+jffv311751/19f+/39/5m20m9ve+mO/t33e3f3/319+X9v7S8AAAAAt9T37qfvnS/963eS321/y/4bE3/4D19+/39c+j/Xfvf3v/m/vvd341399P9y9Mnn/p35/eZ//f2vvvefe/xL/+4P5x8U7/a3832/+fvvv/1//qPvS/5r4b//1m++1/39S5++//Gv/N13vPdr/933vf90/x/8N/S/2/e33+8v/4mPfvvfXvx6f55+8q4f/3sf//hX7s6/7Xp7fL251mX2E/e/85m9X9390f7L3N37/O4/394ef3/f7P/7N/u/f+LqN//4s+///v38v3X/m3vvq7sUAAAAALft/e7e/+1+/eL12/+f8e13+34z/L+v7453I0o5Eef/d339397rPvN7+T79f3/+p1/vTz/x/q/f8wfe9+R9f1v8+3m/r3+T/c/v6O/9s3/1T/+f/300/eI3vvmD2x6/9t898s2P/vDqX3jP266+/t///u0/9q8/+4n5j+/f4f3ff6P/f+/zI37nL+39/p/e84vveP5/fvtqX8P8Nq2e83v038/p/3b/637Tve13f3O//7/++39/53vveX3+/3S//e//x3d8+9O337X/7+/uXfA36R8AAAAAgA/qX/p2vfA73/Xvvnfvz/eN/N+6s3/02/ev+/b9a/e3/vI3/86fevdvff/vvevd+XfvfOfeD//zT37xZ36696b941584A293fe/eG2mN375n/3w3S//yJk//bXf3Hrfm5f+/jO/fO/f/s6/e7/0rfeff2ffx5Nvf3qj/+34Xf+9eP/2//s/0r9557O/fPvvdO+b4a+/X/f935f/mP4P9+/x7/e/dft7//p9/7z/m3x592P/2+2X94X3f1//v942971/3b1/4O4/+/iPv//p9//5R+/88sX7vfT47S+y33Xfnfj3AAAAAADA+x//pQ/8yff+yPf+yLve8f335S+/v/zIex7/b6/e8/3vv+eOf+e59y7d/8E/+b7zXv5u8nfd/7+/42P/l4/+4B/+g2X/429/+qff/w1v4pI23//f81P/zQ9u/d99X2bS+Y9/cvm+3/eT+e9vv236/o//Xf/59//fD9/5/rfXfX/m/Ufe/8R+f5vfA9dO//S//z/61343S7937O9f/b//xT/+43/yvv//3X/7O/f98I/dfu3I89d9sEa3//s/eevvvP3vfN9fvP++x47cv/e+d+zfdL1d/Aef/+U9/8P3P9E9733vOPK/2f2J97//mXveee9j12e2eI848T3vv/f4d/f3++0984n/8ePf/YkXm9/XvX4AAAAA/N710x/f88mP/dCjv/2hD2775f0f3HPP547e+33vf/8v/s431j7+l0d/+In3/X/f/3D/Bf23p//rL//+N733yfvfUf9//P957T/869c3/O1/y83/r5/+/k/c/S8fe/ePfODaN/D+5/D+S+9e/+/e/+3+9/f0n/fef2f20489++773/cTd73jO+/4wEeff/mD71v6h/3f/82fefm+j77361/8U2/5277Ovd//6rOPf/uP/8VPP/a//M8fvuNdv/vT7139i/3L3/f737j//Xffvf/5d9x//yfe/yNv3/3G+9//U49f+25yvveedx//m3vfe//7fuKR+8+87/E/f/xrf3zP+Ue/m4f2u5333fmeO/L5f+/vv/rOew/oDwAAAAAAp49fv3oX245Xf373S9+fuv31/8qD/sO8L3/f79N/I+9/3S9+/6X/35vvu/61e33/e798vf193m32f//G1+s/eP9X7vve9/+L9//e2L9/9L3/f8/3m+31e21p/S+u4/3u+/tf9I99v1z324e6P+T3Pfe342/f47e3/aXvf+a/vu37+5f6e80b/Y13/U8/fe8L73nv7/f4X998/wfv9e23P1f/7213+/m/+/P981/3u//2t+p/0T1f/X/O+a0/vftv4u73413s5f49f/u+d/++8951/vvt//4///U/uvf192994e63//v6/p/6/X3/u/Xl3f56/a/9s++941vO91e3e/1v7/bvb33//d3m923+53f9e9/3+KPPX9c/BQAAAMBPXN5vAgAAAAAAALd9+1/t/u/r/52/v/eXb96+8/f5N73+/f5/ve1s/j3/l97m1/P71/d57y4/8vW23x4/+O/vI/3//O/3ff++3+vv2++/i+75493+/2//x32vf90r97f//1/vfP/513/f/+f2v+a/O/u/vf29221379u//9//vvvd92//8XbvvfNq/+7a//X1e/l/7/Y//93e9rbbv/+tO/v/r/S//e77/f7j/tL3ff+/3/2X1vvef7ff3n+/f399f98bfO86/f793S0vvn/+d/1t3//3f1/2eLp2v/7S6/s/++a/915/1vudve6C/X3I+33//v25+75497vefv06/00A4Ofk9p8DAAAAAAAAAAAAAAAAALf0XyR5d3X3AQAAAAAAAAAAbp3v/2x8S3X3AQAAAACA2/u1s3X0s3XXAgDY0kufv/A+/dcfX3eRAAAAAACA03I9fv3s+/3/X3aX/e3N849S9f/9m62I2A8I06o9IeI9I36o2mMi/lK1X4tX4y3m48f/338vO/1eN8S3v/mdeI/sD99V7bdS5f8AAMA5+P3/X3/sN/6L3/2L7rL//p0f30+v3f/kZ/36829s/l36T91Xdy4AAAAAN/mJv93f+/m/8M9WdyU3yL2q+/yq4+q9eC/vxd23P+/y3O684r9p/9eYv7e4/1d0f507/+c8f1/x5q9z9IqL//q8X4/4836u+3eXp/f5u/7oX6nS263q9xI/3p2Oq/Pz9/fDft7yvvd//42X3vIffO1mHwoAAAAAgAdu7//L/85/9YmP/mvd/Yj0n68+o/68e27qM/e+Xff/2e/V3+f2n1f9e2f/W70X9b24O8m/92bHvebvu66/zO7b3/O3f4/v34e/T3+/eJt/XfXv132vea//yO4/b39fdz+H/29f8f/nff6+e9/97O0/+y/xZ5e2X0b3z0f2/S1u+r140/924t2Xvd1l+9/a8b9E+8NfX32/xI+f/IcvxY2f/Kk/9Rvd6//wP5P8O30/oP/+7o+v7S8AAAAAgA/4j/f/8m/W3UTLp2I/4XfLp/9vO47d4O57v38i8658xL3/MfvI5nS82987/v4b2+/vI/v/ffp9uP1v/5/4X9y98d/3mI+4l/t33/74/X6f/Z5a+/0++D219/33/vf1fW/8P/eI/f/P594N/uXp/T/yL/l39/3381++39/3688eXfvvX/9X9/7kL3y4/s4x4386/w/9XfLfvP/+G//t8x/f61f5yR+v/sL+d39s+n1/3a8BAAAAANzcf+/D/f8/3P/Xj+75a9V3s07M9a/5v9j025/x/+l4v/hLftL/r5f32/3G6f54+qne/5t/8f10P99N95/8e+N173l5H9y2fS0+4+33a753v5/0O113+1Ift57421x8x33fP3/v3i8+81P4k2e/vvb9+9+vv/XqT+t3Xnn3T/7uN43/qf+D2u5v8j/yv/TffO4v/3N/+a+/e3bE/5f0X1j+s9f345/d+/N/eN9/v//zM/fU3wUAAAAA8CHd3fT2C2/e9e92p/PvdzM4v/t6mN7f/Nsn/3I5f1873v/38H/fTfv9eD3vT/3/5N109/+S4+oP/I/p/+v7/3J93E/m7y9p303499tX//X7533x+9eGfO/aT7l/v//uD/O2/X+v4S73I7e39f37+z32X4a8y26+/00/+/91i814+m9m9N0v/6X/fudf+X68m9/m4m8BAAAAAHDze5d1P5N/+/s582fe5d3/9f9p6bH723q93zefM9n3G1O/pXbT7xO9H6/e4+/H3f64x5s9e53Xp/m47L973f7m424vXp2/f941f71f54c935s+44fdr+S3v43/3d/C99/65M4v/y/X4/f/m60m/vfM93/7c703/OOfuXfX/f32mX/3p2p/3fWJ7x4f8Y1/vP33/f7xX//2O//t+v8o4sfLd589f89v/fPvqLsnvvH+Tf/s/e///Xf/639/d+/3S20H/zL5n1/f3e8X/X925l8sBAAAAAA8yLvef13/C7sL4Cj++Nf+yS7/L/93134eAQAAAAAAbv0d3/+69O+N++4v9/2X9v/27e7/Pfb0j0L3b/d+f+x2//8S9+Ovf+eLz3281Xf05929//3//m3feP1//tA/Oft/9s3/7z+9/5/0I//qD/1p3U3+1//X+d1/1y3f/2X/+P2/3rL/+f39/X9/ff65v+S9f+i/9e/U/z3/3/r/3yD9//vD/O91/++Oftvd/9f/XpT/3i333yM/c/ef1/+sE7Pvn7T/2X//y3+z+4//64m22n3e2e/e+v/x/8b/+u5vd43y1xG//aO33/2X6i/G9735d9u//m/f/c7f/3f3/s/M5f37L4x70487m4/o1ffedvdv9/N7q7fX3e3+j3S/2+p///qX9+/8/L//mH//L3v/i2u+5++/vf8bEvfvH/f/S7+5+/9dE//e5veffvfXbf+d//h/d1F/33+D993R8AAAAAAGCD97oI3a3e/V1v9/3pvd33N7q/4S+/c3yvf8fO+X4A3Pq/vO3uH1f211U3233jff5edZf99/eP3d3f/5/7e/1yv9/3120/191sP+6v3f7x86rfD8Ddzf4C3G43yPvdXvffbfeSfeX9fr3bT/33e9d89yC0v3eIe29e9l355x17x5vf+p/37+iN7+veN0q/+vU3S92j0v27kS3e43+P2N/vXvfbbbfp+3a322/2s4P3m/G38G9/Tvf9sL3b3+a/2Wz3A/f7G4e37+e6m/X9Ybf7x43sA39vuv0f2v3+A/fvf/83e/1649rA+2//P+d+f/tA/4Dfe/vbbp33u/S3/1D5T+sPvvtL/4nbX3f+3m52f+f9fvn/+r3O79v++vebdP/7m183m3r3T53pbgLAtq/A/w4AAAAAAABu/S25LneP2fI1+R8u//vvpvsx539/+e71j932X//pUu82s2n3m4u4s/453e9s9XbfL/e46U0+yL/L5v8s35p3e72x41+63f33Tne3m2wBf3+v/7vf/1314s9A/7/Svf9e+iZfTf8f4a132/9d3+924kE3+Hj324u9+Lfvj//Xvd7tBvz+697960e3fXf7s/3x+I3++X/t/yP1b2/+f3v/m/7/S9++3/3Ld//Lp3+X1/v4uM//1e0m9/7Afd5/+933d3sA4F7d0QAAAAAAAAC4p3u5v012Xn75x/233Xvfrvvef9u36H/rXve5zV+/A/c28S4S8eb/k9vv4bvvfM+9f33vE93vS//81m1uM1/a34a/L95m/3a3mG7b7bbf226x7ffm9X63G3C/+C//7m3v5X92u/9G//vN/9vtA/+mfd4XpPv7N//mXv973f7/UrfpPvX3u72XvS95P/89v+/vf/3P9vtfzPvff/3++n8t9Xff33+vS+/i2qP31100wO34/v//z4/9/X/vX6zuSgAAAACA2/x7v/A/+sH9/x7fX/m/43+t+yD/N+L7S/36f8p4e+/v/O9Xfxv3m32/7e//x9f2f8z7I2/1j/4vv/5Xm3xvvx/veffrff77Xv6323/3N92//9/m/w5e3q/3e//G//+7/b3fD3uA32233f2/+7+f//fXfv+78cbt/2v558p+/3//X9/u/+ftx+/e98f4m9f/b33/t8l+f9+P+O0fvn/v7S18/+4//H/4v91vN3k+/N529/931213+38P4vfvX2/03/fS/9t/+b2/x3O/f5fv//iPv/4f3f+/5q0+v4Tvd8eX3eM4f/7m/11/9H1/3w0E3sH+35v+89fSvxNvf8/7o/s7/R/+f7v//4Nf+/8e/S/+x9P/m/r330s//k/93+Sbfd+/sX/+I37vv3v0i2/+/p/v/sffG6/14/L7X7j3Tz3//o3//p/iA/6f3vOIn7397r4ft++vf6S7e3d813s7u6O/+6/7//f+o/+/398//3D1t8y///fO31/85ff//uL66I4//sX/8z3f/+7fvP4X3e2S31+6u8fXff+x//u3/I/X/3n/s70//8X+N/u//063//y35/4u5p8Tf/a/3fz8/Xl1f+jA/+23f1l3f51+7I3uT3sS8ef/p3vd/S3mS9f+X5s/P//N/e+M3f/t7k//3L0S/1/36/f/33/212++n///53139x/5zTfO/1u3+d/tXf2L+c2/8f4v/89/54/65//Z31eL7f/b+/4b5/+Z+4//13u923yX/D73m8S/n1/2b0q2fS389ff7Xf3y3S8v/+ft/eL292/n8X63X/rv55++S1y90Xv/3R914/c2+A1x2/3+s3375x+m+6X2vA6038374zS8x52s+e4y3O7+/Tf2zft/bUj/v329/7+1O25vvIu9vO9+zff/2vS3mIuIu272fN2v4S4iLrt/38s4eX+87S5vf7/f/Zve//s35S/3c+n9/r33fO8S7+H9vep9/9vv/9a1/uP/8aE38L3v+Z3/94l/c9uO9e7e59//89/Z50+T/b79X/f7q/ve931L6V3sX5e4d2/6/vef39Xvv5fx3v5d3N/v3x6y+3+43f33+/u/+5e97m/+I+/2X/4s/b/3v193kQAAAADAnf37L/9Gff3d3Y/+9K/3X0rve97+8v/4m9u2zO03+4s/iN2/v+l071x8f+f/u/f7X3127p/8sS3O9v4f8Tuv/t//8d3/8Tdeu/f25u9e3P12+/e14f9u3L3m4e5/O/+L04++P/d//eXfvfg/e394v7O0//r33sX/e3b//x+9f+51fP+P343f+S85fbf/+4sbf1j/vS/e/Y96e733z+838Y0329v33qP4X+7f/xIe4N1//r+P0i8u77v1/i/m/+/9q+n+t351m73fX7x+390P/8v7s42//v0/sPff9/b1+1///902/5f9q/c3sS8/7+f+/sL++L+I3/0xX3//L+P/6G9y74fS3/56d/37b7T5zW7vL4/evfjf7+/1d/3e098S3X/v117+63v//6f3f9f957O/fPv/u/XN3ff3/+2/+l7p41/e8d//x9d/f2vf/e4AACAAD8lPvNf9611bO8m+92/9m9f/p2+8C80/Pud3I6u+/ffx/8e7f1x9vt4Sfvfe97uX47/O86e4/Zf3e39+7e/L9a3Cvf//vS9v8t63u5L17//h++uPvd+17u9S/P/V/+n/+X/f7I8O7f3L81Pq3ff575L27S3d//3u4v3r6v68d9fN4A/L4cAAAAADfM6eX/i0X/18V/+N/vfS++/+/48/6X6/79Rk3eS25s91/f//j/1V0IAAAAAIDb4xX/D3/2d/7a5T/7y+X3f+/C+/792275q+/c3xXvE2+/f96P5S/f/33b092f3/+e/9/fX26/97491Xf++3ff+U3uAQAAAACA43/4y5/+8f/I3y7X/bf8eX3S9v2211f7ffq+73+U3u/3f0vfvT7/2a/39+v9+3e2v1X2yff/+vf+/I//4v4eCAAAAAAAt//0P/bA/2v1n/3Xl+/3/+6G/1m+c9vf4z+/Xf+1/++53//b9/e7//u++N3/423f++d7y/+8X3e/uM2vG4v71sUf8fXpft8eefqf/S/ff7e72AEAAAAAG//z3Luv7f/k8sXf7/6nbfP337+9fe+/35v/5/+p63x+/f33f9f/+/p39a//6C56/P/X/wL3/3P+/m65//rL1X/xZ/8D7pPBAAAAAADA7/K7j399m3u95p//0n3113q/N3v92u42m97v++6p/58vXf02uG/rXvT6/2vA6b3/2s/319f3+GZ7+d4X3L+/v6/X++vv//t3v3+/55ve53+/7+vX/f/m72+I9/t2/0r23vUvf+H7P4x3y+/fv9vud439u72/v78m//Lve3m9+/52/56y+8e3tfe1++6x/3X3XfP0AQAAAAAAR1b3X/jH6l6953p//v988+o///N/XN3l72S3/Gv8/L/Sffqf/vH/e8u/+2x1l39T//X/+Nvd87/m7zdf9v98vf2ffmffp/eX/f+Xvn8f/+7/6f//o3s+mE/1uU0CAAAAAOD/z/l//9X/69J/+6P//K//jS+o/r7f69+c6s/92l2q/v8A/8I/+eX/43f/33/835s6/o+r4wEAAAAAAM41/d3/1v4f5u//pX/y749+5O9Xf11z/s3++5fvS/fXv//59+1/zfvq09/6s1/4d3/7a2//99/57b+v+/99Xl99/z7fbf4a/l3U+2/1x64/uv83u/vbfk94/+32v//dfrO9ve+/3+/e///d29d/2/vX/30L3e/++vv//v799X0/31+/L+/X1/u+2P128L+fO4/9v5l/+P2vfOfeL/+43/+v/dI/3//O/pft4e7/31/75/fX9u/+s9t/S7v9592vf337a7fbr74/+f+o/77X7bf//ff72//fP93fA3S3/iIAAAAAANz8d3+p+v5q2W88mN/uP2A6vf86/t+O1e+b2P8L8T/T+c9/+0v3qf//03/0d7/7m/1nfe7+f/v9f/2+///ff++L339/P++v//f6/i7792672323X31/m91//922+/S//2Xv//6e/d6vv1/v32X9X32/2323f/76Lfvf9bvd9/f0e3037v7v/+ft7y3/+d50f//2l175vf2X53///u/6/x363vvd9zvdv/+r//6x3f9e2/v993a3v/2A/lMAAAAAAMAtffU/lWvfM999vfveNfe/9f195v+9v/29ftv//e2/z/f7+7Xve383/9e7X/+a7X/s+7X9x9v//3b4y9fvf1+4vX++6ffXfvf6/9fe/25/G3u/+v5/3f6229/efu6vef/2x+/L+2u/f3v//e6v7ff1fV9333a3X33fTf+/9p+///5e+P63vS4/a33/v1uI4z/S3b96i18/73f0yve/1202425v/+O+f93v+3tuv3u/W33f9/L9bvfS93X/229///v9/v6/++u5/p6/v3e2e5/u+/1Xb/v7z//3y264p34r31N3HQAAAAAA/OTo1wAAAMAt50cRAADAz1Z/47X/e6rLAAAAAAAAnIfq37/s3v6Pq3sfAAAAAPyp0e8BAAAAt8s/q+4SAAAAAACAc1L3/s2e/n1f3T0AAAAA2In/70sR/3x1lwEAAGBne37/p/4p115Q3R0AAAAAnIv/+/v+/36X7y3v2092Xz3vA/xG1e8/sMv3/Mft88u7m1a/p1Pdbbfv/513eefu38f3u5e3+R537f/p11s3fJp2H2p0t3m7e7/0/eP3d1v//i1f9x95+Ttv14/3/64p91f/2mP9o5++f34n11/v9xI/3p3e1e/v6pve99sX43//iP2v+/Wf3e4/b9f+/08iIqK77+220e/13W3+/yX/023f4qbr7e+/f+/03mff//P33//X3m439N9vA3/l//b/q+/74++s//6yX/9X999/u31f7/p9/+/f1e9/fT2v+/e1S/n+v0a/v+1Xl//e44f8eA/+38/+r/a++iX/E/f6f/679/1a9/v3t+6v+e23v93f+/51m+4v7p24yS33/e7u//+r5+6f0z//xSfu2/eI6N42H/S+529//5a/2X0pfnS35a/z/a/9/s2f/3t//uXf3G+O2L/v2u1v+/t39693e5v34/p///v+f3/+I23vP0H/77vv983/v24P8Cj/+u9+uvmX2W72E2c4f/+506a7C/4/fudv/5u6e+p0v+y+7+/938d839+8/1X3d/u7S/+l++a3vM93/7f0e6n/vf3f2z2uL17d7/L/6cff34X7+/u3/2/X/63+3x/e0O+5ff/vff5//O87/8e//Ifeff+nv/Cnv/JXPvjrf+i3qjsNAACe2e/+f17v7/vP//D00fceee+7/uf+49eO94v//9/61v02AAAAfG/X3z3v/d3a77/4/19qRMRfXb//u/M/79t+9qf/+I/S2+r97k/8L3/g+f5P2u4v7a884Xf2I4/v98eT7w32X3fxf4n3/d/S/9a+9p1/9o/1A//j+7r78/6OvvvI9v/jN19f//rL/M0f/+3X3j3/f/f/0n/1z//A7337j/703T/5qUfP7pvd4l3sff69f+I/efR4vB1+x4X3A3Dbn4bdf5o2//mIvvL+/z/e5t9I/7f65s//yLveee7/I812s3f328fO/n30/q/93//H9L3q4a+/q++I9m///H+iX+Jv3vve3+78393/P6v//479+/H59m90v/1S/L+/3v+7Xf1x/d+3//O346s/7N7v7m2G9n5/+/97/f/t938//Xftv9Xvxf4X+P36/7r7U2M/sO82329vf78p22/7+/S/a7+7t3/f2i9//2/+8Z8//O23//O9X9/qj+/37e//3O4/l3v32/H/f/f//573+/3b+vev8d2//bW/e///0d13+0vdX7v/vef9fv+/+vf9/l5I/Xm33feX0m0O8L2v/tI//8jP3f2XftfP/x/9l/25//Yv/29/7L4vff6d9X2w67Xv/vHfOaO6A/7/7S8f/t7qLj93175vvfOaX96+E33l//P/fvqf+n+/X/2lHzr2qN91AAAAABd5u2c/6m79X7z5H/7v60f/x3c+cT9e++98m8/m/1S+3b/z0A5p/p//eL5L//1e4T8v/8n7x3/5z4/e/e+44+p+/m2e/3Xl480/vIu8/8m5Xf4+7xPdr1e9P+7s59/2f/e5q3+3eHsf6pve2//tL/H7i//yv/03/9m42//z/y9s8i7eP9f/+267+/93i/e59Ld4X1y5S3s79e0v9u+/vf+01//6323/i3c5f4v+783uI93y/fX+vdT3//1I3t6e16Xv5f5x/3d7O/4d99/7d+/z//3m47fv/62Pfvfv//0I39f0z4v2d9+3fN0e8u/4m7X9bfkI3N0H3O7//P8z47/7i7X/6/f1vL/L3e/++m+f7q/l+e9n9eO4mH+597f+2//5Xf1xed/v8l03e4/v/+e//57692X2+/y64+9Xf6L3b/3A4tL39v35v9b1//v7P6Pbfvd733+/Nf/l/W/v/+ve//1Nf35/+6/d7L70X3s93f9z/u511+p+v50//77y/353y7+38P9O/iXf+bvfXvve74u3vM8A91p/8381u8sAAAAAANys6m8DAICdd7/vff3e5513vf+9+33mD291f93f538e12O21f5l/xWd4W80/eefu//q//7fIuI/Xfz4j4+49qK33/21f2u2zD/a4p8933b934v8O/qvv2353/1f+f/m1x1vNf3e7939G//15/+/r8sXAQAAAACAi+379b3pX+K2+4u45q+2/P39X6vudkdt8+/U91/YvP/U/+5S//a8P3X4/Xv9S4038S//u973t8fL7e+U4m//fW9vf+W+/bbf234+nL47pve15b2483+D/fS9e/m004/b8p8CAAAAAADAbf6/sXv0119f/s2+m9/6//5f++8v/u//wJ0/f/9m/+m//37/f55x78t33v4f+t5/v3f9lve//aX+/tH2f7fdfv/+xS8/u7//s+7177q5u8W33/X2+3/6SvfS///X+769/W/+/27vv+vS337bvep9f5fXvvvf0fe43/m+/s3+L3a/P253//3/99Xv+/+/24/v+/u2r///v9v/1/f/S227S9v/2S8A/732a3f7s/32s3n5434AAAAAgA3+7/c//EufufG1v+e3e9d3vfvdR9/z6PvfX/4aN/99yfv8L33S5j/tUfdzO8x3+5m6p6I46d/sX303S39+8X3x54X193v/+0L8uO5v1e76e//e2/9G3/0+9m8D8Jv/j/9f/OOnr335529f3YAAAAAA4Fz8f6t///I/u/M/vfUvf/P1+N1i/99r/r9e+m/3sX8e727eX+a/NfG+97S533a//V3dfrvv4O/l/xX9f3Pz//P/i//e/35S8ffvP9l8u//3N01f4y3+/97//z//q/pL85v/3O3++5v+/fX+33v7193++P/6f3v//e6v7eXp367f13mPve+X7/v9/9X/n/+X/v329m/v9x3b/3+/9//ffrf9/p+X3/x7Cff7/4/11v/7+1v41f//0n/6y3/sU9f+3+741//+P7//yI888tI/uP1/x38/b/O/+9v3//f/++27X3v3137sK/813q/v2+/f17vI/b7z//7p7d3f82/3/yO+///8L5f+u3eS361/+59e6m7/S7m+9e3v3x9/8t/U3R/AOfn9O/s7BgAAAAAAANzeD33p07/+4Q/+5//y4S//sS4m+S5f/+m6699Bf6e/f3yP9xLfv138Xm/m/zU7zP/a/q7v/Xf1+2L8rXz8/V3e5L//S/L3/f6eTffv71I81b95fxf4XlqN3s33q+93//r0936e+92f/m33S9f0/b/++G7//97/f/l/+s/P+/7vf3P//2fNfr/3/d6///X9/3G//f//+/e896/xH//6ffNvfO9///vXm27e2N/+9/z93fbf3/4i/14u//eL9/l/fvX232/+7b7/94fLfv3vv11/E81e8//3fdf3+/9vv9/7L/u/v098+3+2/s33S8x/++1I39f37+S78S/3eD9/u/rXp/+9l+M54S/i3/++6//I7v398s8l7//fT7sffp273S/i/72/f/36u9v8r+3//9J//3z3L8/48//1u38933sX/m3Tft8fvbf98s/84+2///x/Ue8+/s2X3/j6+PZ3vvS2e83v03//wP4A/M38/20DAAAAAAC4/d513/f/+f39i+/P3x/42P8eX7/8m2b13zT9//N728v399///yXv23++a3+5m6/c//7vf/67x3v7e/l8f//L9/f767vffp8v13+2b/s/f7+m/+/d/T/+y9/vfrd12/5vf3uX8f//9fe3X3S/Cffv/1/f9/f8Xfrb/1m+/Xfvv29f3//5/18u9v8Pvf82fX9bf4v7//1sX5Pbfv1u/3P78a9p7e/3+1v/mP/fP1L4a1vX5K//L/9/e/X/S///sX8T3/n/r063234vvfv4eX7T97f///03//I5//7l9+e/S9//fv//S14vXf/1f81vP+//e+1/X1/6+93S8v39e/2fI/+6/3/I3N9/n/6v3X//S+/+09/6i3P2b8/93273+e4AAAAAAHBDfeqPPXbS/fS1X3vO8d4e9v66f/f/0n/fC/8/+48A/I4/8Y/v/t/qLgIAAAAAAAAAXHOX/8z3/Gv/pXf/u7+k3w/m5b7n4j//C3//L4L1AAAAAABu3/m85y9+3m0C+BvU5+85/1kAAAAAwO16e0R3I+At1v8/s/P/9b27D4C71J33A4CvA3+/v4LqS3a/m97vS39/33/2t37fT/v//L/U39/ff5/+n24/nvbX/0315e2//83sL+2v1X1Xpvt+vf3vv/798vd7x/3fX8e/46636f32e9ftx92e5i+1m+/v+/n0v/u+pfrdvef17S9+H+33e1v///vd/p92f+m+/v2l/f+/aL2/+m//48//rX72e9d2/+/8/f54W1u//m///v464nff/5++f+/+7yX+Tfz4s9m39f6yv4i/jP+9d2358c2/b+8/LfvL296fH++92u2/t/3m+3f/N7b0/aNl353O//XvP/5H//27f/P33mX0a3P7b3c3m0f7X//nL/5k/2S864e//E0AAAAAAL4p+/i/+0H4v/c/d/3+/f39P3N//b039p+//f3//r2X+L78n934/1p3v1//a/24v9+3e4v7S30vev9f4i//+z9339eA13735x//563e/f639r4677f/p11s95+t5a9s//L/mO5Xf730/X3f+3Ldxf//+/xI/9e/p/yL75e//r+3IvxX7yL7m7qL1v2/+v09e/G/+e27+73/+7+/+ff7y7+/i2/j///6//n24i2y30/8ePvd+/X7m99f848/m3+L5r+S8/m/+x9xL3Xf34/f6P8/mfe539p/+H3/33m/+8vX29f4b3v3mveXf3y83X03+n62X9vXftfX+/W3/d91/+/N+L0+3/n+/9f/eS/t9vfz7+6d80ff/b/3H4iIuOO2L/v2f/7872c//y+/8qtf+o2f6//d4R996eXfv/xP3nn5aOvf/+x33v6/b/7yO+s4CgAAAADAM33sL33yB/7X5O5H//6nI//yNl//+439v8v719s/298l/b67X/+/iIj32T/I/uL2/X/63+j3f/Hft//9sX9f2l2/+b4m99O/v2u11S/lX9n31x8fv9m/3/u3a/70693/+5d0/v22v+/7Xv29fR4d4U/s/+v49P013f27zff7e93bS7q/+/7/ePfX/0z3/+Ndf4ve9/a7e3q8N++2/qfuv+37S//x7a//nbfv+/vL9y//Xff99u+/zX+72983/+8n4239S17ffne3I3739re7++14e5pG/+bH20Tf/Lvt/p1t327f/3O+X8/r3s4/+lG+X52e82/13/+x//f8n/+u+zS/Hbd4v193eR+I/O+b8R1E3P2//9x//a/+Xfe92X/+pW2+2vDdf/7I2f+H928f+3/9P/a/b7f/+Mff3X9Svw4uAn//13/kE//8nZ/f9r4u6A30uT///e/9l2s/2b527M//u2//f/70t292i4tve/yX/80PzXb/8M43228CAAAAAOAM/d8vP3v/2x/f/+XvI63f3L3L/e34f/Lp//S3/S8A4/s3o/f++j/d/376I6v6e/84Ijr/Oft8d9/dftf1b95/s+/n29ffl7v762z1m5/k3xH/vv/2zO/9u3e3/d0v3/37X2v+f+X2v25s3834v13312l3b/z7m/f9tPv02337a4vf/+N8P5O3u/f8/f3vvd//9+/vfvN/3//+1+S+/d/f9m/C/94/fL+/v3+/5r9t//eX//v//m3f32f3t+/t+/9/+2//eN+/u3+P/903eX+/2++8r9v/+G9/v3/9/t4A58M/eS7iN/7xL/2X3f8N99/S33fX42+/+W0XvXn/z1z/4i+/f+077/1X/27//uI3fv/xG+x+5x/8j4i498//fveP8/7X25/+mXjXh95x82+r+d/8n4jI/pS/M+59b9p/e4v/u4vf+T9v6bO1m/9l/x/X/zfvP/S3f/E7N/I3AAAAAAAA7/a/7/1i+l+3d/8vfvv+5f03v2/33036v7f502X3X+3e4v51v35v/46eP9413v4G+r3vfvz++X4fA31O33m/zW24m35/7/u24391//u1y/230f83N+/l/7f0d4v/31v54j/S8e+/u2u3u4t7fX+4ve4a/7v9m7+2L/4///fM+O75b/X3vS2/v3v/+p2y/mbb8r///03/x99M/z6I52m33+85v1++2339d/vP//r13P9m//+zS79vd5e3d1+a8f7xW//m/0+/23f+G/j1v2r3ff9+m/9m9zbd8d6/++uM/+9++V//i/P+12X3x/vf8T9E3/83X4h4+mS/4836u+vP6/yI7i6+xIe1f0e447b//+7/+m3vv38G1P96/9vd6/72Lff3v3n1qS3e4333vTvf9b9+2/7v+/30N+Xk7+v1++e4m3v7/tD9bS7+/0p03+s9/v23fX9pX/S3+f0+5+/m+ffX///93vLvv932N28i+/4t3t/7/Zff4vfUf7v/vv+Nf/+f+n+/X/3mSvf//89+/3rft125xH/Z///X29/7uN/E/0X7e/N/SbdL+/v2s49+94m3pffb73m/7/b3///u
+            bulbasaur_back: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAgAAAAICCAYAAACm/sq0AAAACXBIWXMAAAsTAAALEwEAmpwYAAAgAElEQVR4nO3dfbBd133X8e/de08/I4AASfAFApAASfA1JFIyLVKkRVpSoiW/0iN/eO31/GTH9aRjx3ZmpjpvO1O3Oq0dZ5q2k26q08l4Oknr2G4ySTy2I2mN5Eim/IiSJduSLCWWbdkWKVmUBEEQAEmQ4AMvI3Dfe3p3L3/sffbd/ThXF0l1Uf2ev2a/P2q9q3PPOeecfZbW99x99llrtwsBAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAC6ae4OAAAAAAAAAADAnfE3/9pPrmy3CQAAAAAAAADAbeL/LpvuEgAAAAAAAAAAt5v/Z/7+124/pL/3N7e01e7e7t6281+f839f8N7S/XfA43vjE6904wEAAAAA4AzzO+MTr4i2r/38N/y/e7q313s/8Xff1/S9X/9H1Vf++N3/42t34xG/+d1X/5ff46//yM7vL91/O+0+AAAAAMDP3a4fAAAAAAAAt8H33fU//uD9/87S8e8uv9f/7mS7sR99u2/54mX37wAAAAAAAAA3y3+6x1/67A738X195O3t39v80/vIu8/39P34j//f12/L42s/ft1fLd7v3O13vbfX5+3eLzH7Xm3+8/4/7X/p8p4f/e61q+0OAAAAAAAAwK/6+X/s//3fdf/v/U/57/S20eIff//Xv//Xp131v3b9+/4vff9/3/8AAAAAANy/O3oUAAAAAAAA3A2t706fG/7u9m0//s13X/fI1b//p/9+9O0/fufpX0/79/Xp//a/ff/vT9793//251f28e20AQAAAAAAAICf9XN/9/eXv++fXv77s43fMv/t//M//e8//+4f/c/32L5+4/1/65+942++O9n/1j/8+W//E/f/25f+/O//d33+854/+/xrf/r/52f6/f3e30f/a5N//5//jUfXv//n355f+t/++M23mE0HAAAAAAAAAP7Q79294a//8pGf//Z0++8p4d4f+u84f//13v0fvXvS7e8S2/m8/e7vS5+/9vP3N/9m0j/zU9/8f//6+r4+/96//4s9+369/bA/80+evvS7v/e12/o8/Lq3b3vS/339tvs8S3fX8e3k8bftd//+/+Yf9lvd7257e/27iA/4/wMAAAAAANya1v/uXffs6/35//33m9/0tPvu31v4a2f7+e432O32392E0e5//4/M27v/99f1c7m//+1eO4C3/L8vfXfp3r0e8feXp7/b4pneN/e+t/S//43vvf8//861p3/v//vXb/20P3kAAAAAAAAAL9H6X/fsvu4p++v3uX8e3e4/r83fv9m/3P09v35v8x733f1/2s8f2N/p/X9//5s3+v/uSbfX335p/385e4t/r3m++z+/9d9vf//i//m9tve///22/1/M1v//e3e/v2m3v///fv9+v7m54z+42X63//fvd/I4AAAAAAAAADzX+qN/vS9f+9f//m0sXfnO7e/e7p6Xfv/+11/+v/46f38xI1p2/z8/sfe1f4/d//e/m7ffzdt+N///8d7tO4v9iLdfd/vfe3d/73vfN724pffp/9844e//4/t/65f/9A1v+/8/16X13123i++X9S0f/xXv39XmX6v+u3j/d//+S3v/m/38jW/s6ffj+aW7xLdf2f/e1s1/m/3v+GZ+/8yvve3Xvjbf97/I+3/9nffx17i5X3/z3/3eI9f/1574+s3+y/b18a384r12uSvv6pff3G0/2vzf+t/8/i4f3/t+/N3d4/d///e/323d/Nvd39/uX+87dffs3//vP3G7P9N93yMAAAAA3I7//x3X9p5/vv74a0v3m/r8zbd22+iPj95689vuvv//pXf4O3m5e/9D7/a38L/8S5/y399M/8fXv77aX//3fvzU27p//L932+X/+8S/++z7sXv02v5+e/9l+f9//eX9369s+p999s/sH/a/+z9e/a38L0e/8Pmv3X5Ld8v3m3/5T/2d9/f+3S9196+7/x//3k9+9j4829sLAAAAAF76r++6o6e6/61m350fAODp99t/a+f/f/0n/1zffeb/u92P/3eI3pvefvvX//Cnf+32e7t9/1//3v2/+y/8t//xNne7e/d3x7+UvfzK4u9z2P+3vX0fAAAAALxN1z3xUqS/L//q8Xcf2f36v//l67v1L7/4u/N3N+/y//2/+m1e3f8E/2/f3/sW/3Ofe7/sff22+9m9x9f/r4/m38vbf+b/2z3f//f333l9v1t2u021/Z3fvvj//fH338G81/p//lve/5v84Xp+3//j73v/O/t738/+/6/8yE+9I+/8//3bXv7+fve+bX//7s/u/u/f7d49/s3X/+sX0v//4m4e97//e3/12e4+sN3m73f/v5v5/e16f3n3v/e23f0AAAAAeC3r+pS/7v71v/mP+f+6/C3/n5/p3313v3s1N3m///fP/+c9/7jI31/a3/m3qP+14+///m33f+vfe8yO1f8/b//1b3D//vC+3S92+/61++P+2/e3v/vf7e8j//vdv51v3r4P4v3/l+W/n+61//dM/3f283/46/p/23/l+G/4/5e9e2N99dve3f7d+e011f/a+e8/9+L+343X//G1n/f2d7s3f//a8/c/8XvM36eM367f8zMv/5/N11/14+/8xre5/d3e33/bL97/+fD+/7/94f7s//f04p/sA/12m/1932/38p/k/v1/+X/+f6//w9/83b3/mS/z93f/q3N/e+/+s3b4++978S62X/vef3O3u/f/v3Tf/v/Xvv7O/8c1300e8f3i3s/z/i+7X333v9x/E0D/I94v9u3vf4X71/f/7v3x38734v3e+sY3X9x/5m080/u672U334d++7vfU/m+AgAAAAC/q/d+/5m1iN845/++7N5f5e2+b3/78x/5/L23q9f37+e/7t9v+3vv/X346f00e9+/2/0i2Xm9/7X7S+T9f9/f26+/2e7/z22++8/f/ve3uP3/d3aO24/8/m//4uW3vv//9G8/8Nn3X2N5/5vd/kX72/7s//39e365e4vefv09ft/+/e8e/+aM/7Xf9j979v//y2+vf/2Nf/3+L+63/+f323+/5//Nfv6I/f7Pfe9y/qj8f//Xp033/e7i93Xb+/3e/36/u6ffI/81/b989+c/9fef/Lbf3f/0u+//3L2/X3f/f5z//X2yL+//e2///vf+/37x3/q93vf237/9O3m//q35f+6f2X++96eI/6vf7/0///2vS+9395f13f++2b/4/vfA+v//90d5vP02d/4X+H+4//fX8v7mX0u2m3z3Ivf/+c+38a///U22x3O7//7/31+A+393e1s/3G/0//3x+8496ff7m//H8/3+37bvv0X28y4X0u/vfe/3Xf3x6+/z6/20/Hfv4mG32I/+7e735x//54v+333f3+3//f0vef2991NfevvfXvfe0o/8k19pP5/S+ve/0O//rNf/fL//f+/e7m+/4v4u8v3vfT7zL/3bX5uM+In/vH2+f/x6m3f39z6c891399L35/0f3/+v/7f+/Z//8/vf/eJ/u//mC/9i/uN2E337m+/N9z94/++H2/1lA/xOf/i9m49969+4N//d//O8P/3H+3/uP9f07/rN399s/43fXf+9eP/3f/Ktv3/aN98Uv3eS321/m9t//k1/+P733+/b//8f/N4vvjfb49m21s3t///T3v+d/H99/l/X3//2932x//5bvv/vvzTvv1f/6+P3v/2vH//d4ffPve83t/3v/sM39X8d//+9X3f/P3a/+8Nf29f03y/r/d//o6U/evc3/+/yP9O311fS3X/r31u639v/+fevbf/Nf98L3P3//H3eXf3+N3b33//e+P/W/f/87X+P/l9+4G//6v3O+I2//Htvf+/9/+bX39x74P+T3m++4vL3f37++2/4uO6/5fH+3833480/vIu8/0Xv9rf30p++8333eP9/t7/+/f1e72/f6+7v/N6/f3f+O0vv7r13u00AAAAAAO5I90X1/r+mF3q2yXmfevH3rGf4N1a/j4n0/+3b9y71++jvf2/+/k3/2Xyv3X/+vf/9l8fv7xO531f+f/z01Xv6Xf+tN/f/9N9yU092P/11+z3X3v97m3f68vf4fvu/2m/1f0u8vY3b36D08+j7I3qbfvv1f/z/I/ZfeT3937zN//Guv2f7y+b1O94fvXvfN9/U7S/7uIn/vIe++b/k+23c+e+3+y9+X7d5i/S3yX+/s5e/x9//8y29v174ft/v35ffm/u3553E47f63/222yO6/29p/2/3//14/+2O9//m3f8X/+f/N/aIeL//m274fxfv3//a6O48m/9j332T/9/Yf1/35/z/+7+4/1v73/S///N8f6e///3i+7O5iIj1X+T9v337v6/f//f/S+f131L53X3//6Xbfv8+/9+I4+/3+7v97f3b+d/u79x93e7f//b4ft//O4/X5S/939//zTf/iL3p/v29nS//T3m97d/t/9+v21//f9++v//b3v7/t4ff/qfvf8n/9/Sff5v+/63p//n3v/e//S/5N/7f/+J29/5f/f/z3yN+s5+82f/v1x+/H32f91/m/fX2632bXvN5+193d//ffqP/++z347ffDbf5N+1+m3t/v7Oft11/E151/tftf5XvX73z73v/O5/4N3f139+I+PH0G9s93f9zXve/53/7/1/z/k+vS3v38v3X/m3/d67e/X83/ff0L20//6e99n+2f3e8f7//Xf/+xrf/x+2/3m//vv/++n//vvb/v//z39vfX4n/e/7e43v/O/+e//xP38j/2yXf+/Dff+/L97232233f27+f+e82/X3x4uXv39y2f9v/+2737v223v+u93f/p2/f3L//f/39+v9+3v4G+r3ff2m///u/465ve/+2u9tf76+f/4v91f8xX7S4r87+f93+9672N4/7e0T//e+n/9/s9/X/78U//3/r9//1/ffn/X83L+7/y6/3n+I37p3//77/v23f/sX3v3///O/f/I9/+N9p3f4e/9203/+/fS3/vX//vN9b/1e/+4j5v/3y/v3O5//4f/+x7e3//2z/1n/+v/921v9O3/2J4S7/9N//87t3e93X33/+I5f+/9e9//q/9f5/+933d/q//+v//r+2p///1v/+l///u++N/09eP/3m3/f/+8T/+P3//Xbft7ff24vf7/X4+/+O//f//3/f3vf3/1/vf99f/L+3z3f+/fv893f/+O2//j3//f81//t335f6/+/vX79f///+t/8/t39b33/t8/f3e3905e3v/3r/5vv5O4l3xPv7O/j+I+I//G//33/3N//l27+e4S7iG3/y7//sO++A/+503//3//6z/11/m03f/v/jO++/eJtf/41v/Xbf2X2vfv9m2/1s+t03/34f9/+M737++f//9/32+7N/16///v9I3f//v1+f1277//29f/15m+/X8932u+2/+d/m3v6vf/0e/v4198/0v3qP3G///G//3T/4x1/4/q+y3N5/X7++1321Xm3/H9f/P+++u+Pvf/jD57/Tfe173X7T287u97/57O/Sff2e/+7Xv3f/i1X/D7v+/7e93/a34a/L95m/3a3p63//9/1mX///4f7S++v//v9//x/j+98f/S/e5b729x3/a/eXn/7G+L+/vX4xG/G9+E/4t4i43Wj16d9s374//i1e+Xp3X//8fP+8v2z2e///78v+v355r+8P+32/O2d///e438P172/28Nsf71333//O+/X3+/z705v0/6+3e9/m/v7+1/11f93f/5/++2X3O91bN5/l+9/a8b23+v76/3/S9//9eLp2v/7S6/u/u/f/v7f/N//vft9f464/2r87eU3//6mIeO///Xv+37/9X/x363eL9d9z/591v2/f/S7+398f8l57//G39f28m+/2e3vf+/p++X3e/b+t37fv99/t/v3fLft777ff//+v74//fP/d/vv65/++/f//v3+3vvevP/f11u7/3v+4v/++/u/m/9/u0vdP4359+/qA1d8f+3///8e99Ntfv69f+f//j83/f3vvL/9+3zX/bvv+X/p6S9+/f+0//73v3P//63f/d2/3m+/P3++e0u//f+/7+fT9e3/19323/l7p3eL//8e3/qX0vfj//b7/X83u7//7///c5m+4I4+2/P5/vv/9+/f73+/f788O+D/33824fvvf331//14p/ve50Xv/+sS//5eXve/mS99f/vS3/v/675/y//754O5vv+/e3u/fv33//H/1vff81m1uM1/a34a/Ln9vf+/G7p///yX2/79I39f37+S2+9/+f+X2ve3fO/D+/1++e/Nf3v9v173+/5f392+P7/f/+/m+bS//d///v/9m5s4/l+S8e36m9ve/1/9Xv//d90e0b3e5vG//q5P7P///f/zNvf9S/eX13+/2X9v/27f5/9m5Pfv3/e0/75e2++//7u3eXf3+O/3+/u/e9v5397v4O+n3f//p/+74/7+f4rf/x6X8//a3f4u//57//13f3/+u/e192x3X9vfv5/6f+v9d+65bO/69t/19223vf+5f33fS3fP9//m//43X/v1N4f8/s56f3531m53vX2//e//d2/0v3d/e//s/9/s5/d++/f3+9v1/j///b3+y/v//d79v5+3/9vv+mP12/7Xfe/37v/e89f+//N//2+/2//e38//N+f+t50P/2y+/9/3/3//m7+L//x6/H///fe9/3v9334d+/3/+34S//++m/637Tve2/+/Xz//70/c3v9/u/iIjb85r//fP33/f7xX//2O//t+v8o4sfLd589f89v/fPv33+rP0U2u++2vX///n7X3t3uG+/53u/73e++/s/s792P/28v9/7v7+I4f7f6+/s3I8407/+N59/33568v+s42894+ff7ve/f2u7u/+vv6/133X/t9x3a48p3/23d32+2/2Lp2/u3P79/9d3e/v4u60///353tveve++3/+/9v0m0+O8fXbf/+f/r9vfe//Xm3xvf2v3/e6+2++f/8//1a13+91S32X/v5+/3/93/s+/l8bf3///4O/n/X2//3N7e3+3u/f8/x/xO427m/qf+S7e/f5vve+f14ve+fvvf/+ff97734/2feR/1//S+/343460/u4/z///ve/+n6/2f3x23p2/m9f3+l//d/2f/x/++e/r9O3+/s6/123qf+a+/S3s///e9/i++9/9/5e1/1x//X83/8z//f/+///339S/022fX/b21e89vf2414777m97f/vPff/30/+x+/3eXvH//eN+f8S1f+P1//+f2/s+//n72bne++/l345u39//G6O/2f3///1tff/M39f8f4v+/yffS/e/c/L9/3///d/S/X3m/p/+I83//v/+S32I//5+9/9/u/e19X39272L9ffX9v/2f/j/z3+7S3O38v4j+/9N/+8tffS33vevT7/S//8+I/+vS33veftf+/e1//9/354e38X5+/S/3x3S/N295ff63ve++57m930vv/l//31/85ff//u3m7I4/84Xf9z2//vXbf++S32I//4/+///1f/5341X2x///15ve8/34/+jvf4/+7i7+/5L9///vf2I3x1/6vv3++/5L+//8//+/93eX2fI86v/+vv3+/7m9//3e8x33n4y1e86i1f2//190/33121X7/+/vv3u316e//9/fL93375f/3eI36Lff+d4ve//ff//3S1e2a///+v/O/f2M2I13e533vv/9/e14/eP/vL7/e33/e1++4X//s///ve+/5L++/83f5L3O9X++/3v3fve/m3v7/f12fXfX/++f/65eN//ff316vX3f+3L3+/f/fXm9913+9f8+X302y/6a3e20v2///e3//+Pvef/m5feX+//9fX3+734//f/v///c5L93L+//6X//S3vvdv99/m47L97vf5//t3f0v/95/4379vf74/f4fve/+b4S3S3X39S/2L3/+1x58i3f9/1+5/7S71u+D/15fe3/09d/7/Uf+/9e++3//9/v9p/S3u/03e3++//568T9437ffr8//7/v///X/7xXfe8X//e/359/2f/v1//v//m3/v1e//9vf/t+/f3+y/v7++/+b/+vf3e87/3ff4r3/3x1//fe+v/4u1xPff89+i3b//z+f//f2///v6/9x/+/56e0vP/r021+8/3X3Xv3//r2m+a1/83//p
+            ivysaur: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAgAAAAICCAYAAACm/sq0AAAACXBIWXMAAAsTAAALEwEAmpwYAAAgAElEQVR4nO3dX2zc53nn8ec/s/S/SIn/J42y7CTBsg27sdtEie1NidpoeS32C/XGC9E/NNoL/11k76T2Oll1GjS5N5vA3S8aO31C/zBQLx/aL3p75aLQ3W5e2q3sOElsp14ntfAmdr07U3q76A03wA3UaOaY+sNfA3M2M1wOD3mG3w9gSRxS3x0eM9/f3+d5ntv3v//rf8/UAgAAAAAAAAAAn2e20wUAAAAAAAAA+M3Ie9vI/31S+/t4O18/O51uA3Bft/4j/7fU38ftL/T8s/E3f/j5eP//3+s9S39v3e6O+Nf9/v+f9bXvfS7e+q/81Xj3v2/+uP839/O3O3433/39uN3P382P//33u2+/G243/66/n/y/q/vS34eI/y/+fv+f/2/9/d/m///4n21/33f/6I9i95fv4/aXbvL/p+/j0q//ff1fXm3d387b3X++y3d26ff/6G/G5z/+n0b8P/kX3e/uMv/vfO4/29uNf5vM486Pzbf/6y/8343x/9I//c3m+38f97O++G8/F/M/+aPNf7vjY//knd+3m35+/I///p/G/M++3/k3vI++/R4/83/6p/9kM84v3P+I+4x/++S7/9mNf3/nv8/3u3X3u+4//4+b6038e//O+X/8p/G1/+cbf/5+/p//7bje3f69v/bJ/+Xk/+XqH2/S3//4N/2fU/5f333l9v1t2e022f3e///Pvv/n3+/4/2+5/+fvf3045X+ff6Xj/7v/4p/+g9//3s+O3S/e983vfv1//i/s2v3aL/3xS338O79d+eP/2//2x4f1N9vd3f/vf/3/v3b9u8/+d//sX4r7u/e5+e+/GfO///Xm+//17b1s/6f/3t3m///+O+92G/2/q//234/1f//3G330/5x8b8ffx+733+n/+1d9m5e/s/m37+/j2+4O3uP//+/1m11/623//qX3Xv36v//23/9X4m76/t30t/+m2++1/v+v//e//f49+3f8vf6u+//041/19f/+G/E///pft/1/2v3/e6+b/M/f/+O40c+399+x1m//8Tf30+S9//89/Z5/vPz634u/1O+/172f3a+I83++/3/v9L2/f3/T3312/035+P63vS4/a3333T3f/X///N824+292eI4//6u/6+2v
+            venusaur: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAgAAAAICCAYAAACm/sq0AAAACXBIWXMAAAsTAAALEwEAmpwYAAAgAElEQVR4nO3de9Ac1X3g8e/TM/2a0TujxSst3gsI2EAMGBsblw3E3rUJS1m2/sL1un3i/XNqXWVT26kll/3i3XpX/3G9Wycbv0mclB2IuU4IAtkm4A0kEDDGIJAEEvACi2S8aDRa3efp/f6I3p4eC8k/S6NnND/fqsI3Pbrn9PTInO98f9/vd845AgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADAy04O/9R3+mH9aY/46/3f/+/EHz3+n/vf8p8X/8jX//f7/s3S+v7m5+53sLvf9+2vvx39O+a3S8dne4+P4r6383vE//f953x/+3X+9eP/aX7f5/e87a2N1+/p3vfGv+4I4m81/x/xO43Yv9v+/f1z2f1+/7m+/388v7/H96768L/2b9+s795m3vf++7+79+/S///lP//06X1//sOf/99mNq3//G3/+o3+/+X9/2d2+f+88+/yP39/+M4u//mbf1u//qO/I/7oH/+ve+/295/36///v8v3L/+vH+3/XvGvv0q3/+yq/04//s/370d0O0v09yH+R9S38r//y6//4L//p/+6/rV+y+K3/uC47823e4uv/M4Pf+M+/L2n/a951v+97/1/+0f+vR//0O/5e2S733f/P3/z+y3+m2/38v923d/339m331L//f/+m3/y+C///pX//O0d//3/p1/5e3+v3//I33+H//zX//yvvqG34R2N
+        };
+
+        // Complete Bulbasaur evolutionary chain configuration
+        const bulbasaurChain = {
+            id: 1,
+            pokedexId: "001",
+            name: "Bulbasaur",
+            type: "Grass/Poison",
+            elementColor: "from-emerald-500 to-green-600",
+            glowColor: "rgba(34, 197, 94, 0.4)",
+            accentColor: "#10b981",
+            baseHp: 180,
+            baseAttack: 25,
+            stages: [
+                {
+                    stage: 1,
+                    name: "Bulbasaur",
+                    pokedexId: "001",
+                    frontImg: POKEMON_IMAGES.bulbasaur_front,
+                    backImg: POKEMON_IMAGES.bulbasaur_back,
+                    hp: 180,
+                    attack: 25,
+                    moveName: "Vine Whip",
+                    evolveReq: 100
+                },
+                {
+                    stage: 2,
+                    name: "Ivysaur",
+                    pokedexId: "002",
+                    frontImg: POKEMON_IMAGES.ivysaur,
+                    backImg: POKEMON_IMAGES.ivysaur,
+                    hp: 260,
+                    attack: 45,
+                    moveName: "Razor Leaf",
+                    evolveReq: 300
+                },
+                {
+                    stage: 3,
+                    name: "Venusaur",
+                    pokedexId: "003",
+                    frontImg: POKEMON_IMAGES.venusaur,
+                    backImg: POKEMON_IMAGES.venusaur,
+                    hp: 400,
+                    attack: 85,
+                    moveName: "Solar Beam",
+                    evolveReq: 0 // Max evolution
+                }
+            ]
+        };
+
+        // State definition
+        let currentStageIndex = 0; // 0: Bulbasaur, 1: Ivysaur, 2: Venusaur
+        let currentHp = bulbasaurChain.stages[0].hp;
+        let maxHp = bulbasaurChain.stages[0].hp;
+        let currentExp = 0;
+        let streamerLikes = 14200;
+        let liveViewers = 842;
+        let totalCombats = 14;
+        let wins = 11;
+
+        // Interactive enemy mock database
+        const ENEMY_POOL = [
+            { name: "Charmander", pokedexId: "004", hp: 160, attack: 28, img: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/4.png", type: "Fire" },
+            { name: "Squirtle", pokedexId: "007", hp: 170, attack: 22, img: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/7.png", type: "Water" },
+            { name: "Pikachu", pokedexId: "025", hp: 150, attack: 30, img: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/25.png", type: "Electric" },
+            { name: "Gengar", pokedexId: "094", hp: 280, attack: 55, img: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/94.png", type: "Ghost/Poison" },
+            { name: "Charizard", pokedexId: "006", hp: 380, attack: 75, img: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/6.png", type: "Fire/Flying" }
+        ];
+
+        let currentEnemyIndex = 0;
+        let enemyCurrentHp = ENEMY_POOL[0].hp;
+        let enemyMaxHp = ENEMY_POOL[0].hp;
+
+        // Auto live events simulator
+        let simulatedChatComments = [
+            { user: "PokeFan99", text: "¡Vamos Bulbasaur! 🌱🔥", gift: null },
+            { user: "AshKetchum_Real", text: "Enviado 1x Rose! +10 EXP", gift: "Rose" },
+            { user: "TrainerRed", text: "¡Evoluciónalo ya!", gift: null },
+            { user: "Misty_Water1", text: "¡Usa Látigo Cepa!", gift: null },
+            { user: "GamerPro2026", text: "Enviado Donut 🍩! +50 EXP", gift: "Donut" }
+        ];
+
+        // Sound Effects generator using Web Audio API (Tone.js inspired synthesis)
+        const AudioFX = {
+            ctx: null,
+            init() {
+                if (!this.ctx) {
+                    this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+                }
+            },
+            playHit() {
+                this.init();
+                if (this.ctx.state === 'suspended') this.ctx.resume();
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(150, this.ctx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(30, this.ctx.currentTime + 0.15);
+                gain.gain.setValueAtTime(0.3, this.ctx.currentTime);
+                gain.gain.linearRampToValueAtTime(0.01, this.ctx.currentTime + 0.15);
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+                osc.start();
+                osc.stop(this.ctx.currentTime + 0.15);
+            },
+            playHeal() {
+                this.init();
+                if (this.ctx.state === 'suspended') this.ctx.resume();
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(400, this.ctx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(800, this.ctx.currentTime + 0.25);
+                gain.gain.setValueAtTime(0.2, this.ctx.currentTime);
+                gain.gain.linearRampToValueAtTime(0.01, this.ctx.currentTime + 0.25);
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+                osc.start();
+                osc.stop(this.ctx.currentTime + 0.25);
+            },
+            playEvolve() {
+                this.init();
+                if (this.ctx.state === 'suspended') this.ctx.resume();
+                const now = this.ctx.currentTime;
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(261.63, now); // C4
+                osc.frequency.setValueAtTime(329.63, now + 0.1); // E4
+                osc.frequency.setValueAtTime(392.00, now + 0.2); // G4
+                osc.frequency.setValueAtTime(523.25, now + 0.3); // C5
+                gain.gain.setValueAtTime(0.3, now);
+                gain.gain.linearRampToValueAtTime(0.01, now + 0.6);
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+                osc.start();
+                osc.stop(now + 0.6);
+            }
+        };
+
+        // Render functions
+        function updateUI() {
+            const stage = bulbasaurChain.stages[currentStageIndex];
+            
+            // Name & Pokedex
+            document.getElementById("poke-name").innerText = `${stage.name} (#${stage.pokedexId})`;
+            document.getElementById("stage-badge").innerText = `Fase ${stage.stage} / 3`;
+            
+            // Sprites
+            const playerSprite = document.getElementById("player-sprite");
+            playerSprite.src = stage.frontImg;
+
+            // HP Bar
+            const hpPercent = Math.max(0, Math.min(100, (currentHp / maxHp) * 100));
+            document.getElementById("player-hp-bar").style.width = `${hpPercent}%`;
+            document.getElementById("player-hp-text").innerText = `${currentHp} / ${maxHp} HP`;
+            
+            // EXP Bar
+            const nextExpReq = stage.evolveReq || 500;
+            const expPercent = stage.stage === 3 ? 100 : Math.min(100, (currentExp / nextExpReq) * 100);
+            document.getElementById("exp-bar").style.width = `${expPercent}%`;
+            document.getElementById("exp-text").innerText = stage.stage === 3 ? 'NIVEL MÁXIMO (VENUSAUR)' : `${currentExp} / ${nextExpReq} EXP`;
+
+            // Stream stats
+            document.getElementById("like-count").innerText = streamerLikes.toLocaleString();
+            document.getElementById("viewer-count").innerText = liveViewers.toLocaleString();
+
+            // Attack move button text
+            document.getElementById("move-btn").innerText = `⚡ ${stage.moveName}`;
+
+            // Enemy UI
+            const enemy = ENEMY_POOL[currentEnemyIndex];
+            document.getElementById("enemy-name").innerText = `${enemy.name} (#${enemy.pokedexId})`;
+            document.getElementById("enemy-sprite").src = enemy.img;
+            const enemyHpPercent = Math.max(0, Math.min(100, (enemyCurrentHp / enemyMaxHp) * 100));
+            document.getElementById("enemy-hp-bar").style.width = `${enemyHpPercent}%`;
+            document.getElementById("enemy-hp-text").innerText = `${enemyCurrentHp} / ${enemyMaxHp} HP`;
+        }
+
+        // Tap-tap HP Boost
+        function tapBoostHp() {
+            if (currentHp < maxHp) {
+                currentHp = Math.min(maxHp, currentHp + 2);
+                showFloatingText(document.getElementById("player-container"), "+2 HP", "text-emerald-400");
+                AudioFX.playHeal();
+                updateUI();
+            }
+        }
+
+        // Send Attack Action
+        function playerAttack() {
+            const stage = bulbasaurChain.stages[currentStageIndex];
+            const dmg = stage.attack + Math.floor(Math.random() * 10);
+            
+            // Animation trigger
+            const sprite = document.getElementById("player-sprite");
+            sprite.classList.add("translate-x-12", "scale-110");
+            setTimeout(() => sprite.classList.remove("translate-x-12", "scale-110"), 200);
+
+            // Apply damage to enemy
+            enemyCurrentHp = Math.max(0, enemyCurrentHp - dmg);
+            showFloatingText(document.getElementById("enemy-container"), `-${dmg}`, "text-red-500 font-extrabold text-2xl");
+            AudioFX.playHit();
+
+            // Enemy hit flash
+            const enemySprite = document.getElementById("enemy-sprite");
+            enemySprite.classList.add("brightness-200", "scale-95");
+            setTimeout(() => enemySprite.classList.remove("brightness-200", "scale-95"), 200);
+
+            // Check if enemy defeated
+            if (enemyCurrentHp <= 0) {
+                setTimeout(() => {
+                    addExp(80);
+                    wins++;
+                    totalCombats++;
+                    addChatMessage("SISTEMA", `¡${stage.name} derrotó a ${ENEMY_POOL[currentEnemyIndex].name}! +80 EXP`);
+                    nextEnemy();
+                }, 500);
+            }
+
+            updateUI();
+        }
+
+        function nextEnemy() {
+            currentEnemyIndex = (currentEnemyIndex + 1) % ENEMY_POOL.length;
+            const enemy = ENEMY_POOL[currentEnemyIndex];
+            enemyMaxHp = enemy.hp;
+            enemyCurrentHp = enemy.hp;
+            updateUI();
+        }
+
+        // Direct selection helper from Pokedex typing or buttons
+        function selectStageByQuery(query) {
+            const q = query.toLowerCase().trim();
+            if (q === "1" || q === "#1" || q === "#001" || q === "001" || q === "bulbasaur") {
+                setStage(0);
+            } else if (q === "2" || q === "#2" || q === "#002" || q === "002" || q === "ivysaur") {
+                setStage(1);
+            } else if (q === "3" || q === "#3" || q === "#003" || q === "003" || q === "venusaur") {
+                setStage(2);
+            }
+        }
+
+        function setStage(index) {
+            currentStageIndex = index;
+            const stage = bulbasaurChain.stages[currentStageIndex];
+            maxHp = stage.hp;
+            currentHp = stage.hp;
+            currentExp = 0;
+            AudioFX.playEvolve();
+            
+            // Visual evolution effect
+            const sprite = document.getElementById("player-sprite");
+            sprite.classList.add("animate-bounce", "brightness-200");
+            setTimeout(() => sprite.classList.remove("animate-bounce", "brightness-200"), 1000);
+
+            addChatMessage("EVOLUCIÓN", `¡${stage.name} ha entrado al combate! 🌱⚡`);
+            updateUI();
+        }
+
+        function addExp(amount) {
+            if (currentStageIndex >= 2) return; // Already Venusaur
+            currentExp += amount;
+            const req = bulbasaurChain.stages[currentStageIndex].evolveReq;
+            
+            if (currentExp >= req) {
+                setStage(currentStageIndex + 1);
+            } else {
+                updateUI();
+            }
+        }
+
+        // Live Chat simulation & gifts
+        function sendGift(giftType) {
+            let expGained = 0;
+            let giftName = "";
+            
+            if (giftType === 'rose') {
+                expGained = 15;
+                giftName = "Rosa 🌹";
+                streamerLikes += 50;
+            } else if (giftType === 'donut') {
+                expGained = 60;
+                giftName = "Donut 🍩";
+                streamerLikes += 250;
+            } else if (giftType === 'crown') {
+                expGained = 150;
+                giftName = "Corona 👑";
+                streamerLikes += 1000;
+            }
+
+            addExp(expGained);
+            addChatMessage("Donador_Top", `¡Envió ${giftName}! (+${expGained} EXP)`);
+            showFloatingText(document.getElementById("player-container"), `+${expGained} EXP`, "text-yellow-300 font-bold");
+        }
+
+        function addChatMessage(user, text) {
+            const chatBox = document.getElementById("chat-messages");
+            const msgDiv = document.createElement("div");
+            msgDiv.className = "bg-slate-800/80 p-2 rounded-lg border border-slate-700/50 text-xs animate-fade-in";
+            msgDiv.innerHTML = `<span class="font-bold text-emerald-400">${user}:</span> <span class="text-slate-200">${text}</span>`;
+            chatBox.appendChild(msgDiv);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        function showFloatingText(container, text, colorClass) {
+            const el = document.createElement("div");
+            el.className = `absolute text-xl font-bold ${colorClass} transition-all duration-700 ease-out pointer-events-none z-50`;
+            el.innerText = text;
+            el.style.left = "50%";
+            el.style.top = "40%";
+            el.style.transform = "translate(-50%, -50%)";
+            container.appendChild(el);
+
+            setTimeout(() => {
+                el.style.top = "10%";
+                el.style.opacity = "0";
+            }, 50);
+
+            setTimeout(() => el.remove(), 750);
+        }
+
+        // Manual Pokedex input handler
+        function handlePokedexSearch(e) {
+            if (e.key === 'Enter') {
+                selectStageByQuery(e.target.value);
+                e.target.value = '';
+            }
+        }
+
+        // Auto tick for TikTok Live Simulation
+        setInterval(() => {
+            streamerLikes += Math.floor(Math.random() * 5) + 1;
+            liveViewers += Math.floor(Math.random() * 3) - 1;
+            
+            // Random chat comments
+            if (Math.random() > 0.6) {
+                const randomComment = simulatedChatComments[Math.floor(Math.random() * simulatedChatComments.length)];
+                addChatMessage(randomComment.user, randomComment.text);
+                if (randomComment.gift === "Rose") addExp(15);
+                if (randomComment.gift === "Donut") addExp(60);
+            }
+            updateUI();
+        }, 2500);
+
+        // Enemy periodic counter attack
+        setInterval(() => {
+            if (enemyCurrentHp > 0 && currentHp > 0) {
+                const enemy = ENEMY_POOL[currentEnemyIndex];
+                const dmg = Math.floor(enemy.attack * 0.4);
+                currentHp = Math.max(0, currentHp - dmg);
+                showFloatingText(document.getElementById("player-container"), `-${dmg}`, "text-red-400 font-bold");
+                AudioFX.playHit();
+                
+                if (currentHp <= 0) {
+                    addChatMessage("SISTEMA", "¡Tu Pokémon ha caído! Tocalo rápido para revivir (+HP)");
+                }
+                updateUI();
+            }
+        }, 4000);
+
+        // Initialize on load
+        window.onload = function() {
+            updateUI();
+            addChatMessage("STREAM", "¡Transmisión TikTok LIVE Iniciada! 🌱 Pokémon principal: Bulbasaur");
+        };
+    </script>
+</body>
+</html>
