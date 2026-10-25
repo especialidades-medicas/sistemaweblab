@@ -1,79 +1,47 @@
 /**
  * ASISTENTE DE VOZ INTELIGENTE - LABORATORIO CLÍNICO
- * Versión corregida y limpia.
+ * Versión Directa con Relleno Secuencial por Comas (,) y 60 Segundos de Inactividad.
  */
 
 document.addEventListener('DOMContentLoaded', () => {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 
-    let estadoConversacion = 'IDLE'; // 'IDLE', 'ESPERANDO_CONFIRMACION', 'ESPERANDO_SUB_OPCION'
+    let estadoConversacion = 'IDLE'; // 'IDLE', 'ESPERANDO_RESULTADOS_SECUENCIALES'
     let temporizadorInactividad = null;
-    let tabActivaNombre = '';
-    let tabActivaId = '';
-    let ultimoTextoHablado = ''; // Almacena lo último que dijo el asistente para la opción "repite"
+    let inputsActivosSeccion = []; // Almacena los inputs de la tabla actual
+    let ultimoTextoHablado = ''; 
 
-    // Subopciones numeradas asociadas a cada pestaña principal
-    const subOpcionesTabs = {
-        'hematologia': [
-            { numero: '1', nombre: 'Automatizada Dirui', idTab: 'auto-tab' },
-            { numero: '2', nombre: 'Pediátrica Dirui', idTab: 'pediatrico-tab' },
-            { numero: '3', nombre: 'Manual', idTab: 'manual-tab' },
-            { numero: '4', nombre: 'VES', idTab: 'ves-tab' }
-        ],
-        'qs': [
-            { numero: '1', nombre: 'Química Sanguínea General', idTab: 'qs-tab' }
-        ],
-        'hepaticas': [
-            { numero: '1', nombre: 'Perfil Hepático', idTab: 'hepaticas-tab' }
-        ],
-        'electrolitos': [
-            { numero: '1', nombre: 'Electrolitos', idTab: 'electrolitos-tab' }
-        ],
-        'endocrinologia': [
-            { numero: '1', nombre: 'Endocrinología', idTab: 'endocrinologia-tab' }
-        ],
-        'inmunologicos': [
-            { numero: '1', nombre: 'Inmunológicos', idTab: 'inmunologicos-tab' }
-        ],
-        'coagulacion': [
-            { numero: '1', nombre: 'Coagulación', idTab: 'coagulacion-tab' }
-        ],
-        'oncologicos': [
-            { numero: '1', nombre: 'Oncológicos', idTab: 'oncologicos-tab' }
-        ],
-        'reumatologico': [
-            { numero: '1', nombre: 'Reumatológico', idTab: 'reumatologico-tab' }
-        ],
-        'otros': [
-            { numero: '1', nombre: 'Otros BHCG y GyF', idTab: 'otros-tab' }
-        ],
-        'vitaminas': [
-            { numero: '1', nombre: 'Vitaminas', idTab: 'vitaminas-tab' }
-        ],
-        'orina': [
-            { numero: '1', nombre: 'Orina', idTab: 'orina-tab' }
-        ],
-        'heces': [
-            { numero: '1', nombre: 'Heces', idTab: 'heces-tab' }
-        ],
-        'cultivos': [
-            { numero: '1', nombre: 'Cultivos', idTab: 'cultivos-tab' }
-        ],
-        'secreciones': [
-            { numero: '1', nombre: 'Secreciones', idTab: 'secreciones-tab' }
-        ],
-        'covid': [
-            { numero: '1', nombre: 'Covid', idTab: 'covid-tab' }
-        ],
-        'comentario': [
-            { numero: '1', nombre: 'Comentario', idTab: 'comentario-tab' }
-        ]
+    // Mapeo directo de comandos cortos a las sub-pestañas reales del HTML
+    const mapaAccesoDirecto = {
+        'hematologia': { idTab: 'auto-tab', nombre: 'Hematología Automatizada' },
+        'biometria': { idTab: 'auto-tab', nombre: 'Hematología Automatizada' },
+        'automatizada': { idTab: 'auto-tab', nombre: 'Hematología Automatizada' },
+        'pediatrico': { idTab: 'pediatrico-tab', nombre: 'Hematología Pediátrica' },
+        'pediatrica': { idTab: 'pediatrico-tab', nombre: 'Hematología Pediátrica' },
+        'manual': { idTab: 'manual-tab', nombre: 'Hematología Manual' },
+        'ves': { idTab: 'ves-tab', nombre: 'VES' },
+        'quimica': { idTab: 'qs-tab', nombre: 'Química Sanguínea' },
+        'sanguinea': { idTab: 'qs-tab', nombre: 'Química Sanguínea' },
+        'hepatica': { idTab: 'hepaticas-tab', nombre: 'Hepáticas' },
+        'electrolitos': { idTab: 'electrolitos-tab', nombre: 'Electrolitos' },
+        'endocrinologia': { idTab: 'endocrinologia-tab', nombre: 'Endocrinología' },
+        'inmunologicos': { idTab: 'inmunologicos-tab', nombre: 'Inmunológicos' },
+        'coagulacion': { idTab: 'coagulacion-tab', nombre: 'Coagulación' },
+        'oncologicos': { idTab: 'oncologicos-tab', nombre: 'Oncológicos' },
+        'reumatologico': { idTab: 'reumatologico-tab', nombre: 'Reumatológico' },
+        'otros': { idTab: 'otros-tab', nombre: 'Otros' },
+        'vitaminas': { idTab: 'vitaminas-tab', nombre: 'Vitaminas' },
+        'orina': { idTab: 'orina-tab', nombre: 'Orina' },
+        'heces': { idTab: 'heces-tab', nombre: 'Heces' },
+        'cultivos': { idTab: 'cultivos-tab', nombre: 'Cultivos' },
+        'secreciones': { idTab: 'secreciones-tab', nombre: 'Secreciones' },
+        'covid': { idTab: 'covid-tab', nombre: 'Covid' },
+        'comentario': { idTab: 'comentario-tab', nombre: 'Comentario' }
     };
 
     const btnVoz = document.getElementById('btnVozGlobal');
     const estadoVoz = document.getElementById('estadoVoz');
 
-    // Función para hablar con voz femenina e interrumpir locuciones anteriores
     function hablarTexto(texto, callbackCuandoTermine) {
         ultimoTextoHablado = texto;
         if ('speechSynthesis' in window) {
@@ -95,14 +63,10 @@ document.addEventListener('DOMContentLoaded', () => {
                  v.name.toLowerCase().includes('sabrina'))
             );
 
-            if (vozFemenina) {
-                utterance.voice = vozFemenina;
-            }
+            if (vozFemenina) utterance.voice = vozFemenina;
 
             utterance.onend = () => {
-                if (callbackCuandoTermine) {
-                    callbackCuandoTermine();
-                }
+                if (callbackCuandoTermine) callbackCuandoTermine();
             };
 
             window.speechSynthesis.speak(utterance);
@@ -112,9 +76,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     if ('speechSynthesis' in window) {
-        window.speechSynthesis.onvoiceschanged = () => {
-            window.speechSynthesis.getVoices();
-        };
+        window.speechSynthesis.onvoiceschanged = () => { window.speechSynthesis.getVoices(); };
     }
 
     function normalizarTexto(str) {
@@ -124,23 +86,17 @@ document.addEventListener('DOMContentLoaded', () => {
     function convertirTextoAFecha(texto) {
         let numeros = texto.match(/\d+/g);
         if (!numeros || numeros.length < 3) return null;
-
         let n1 = parseInt(numeros[0], 10);
         let n2 = parseInt(numeros[1], 10);
         let n3 = parseInt(numeros[2], 10);
-
         let anio, mes, dia;
-        if (n1 > 1000) {
-            anio = n1; mes = n2; dia = n3;
-        } else {
-            dia = n1; mes = n2; anio = n3;
-            if (anio < 100) anio += 2000;
-        }
-
+        if (n1 > 1000) { anio = n1; mes = n2; dia = n3; } 
+        else { dia = n1; mes = n2; anio = n3; if (anio < 100) anio += 2000; }
         return `${anio}-${String(mes).padStart(2, '0')}-${String(dia).padStart(2, '0')}`;
     }
 
-    function iniciarTemporizador10Seg() {
+    // Temporizador aumentado a 60 segundos (60000 ms)
+    function iniciarTemporizador60Seg() {
         clearTimeout(temporizadorInactividad);
         temporizadorInactividad = setTimeout(() => {
             if (estadoConversacion !== 'IDLE') {
@@ -152,7 +108,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                 });
             }
-        }, 10000);
+        }, 60000); 
     }
 
     function restaurarBotonVozVisual() {
@@ -200,8 +156,8 @@ document.addEventListener('DOMContentLoaded', () => {
             if (estadoVoz) estadoVoz.textContent = "Procesado ✔️";
         };
 
-        recognition.onerror = (event) => {
-            if (estadoVoz) estadoVoz.textContent = "Error: " + event.error;
+        recognition.onerror = () => {
+            if (estadoVoz) estadoVoz.textContent = "Error";
             restaurarBotonVozVisual();
             estadoConversacion = 'IDLE';
         };
@@ -220,7 +176,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 btnVoz.classList.remove('btn-primary');
                 btnVoz.classList.add('btn-danger');
             }
-            iniciarTemporizador10Seg();
+            iniciarTemporizador60Seg();
         } catch (err) {
             console.log(err);
         }
@@ -228,80 +184,83 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function procesarFlujoConversacional(frase, fraseCruda) {
         if (frase.includes('repite') || frase.includes('repetir')) {
-            iniciarTemporizador10Seg();
+            iniciarTemporizador60Seg();
             hablarTexto(ultimoTextoHablado, () => {
                 iniciarEscuchaManual();
             });
             return;
         }
 
-        if (estadoConversacion === 'ESPERANDO_CONFIRMACION') {
-            if (frase.includes('si') || frase.includes('ingresar') || frase.includes('claro')) {
-                let subOps = subOpcionesTabs[tabActivaId] || [{ numero: '1', nombre: 'General' }];
-                let textoOpcionesLista = subOps.map(op => `${op.numero}, ${op.nombre}`).join('. ');
-                
-                estadoConversacion = 'ESPERANDO_SUB_OPCION';
-                iniciarTemporizador10Seg();
-                
-                hablarTexto(`¿Qué subopción deseas? Las opciones son: ${textoOpcionesLista}. Di el número o el nombre.`, () => {
-                    iniciarEscuchaManual();
-                    iniciarTemporizador10Seg();
-                });
-            } else if (frase.includes('no')) {
-                estadoConversacion = 'IDLE';
-                hablarTexto("Operación cancelada.");
-                restaurarBotonVozVisual();
-            } else {
-                iniciarTemporizador10Seg();
-                hablarTexto("Por favor responde sí o no.", () => {
-                    iniciarEscuchaManual();
-                    iniciarTemporizador10Seg();
-                });
-            }
-            return;
-        }
-
-        if (estadoConversacion === 'ESPERANDO_SUB_OPCION') {
-            let subOps = subOpcionesTabs[tabActivaId] || [];
-            let encontrada = subOps.find(op => frase.includes(op.numero) || normalizarTexto(op.nombre).includes(frase) || frase.includes(normalizarTexto(op.nombre)));
-            
+        // Si el sistema está esperando los resultados secuenciales separados por comas
+        if (estadoConversacion === 'ESPERANDO_RESULTADOS_SECUENCIALES') {
             estadoConversacion = 'IDLE';
             restaurarBotonVozVisual();
 
-            if (encontrada) {
-                let elSubTab = document.getElementById(encontrada.idTab);
-                if (elSubTab) {
-                    let bsTab = new bootstrap.Tab(elSubTab);
-                    bsTab.show();
+            // Limpiar y separar los valores dictados por comas
+            let valores = fraseCruda.split(',').map(v => v.trim());
+            let ingresados = 0;
+
+            inputsActivosSeccion.forEach((input, index) => {
+                if (valores[index] !== undefined) {
+                    input.value = valores[index];
+                    // Disparar evento change por si el input tiene validaciones
+                    input.dispatchEvent(new Event('change'));
+                    ingresados++;
                 }
-                hablarTexto(`Perfecto, ingresando en ${encontrada.nombre}. Dicta el valor correspondiente.`);
-            } else {
-                hablarTexto("No reconocí esa opción.");
-            }
-            return;
-        }
-
-        if (frase.includes('ingresar resultado') || frase.includes('ingresar resultados')) {
-            let tabActivaBtn = document.querySelector('#mainTabs .nav-link.active');
-            if (tabActivaBtn) {
-                tabActivaNombre = tabActivaBtn.textContent.trim();
-                let idTabHtml = tabActivaBtn.id;
-                tabActivaId = Object.keys(subOpcionesTabs).find(k => idTabHtml.includes(k)) || 'otros';
-            } else {
-                tabActivaNombre = "la opción actual";
-                tabActivaId = "otros";
-            }
-
-            estadoConversacion = 'ESPERANDO_CONFIRMACION';
-            iniciarTemporizador10Seg();
-            
-            hablarTexto(`Estás en ${tabActivaNombre}. ¿Quieres ingresar resultado? Di sí o no.`, () => {
-                iniciarEscuchaManual();
-                iniciarTemporizador10Seg();
             });
+
+            hablarTexto(`Listo. Se ingresaron ${ingresados} resultados correctamente.`);
             return;
         }
 
+        // Detección del comando "ingresar resultado [sección]" de forma directa
+        if (frase.includes('ingresa resultado') || frase.includes('ingresar resultado') || frase.includes('ingresar resultados')) {
+            let claveEncontrada = null;
+            
+            // Buscar cuál sub-sección nombró el usuario en la frase
+            for (let clave in mapaAccesoDirecto) {
+                if (frase.includes(clave)) {
+                    claveEncontrada = clave;
+                    break;
+                }
+            }
+
+            if (claveEncontrada) {
+                let destino = mapaAccesoDirecto[claveEncontrada];
+                let elTab = document.getElementById(destino.idTab);
+                
+                if (elTab) {
+                    let bsTab = new bootstrap.Tab(elTab);
+                    bsTab.show();
+                    elTab.scrollIntoView({ behavior: 'smooth', inline: 'center' });
+
+                    // Buscar el contenedor activo actual de esa pestaña para extraer sus inputs
+                    setTimeout(() => {
+                        let paneId = elTab.getAttribute('data-bs-target') || elTab.getAttribute('href');
+                        let contenedorPane = document.querySelector(paneId) || document.querySelector('.tab-pane.active');
+                        
+                        if (contenedorPane) {
+                            inputsActivosSeccion = Array.from(contenedorPane.querySelectorAll('input.form-control-editable'));
+                        } else {
+                            inputsActivosSeccion = Array.from(document.querySelectorAll('.tab-pane.fade.show input.form-control-editable, .tab-pane.active input.form-control-editable'));
+                        }
+
+                        estadoConversacion = 'ESPERANDO_RESULTADOS_SECUENCIALES';
+                        iniciarTemporizador60Seg();
+
+                        hablarTexto(`Ingresa en orden el resultado mencionando una coma para pasar al siguiente en ${destino.nombre}. Te escucho.`, () => {
+                            iniciarEscuchaManual();
+                            iniciarTemporizador60Seg();
+                        });
+                    }, 300);
+                }
+            } else {
+                hablarTexto("Por favor especifica el examen, por ejemplo: ingresa resultado hematología o pediátrico.");
+            }
+            return;
+        }
+
+        // Manejo de Datos del Paciente (Cédula, Orden, Nombres, etc.)
         if (frase.includes('cedula') || frase.includes('documento')) {
             let valor = extraerTextoDespues(fraseCruda, ['cédula', 'cedula', 'documento']);
             if (valor) {
