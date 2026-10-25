@@ -58,20 +58,18 @@
 <body class="bg-slate-100 text-slate-800 antialiased min-h-screen py-8 px-4 sm:px-6 lg:px-8">
     
     <div class="container-fluid p-2">
-		
-		
-        <!-- Botón Flotante Circular de Micrófono (Fijo en la esquina superior derecha, oculto al imprimir) -->
-    <div class="no-print" style="position: fixed; top: 20px; right: 20px; z-index: 9999;">
-        <button type="button" id="btnVozGlobal" class="btn btn-primary rounded-circle shadow-lg d-flex align-items-center justify-content-center" style="width: 55px; height: 55px; transition: all 0.3s ease;" title="Activar Comando de Voz">
-            <i class="bi bi-mic-fill" style="font-size: 24px;"></i>
-        </button>
-        <!-- Texto de estado flotante y discreto debajo del botón -->
-        <div id="estadoVoz" class="bg-white px-2 py-1 rounded shadow-sm text-end mt-1 text-primary fw-bold" style="font-size: 10px; display: none; max-width: 150px; float: right;">
-            Esperando...
-        </div>
-    </div>
 
-				
+		<!-- Botón Flotante Circular de Micrófono (Fijo en la esquina superior derecha, oculto al imprimir) -->
+		    <div class="no-print" style="position: fixed; top: 20px; right: 20px; z-index: 9999;">
+		        <button type="button" id="btnVozGlobal" class="btn btn-primary rounded-circle shadow-lg d-flex align-items-center justify-content-center" style="width: 55px; height: 55px; transition: all 0.3s ease;" title="Activar Comando de Voz">
+		            <i class="bi bi-mic-fill" style="font-size: 24px;"></i>
+		        </button>
+		        <!-- Texto de estado flotante y discreto debajo del botón -->
+		        <div id="estadoVoz" class="bg-white px-2 py-1 rounded shadow-sm text-end mt-1 text-primary fw-bold" style="font-size: 10px; display: none; max-width: 150px; float: right;">
+		            Esperando...
+		        </div>
+		    </div>
+		
         <!-- Contenedor principal que se imprimirá y exportará a PDF -->
         <div class="pedido-box border p-3 bg-white" id="pedidoContainer">
             
@@ -108,7 +106,7 @@
                     </div>
                     
                     <div class="col-md-12 col-12">
-                        <strong>NOMBRES:</strong>
+                        <strong>APELLIDOS Y NOMBRES:</strong>
                         <input type="text" id="nombrePaciente" class="form-control form-control-sm fw-bold" value=" ">
                     </div>
 
@@ -1128,9 +1126,9 @@
 								</tr>
 								<tr><td colspan="4" class="border-0 py-1"></td></tr>
 								<tr>
-                                        <td class="fw-bold">
-                                               <input type="text" class="form-control form-control-sm fw-bold mb-1" id="inmunoExamen1" placeholder="Ingrese nombre del examen ...">
-                                              </td>
+                                        <td class="fw-bold">										
+                                               <input type="text" class="form-control form-control-sm fw-bold mb-1" id="inmunoExamen1" placeholder="Ingrese nombre del examen ...">                                               
+                                        </td>
                                         <td><input type="text" class="form-control form-control-sm form-control-editable" id="resinmuno1"></td>
                                         <td><input type="text" class="form-control form-control-sm text-muted" id="unidadinmuno1" placeholder="Unidad"></td>
                                         <td><input type="text" class="form-control form-control-sm text-muted" id="refinmuno1" placeholder="Valores de referencia"></td>
@@ -3059,7 +3057,7 @@
                         <td class="py-1">
                             <select class="form-select form-select-sm form-control-editable">
                                 <option value="" selected>-</option>
-                                <option value="Secreción Vaginal">Secreción Vaginal</option>
+                                <option value="Secreción Vaginal">Secreción Vaginal En Fresco</option>
                                 <option value="Exudado Endocervical">Exudado Endocervical</option>
                                 <option value="Fondo de Saco">Fondo de Saco</option>
                             </select>
@@ -3565,105 +3563,190 @@
         </div>
     </div>
 </div>
-<!-- 16. COVID -->
-<!-- 16. COVID -->
-<div class="tab-pane fade" id="covidContent" role="tabpanel">
-    <div class="border p-2 rounded bg-white shadow-sm">
-        <div class="section-title text-primary fw-bold border-bottom pb-1 mb-2 small" data-section-name="PRUEBAS COVID-19">
-            PRUEBAS COVID-19
-        </div>
-        
-        <table class="table table-sm table-bordered align-middle mb-0 small bg-white">
-            <thead class="table-light text-muted">
-                <tr>
-                    <th>EXAMEN</th>
-                    <th style="width: 25%;">RESULTADO</th>
-                    <th style="width: 15%;">UNIDAD</th>
-                    <th>V. REFERENCIA</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td colspan="4" class="table-active fw-bold text-secondary" style="font-size: 9.5px;">
-                        <div>                            
-                            NOTA: Esta prueba debe solicitarse para la detección del virus de SARS-CoV-2 en individuos que cumplen con criterios clínicos y/o epidemiológicos.
-                        </div>
-                    </td>                                     
-                </tr>
-                <!-- Metadatos de la Muestra -->
-                <tr>
-                    <td class="fw-bold py-1" style="width: 25%;">Fecha de Muestra:</td>
-                    <td class="py-1">
-                        <input type="date" class="form-control form-control-sm form-control-editable" id="covidFechaMuestra" value="">
-                    </td>
-                    <td class="py-1">
-                        <input type="time" class="form-control form-control-sm form-control-editable" id="covidHoraMuestra" value="">
-                    </td>
-                    <td class="text-muted small">Fecha Hora Ingreso</td>
-                </tr>
-                <tr>
-                    <td class="fw-bold py-1">Fecha de Impresión:</td>
-                    <td class="py-1">
-                        <input type="date" class="form-control form-control-sm form-control-editable" id="covidFechaImpresion" value="">
-                    </td>
-                    <td class="py-1">
-                        <input type="time" class="form-control form-control-sm form-control-editable" id="covidHoraImpresion" value="">
-                    </td>
-                    <td class="text-muted small">Fecha Hora Resultado</td>
-                </tr>
-                <tr>
-                    <td class="fw-bold py-1">Muestra:</td>
-                    <td class="py-1"> 
-                        <select class="form-select form-select-sm form-control-editable" id="covidTipoMuestra">
-                            <option value="" selected disabled>Seleccione...</option>
-                            <option value="-">-</option>
-                            <option value="HISOPADO NASOFARINGEO">HISOPADO NASOFARINGEO</option>
-                        </select>
-                    </td>
-                    <td class="text-muted">-</td>
-                    <td class="text-muted">-</td>
-                </tr>
-                <tr>
-                    <td class="fw-bold py-1">Técnica:</td>
-                    <td class="py-1">
-                        <select class="form-select form-select-sm form-control-editable" id="covidTecnica">
-                            <option value="" selected disabled>Seleccione...</option>
-                            <option value="-">-</option>
-                            <option value="INMUNOCROMATOGRAFIA">INMUNOCROMATOGRAFIA</option>
-                        </select>
-                    </td>
-                    <td class="text-muted">-</td>
-                    <td class="text-muted">-</td>
-                </tr>
-				<tr><td colspan="4" class="border-0 py-1"></td></tr>
-				<tr>
-                    <td colspan="4" class="table-active fw-bold text-secondary" style="font-size: 9.5px;">
-                        <div>
-                            INTERPRETACIÓN DE RESULTADOS: <br>
-                            <strong>NEGATIVO:</strong> Indica ausencia del Antígeno SARS-CoV-2. <br>
-                            <strong>POSITIVO:</strong> Indica la presencia del Antígeno SARS-CoV-2. <br>
-                    	 </div>
-                    </td>                                     
-                </tr>
 
-                <!-- Fila Principal de Resultado -->
-                <tr class="fila-resultado" data-examen="ANTÍGENO SARS-CoV-2 (COVID-19)">
-                    <td class="fw-bold">ANTÍGENO SARS-CoV-2 (COVID-19)</td>
-                    <td>
-                        <select class="form-select form-select-sm form-control-editable" id="resCovidAntigeno">
-                            <option value="" selected disabled>Seleccione...</option>
-                            <option value="-">-</option>
-                            <option value="NEGATIVO">NEGATIVO</option>
-                            <option value="POSITIVO">POSITIVO</option>
-                        </select>
-                    </td>
-                    <td class="text-muted">Cualitativo</td>
-                    <td class="text-muted">NEGATIVO /POSITIVO</td>                     
-                </tr>
-                
-            </tbody> 
-        </table> 
-    </div> 
+<!-- 16. COVID (Pestaña principal independiente) -->
+<div class="tab-pane fade" id="covidContent" role="tabpanel">
+    
+    <!-- Acordeón general para los exámenes de COVID -->
+    <div class="accordion" id="covidExamenesAccordion">
+        
+        <!-- BLOQUE 1: Tu código original de Hisopado Nasal funcionando exactamente igual -->
+        <div class="border rounded bg-white shadow-sm mb-2">
+            <div class="section-title text-primary fw-bold border-bottom p-2 bg-light small" data-bs-toggle="collapse" data-bs-target="#collapseCovidNasal" style="cursor: pointer;" data-section-name="PRUEBAS COVID-19">
+                ▼ PRUEBAS COVID-19 HISOPADO NASAL
+            </div>
+            
+            <div id="collapseCovidNasal" class="collapse show" data-bs-parent="#covidExamenesAccordion">
+                <div class="p-2">
+                    <table class="table table-sm table-bordered align-middle mb-0 small bg-white">
+                        <thead class="table-light text-muted">
+                            <tr>
+                                <th>EXAMEN</th>
+                                <th style="width: 25%;">RESULTADO</th>
+                                <th style="width: 15%;">UNIDAD</th>
+                                <th>V. REFERENCIA</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td colspan="4" class="table-active fw-bold text-secondary" style="font-size: 9.5px;">
+                                    <div>        
+                                        NOTA: Esta prueba debe solicitarse para la detección del virus de SARS-CoV-2 en individuos que cumplen con criterios clínicos y/o epidemiológicos.
+                                    </div>
+                                </td>                                     
+                            </tr>
+                            <!-- Metadatos de la Muestra -->
+                            <tr>
+                                <td class="fw-bold py-1" style="width: 25%;">Fecha de Muestra:</td>
+                                <td class="py-1">
+                                    <input type="date" class="form-control form-control-sm form-control-editable" id="covidFechaMuestra" value="">
+                                </td>
+                                <td class="py-1">
+                                    <input type="time" class="form-control form-control-sm form-control-editable" id="covidHoraMuestra" value="">
+                                </td>
+                                <td class="text-muted small">Fecha Hora Ingreso</td>
+                            </tr>
+                            <tr>
+                                <td class="fw-bold py-1">Fecha de Impresión:</td>
+                                <td class="py-1">
+                                    <input type="date" class="form-control form-control-sm form-control-editable" id="covidFechaImpresion" value="">
+                                </td>
+                                <td class="py-1">
+                                    <input type="time" class="form-control form-control-sm form-control-editable" id="covidHoraImpresion" value="">
+                                </td>
+                                <td class="text-muted small">Fecha Hora Resultado</td>
+                            </tr>
+                            <tr>
+                                <td class="fw-bold py-1">Muestra:</td>
+                                <td class="py-1"> 
+                                    <select class="form-select form-select-sm form-control-editable" id="covidTipoMuestra">
+                                        <option value="" selected disabled>Seleccione...</option>
+                                        <option value="-">-</option>
+                                        <option value="HISOPADO NASOFARINGEO">HISOPADO NASOFARINGEO</option>
+                                    </select>
+                                </td>
+                                <td class="text-muted">-</td>
+                                <td class="text-muted">-</td>
+                            </tr>
+                            <tr>
+                                <td class="fw-bold py-1">Técnica:</td>
+                                <td class="py-1">
+                                    <select class="form-select form-select-sm form-control-editable" id="covidTecnica">
+                                        <option value="" selected disabled>Seleccione...</option>
+                                        <option value="-">-</option>
+                                        <option value="INMUNOCROMATOGRAFIA">INMUNOCROMATOGRAFIA</option>
+                                    </select>
+                                </td>
+                                <td class="text-muted">-</td>
+                                <td class="text-muted">-</td>
+                            </tr>
+                            <tr><td colspan="4" class="border-0 py-1"></td></tr>
+                            <tr>
+                                <td colspan="4" class="table-active fw-bold text-secondary" style="font-size: 9.5px;">
+                                    <div>
+                                        INTERPRETACIÓN: <br>
+                                        <strong>NEGATIVO:</strong> Indica ausencia del Antígeno SARS-CoV-2. <br> | 
+                                        <strong>POSITIVO:</strong> Indica la presencia del Antígeno SARS-CoV-2. <br>
+                                    </div>
+                                </td>                                     
+                            </tr>
+
+                            <!-- Fila Principal de Resultado -->
+                            <tr class="fila-resultado" data-examen="ANTÍGENO SARS-CoV-2 (COVID-19)">
+                                <td class="fw-bold">ANTÍGENO SARS-CoV-2 (COVID-19)</td>
+                                <td>
+                                    <select class="form-select form-select-sm form-control-editable" id="resCovidAntigeno">
+                                        <option value="" selected disabled>Seleccione...</option>
+                                        <option value="-">-</option>
+                                        <option value="NEGATIVO">NEGATIVO</option>
+                                        <option value="POSITIVO">POSITIVO</option>
+                                    </select>
+                                </td>
+                                <td class="text-muted">Cualitativo</td>
+                                <td class="text-muted">NEGATIVO | POSITIVO</td>                     
+                            </tr>
+                        </tbody> 
+                    </table> 
+                </div>
+            </div>
+        </div>
+
+        <!-- BLOQUE 2: El examen separado de Inmunología (IgG / IgM) en su propio acordeón -->
+        <div class="border rounded bg-white shadow-sm">
+            <div class="section-title text-primary fw-bold border-bottom p-2 bg-light small" data-bs-toggle="collapse" data-bs-target="#collapseCovidInmuno" style="cursor: pointer;" data-section-name="PRUEBAS COVID-19 INMUNOLOGIA">
+                ▼ PRUEBAS COVID-19 ANTÍGENO E INMUNOLOGÍA (IGG / IGM)
+            </div>
+            
+            <div id="collapseCovidInmuno" class="collapse" data-bs-parent="#covidExamenesAccordion">
+                <div class="p-2">
+                    <table class="table table-sm table-bordered align-middle mb-0 small bg-white">
+                        <thead class="table-light text-muted">
+                            <tr>
+                                <th>EXAMEN</th>
+                                <th style="width: 25%;">RESULTADO</th>
+                                <th style="width: 15%;">UNIDAD</th>
+                                <th>V. REFERENCIA</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- SARS-CoV-2 IgG -->
+                            <tr>
+                                <td colspan="4" class="table-active fw-bold text-secondary" style="font-size: 9.5px;">
+                                    <div>
+                                        EL MÉTODO MICROELISA ES DE ALTA SENSIBILIDAD QUE DETERMINA LOS ANTICUERPOS CIRCULANTES EN UNA REACCIÓN DE COLOR PROPORCIONAL A LA CONCENTRACIÓN EN SANGRE.
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="fila-resultado" data-examen="SARS-CoV-2 IgG">
+                                <td class="fw-bold">SARS-CoV-2 IgG</td>
+                                <td>
+                                    <input type="text" class="form-control form-control-sm form-control-editable" id="resCovidIgg" placeholder="Ej. 5.01">
+                                </td>
+                                <td class="text-muted">AU/mL</td>
+                                <td class="text-muted" style="font-size: 9px;">
+                                    MÉTODO EIA<br> | 
+                                    Positivo: Mayor a 10.0<br> | 
+                                    Indeterminado: Entre 9.0 - 9.9<br> | 
+                                    Negativo: Menor a 9.0<br> | 
+                                    Sensibilidad: 98.00%<br> | 
+                                    Especificidad: 98.00% | 
+                                </td>
+                            </tr>
+
+                            <tr><td colspan="4" class="border-0 py-1"></td></tr>
+
+                            <!-- SARS-CoV-2 IgM -->
+                            <tr>
+                                <td colspan="4" class="table-active fw-bold text-secondary" style="font-size: 9.5px;">
+                                    <div>
+                                        EL MÉTODO MICROELISA ES DE ALTA SENSIBILIDAD QUE DETERMINA LOS ANTICUERPOS CIRCULANTES EN UNA REACCIÓN DE COLOR PROPORCIONAL A LA CONCENTRACIÓN EN SANGRE. <br>
+                                        ESTE RESULTADO DEBE SER CONSIDERADO COMO AYUDA PRELIMINAR Y DEBE CORRELACIONARSE CON DATOS EPIDEMIOLÓGICOS Y CLÍNICOS DEL PACIENTE. <br>
+                                        RECOMENDACIÓN PARA LOS RESULTADOS INDETERMINADOS REPETICIÓN EN LOS DÍAS QUE EL MÉDICO PRESCRIBA.
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="fila-resultado" data-examen="SARS-CoV-2 IgM">
+                                <td class="fw-bold">SARS-CoV-2 IgM</td>
+                                <td>
+                                    <input type="text" class="form-control form-control-sm form-control-editable" id="resCovidIgm" placeholder="Ej. 3.05">
+                                </td>
+                                <td class="text-muted">AU/mL</td>
+                                <td class="text-muted" style="font-size: 9px;">
+                                    MÉTODO EIA<br> | 
+                                    Positivo: Mayor a 10.0<br>  | 
+                                    Indeterminado: Entre 9.0 - 9.9<br>  | 
+                                    Negativo: Menor a 9.0<br>  | 
+                                    Sensibilidad: 98.00%<br>  | 
+                                    Especificidad: 98.00%
+                                </td>
+                            </tr>
+                        </tbody> 
+                    </table> 
+                </div>
+            </div>
+        </div>
+
+    </div>
 </div>
                 
                 <!-- 17. Comentario -->
@@ -3680,6 +3763,10 @@
                 </div>
             </div>
 
+<!-- Botón para guardar en la Base de Datos en la Nube -->
+<button type="button" class="btn btn-primary btn-sm ms-2 no-print" onclick="guardarEnBaseDeDatos()">
+    <i class="bi bi-cloud-arrow-up-fill me-1"></i> Guardar en la Nube
+</button>
 		
             
             <!-- TABLA UNIFICADA DE RESULTADOS (Agrupa por categoría y oculta inputs al imprimir/PDF) -->
@@ -3697,7 +3784,15 @@
                 </table>
             </div>
 
-            
+            <!-- Sección de Firmas 
+            <div class="card p-3 mb-3 bg-light no-print">
+                <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" id="chkIncluirFirmas" checked>
+                    <label class="form-check-label fw-bold text-dark" for="chkIncluirFirmas">
+                        Incluir Firmas Digitales (Desmarcar para dejar espacio y firmar a mano)
+                    </label>
+                </div>
+            </div>-->
 
             <!-- Contenedor de las Firmas (Respetando el espacio) -->
            <!-- Panel de Control de Firmas (Opciones dinámicas - No visible en impresión) -->
@@ -3900,7 +3995,7 @@ function actualizarTablaDinamica() {
         const titulosSeccion = pane.querySelectorAll('.section-title');
 
         titulosSeccion.forEach(tituloElem => {
-            const tituloSeccion = tituloElem.getAttribute('data-section-name') || "EXÁMENES";
+            const tituloSeccion = tituloElem.getAttribute('data-section-name');
             
             let siguiente = tituloElem.nextElementSibling;
             let contenedorSeccion = [];
@@ -3942,14 +4037,17 @@ function actualizarTablaDinamica() {
                         let unidad = "-";
                         let referencia = "Ver referencia estándar";
                         let subtituloAsociado = "GENERAL";
-                        let textoMetodoFila = "";
+                        let textoMetodoFila = ""; // Variable para capturar el método específico de la fila
+						
 
                         let filaOriginal = elemento.closest("tr");
                         if (filaOriginal && filaOriginal.closest("table")) {
                             let prevRow = filaOriginal.previousElementSibling;
                             while (prevRow) {
                                 if (prevRow.querySelector('td[colspan]')) {
+                                    // Clonamos la fila para manipularla sin afectar la original
                                     let clonPrev = prevRow.cloneNode(true);
+                                    // Removemos los botones de esa fila antes de extraer el texto
                                     clonPrev.querySelectorAll('button').forEach(btn => btn.remove());
                                     subtituloAsociado = clonPrev.innerText.trim();
                                     break;
@@ -3957,8 +4055,8 @@ function actualizarTablaDinamica() {
                                 prevRow = prevRow.previousElementSibling;
                             }
 
-                            // Buscar método analítico integrado
-                            let selectMetodoFila = filaOriginal.querySelector('select[id*="metodo"], select[id*="Metodo"]');
+                            // Buscar si la fila actual tiene un select o input de método integrado
+                            let selectMetodoFila = filaOriginal.querySelector('select[id*="metodo"]');
                             if (selectMetodoFila && selectMetodoFila.selectedIndex > 0) {
                                 let optText = selectMetodoFila.options[selectMetodoFila.selectedIndex].text;
                                 if (!optText.toLowerCase().includes("seleccione") && !optText.toLowerCase().includes("método analítico")) {
@@ -3966,31 +4064,40 @@ function actualizarTablaDinamica() {
                                 }
                             }
 
-                            let inputMetodoFila = filaOriginal.querySelector('input[id*="metodo"], input[id*="Metodo"]');
+                            let inputMetodoFila = filaOriginal.querySelector('input[id*="metodo"]');
                             if (inputMetodoFila && inputMetodoFila.value.trim() !== "") {
                                 textoMetodoFila = inputMetodoFila.value.trim();
+                            }
+                            // 🔍 SOPORTE ESPECIAL PARA MÉTODOS DE CABECERA O SECCIÓN (Ej. Panel Torch IgG)
+                            if (textoMetodoFila === "") {
+                                let tablaPadre = filaOriginal.closest("table");
+                                if (tablaPadre) {
+                                    let inputMetodoGlobal = tablaPadre.querySelector('input[id*="metodo"], input[id*="Metodo"]');
+                                    if (inputMetodoGlobal && inputMetodoGlobal.value.trim() !== "") {
+                                        textoMetodoFila = inputMetodoGlobal.value.trim();
+                                    }
+                                }
                             }
 
                             let celdas = filaOriginal.querySelectorAll("td");
                             if (celdas.length >= 2) {
-                                // Soporte mejorado para inputs de nombre de examen personalizados (ej. Inmuno)
-                                let inputNombreCustom = celdas[0].querySelector('input[type="text"]');
-                                if (inputNombreCustom && inputNombreCustom.value.trim() !== "") {
-                                    nombreExamen = inputNombreCustom.value.trim();
+                                let inputNombreCustom = celdas[0].querySelector('input[id^="nombreExamen"]');
+                                if (inputNombreCustom) {
+                                    let nombreVal = inputNombreCustom.value.trim();
+                                    nombreExamen = (nombreVal !== "" ? nombreVal : "Examen Personalizado");
                                 } else {
                                     let clonCelda = celdas[0].cloneNode(true);
+                                    // Limpiamos selectores de método e inputs para aislar solo el nombre del examen
                                     clonCelda.querySelectorAll('input, select, button').forEach(inp => inp.remove());
                                     nombreExamen = clonCelda.innerText.trim();
                                 }
 
-                                if (nombreExamen === "" && inputNombreCustom) {
-                                    nombreExamen = "Examen Personalizado";
-                                }
-
+                                // Si se encontró un método específico para este examen, lo adjuntamos al nombre para que se desglose claro
                                 if (textoMetodoFila !== "") {
                                     nombreExamen += ` <i style="font-size: 0.9em; color: #555;">(${textoMetodoFila})</i>`;
                                 }
 
+                                // SECCIÓN ACTUALIZADA ÚNICAMENTE PARA PERMITIR UNIDADES DESDE UN <input>, <select> o TEXTO PLANO
                                 if (celdas.length >= 3) {
                                     let celdaUnidad = celdas[2];
                                     let inputUnidad = celdaUnidad.querySelector("input");
@@ -4013,24 +4120,22 @@ function actualizarTablaDinamica() {
                             }
                         } 
                         else {
-                            let contenedorCol = elemento.closest(".col-12") || elemento.closest(".mb-2") || elemento.closest(".card");
+                            let contenedorCol = elemento.closest(".col-12") || elemento.closest(".mb-2");
                             if (contenedorCol) {
-                                let labelDiv = contenedorCol.querySelector(".fw-bold, label");
+                                let labelDiv = contenedorCol.querySelector(".fw-bold");
                                 if (labelDiv) nombreExamen = labelDiv.innerText.trim();
                             }
 
                             let hermano = elemento.parentElement;
                             while (hermano) {
-                                if (hermano.classList && (hermano.classList.contains('text-secondary') || hermano.classList.contains('fw-bold'))) {
+                                if (hermano.classList && hermano.classList.contains('text-secondary') && hermano.classList.contains('fw-bold')) {
                                     subtituloAsociado = hermano.innerText.trim();
                                     break;
                                 }
                                 hermano = hermano.previousElementSibling || hermano.parentElement;
                             }
 
-                            // Detección genérica por contenido o atributos de la pestaña para cultivos/secreciones
-                            let paneId = pane.id.toLowerCase();
-                            if (paneId.includes("cultivo") || paneId.includes("secrecion") || paneId.includes("copro")) {
+                            if (pane.id === "cultivosContent" || pane.id === "coprocultivoContent" || pane.id === "secrecionesContent") {
                                 if (elemento.closest("table")) {
                                     subtituloAsociado = "PRUEBA DE SENSIBILIDAD ANTIMICROBIANA (ANTIBIOGRAMA)";
                                     let filaAnti = elemento.closest("tr");
@@ -4046,27 +4151,32 @@ function actualizarTablaDinamica() {
                         }
 
                         if (nombreExamen !== "") {
-                            // Clave única más flexible para evitar bloqueos en exámenes repetitivos
-                            let claveUnica = tituloSeccion + "_" + subtituloAsociado + "_" + nombreExamen + "_" + Math.random();
+                            let claveUnica = tituloSeccion + "_" + subtituloAsociado + "_" + nombreExamen;
                             
-                            if (!subgruposSeccion[subtituloAsociado]) {
-                                subgruposSeccion[subtituloAsociado] = [];
-                            }
-                            
-                            subgruposSeccion[subtituloAsociado].push({
-                                examen: nombreExamen,
-                                resultado: valor,
-                                unidad: unidad,
-                                referencia: referencia
-                            });
+                            if (!clavesGlobalesUnicas.has(claveUnica)) {
+                                clavesGlobalesUnicas.add(claveUnica);
+                                
+                                if (!subgruposSeccion[subtituloAsociado]) {
+                                    subgruposSeccion[subtituloAsociado] = [];
+                                }
+                                
+                                subgruposSeccion[subtituloAsociado].push({
+                                    examen: nombreExamen,
+                                    resultado: valor,
+                                    unidad: unidad,
+                                    referencia: referencia
+                                });
 
-                            filasValidasDeSeccion.push(true);
+                                filasValidasDeSeccion.push(true);
+                            }
                         }
                     }
                 });
             });
 
             if (filasValidasDeSeccion.length > 0) {
+                totalValidados += filasValidasDeSeccion.length;
+
                 let filaTitulo = document.createElement("tr");
                 filaTitulo.innerHTML = `<td colspan="4" class="text-primary fw-bold bg-light text-center" style="font-size: 13px;">${tituloSeccion}</td>`;
                 tbody.appendChild(filaTitulo);
@@ -4093,7 +4203,7 @@ function actualizarTablaDinamica() {
         });
     });
 
-    if (tbody.children.length === 0) {
+    if (totalValidados === 0) {
         let filaVacia = document.createElement("tr");
         filaVacia.innerHTML = `<td colspan="4" class="text-center text-muted">No hay exámenes con resultados ingresados.</td>`;
         tbody.appendChild(filaVacia);
@@ -4101,7 +4211,7 @@ function actualizarTablaDinamica() {
 }
 
 document.addEventListener("input", actualizarTablaDinamica);
-document.addEventListener("change", actualizarTablaDinamica);
+document.addEventListener("change", actualizarTablaDinamica); 
 
 // Inicialización al cargar la página
 window.addEventListener('DOMContentLoaded', () => {
@@ -5382,7 +5492,7 @@ function cargarPatronGardnerella() {
     const valoresGardnerella = [
         "Secreción Vaginal",                                          // MUESTRA
         "+++",                                                        // CÉLULAS EPITELIALES
-        "++",                                                         // PIOCITOS
+        "+++",                                                        // PIOCITOS
         "Ausentes",                                                   // HEMATÍES
         "+++",                                                        // BACTERIAS
         "Ausentes",                                                   // FLORA MUCOSA
@@ -5918,6 +6028,7 @@ function removerIndicador(input) {
 }
 
 
+
 //comando voz
 		const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 
@@ -6199,7 +6310,6 @@ function removerIndicador(input) {
                 alert(`No se encontró una sección exacta para: "${fraseCruda}".`);
             }
         }
-
 
 		
 									
