@@ -61,15 +61,33 @@
     <div class="container-fluid p-2">
 
 		<!-- Botón Flotante Circular de Micrófono (Fijo en la esquina superior derecha, oculto al imprimir) -->
-		    <div class="no-print" style="position: fixed; top: 20px; right: 20px; z-index: 9999;">
-		        <button type="button" id="btnVozGlobal" class="btn btn-primary rounded-circle shadow-lg d-flex align-items-center justify-content-center" style="width: 55px; height: 55px; transition: all 0.3s ease;" title="Activar Comando de Voz">
-		            <i class="bi bi-mic-fill" style="font-size: 24px;"></i>
-		        </button>
-		        <!-- Texto de estado flotante y discreto debajo del botón -->
-		        <div id="estadoVoz" class="bg-white px-2 py-1 rounded shadow-sm text-end mt-1 text-primary fw-bold" style="font-size: 10px; display: none; max-width: 150px; float: right;">
-		            Esperando...
-		        </div>
-		    </div>
+		    <!-- Contenedor flotante superior derecho -->
+<div class="no-print" style="position: fixed; top: 20px; right: 20px; z-index: 9999;">
+    <div class="d-flex align-items-center gap-2">
+        
+        <!-- Input de búsqueda con sugerencias (Lista desplegable flotante) -->
+        <div class="position-relative" id="contenedorBuscadorTabs" style="display: none;">
+            <input type="text" id="inputBuscarTab" class="form-control form-control-sm shadow-sm" placeholder="Buscar examen o pestaña..." style="width: 200px;">
+            <!-- Contenedor de sugerencias -->
+            <div id="sugerenciasBuscador" class="dropdown-menu w-100 shadow border-0 mt-1" style="max-height: 200px; overflow-y: auto;"></div>
+        </div>
+
+        <!-- Botón para alternar / mostrar el buscador -->
+        <button type="button" id="btnToggleBuscador" class="btn btn-light text-primary rounded-circle shadow-sm d-flex align-items-center justify-content-center border" style="width: 40px; height: 40px;" title="Buscar examen por texto">
+            <i class="bi bi-search" style="font-size: 16px;"></i>
+        </button>
+
+        <!-- Botón Flotante Circular de Micrófono existente -->
+        <button type="button" id="btnVozGlobal" class="btn btn-primary rounded-circle shadow-lg d-flex align-items-center justify-content-center" style="width: 55px; height: 55px; transition: all 0.3s ease;" title="Activar Comando de Voz">
+            <i class="bi bi-mic-fill" style="font-size: 24px;"></i>
+        </button>
+    </div>
+
+    <!-- Texto de estado flotante y discreto debajo -->
+    <div id="estadoVoz" class="bg-white px-2 py-1 rounded shadow-sm text-end mt-1 text-primary fw-bold" style="font-size: 10px; display: none; max-width: 150px; float: right;">
+        Esperando...
+    </div>
+</div>
 		
         <!-- Contenedor principal que se imprimirá y exportará a PDF -->
         <div class="pedido-box border p-3 bg-white" id="pedidoContainer">
@@ -6028,7 +6046,125 @@ function removerIndicador(input) {
     return valor;
 }
 
-	
+	// buscar boton examen
+		document.addEventListener("DOMContentLoaded", () => {
+    // Diccionario de mapeo (puedes unificarlo o mantenerlo aquí)
+    const mapaTabs = {
+        'hematologia': 'hematologia-tab',
+        'biometria': 'hematologia-tab',
+        'quimica': 'qs-tab',
+        'sanguinea': 'qs-tab',
+        'hepatica': 'hepaticas-tab',
+        'tgo': 'hepaticas-tab',
+        'tgp': 'hepaticas-tab',
+        'bilirrubinas': 'hepaticas-tab',
+        'higado': 'hepaticas-tab',
+        'electrolitos': 'electrolitos-tab',
+        'endocrinologia': 'endocrinologia-tab',
+        'tiroides': 'endocrinologia-tab',
+        'glicosilada': 'endocrinologia-tab',
+        'inmunologicos': 'inmunologicos-tab',
+        'coagulacion': 'coagulacion-tab',
+        'tp ttp': 'coagulacion-tab',
+        'oncologicos': 'oncologicos-tab',
+        'oncológicos': 'oncologicos-tab',
+        'psa': 'oncologicos-tab',
+        'reumatologico': 'reumatologico-tab',
+        'reuma': 'reumatologico-tab',
+        'otros': 'otros-tab',
+        'bhcg': 'otros-tab',
+        'Embarazo': 'otros-tab',
+        'grupo y factor': 'otros-tab',
+        'koh': 'otros-tab',
+        'drogas': 'otros-tab',
+        'vitaminas': 'vitaminas-tab',
+        'orina': 'orina-tab',
+        'emo': 'orina-tab',
+        'heces': 'heces-tab',
+        'copro': 'heces-tab',
+        'cultivos': 'cultivos-tab',
+        'urocultivos': 'cultivos-tab',
+        'coprocultivos': 'cultivos-tab',
+        'secreciones': 'secreciones-tab',
+        'baar': 'secreciones-tab',
+        'pap test': 'secreciones-tab',
+        'espermatograma': 'secreciones-tab',
+        'covid': 'covid-tab',
+        'comentario': 'comentario-tab'
+    };
+
+    const btnToggleBuscador = document.getElementById('btnToggleBuscador');
+    const contenedorBuscador = document.getElementById('contenedorBuscadorTabs');
+    const inputBuscar = document.getElementById('inputBuscarTab');
+    const listaSugerencias = document.getElementById('sugerenciasBuscador');
+
+    // Función auxiliar para normalizar texto (si ya la tienes global, puedes usar la tuya)
+    function normalizar(texto) {
+        return texto.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    }
+
+    // Mostrar u ocultar el input al hacer clic en el botón de la lupa
+    btnToggleBuscador.addEventListener('click', () => {
+        if (contenedorBuscador.style.display === 'none') {
+            contenedorBuscador.style.display = 'block';
+            inputBuscar.focus();
+        } else {
+            contenedorBuscador.style.display = 'none';
+            listaSugerencias.classList.remove('show');
+        }
+    });
+
+    // Evento al escribir en el buscador
+    inputBuscar.addEventListener('input', (e) => {
+        const query = normalizar(e.target.value.trim());
+        listaSugerencias.innerHTML = '';
+
+        if (query.length === 0) {
+            listaSugerencias.classList.remove('show');
+            return;
+        }
+
+        // Filtrar claves del diccionario que coincidan con lo que escribe el usuario
+        const coincidencias = Object.keys(mapaTabs).filter(clave => normalizar(clave).includes(query));
+
+        if (coincidencias.length > 0) {
+            coincidencias.forEach(clave => {
+                const tabId = mapaTabs[clave];
+                const elTab = document.getElementById(tabId);
+                const nombreVisible = elTab ? elTab.textContent.trim() : clave;
+
+                // Crear elemento de sugerencia visual
+                const item = document.createElement('a');
+                item.href = '#';
+                item.className = 'dropdown-item';
+                item.style.fontSize = '12px';
+                item.innerHTML = `<strong>${clave}</strong> <span class="text-muted">(${nombreVisible})</span>`;
+
+                // Al hacer clic en una sugerencia, navegamos a la pestaña
+                item.addEventListener('click', (ev) => {
+                    ev.preventDefault();
+                    inputBuscar.value = clave;
+                    listaSugerencias.classList.remove('show');
+                    
+                    // Ejecutamos tu misma lógica de navegación
+                    navegarPestanaExamenPorVoz(normalizar(clave), clave);
+                });
+
+                listaSugerencias.appendChild(item);
+            });
+            listaSugerencias.classList.add('show');
+        } else {
+            listaSugerencias.classList.remove('show');
+        }
+    });
+
+    // Ocultar sugerencias si se hace clic fuera
+    document.addEventListener('click', (e) => {
+        if (!contenedorBuscador.contains(e.target) && e.target !== btnToggleBuscador) {
+            listaSugerencias.classList.remove('show');
+        }
+    });
+});
 									
     </script>
 	<!-- Modal para Gestión e Impresión de Sobres (Tu modal original) -->
