@@ -1,6 +1,6 @@
 /**
  * ASISTENTE DE VOZ INTELIGENTE - LABORATORIO CLÍNICO
- * Versión Directa con Relleno Secuencial por Comas (,) y 60 Segundos de Inactividad.
+ * Versión optimizada con conversión automática de "punto" a decimales (".") y 60s de escucha.
  */
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -8,10 +8,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let estadoConversacion = 'IDLE'; // 'IDLE', 'ESPERANDO_RESULTADOS_SECUENCIALES'
     let temporizadorInactividad = null;
-    let inputsActivosSeccion = []; // Almacena los inputs de la tabla actual
+    let inputsActivosSeccion = []; 
     let ultimoTextoHablado = ''; 
 
-    // Mapeo directo de comandos cortos a las sub-pestañas reales del HTML
     const mapaAccesoDirecto = {
         'hematologia': { idTab: 'auto-tab', nombre: 'Hematología Automatizada' },
         'biometria': { idTab: 'auto-tab', nombre: 'Hematología Automatizada' },
@@ -66,7 +65,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (vozFemenina) utterance.voice = vozFemenina;
 
             utterance.onend = () => {
-                if (callbackCuandoTermine) callbackCuandoTermine();
+                if (callbackКогдаTermine) callbackКогдаTermine();
             };
 
             window.speechSynthesis.speak(utterance);
@@ -83,6 +82,18 @@ document.addEventListener('DOMContentLoaded', () => {
         return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
     }
 
+    // Función inteligente que convierte palabras de decimales a números reales
+    function limpiarYFormatearNumeroVoz(textoBruto) {
+        let limpio = textoBruto.toLowerCase();
+        
+        // Reemplazar palabras comunes de voz a puntos decimales numéricos
+        limpio = limpio.replace(/\s+punto\s+/g, '.');
+        limpio = limpio.replace(/\s+con\s+/g, '.');
+        limpio = limpio.replace(/,/g, '.'); // Convertir comas literales a puntos si se desea estandarizar decimales
+
+        return limpio.trim();
+    }
+
     function convertirTextoAFecha(texto) {
         let numeros = texto.match(/\d+/g);
         if (!numeros || numeros.length < 3) return null;
@@ -95,7 +106,6 @@ document.addEventListener('DOMContentLoaded', () => {
         return `${anio}-${String(mes).padStart(2, '0')}-${String(dia).padStart(2, '0')}`;
     }
 
-    // Temporizador aumentado a 60 segundos (60000 ms)
     function iniciarTemporizador60Seg() {
         clearTimeout(temporizadorInactividad);
         temporizadorInactividad = setTimeout(() => {
@@ -191,19 +201,19 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        // Si el sistema está esperando los resultados secuenciales separados por comas
+        // Si estamos esperando los resultados secuenciales
         if (estadoConversacion === 'ESPERANDO_RESULTADOS_SECUENCIALES') {
             estadoConversacion = 'IDLE';
             restaurarBotonVozVisual();
 
-            // Limpiar y separar los valores dictados por comas
-            let valores = fraseCruda.split(',').map(v => v.trim());
+            // Formatear texto para transformar palabras "punto" o "con" en puntos decimales válidos
+            let textoLimpioValores = limpiarYFormatearNumeroVoz(fraseCruda);
+            let valores = textoLimpioValores.split(',').map(v => v.trim());
             let ingresados = 0;
 
             inputsActivosSeccion.forEach((input, index) => {
                 if (valores[index] !== undefined) {
                     input.value = valores[index];
-                    // Disparar evento change por si el input tiene validaciones
                     input.dispatchEvent(new Event('change'));
                     ingresados++;
                 }
@@ -213,11 +223,10 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        // Detección del comando "ingresar resultado [sección]" de forma directa
+        // Comando directo para ingresar resultados en una sección
         if (frase.includes('ingresa resultado') || frase.includes('ingresar resultado') || frase.includes('ingresar resultados')) {
             let claveEncontrada = null;
             
-            // Buscar cuál sub-sección nombró el usuario en la frase
             for (let clave in mapaAccesoDirecto) {
                 if (frase.includes(clave)) {
                     claveEncontrada = clave;
@@ -234,7 +243,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     bsTab.show();
                     elTab.scrollIntoView({ behavior: 'smooth', inline: 'center' });
 
-                    // Buscar el contenedor activo actual de esa pestaña para extraer sus inputs
                     setTimeout(() => {
                         let paneId = elTab.getAttribute('data-bs-target') || elTab.getAttribute('href');
                         let contenedorPane = document.querySelector(paneId) || document.querySelector('.tab-pane.active');
@@ -248,19 +256,19 @@ document.addEventListener('DOMContentLoaded', () => {
                         estadoConversacion = 'ESPERANDO_RESULTADOS_SECUENCIALES';
                         iniciarTemporizador60Seg();
 
-                        hablarTexto(`Ingresa en orden el resultado mencionando una coma para pasar al siguiente en ${destino.nombre}. Te escucho.`, () => {
+                        hablarTexto(`Ingresa los resultados separados por comas para ${destino.nombre}. Te escucho.`, () => {
                             iniciarEscuchaManual();
                             iniciarTemporizador60Seg();
                         });
                     }, 300);
                 }
             } else {
-                hablarTexto("Por favor especifica el examen, por ejemplo: ingresa resultado hematología o pediátrico.");
+                hablarTexto("Por favor especifica el examen, por ejemplo: ingresa resultado hematología.");
             }
             return;
         }
 
-        // Manejo de Datos del Paciente (Cédula, Orden, Nombres, etc.)
+        // Datos del Paciente y Navegación
         if (frase.includes('cedula') || frase.includes('documento')) {
             let valor = extraerTextoDespues(fraseCruda, ['cédula', 'cedula', 'documento']);
             if (valor) {
