@@ -1,478 +1,451 @@
 /**
  * ASISTENTE DE VOZ INTELIGENTE - LABORATORIO CLÍNICO
- * Versión optimizada con navegación, datos de paciente, subopciones numeradas e interacción por voz.
+ * Versión blindada con DOMContentLoaded para evitar errores de elementos nulos.
  */
 
-const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+document.addEventListener('DOMContentLoaded', () => {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 
-// Variables de Estado Conversacional
-let estadoConversacion = 'IDLE'; // 'IDLE', 'ESPERANDO_CONFIRMACION', 'ESPERANDO_SUB_OPCION'
-let temporizadorInactividad = null;
-let tabActivaNombre = '';
-let tabActivaId = '';
-let ultimoTextoHablado = ''; // Almacena lo último que dijo el asistente para la opción "repite"
+    let estadoConversacion = 'IDLE'; // 'IDLE', 'ESPERANDO_CONFIRMACION', 'ESPERANDO_SUB_OPCION'
+    let temporizadorInactividad = null;
+    let tabActivaNombre = '';
+    let tabActivaId = '';
+    let ultimoTextoHablado = ''; // Almacena lo último que dijo el asistente para la opción "repite"
 
-// Subopciones numeradas asociadas a cada pestaña principal (Basado en tus sub-pestañas reales)
-const subOpcionesTabs = {
-    'hematologia': [
-        { numero: '1', nombre: 'Automatizada Dirui', idTab: 'auto-tab' },
-        { numero: '2', nombre: 'Pediátrica Dirui', idTab: 'pediatrico-tab' },
-        { numero: '3', nombre: 'Manual', idTab: 'manual-tab' },
-        { numero: '4', nombre: 'VES', idTab: 'ves-tab' }
-    ],
-    'qs': [
-        { numero: '1', nombre: 'Química Sanguínea General', idTab: 'qs-tab' }
-    ],
-    'hepaticas': [
-        { numero: '1', nombre: 'Perfil Hepático', idTab: 'hepaticas-tab' }
-    ],
-    'electrolitos': [
-        { numero: '1', nombre: 'Electrolitos', idTab: 'electrolitos-tab' }
-    ],
-    'endocrinologia': [
-        { numero: '1', nombre: 'Endocrinología', idTab: 'endocrinologia-tab' }
-    ],
-    'inmunologicos': [
-        { numero: '1', nombre: 'Inmunológicos', idTab: 'inmunologicos-tab' }
-    ],
-    'coagulacion': [
-        { numero: '1', nombre: 'Coagulación', idTab: 'coagulacion-tab' }
-    ],
-    'oncologicos': [
-        { numero: '1', nombre: 'Oncológicos', idTab: 'oncologicos-tab' }
-    ],
-    'reumatologico': [
-        { numero: '1', nombre: 'Reumatológico', idTab: 'reumatologico-tab' }
-    ],
-    'otros': [
-        { numero: '1', nombre: 'Otros BHCG y GyF', idTab: 'otros-tab' }
-    ],
-    'vitaminas': [
-        { numero: '1', nombre: 'Vitaminas', idTab: 'vitaminas-tab' }
-    ],
-    'orina': [
-        { numero: '1', nombre: 'Orina', idTab: 'orina-tab' }
-    ],
-    'heces': [
-        { numero: '1', nombre: 'Heces', idTab: 'heces-tab' }
-    ],
-    'cultivos': [
-        { numero: '1', nombre: 'Cultivos', idTab: 'cultivos-tab' }
-    ],
-    'secreciones': [
-        { numero: '1', nombre: 'Secreciones', idTab: 'secreciones-tab' }
-    ],
-    'covid': [
-        { numero: '1', nombre: 'Covid', idTab: 'covid-tab' }
-    ],
-    'comentario': [
-        { numero: '1', nombre: 'Comentario', idTab: 'comentario-tab' }
-    ]
-};
+    // Subopciones numeradas asociadas a cada pestaña principal
+    const subOpcionesTabs = {
+        'hematologia': [
+            { numero: '1', nombre: 'Automatizada Dirui', idTab: 'auto-tab' },
+            { numero: '2', nombre: 'Pediátrica Dirui', idTab: 'pediatrico-tab' },
+            { numero: '3', nombre: 'Manual', idTab: 'manual-tab' },
+            { numero: '4', nombre: 'VES', idTab: 'ves-tab' }
+        ],
+        'qs': [
+            { numero: '1', nombre: 'Química Sanguínea General', idTab: 'qs-tab' }
+        ],
+        'hepaticas': [
+            { numero: '1', nombre: 'Perfil Hepático', idTab: 'hepaticas-tab' }
+        ],
+        'electrolitos': [
+            { numero: '1', nombre: 'Electrolitos', idTab: 'electrolitos-tab' }
+        ],
+        'endocrinologia': [
+            { numero: '1', nombre: 'Endocrinología', idTab: 'endocrinologia-tab' }
+        ],
+        'inmunologicos': [
+            { numero: '1', nombre: 'Inmunológicos', idTab: 'inmunologicos-tab' }
+        ],
+        'coagulacion': [
+            { numero: '1', nombre: 'Coagulación', idTab: 'coagulacion-tab' }
+        ],
+        'oncologicos': [
+            { numero: '1', nombre: 'Oncológicos', idTab: 'oncologicos-tab' }
+        ],
+        'reumatologico': [
+            { numero: '1', nombre: 'Reumatológico', idTab: 'reumatologico-tab' }
+        ],
+        'otros': [
+            { numero: '1', nombre: 'Otros BHCG y GyF', idTab: 'otros-tab' }
+        ],
+        'vitaminas': [
+            { numero: '1', nombre: 'Vitaminas', idTab: 'vitaminas-tab' }
+        ],
+        'orina': [
+            { numero: '1', nombre: 'Orina', idTab: 'orina-tab' }
+        ],
+        'heces': [
+            { numero: '1', nombre: 'Heces', idTab: 'heces-tab' }
+        ],
+        'cultivos': [
+            { numero: '1', nombre: 'Cultivos', idTab: 'cultivos-tab' }
+        ],
+        'secreciones': [
+            { numero: '1', nombre: 'Secreciones', idTab: 'secreciones-tab' }
+        ],
+        'covid': [
+            { numero: '1', nombre: 'Covid', idTab: 'covid-tab' }
+        ],
+        'comentario': [
+            { numero: '1', nombre: 'Comentario', idTab: 'comentario-tab' }
+        ]
+    };
 
-const btnVoz = document.getElementById('btnVozGlobal');
-const estadoVoz = document.getElementById('estadoVoz');
+    const btnVoz = document.getElementById('btnVozGlobal');
+    const estadoVoz = document.getElementById('estadoVoz');
 
-// Función para hablar con voz femenina e interrumpir locuciones anteriores
-function hablarTexto(texto, callbackCuandoTermine) {
-    ultimoTextoHablado = texto; // Guardar texto para el comando "repite"
+    // Función para hablar con voz femenina e interrumpir locuciones anteriores
+    function hablarTexto(texto, callbackCuandoTermine) {
+        ultimoTextoHablado = texto;
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.cancel();
+
+            const utterance = new SpeechSynthesisUtterance(texto);
+            utterance.lang = 'es-ES';
+            utterance.rate = 1.0;
+
+            const voces = window.speechSynthesis.getVoices();
+            const vozFemenina = voces.find(v => 
+                v.lang.toLowerCase().startsWith('es') && 
+                (v.name.toLowerCase().includes('female') || 
+                 v.name.toLowerCase().includes('elena') || 
+                 v.name.toLowerCase().includes('monica') || 
+                 v.name.toLowerCase().includes('paulina') || 
+                 v.name.toLowerCase().includes('lucia') || 
+                 v.name.toLowerCase().includes('google español') ||
+                 v.name.toLowerCase().includes('sabrina'))
+            );
+
+            if (vozFemenina) {
+                utterance.voice = vozFemenina;
+            }
+
+            utterance.onend = () => {
+                if (callbackКогдаTermine || callbackCuandoTermine) {
+                    (callbackКогдаTermine ? callbackКогдаTermine : callbackCuandoTermine)();
+                }
+            };
+
+            window.speechSynthesis.speak(utterance);
+        } else {
+            if (callbackCuandoTermine) callbackCuandoTermine();
+        }
+    }
+
     if ('speechSynthesis' in window) {
-        window.speechSynthesis.cancel(); // Interrumpe cualquier locución anterior de inmediato
+        window.speechSynthesis.onvoiceschanged = () => {
+            window.speechSynthesis.getVoices();
+        };
+    }
 
-        const utterance = new SpeechSynthesisUtterance(texto);
-        utterance.lang = 'es-ES';
-        utterance.rate = 1.0; // Velocidad normal
+    function normalizarTexto(str) {
+        return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+    }
 
-        // Intentar buscar una voz femenina en español disponible en el navegador
-        const voces = window.speechSynthesis.getVoices();
-        const vozFemenina = voces.find(v => 
-            v.lang.toLowerCase().startsWith('es') && 
-            (v.name.toLowerCase().includes('female') || 
-             v.name.toLowerCase().includes('elena') || 
-             v.name.toLowerCase().includes('monica') || 
-             v.name.toLowerCase().includes('paulina') || 
-             v.name.toLowerCase().includes('lucia') || 
-             v.name.toLowerCase().includes('google español') ||
-             v.name.toLowerCase().includes('sabrina'))
-        );
+    function convertirTextoAFecha(texto) {
+        let numeros = texto.match(/\d+/g);
+        if (!numeros || numeros.length < 3) return null;
 
-        if (vozFemenina) {
-            utterance.voice = vozFemenina;
+        let n1 = parseInt(numeros[0], 10);
+        let n2 = parseInt(numeros[1], 10);
+        let n3 = parseInt(numeros[2], 10);
+
+        let anio, mes, dia;
+        if (n1 > 1000) {
+            anio = n1; mes = n2; dia = n3;
+        } else {
+            dia = n1; mes = n2; anio = n3;
+            if (anio < 100) anio += 2000;
         }
 
-        utterance.onend = () => {
-            if (callbackCuandoTermine) callbackCuandoTermine();
-        };
-
-        window.speechSynthesis.speak(utterance);
-    } else {
-        if (callbackCuandoTermine) callbackCuandoTermine();
-    }
-}
-
-// Cargar voces al inicio para asegurar que estén listas
-if ('speechSynthesis' in window) {
-    window.speechSynthesis.onvoiceschanged = () => {
-        window.speechSynthesis.getVoices();
-    };
-}
-
-// Función para limpiar tildes y comparar sin errores
-function normalizarTexto(str) {
-    return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
-}
-
-// Función inteligente para convertir dictados de fecha a formato YYYY-MM-DD
-function convertirTextoAFecha(texto) {
-    let numeros = texto.match(/\d+/g);
-    if (!numeros || numeros.length < 3) return null;
-
-    let n1 = parseInt(numeros[0], 10);
-    let n2 = parseInt(numeros[1], 10);
-    let n3 = parseInt(numeros[2], 10);
-
-    let anio, mes, dia;
-
-    // Si el primer número es mayor a 1000, asumimos formato YYYY-MM-DD
-    if (n1 > 1000) {
-        anio = n1;
-        mes = n2;
-        dia = n3;
-    } else {
-        // Si el tercer número es mayor a 1000, asumimos formato DD-MM-YYYY
-        dia = n1;
-        mes = n2;
-        anio = n3;
-        if (anio < 100) anio += 2000; // Por si dicen años cortos
+        return `${anio}-${String(mes).padStart(2, '0')}-${String(dia).padStart(2, '0')}`;
     }
 
-    // Asegurar formato de 2 dígitos para mes y día
-    let mesStr = String(mes).padStart(2, '0');
-    let diaStr = String(dia).padStart(2, '0');
+    function iniciarTemporizador10Seg() {
+        clearTimeout(temporizadorInactividad);
+        temporizadorInactividad = setTimeout(() => {
+            if (estadoConversacion !== 'IDLE') {
+                hablarTexto("Tiempo agotado sin respuesta. Cerrando micrófono.", () => {
+                    estadoConversacion = 'IDLE';
+                    restaurarBotonVozVisual();
+                    if (recognition) {
+                        try { recognition.stop(); } catch(e){}
+                    }
+                });
+            }
+        }, 10000);
+    }
 
-    return `${anio}-${mesStr}-${diaStr}`;
-}
+    function restaurarBotonVozVisual() {
+        if (btnVoz) {
+            btnVoz.classList.remove('btn-danger');
+            btnVoz.classList.add('btn-primary');
+        }
+        if (estadoVoz) {
+            setTimeout(() => { estadoVoz.style.display = 'none'; }, 2000);
+        }
+    }
 
-// Temporizador estricto de 10 segundos para respuestas interactivas
-function iniciarTemporizador10Seg() {
-    clearTimeout(temporizadorInactividad);
-    temporizadorInactividad = setTimeout(() => {
-        if (estadoConversacion !== 'IDLE') {
-            hablarTexto("Tiempo agotado sin respuesta. Cerrando micrófono.", () => {
-                estadoConversacion = 'IDLE';
-                restaurarBotonVozVisual();
-                if (recognition) {
-                    try { recognition.stop(); } catch(e){}
+    let recognition = null;
+    if (SpeechRecognition) {
+        recognition = new SpeechRecognition();
+        recognition.lang = 'es-ES';
+        recognition.interimResults = false;
+        recognition.maxAlternatives = 1;
+
+        if (btnVoz) {
+            btnVoz.addEventListener('click', () => {
+                try {
+                    window.speechSynthesis.cancel();
+                    clearTimeout(temporizadorInactividad);
+                    estadoConversacion = 'IDLE';
+                    iniciarEscuchaManual();
+                } catch (e) {
+                    console.error(e);
                 }
             });
         }
-    }, 10000); // 10 segundos exactos
-}
 
-function restaurarBotonVozVisual() {
-    if (btnVoz) {
-        btnVoz.classList.remove('btn-danger');
-        btnVoz.classList.add('btn-primary');
-    }
-    if (estadoVoz) {
-        setTimeout(() => { estadoVoz.style.display = 'none'; }, 2000);
-    }
-}
-
-let recognition = null;
-if (SpeechRecognition) {
-    recognition = new SpeechRecognition();
-    recognition.lang = 'es-ES';
-    recognition.interimResults = false;
-    recognition.maxAlternatives = 1;
-
-    btnVoz.addEventListener('click', () => {
-        try {
-            window.speechSynthesis.cancel(); // Interrumpir voz si habla al presionar
+        recognition.onresult = (event) => {
             clearTimeout(temporizadorInactividad);
-            estadoConversacion = 'IDLE';
-            iniciarEscuchaManual();
-        } catch (e) {
-            console.error(e);
-        }
-    });
-
-    recognition.onresult = (event) => {
-        clearTimeout(temporizadorInactividad);
-        const fraseCruda = event.results[0][0].transcript;
-        const frase = normalizarTexto(fraseCruda);
-        if (estadoVoz) estadoVoz.textContent = `Escuchado: "${fraseCruda}"`;
-        
-        procesarFlujoConversacional(frase, fraseCruda);
-    };
-
-    recognition.onspeechend = () => {
-        recognition.stop();
-        restaurarBotonVozVisual();
-        if (estadoVoz) estadoVoz.textContent = "Procesado ✔️";
-    };
-
-    recognition.onerror = (event) => {
-        if (estadoVoz) estadoVoz.textContent = "Error: " + event.error;
-        restaurarBotonVozVisual();
-        estadoConversacion = 'IDLE';
-    };
-} else {
-    if (document.getElementById('btnVozGlobal')) {
-        document.getElementById('btnVozGlobal').style.display = 'none';
-    }
-}
-
-function iniciarEscuchaManual() {
-    try {
-        recognition.start();
-        if (estadoVoz) {
-            estadoVoz.style.display = 'block';
-            estadoVoz.textContent = "Escuchando... 🎙️";
-        }
-        btnVoz.classList.remove('btn-primary');
-        btnVoz.classList.add('btn-danger');
-        iniciarTemporizador10Seg();
-    } catch (err) {
-        console.log(err);
-    }
-}
-
-// Procesador Central de Comandos, Datos de Pacientes y Diálogo Interactivo
-function procesarFlujoConversacional(frase, fraseCruda) {
-    
-    // Comando para repetir lo último dicho
-    if (frase.includes('repite') || frase.includes('repetir')) {
-        iniciarTemporizador10Seg();
-        hablarTexto(ultimoTextoHablado, () => {
-            iniciarEscuchaManual();
-        });
-        return;
-    }
-
-    // 1. Esperando Confirmación (Sí / No) para ingresar resultados
-    if (estadoConversacion === 'ESPERANDO_CONFIRMACION') {
-        if (frase.includes('si') || frase.includes('ingresar') || frase.includes('claro')) {
-            let subOps = subOpcionesTabs[tabActivaId] || [{ numero: '1', nombre: 'General' }];
-            let textoOpcionesLista = subOps.map(op => `${op.numero}, ${op.nombre}`).join('. ');
+            const fraseCruda = event.results[0][0].transcript;
+            const frase = normalizarTexto(fraseCruda);
+            if (estadoVoz) estadoVoz.textContent = `Escuchado: "${fraseCruda}"`;
             
-            estadoConversacion = 'ESPERANDO_SUB_OPCION';
-            iniciarTemporizador10Seg();
-            
-            hablarTexto(`¿Qué subopción deseas? Las opciones son: ${textoOpcionesLista}. Di el número o el nombre.`, () => {
-                iniciarEscuchaManual();
-                iniciarTemporizador10Seg();
-            });
-        } else if (frase.includes('no')) {
-            estadoConversacion = 'IDLE';
-            hablarTexto("Operación cancelada.");
+            procesarFlujoConversacional(frase, fraseCruda);
+        };
+
+        recognition.onspeechend = () => {
+            recognition.stop();
             restaurarBotonVozVisual();
-        } else {
+            if (estadoVoz) estadoVoz.textContent = "Procesado ✔️";
+        };
+
+        recognition.onerror = (event) => {
+            if (estadoVoz) estadoVoz.textContent = "Error: " + event.error;
+            restaurarBotonVozVisual();
+            estadoConversacion = 'IDLE';
+        };
+    } else {
+        if (btnVoz) btnVoz.style.display = 'none';
+    }
+
+    function iniciarEscuchaManual() {
+        try {
+            recognition.start();
+            if (estadoVoz) {
+                estadoVoz.style.display = 'block';
+                estadoVoz.textContent = "Escuchando... 🎙️";
+            }
+            if (btnVoz) {
+                btnVoz.classList.remove('btn-primary');
+                btnVoz.classList.add('btn-danger');
+            }
             iniciarTemporizador10Seg();
-            hablarTexto("Por favor responde sí o no.", () => {
+        } catch (err) {
+            console.log(err);
+        }
+    }
+
+    function procesarFlujoConversacional(frase, fraseCruda) {
+        if (frase.includes('repite') || frase.includes('repetir')) {
+            iniciarTemporizador10Seg();
+            hablarTexto(ultimoTextoHablado, () => {
+                iniciarEscuchaManual();
+            });
+            return;
+        }
+
+        if (estadoConversacion === 'ESPERANDO_CONFIRMACION') {
+            if (frase.includes('si') || frase.includes('ingresar') || frase.includes('claro')) {
+                let subOps = subOpcionesTabs[tabActivaId] || [{ numero: '1', nombre: 'General' }];
+                let textoOpcionesLista = subOps.map(op => `${op.numero}, ${op.nombre}`).join('. ');
+                
+                estadoConversacion = 'ESPERANDO_SUB_OPCION';
+                iniciarTemporizador10Seg();
+                
+                hablarTexto(`¿Qué subopción deseas? Las opciones son: ${textoOpcionesLista}. Di el número o el nombre.`, () => {
+                    iniciarEscuchaManual();
+                    iniciarTemporizador10Seg();
+                });
+            } else if (frase.includes('no')) {
+                estadoConversacion = 'IDLE';
+                hablarTexto("Operación cancelada.");
+                restaurarBotonVozVisual();
+            } else {
+                iniciarTemporizador10Seg();
+                hablarTexto("Por favor responde sí o no.", () => {
+                    iniciarEscuchaManual();
+                    iniciarTemporizador10Seg();
+                });
+            }
+            return;
+        }
+
+        if (estadoConversacion === 'ESPERANDO_SUB_OPCION') {
+            let subOps = subOpcionesTabs[tabActivaId] || [];
+            let encontrada = subOps.find(op => frase.includes(op.numero) || normalizarTexto(op.nombre).includes(frase) || frase.includes(normalizarTexto(op.nombre)));
+            
+            estadoConversacion = 'IDLE';
+            restaurarBotonVozVisual();
+
+            if (encontrada) {
+                let elSubTab = document.getElementById(encontrada.idTab);
+                if (elSubTab) {
+                    let bsTab = new bootstrap.Tab(elSubTab);
+                    bsTab.show();
+                }
+                hablarTexto(`Perfecto, ingresando en ${encontrada.nombre}. Dicta el valor correspondiente.`);
+            } else {
+                hablarTexto("No reconocí esa opción.");
+            }
+            return;
+        }
+
+        if (frase.includes('ingresar resultado') || frase.includes('ingresar resultados')) {
+            let tabActivaBtn = document.querySelector('#mainTabs .nav-link.active');
+            if (tabActivaBtn) {
+                tabActivaNombre = tabActivaBtn.textContent.trim();
+                let idTabHtml = tabActivaBtn.id;
+                tabActivaId = Object.keys(subOpcionesTabs).find(k => idTabHtml.includes(k)) || 'otros';
+            } else {
+                tabActivaNombre = "la opción actual";
+                tabActivaId = "otros";
+            }
+
+            estadoConversacion = 'ESPERANDO_CONFIRMACION';
+            iniciarTemporizador10Seg();
+            
+            hablarTexto(`Estás en ${tabActivaNombre}. ¿Quieres ingresar resultado? Di sí o no.`, () => {
                 iniciarEscuchaManual();
                 iniciarTemporizador10Seg();
             });
+            return;
         }
-        return;
+
+        if (frase.includes('cedula') || frase.includes('documento')) {
+            let valor = extraerTextoDespues(fraseCruda, ['cédula', 'cedula', 'documento']);
+            if (valor) {
+                document.getElementById('codDoc').value = valor;
+                document.getElementById('txtCodDocVisual').textContent = valor;
+                hablarTexto(`Cédula ingresada: ${valor}`);
+            }
+        } 
+        else if (frase.includes('orden')) {
+            let valor = extraerTextoDespues(fraseCruda, ['orden número', 'orden numero', 'orden', 'codigo', 'código']);
+            if (valor) {
+                let valorNumerico = valor.replace(/\D/g, '');
+                document.getElementById('idOrden').value = valorNumerico;
+                document.getElementById('txtIdOrdenVisual').textContent = valorNumerico;
+                if (typeof buscarOrden === 'function') {
+                    buscarOrden(valorNumerico);
+                }
+                hablarTexto(`Orden número ${valorNumerico}`);
+            }
+        } 
+        else if (frase.includes('nombre')) {
+            let valor = extraerTextoDespues(fraseCruda, ['nombres y apellidos', 'nombres', 'nombre']);
+            if (valor) {
+                let nombreMayus = valor.toUpperCase();
+                document.getElementById('nombrePaciente').value = nombreMayus;
+                document.getElementById('txtNombreVisual').textContent = nombreMayus;
+                hablarTexto(`Nombres: ${nombreMayus}`);
+            }
+        } 
+        else if (frase.includes('edad')) {
+            let valor = extraerTextoDespues(fraseCruda, ['edad']);
+            if (valor) {
+                let numEdad = valor.replace(/\D/g, '');
+                document.getElementById('edadPaciente').value = numEdad + ' años';
+                document.getElementById('txtEdadVisual').textContent = numEdad + ' años';
+                hablarTexto(`Edad: ${numEdad} años`);
+            }
+        } 
+        else if (frase.includes('nacimiento')) {
+            let textoFecha = extraerTextoDespues(fraseCruda, ['fecha de nacimiento', 'nacimiento']);
+            let fechaFormateada = convertirTextoAFecha(textoFecha);
+            
+            if (fechaFormateada) {
+                document.getElementById('fechaNacimiento').value = fechaFormateada;
+                document.getElementById('txtFechaNacVisual').textContent = fechaFormateada;
+                hablarTexto(`Fecha de nacimiento registrada`);
+            } else {
+                hablarTexto(`No pude entender la fecha. Intenta como: nacimiento 15 05 1990`);
+            }
+        }
+        else if (frase.includes('sexo') || frase.includes('genero')) {
+            let selectSexo = document.getElementById('sexoPaciente');
+            if (frase.includes('femenino')) {
+                selectSexo.value = 'Femenino';
+                document.getElementById('txtSexoVisual').textContent = 'Femenino';
+                hablarTexto("Sexo Femenino seleccionado");
+            } else if (frase.includes('masculino')) {
+                selectSexo.value = 'Masculino';
+                document.getElementById('txtSexoVisual').textContent = 'Masculino';
+                hablarTexto("Sexo Masculino seleccionado");
+            }
+        } 
+        else if (frase.includes('telefono')) {
+            let valor = extraerTextoDespues(fraseCruda, ['teléfono', 'telefono']);
+            if (valor) {
+                document.getElementById('telefonoPaciente').value = valor;
+                document.getElementById('txtTelVisual').textContent = valor;
+                hablarTexto(`Teléfono guardado`);
+            }
+        }
+        else {
+            navegarPestanaExamenPorVoz(frase, fraseCruda);
+        }
     }
 
-    // 2. Esperando Selección de Subopción por Número o Nombre
-    if (estadoConversacion === 'ESPERANDO_SUB_OPCION') {
-        let subOps = subOpcionesTabs[tabActivaId] || [];
-        let encontrada = subOps.find(op => frase.includes(op.numero) || normalizarTexto(op.nombre).includes(frase) || frase.includes(normalizarTexto(op.nombre)));
-        
-        estadoConversacion = 'IDLE';
-        restaurarBotonVozVisual();
+    function extraerTextoDespues(texto, palabrasClave) {
+        for (let kw of palabrasClave) {
+            let idx = texto.toLowerCase().indexOf(kw.toLowerCase());
+            if (idx !== -1) {
+                return texto.substring(idx + kw.length).trim();
+            }
+        }
+        return texto;
+    }
 
-        if (encontrada) {
-            let elSubTab = document.getElementById(encontrada.idTab);
-            if (elSubTab) {
-                let bsTab = new bootstrap.Tab(elSubTab);
+    function navegarPestanaExamenPorVoz(fraseNormalizada, fraseCruda) {
+        const mapaTabs = {
+            'hematologia': 'hematologia-tab',
+            'quimica': 'qs-tab',
+            'sanguinea': 'qs-tab',
+            'hepatica': 'hepaticas-tab',
+            'higado': 'hepaticas-tab',
+            'electrolitos': 'electrolitos-tab',
+            'endocrinologia': 'endocrinologia-tab',
+            'inmunologicos': 'inmunologicos-tab',
+            'coagulacion': 'coagulacion-tab',
+            'oncologicos': 'oncologicos-tab',
+            'oncológicos': 'oncologicos-tab',
+            'reumatologico': 'reumatologico-tab',
+            'reuma': 'reumatologico-tab',
+            'otros': 'otros-tab',
+            'bhcg': 'otros-tab',
+            'embarazo': 'otros-tab',
+            'grupo y factor': 'otros-tab',
+            'koh': 'otros-tab',
+            'drogas': 'otros-tab',
+            'vitaminas': 'vitaminas-tab',
+            'orina': 'orina-tab',
+            'heces': 'heces-tab',
+            'cultivos': 'cultivos-tab',
+            'secreciones': 'secreciones-tab',
+            'covid': 'covid-tab',
+            'comentario': 'comentario-tab'
+        };
+
+        let tabEncontradoId = null;
+
+        for (let [clave, id] of Object.entries(mapaTabs)) {
+            if (fraseNormalizada.includes(clave)) {
+                tabEncontradoId = id;
+                break;
+            }
+        }
+
+        if (!tabEncontradoId) {
+            const botonesTabs = document.querySelectorAll('#mainTabs .nav-link');
+            botonesTabs.forEach(btn => {
+                let textoBtnNorm = normalizarTexto(btn.textContent);
+                if (textoBtnNorm.includes(fraseNormalizada) || fraseNormalizada.includes(textoBtnNorm)) {
+                    tabEncontradoId = btn.id;
+                }
+            });
+        }
+
+        if (tabEncontradoId) {
+            const elTab = document.getElementById(tabEncontradoId);
+            if (elTab) {
+                let bsTab = new bootstrap.Tab(elTab);
                 bsTab.show();
+                elTab.scrollIntoView({ behavior: 'smooth', inline: 'center' });
+                hablarTexto(`Navegando a ${elTab.textContent}`);
             }
-            hablarTexto(`Perfecto, ingresando en ${encontrada.nombre}. Dicta el valor correspondiente.`);
         } else {
-            hablarTexto("No reconocí esa opción.");
-        }
-        return;
-    }
-
-    // 3. Comando Principal: "Ingresar resultados"
-    if (frase.includes('ingresar resultado') || frase.includes('ingresar resultados')) {
-        let tabActivaBtn = document.querySelector('#mainTabs .nav-link.active');
-        if (tabActivaBtn) {
-            tabActivaNombre = tabActivaBtn.textContent.trim();
-            let idTabHtml = tabActivaBtn.id;
-            tabActivaId = Object.keys(subOpcionesTabs).find(k => idTabHtml.includes(k)) || 'otros';
-        } else {
-            tabActivaNombre = "la opción actual";
-            tabActivaId = "otros";
-        }
-
-        estadoConversacion = 'ESPERANDO_CONFIRMACION';
-        iniciarTemporizador10Seg();
-        
-        hablarTexto(`Estás en ${tabActivaNombre}. ¿Quieres ingresar resultado? Di sí o no.`, () => {
-            iniciarEscuchaManual();
-            iniciarTemporizador10Seg();
-        });
-        return;
-    }
-
-    // 4. Cédula / Cod/Doc
-    if (frase.includes('cedula') || frase.includes('documento')) {
-        let valor = extraerTextoDespues(fraseCruda, ['cédula', 'cedula', 'documento']);
-        if (valor) {
-            document.getElementById('codDoc').value = valor;
-            document.getElementById('txtCodDocVisual').textContent = valor;
-            hablarTexto(`Cédula ingresada: ${valor}`);
-        }
-    } 
-    // 5. Orden / Código
-    else if (frase.includes('orden')) {
-        let valor = extraerTextoDespues(fraseCruda, ['orden número', 'orden numero', 'orden', 'codigo', 'código']);
-        if (valor) {
-            let valorNumerico = valor.replace(/\D/g, '');
-            document.getElementById('idOrden').value = valorNumerico;
-            document.getElementById('txtIdOrdenVisual').textContent = valorNumerico;
-            if (typeof buscarOrden === 'function') {
-                buscarOrden(valorNumerico);
-            }
-            hablarTexto(`Orden número ${valorNumerico}`);
-        }
-    } 
-    // 6. Nombres
-    else if (frase.includes('nombre')) {
-        let valor = extraerTextoDespues(fraseCruda, ['nombres y apellidos', 'nombres', 'nombre']);
-        if (valor) {
-            let nombreMayus = valor.toUpperCase();
-            document.getElementById('nombrePaciente').value = nombreMayus;
-            document.getElementById('txtNombreVisual').textContent = nombreMayus;
-            hablarTexto(`Nombres: ${nombreMayus}`);
-        }
-    } 
-    // 7. Edad
-    else if (frase.includes('edad')) {
-        let valor = extraerTextoDespues(fraseCruda, ['edad']);
-        if (valor) {
-            let numEdad = valor.replace(/\D/g, '');
-            document.getElementById('edadPaciente').value = numEdad + ' años';
-            document.getElementById('txtEdadVisual').textContent = numEdad + ' años';
-            hablarTexto(`Edad: ${numEdad} años`);
-        }
-    } 
-    // 8. Fecha de Nacimiento
-    else if (frase.includes('nacimiento')) {
-        let textoFecha = extraerTextoDespues(fraseCruda, ['fecha de nacimiento', 'nacimiento']);
-        let fechaFormateada = convertirTextoAFecha(textoFecha);
-        
-        if (fechaFormateada) {
-            document.getElementById('fechaNacimiento').value = fechaFormateada;
-            document.getElementById('txtFechaNacVisual').textContent = fechaFormateada;
-            hablarTexto(`Fecha de nacimiento registrada`);
-        } else {
-            hablarTexto(`No pude entender la fecha. Intenta como: nacimiento 15 05 1990`);
+            hablarTexto("No se encontró el examen o sección solicitada.");
         }
     }
-    // 9. Sexo / Género
-    else if (frase.includes('sexo') || frase.includes('genero')) {
-        let selectSexo = document.getElementById('sexoPaciente');
-        if (frase.includes('femenino')) {
-            selectSexo.value = 'Femenino';
-            document.getElementById('txtSexoVisual').textContent = 'Femenino';
-            hablarTexto("Sexo Femenino seleccionado");
-        } else if (frase.includes('masculino')) {
-            selectSexo.value = 'Masculino';
-            document.getElementById('txtSexoVisual').textContent = 'Masculino';
-            hablarTexto("Sexo Masculino seleccionado");
-        }
-    } 
-    // 10. Teléfono
-    else if (frase.includes('telefono')) {
-        let valor = extraerTextoDespues(fraseCruda, ['teléfono', 'telefono']);
-        if (valor) {
-            document.getElementById('telefonoPaciente').value = valor;
-            document.getElementById('txtTelVisual').textContent = valor;
-            hablarTexto(`Teléfono guardado`);
-        }
-    }
-    // 11. Búsqueda y Navegación de Exámenes (Pestañas con coincidencia flexible)
-    else {
-        navegarPestanaExamenPorVoz(frase, fraseCruda);
-    }
-}
-
-function extraerTextoDespues(texto, palabrasClave) {
-    for (let kw of palabrasClave) {
-        let idx = texto.toLowerCase().indexOf(kw.toLowerCase());
-        if (idx !== -1) {
-            return texto.substring(idx + kw.length).trim();
-        }
-    }
-    return texto;
-}
-
-function navegarPestanaExamenPorVoz(fraseNormalizada, fraseCruda) {
-    const mapaTabs = {
-        'hematologia': 'hematologia-tab',
-        'quimica': 'qs-tab',
-        'sanguinea': 'qs-tab',
-        'hepatica': 'hepaticas-tab',
-        'higado': 'hepaticas-tab',
-        'electrolitos': 'electrolitos-tab',
-        'endocrinologia': 'endocrinologia-tab',
-        'inmunologicos': 'inmunologicos-tab',
-        'coagulacion': 'coagulacion-tab',
-        'oncologicos': 'oncologicos-tab',
-        'oncológicos': 'oncologicos-tab',
-        'reumatologico': 'reumatologico-tab',
-        'reuma': 'reumatologico-tab',
-        'otros': 'otros-tab',
-        'bhcg': 'otros-tab',
-        'embarazo': 'otros-tab',
-        'grupo y factor': 'otros-tab',
-        'koh': 'otros-tab',
-        'drogas': 'otros-tab',
-        'vitaminas': 'vitaminas-tab',
-        'orina': 'orina-tab',
-        'heces': 'heces-tab',
-        'cultivos': 'cultivos-tab',
-        'secreciones': 'secreciones-tab',
-        'covid': 'covid-tab',
-        'comentario': 'comentario-tab'
-    };
-
-    let tabEncontradoId = null;
-
-    // Buscar por coincidencia en el diccionario normalizado
-    for (let [clave, id] of Object.entries(mapaTabs)) {
-        if (fraseNormalizada.includes(clave)) {
-            tabEncontradoId = id;
-            break;
-        }
-    }
-
-    // Si no está en el diccionario, buscar directamente en el texto de los botones de las pestañas
-    if (!tabEncontradoId) {
-        const botonesTabs = document.querySelectorAll('#mainTabs .nav-link');
-        botonesTabs.forEach(btn => {
-            let textoBtnNorm = normalizarTexto(btn.textContent);
-            if (textoBtnNorm.includes(fraseNormalizada) || fraseNormalizada.includes(textoBtnNorm)) {
-                tabEncontradoId = btn.id;
-            }
-        });
-    }
-
-    if (tabEncontradoId) {
-        const elTab = document.getElementById(tabEncontradoId);
-        if (elTab) {
-            let bsTab = new bootstrap.Tab(elTab);
-            bsTab.show();
-            elTab.scrollIntoView({ behavior: 'smooth', inline: 'center' });
-            hablarTexto(`Navegando a ${elTab.textContent}`);
-        }
-    } else {
-        hablarTexto("No se encontró el examen o sección solicitada.");
-    }
-}
+});
