@@ -5964,6 +5964,40 @@ function removerIndicador(input) {
             return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
         }
 
+
+// Función inteligente para convertir dictados de fecha a formato YYYY-MM-DD
+        function convertirTextoAFecha(texto) {
+            let numeros = texto.match(/\d+/g);
+            if (!numeros || numeros.length < 3) return null;
+
+            let n1 = parseInt(numeros[0], 10);
+            let n2 = parseInt(numeros[1], 10);
+            let n3 = parseInt(numeros[2], 10);
+
+            let anio, mes, dia;
+
+            // Si el primer número es mayor a 1000, asumimos formato YYYY-MM-DD
+            if (n1 > 1000) {
+                anio = n1;
+                mes = n2;
+                dia = n3;
+            } else {
+                // Si el tercer número es mayor a 1000, asumimos formato DD-MM-YYYY
+                dia = n1;
+                mes = n2;
+                anio = n3;
+                if (anio < 100) anio += 2000; // Por si dicen años cortos
+            }
+
+            // Asegurar formato de 2 dígitos para mes y día
+            let mesStr = String(mes).padStart(2, '0');
+            let diaStr = String(dia).padStart(2, '0');
+
+            return `${anio}-${mesStr}-${diaStr}`;
+        }
+		
+		
+
         if (SpeechRecognition) {
             const recognition = new SpeechRecognition();
             recognition.lang = 'es-ES';
@@ -6022,7 +6056,7 @@ function removerIndicador(input) {
             } 
             // 2. Orden
             else if (frase.includes('orden')) {
-                let valor = extraerTextoDespues(fraseCruda, ['orden número', 'orden numero', 'orden', 'codigo']);
+                let valor = extraerTextoDespues(fraseCruda, ['orden número', 'orden numero', 'orden', 'codigo', 'código']);
                 if (valor) {
                     let valorNumerico = valor.replace(/\D/g, '');
                     document.getElementById('idOrden').value = valorNumerico;
@@ -6055,13 +6089,17 @@ function removerIndicador(input) {
             } 
             // 5. Fecha de Nacimiento
             else if (frase.includes('nacimiento')) {
-                let valor = extraerTextoDespues(fraseCruda, ['fecha de nacimiento', 'nacimiento']);
-                if (valor) {
-                    document.getElementById('fechaNacimiento').value = valor;
-                    document.getElementById('txtFechaNacVisual').textContent = valor;
+                let textoFecha = extraerTextoDespues(fraseCruda, ['fecha de nacimiento', 'nacimiento']);
+                let fechaFormateada = convertirTextoAFecha(textoFecha);
+                
+                if (fechaFormateada) {
+                    document.getElementById('fechaNacimiento').value = fechaFormateada;
+                    document.getElementById('txtFechaNacVisual').textContent = fechaFormateada;
                     hablarTexto(`Fecha de nacimiento registrada`);
+                } else {
+                    hablarTexto(`No pude entender la fecha. Intenta como: nacimiento 15 05 1990`);
                 }
-            } 
+            }
             // 6. Sexo
             else if (frase.includes('sexo') || frase.includes('genero')) {
                 let selectSexo = document.getElementById('sexoPaciente');
