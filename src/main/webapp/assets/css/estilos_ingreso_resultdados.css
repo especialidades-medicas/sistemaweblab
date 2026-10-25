@@ -547,15 +547,15 @@ body {
 /* --------------------------------------------------------------------------
    7. REGLAS EXCLUSIVAS DE EXPORTACIÓN PDF (html2pdf / .pdf-mode)
    -------------------------------------------------------------------------- */
-.print-only { 
+.print-only {  
     display: none; 
 }
 
-.pdf-mode .no-print { 
+.pdf-mode .no-print {  
     display: none !important; 
 }
 
-.pdf-mode .print-only { 
+.pdf-mode .print-only {  
     display: block !important; 
 }
 
@@ -590,6 +590,11 @@ body {
     break-after: avoid !important;
 }
 
+/* 🟢 NUEVO: Repetir el encabezado de la tabla en cada página para html2pdf */
+.pdf-mode thead {
+    display: table-header-group !important;
+}
+
 /* --------------------------------------------------------------------------
    8. REGLAS DE IMPRESIÓN DIRECTA DEL NAVEGADOR (@media print)
    -------------------------------------------------------------------------- */
@@ -621,6 +626,11 @@ body {
     .no-print,
     .d-none-print {
         display: none !important;
+    }
+
+    /* 🟢 NUEVO: Repetir el encabezado institucional automáticamente en cada hoja al imprimir */
+    thead {
+        display: table-header-group !important;
     }
 }
 
