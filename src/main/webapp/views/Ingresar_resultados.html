@@ -108,7 +108,7 @@
                     </div>
                     
                     <div class="col-md-12 col-12">
-                        <strong>APELLIDOS Y NOMBRES:</strong>
+                        <strong>NOMBRES:</strong>
                         <input type="text" id="nombrePaciente" class="form-control form-control-sm fw-bold" value=" ">
                     </div>
 
@@ -6022,7 +6022,7 @@ function removerIndicador(input) {
             } 
             // 2. Orden
             else if (frase.includes('orden')) {
-                let valor = extraerTextoDespues(fraseCruda, ['orden número', 'orden numero', 'orden']);
+                let valor = extraerTextoDespues(fraseCruda, ['orden número', 'orden numero', 'orden', 'codigo']);
                 if (valor) {
                     let valorNumerico = valor.replace(/\D/g, '');
                     document.getElementById('idOrden').value = valorNumerico;
