@@ -1,6 +1,6 @@
 /**
  * ASISTENTE DE VOZ INTELIGENTE - LABORATORIO CLÍNICO
- * Versión blindada con DOMContentLoaded para evitar errores de elementos nulos.
+ * Versión corregida y limpia.
  */
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -100,8 +100,8 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             utterance.onend = () => {
-                if (callbackКогдаTermine || callbackCuandoTermine) {
-                    (callbackКогдаTermine ? callbackКогдаTermine : callbackCuandoTermine)();
+                if (callbackCuandoTermine) {
+                    callbackCuandoTermine();
                 }
             };
 
