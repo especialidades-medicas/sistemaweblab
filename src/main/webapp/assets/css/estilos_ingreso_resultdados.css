@@ -592,8 +592,8 @@ body {
 
 /* 🟢 NUEVO: Repetir el encabezado de la tabla en cada página para html2pdf */
 .pdf-mode thead {
-    display: table-header-group !important;
-}
+          display: table-header-group !important;
+      }
 
 /* --------------------------------------------------------------------------
    8. REGLAS DE IMPRESIÓN DIRECTA DEL NAVEGADOR (@media print)
@@ -629,10 +629,16 @@ body {
     }
 
     /* 🟢 NUEVO: Repetir el encabezado institucional automáticamente en cada hoja al imprimir */
-    thead {
-        display: table-header-group !important;
-    }
-}
+    
+      thead {
+          display: table-header-group !important;
+      }
+      
+      
+      
+      tr, table {
+          page-break-inside: auto !important; /* Permite saltos limpios entre filas de exámenes */
+      }
 
 
 
