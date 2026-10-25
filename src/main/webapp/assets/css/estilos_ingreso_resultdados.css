@@ -634,32 +634,7 @@ body {
           display: table-header-group !important;
       }
       
-      
-      
-      tr, table {
-          page-break-inside: auto !important; /* Permite saltos limpios entre filas de exámenes */
-      }
 
-
-
-
-/* ==========================================================================
-   DISEÑO METALIZADO Y MARGENES PARA LA PANTALLA DE INGRESO
-   ========================================================================== */
-/* ==========================================================================
-   #pedidoContainer {
-    width: 95% !important;
-    max-width: 1250px !important;
-    margin: 30px auto !important;
-    padding: 24px !important;
-    background: linear-gradient(145deg, #f1f5f9 0%, #e2e8f0 50%, #cbd5e1 100%) !important;
-    border: 1px solid #94a3b8 !important;
-    border-radius: 16px !important;
-    box-shadow: 
-        0 20px 25px -5px rgba(0, 0, 0, 0.1),
-        0 8px 10px -6px rgba(0, 0, 0, 0.1),
-        inset 0 1px 2px rgba(255, 255, 255, 0.9),
-        inset 0 -2px 4px rgba(0, 0, 0, 0.08) !important;
 }
 
    ========================================================================== */
