@@ -16,7 +16,6 @@
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <!-- Librería JsBarcode para generar códigos de barras automáticamente -->
     <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
-	<script src="../controllers/asistente-voz-lab.js"></script>	
     
     <style>
        /* Color de fondo verde azulado suave para resaltar los campos con datos */
@@ -60,39 +59,40 @@
     
     <div class="container-fluid p-2">
 
-		<!-- Botón Flotante Circular de Micrófono (Fijo en la esquina superior derecha, oculto al imprimir) -->
-		    <!-- Contenedor flotante superior derecho -->
-<div class="no-print" style="position: fixed; top: 20px; right: 20px; z-index: 9999;">
-    <div class="d-flex align-items-center gap-2">
-        
-        <!-- Input de búsqueda con sugerencias (Lista desplegable flotante) -->
-        <div class="position-relative" id="contenedorBuscadorTabs" style="display: none;">
-            <input type="text" id="inputBuscarTab" class="form-control form-control-sm shadow-sm" placeholder="Buscar examen o pestaña..." style="width: 200px;">
-            <!-- Contenedor de sugerencias -->
-            <div id="sugerenciasBuscador" class="dropdown-menu w-100 shadow border-0 mt-1" style="max-height: 200px; overflow-y: auto;"></div>
-        </div>
-
-        <!-- Botón para alternar / mostrar el buscador -->
-        <button type="button" id="btnToggleBuscador" class="btn btn-light text-primary rounded-circle shadow-sm d-flex align-items-center justify-content-center border" style="width: 40px; height: 40px;" title="Buscar examen por texto">
-            <i class="bi bi-search" style="font-size: 16px;"></i>
-        </button>
-
-        <!-- Botón Flotante Circular de Micrófono existente -->
-        <button type="button" id="btnVozGlobal" class="btn btn-primary rounded-circle shadow-lg d-flex align-items-center justify-content-center" style="width: 55px; height: 55px; transition: all 0.3s ease;" title="Activar Comando de Voz">
-            <i class="bi bi-mic-fill" style="font-size: 24px;"></i>
-        </button>
-    </div>
-
-    <!-- Texto de estado flotante y discreto debajo -->
-    <div id="estadoVoz" class="bg-white px-2 py-1 rounded shadow-sm text-end mt-1 text-primary fw-bold" style="font-size: 10px; display: none; max-width: 150px; float: right;">
-        Esperando...
-    </div>
-</div>
+		<!-- Botón buscar y voz-->
+		    <!-- Contenedor Flotante Superior Derecho (Fijo, oculto al imprimir) -->
+				<div class="no-print" style="position: fixed; top: 20px; right: 20px; z-index: 9999;">
+				    <div class="d-flex align-items-center gap-2">
+				        
+				        <!-- Input de búsqueda con sugerencias (Lista desplegable flotante) -->
+				        <div class="position-relative" id="contenedorBuscadorTabs" style="display: none;">
+				            <input type="text" id="inputBuscarTab" class="form-control form-control-sm shadow-sm" placeholder="Buscar examen o pestaña..." style="width: 200px;">
+				            <!-- Contenedor de sugerencias -->
+				            <div id="sugerenciasBuscador" class="dropdown-menu w-100 shadow border-0 mt-1" style="max-height: 200px; overflow-y: auto;"></div>
+				        </div>
+				
+				        <!-- Botón para alternar / mostrar el buscador (Lupa) -->
+				        <button type="button" id="btnToggleBuscador" class="btn btn-light text-primary rounded-circle shadow-sm d-flex align-items-center justify-content-center border" style="width: 40px; height: 40px;" title="Buscar examen por texto">
+				            <i class="bi bi-search" style="font-size: 16px;"></i>
+				        </button>
+				
+				        <!-- Botón Flotante Circular de Micrófono -->
+				        <button type="button" id="btnVozGlobal" class="btn btn-primary rounded-circle shadow-lg d-flex align-items-center justify-content-center" style="width: 55px; height: 55px; transition: all 0.3s ease;" title="Activar Comando de Voz">
+				            <i class="bi bi-mic-fill" style="font-size: 24px;"></i>
+				        </button>
+				    </div>
+				
+				    <!-- Texto de estado flotante y discreto debajo del botón -->
+				    <div id="estadoVoz" class="bg-white px-2 py-1 rounded shadow-sm text-end mt-1 text-primary fw-bold" style="font-size: 10px; display: none; max-width: 150px; float: right;">
+				        Esperando...
+				    </div>
+				</div>
 		
         <!-- Contenedor principal que se imprimirá y exportará a PDF -->
         <div class="pedido-box border p-3 bg-white" id="pedidoContainer">
             
             <!-- Encabezado Institucional -->
+			<thead>
             <table class="table-layout mb-2 border-bottom pb-2" style="width: 100%;">
                 <tr>
                     <td style="width: 15%;" class="text-start">
@@ -110,6 +110,7 @@
                     </td>
                 </tr>
             </table>
+			</thead>
 
             <!-- Datos Generales del Paciente (Editables en Pantalla) -->
             <div class="card p-2 mb-2 bg-light border no-print">
@@ -323,7 +324,7 @@
     <table class="table table-sm table-bordered align-middle mb-0 small">
         <thead class="table-light text-muted"><tr><th>EXAMEN</th><th>RESULTADO</th><th>UNIDAD</th><th>V. REFERENCIA</th></tr></thead>
         <tbody>
-            <tr><td class="fw-bold">Velocidad de Sedimentación Globular (VSE / VSG)</td>
+            <tr><td class="fw-bold">Velocidad de Sedimentación Globular (VSE-VSG)</td>
 				<td><input type="text" class="form-control form-control-sm form-control-editable"></td><td>mm/h</td><td class="text-muted">Hombres: 0 – 15 | Mujeres: 0 – 20</td></tr>
         </tbody>
     </table>
@@ -6046,9 +6047,10 @@ function removerIndicador(input) {
     return valor;
 }
 
-	// buscar boton examen
-		document.addEventListener("DOMContentLoaded", () => {
-    // Diccionario de mapeo (puedes unificarlo o mantenerlo aquí)
+
+
+document.addEventListener("DOMContentLoaded", () => {
+    // Diccionario de mapeo de pestañas
     const mapaTabs = {
         'hematologia': 'hematologia-tab',
         'biometria': 'hematologia-tab',
@@ -6093,17 +6095,341 @@ function removerIndicador(input) {
         'comentario': 'comentario-tab'
     };
 
+    // Función para hablar con voz femenina e interrumpir si hay otro comando en curso
+    function hablarTexto(texto) {
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.cancel();
+
+            const utterance = new SpeechSynthesisUtterance(texto);
+            utterance.lang = 'es-ES';
+            utterance.rate = 1.0;
+
+            const voces = window.speechSynthesis.getVoices();
+            const vozFemenina = voces.find(v => 
+                v.lang.toLowerCase().startsWith('es') && 
+                (v.name.toLowerCase().includes('female') || 
+                 v.name.toLowerCase().includes('elena') || 
+                 v.name.toLowerCase().includes('monica') || 
+                 v.name.toLowerCase().includes('paulina') || 
+                 v.name.toLowerCase().includes('lucia') || 
+                 v.name.toLowerCase().includes('google español') ||
+                 v.name.toLowerCase().includes('sabrina'))
+            );
+
+            if (vozFemenina) {
+                utterance.voice = vozFemenina;
+            }
+
+            window.speechSynthesis.speak(utterance);
+        }
+    }
+
+    if ('speechSynthesis' in window) {
+        window.speechSynthesis.onvoiceschanged = () => {
+            window.speechSynthesis.getVoices();
+        };
+    }
+
+    function normalizarTexto(str) {
+        return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+    }
+
+    function convertirTextoAFecha(texto) {
+        let numeros = texto.match(/\d+/g);
+        if (!numeros || numeros.length < 3) return null;
+
+        let n1 = parseInt(numeros[0], 10);
+        let n2 = parseInt(numeros[1], 10);
+        let n3 = parseInt(numeros[2], 10);
+
+        let anio, mes, dia;
+        if (n1 > 1000) {
+            anio = n1;
+            mes = n2;
+            dia = n3;
+        } else {
+            dia = n1;
+            mes = n2;
+            anio = n3;
+            if (anio < 100) anio += 2000;
+        }
+
+        let mesStr = String(mes).padStart(2, '0');
+        let diaStr = String(dia).padStart(2, '0');
+        return `${anio}-${mesStr}-${diaStr}`;
+    }
+
+    // Configuración de Reconocimiento de Voz
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (SpeechRecognition) {
+        const recognition = new SpeechRecognition();
+        recognition.lang = 'es-ES';
+        recognition.interimResults = false;
+        recognition.maxAlternatives = 1;
+
+        const btnVoz = document.getElementById('btnVozGlobal');
+        const estadoVoz = document.getElementById('estadoVoz');
+
+        btnVoz.addEventListener('click', () => {
+            try {
+                window.speechSynthesis.cancel();
+                recognition.start();
+                estadoVoz.style.display = 'block';
+                estadoVoz.textContent = "Escuchando... 🎙️";
+                btnVoz.classList.remove('btn-primary');
+                btnVoz.classList.add('btn-danger');
+            } catch (e) {
+                console.error(e);
+            }
+        });
+
+        recognition.onresult = (event) => {
+            const fraseCruda = event.results[0][0].transcript;
+            const frase = normalizarTexto(fraseCruda);
+            estadoVoz.textContent = `Escuchado: "${fraseCruda}"`;
+            procesarComandoVozLab(frase, fraseCruda);
+        };
+
+        recognition.onspeechend = () => {
+            recognition.stop();
+            estadoVoz.textContent = "Procesado ✔️";
+            btnVoz.classList.remove('btn-danger');
+            btnVoz.classList.add('btn-primary');
+            setTimeout(() => { estadoVoz.style.display = 'none'; }, 2500);
+        };
+
+        recognition.onerror = (event) => {
+            estadoVoz.textContent = "Error: " + event.error;
+            btnVoz.classList.remove('btn-danger');
+            btnVoz.classList.add('btn-primary');
+        };
+    } else {
+        if (document.getElementById('btnVozGlobal')) {
+            document.getElementById('btnVozGlobal').style.display = 'none';
+        }
+    }
+
+    // Función principal que procesa los comandos y muestra mensajes detallados de cada opción
+    function procesarComandoVozLab(frase, fraseCruda) {
+        const estadoVoz = document.getElementById('estadoVoz');
+
+        // 1. Cédula
+        if (frase.includes('cedula') || frase.includes('documento')) {
+            let valor = extraerTextoDespues(fraseCruda, ['cédula', 'cedula', 'documento']);
+            if (valor) {
+                document.getElementById('codDoc').value = valor;
+                document.getElementById('txtCodDocVisual').textContent = valor;
+                estadoVoz.textContent = `Opción detectada: Cédula / Documento [${valor}]`;
+                hablarTexto(`Cédula ingresada: ${valor}`);
+            }
+        } 
+        // 2. Orden
+        else if (frase.includes('orden')) {
+            let valor = extraerTextoDespues(fraseCruda, ['orden número', 'orden numero', 'orden', 'codigo', 'código']);
+            if (valor) {
+                let valorNumerico = valor.replace(/\D/g, '');
+                document.getElementById('idOrden').value = valorNumerico;
+                document.getElementById('txtIdOrdenVisual').textContent = valorNumerico;
+                if (typeof buscarOrden === 'function') {
+                    buscarOrden(valorNumerico);
+                }
+                estadoVoz.textContent = `Opción detectada: Buscar Orden [${valorNumerico}]`;
+                hablarTexto(`Orden número ${valorNumerico}`);
+            }
+        } 
+        // 3. Nombre
+        else if (frase.includes('nombre')) {
+            let valor = extraerTextoDespues(fraseCruda, ['nombres y apellidos', 'nombres', 'nombre']);
+            if (valor) {
+                let nombreMayus = valor.toUpperCase();
+                document.getElementById('nombrePaciente').value = nombreMayus;
+                document.getElementById('txtNombreVisual').textContent = nombreMayus;
+                estadoVoz.textContent = `Opción detectada: Nombres del Paciente [${nombreMayus}]`;
+                hablarTexto(`Nombres: ${nombreMayus}`);
+            }
+        } 
+        // 4. Edad
+        else if (frase.includes('edad')) {
+            let valor = extraerTextoDespues(fraseCruda, ['edad']);
+            if (valor) {
+                let numEdad = valor.replace(/\D/g, '');
+                document.getElementById('edadPaciente').value = numEdad + ' años';
+                document.getElementById('txtEdadVisual').textContent = numEdad + ' años';
+                estadoVoz.textContent = `Opción detectada: Edad del Paciente [${numEdad} años]`;
+                hablarTexto(`Edad: ${numEdad} años`);
+            }
+        } 
+        // 5. Fecha de Nacimiento
+        else if (frase.includes('nacimiento')) {
+            let textoFecha = extraerTextoDespues(fraseCruda, ['fecha de nacimiento', 'nacimiento']);
+            let fechaFormateada = convertirTextoAFecha(textoFecha);
+            
+            if (fechaFormateada) {
+                const inputFecha = document.getElementById('fechaNacimiento');
+                inputFecha.value = fechaFormateada;
+                inputFecha.dispatchEvent(new Event('input', { bubbles: true }));
+                inputFecha.dispatchEvent(new Event('change', { bubbles: true }));
+                
+                const txtVisual = document.getElementById('txtFechaNacVisual');
+                if (txtVisual) txtVisual.textContent = fechaFormateada;
+
+                estadoVoz.textContent = `Opción detectada: Fecha de Nacimiento [${fechaFormateada}]`;
+                hablarTexto(`Fecha de nacimiento registrada`);
+            } else {
+                estadoVoz.textContent = `Error en Fecha de Nacimiento`;
+                hablarTexto(`No pude entender la fecha. Intenta diciendo: nacimiento 15 05 1990`);
+            }
+        } 
+        // 6. Sexo / Género
+        else if (frase.includes('sexo') || frase.includes('genero')) {
+            let selectSexo = document.getElementById('sexoPaciente');
+            if (frase.includes('femenino')) {
+                selectSexo.value = 'Femenino';
+                document.getElementById('txtSexoVisual').textContent = 'Femenino';
+                estadoVoz.textContent = `Opción detectada: Sexo Femenino`;
+                hablarTexto("Sexo Femenino seleccionado");
+            } else if (frase.includes('masculino')) {
+                selectSexo.value = 'Masculino';
+                document.getElementById('txtSexoVisual').textContent = 'Masculino';
+                estadoVoz.textContent = `Opción detectada: Sexo Masculino`;
+                hablarTexto("Sexo Masculino seleccionado");
+            }
+        } 
+        // 7. Teléfono
+        else if (frase.includes('telefono')) {
+            let valor = extraerTextoDespues(fraseCruda, ['teléfono', 'telefono']);
+            if (valor) {
+                document.getElementById('telefonoPaciente').value = valor;
+                document.getElementById('txtTelVisual').textContent = valor;
+                estadoVoz.textContent = `Opción detectada: Teléfono [${valor}]`;
+                hablarTexto(`Teléfono guardado`);
+            }
+        } 
+        // --- COMANDOS PARA LA BARRA LIQUID GLASS ---
+        else if (frase.includes('dashboard') || frase.includes('inicio') || frase.includes('regresar')) {
+            estadoVoz.textContent = `Opción detectada: Regresar al Dashboard`;
+            hablarTexto("Regresando al Dashboard");
+            setTimeout(() => { window.location.href = 'dashboard.html'; }, 1000);
+        }
+        else if (frase.includes('registro de pacientes') || frase.includes('pacientes')) {
+            estadoVoz.textContent = `Opción detectada: Registro de Pacientes`;
+            hablarTexto("Abriendo registro de pacientes");
+            setTimeout(() => { window.location.href = 'registro_pacientes.html'; }, 1000);
+        }
+        else if (frase.includes('pedido de examen') || frase.includes('pedidos')) {
+            estadoVoz.textContent = `Opción detectada: Pedidos de Exámenes`;
+            hablarTexto("Abriendo pedidos de exámenes");
+            setTimeout(() => { window.location.href = 'pedido_examen.html'; }, 1000);
+        }
+        else if (frase.includes('certificado')) {
+            estadoVoz.textContent = `Opción detectada: Certificado de Atención`;
+            hablarTexto("Abriendo certificado de atención");
+            setTimeout(() => { window.location.href = 'certificado_atencion.html'; }, 1000);
+        }
+        else if (frase.includes('imprimir') || frase.includes('impresion')) {
+            estadoVoz.textContent = `Opción detectada: Imprimir Resultados`;
+            hablarTexto("Imprimiendo resultados");
+            if (typeof imprimirResultados === 'function') imprimirResultados();
+        }
+        else if (frase.includes('pdf') || frase.includes('descargar pdf')) {
+            estadoVoz.textContent = `Opción detectada: Descargar PDF`;
+            hablarTexto("Descargando PDF de resultados");
+            if (typeof descargarPDFResultados === 'function') descargarPDFResultados();
+        }
+        else if (frase.includes('whatsapp') || frase.includes('guasap')) {
+            estadoVoz.textContent = `Opción detectada: Enviar por WhatsApp`;
+            hablarTexto("Enviando resultado por WhatsApp");
+            if (typeof enviarWhatsAppResultado === 'function') enviarWhatsAppResultado();
+        }
+        else if (frase.includes('correo') || frase.includes('email')) {
+            let correoTexto = extraerTextoDespues(fraseCruda, ['correo', 'email', 'enviar a']);
+            if (correoTexto && correoTexto.includes('@')) {
+                document.getElementById('txtMail').value = correoTexto;
+            }
+            estadoVoz.textContent = `Opción detectada: Enviar Correo Electrónico`;
+            hablarTexto("Enviando correo electrónico");
+            if (typeof enviarCorreoResultado === 'function') enviarCorreoResultado();
+        }
+        else if (frase.includes('firma') || frase.includes('firmas')) {
+            estadoVoz.textContent = `Opción detectada: Alternar Firmas Digitales`;
+            hablarTexto("Cambiando modo de firmas");
+            if (typeof toggleFirmas === 'function') toggleFirmas();
+        }
+        else if (frase.includes('nuevo paciente')) {
+            estadoVoz.textContent = `Opción detectada: Nuevo Paciente`;
+            hablarTexto("Preparando para nuevo paciente");
+            if (typeof nuevoPaciente === 'function') nuevoPaciente();
+        }
+        else if (frase.includes('guardar') || frase.includes('actualizar')) {
+            estadoVoz.textContent = `Opción detectada: Guardar o Actualizar`;
+            hablarTexto("Guardando o actualizando datos");
+            if (typeof guardarOActualizarPaciente === 'function') guardarOActualizarPaciente();
+        }
+        // 8. Pestañas de Exámenes por Voz
+        else {
+            navegarPestanaExamenPorVoz(frase, fraseCruda);
+        }
+    }
+
+    function extraerTextoDespues(texto, palabrasClave) {
+        for (let kw of palabrasClave) {
+            let idx = texto.toLowerCase().indexOf(kw.toLowerCase());
+            if (idx !== -1) {
+                return texto.substring(idx + kw.length).trim();
+            }
+        }
+        return texto;
+    }
+
+    function navegarPestanaExamenPorVoz(fraseNormalizada, fraseCruda) {
+        let tabEncontradoId = null;
+
+        for (let [clave, id] of Object.entries(mapaTabs)) {
+            if (fraseNormalizada.includes(clave)) {
+                tabEncontradoId = id;
+                break;
+            }
+        }
+
+        if (!tabEncontradoId) {
+            const botonesTabs = document.querySelectorAll('#mainTabs .nav-link');
+            botonesTabs.forEach(btn => {
+                let textoBtnNorm = normalizarTexto(btn.textContent);
+                if (textoBtnNorm.includes(fraseNormalizada) || fraseNormalizada.includes(textoBtnNorm)) {
+                    tabEncontradoId = btn.id;
+                }
+            });
+        }
+
+        const inputBuscar = document.getElementById('inputBuscarTab');
+        if (inputBuscar) {
+            inputBuscar.value = fraseCruda;
+        }
+
+        const estadoVoz = document.getElementById('estadoVoz');
+
+        if (tabEncontradoId) {
+            const elTab = document.getElementById(tabEncontradoId);
+            if (elTab) {
+                let bsTab = new bootstrap.Tab(elTab);
+                bsTab.show();
+                elTab.scrollIntoView({ behavior: 'smooth', inline: 'center' });
+                estadoVoz.textContent = `Opción detectada: Navegando a pestaña [${elTab.textContent.trim()}]`;
+                hablarTexto(`Navegando a ${elTab.textContent}`);
+            }
+        } else {
+            estadoVoz.textContent = `Opción no encontrada: "${fraseCruda}"`;
+            hablarTexto("No se encontró el examen.");
+            alert(`No se encontró una sección exacta para: "${fraseCruda}".`);
+        }
+    }
+
+    // Lógica del Buscador Visual por Teclado y Sugerencias
     const btnToggleBuscador = document.getElementById('btnToggleBuscador');
     const contenedorBuscador = document.getElementById('contenedorBuscadorTabs');
     const inputBuscar = document.getElementById('inputBuscarTab');
     const listaSugerencias = document.getElementById('sugerenciasBuscador');
 
-    // Función auxiliar para normalizar texto (si ya la tienes global, puedes usar la tuya)
-    function normalizar(texto) {
-        return texto.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-    }
-
-    // Mostrar u ocultar el input al hacer clic en el botón de la lupa
     btnToggleBuscador.addEventListener('click', () => {
         if (contenedorBuscador.style.display === 'none') {
             contenedorBuscador.style.display = 'block';
@@ -6114,9 +6440,8 @@ function removerIndicador(input) {
         }
     });
 
-    // Evento al escribir en el buscador
     inputBuscar.addEventListener('input', (e) => {
-        const query = normalizar(e.target.value.trim());
+        const query = normalizarTexto(e.target.value.trim());
         listaSugerencias.innerHTML = '';
 
         if (query.length === 0) {
@@ -6124,8 +6449,7 @@ function removerIndicador(input) {
             return;
         }
 
-        // Filtrar claves del diccionario que coincidan con lo que escribe el usuario
-        const coincidencias = Object.keys(mapaTabs).filter(clave => normalizar(clave).includes(query));
+        const coincidencias = Object.keys(mapaTabs).filter(clave => normalizarTexto(clave).includes(query));
 
         if (coincidencias.length > 0) {
             coincidencias.forEach(clave => {
@@ -6133,21 +6457,17 @@ function removerIndicador(input) {
                 const elTab = document.getElementById(tabId);
                 const nombreVisible = elTab ? elTab.textContent.trim() : clave;
 
-                // Crear elemento de sugerencia visual
                 const item = document.createElement('a');
                 item.href = '#';
                 item.className = 'dropdown-item';
                 item.style.fontSize = '12px';
                 item.innerHTML = `<strong>${clave}</strong> <span class="text-muted">(${nombreVisible})</span>`;
 
-                // Al hacer clic en una sugerencia, navegamos a la pestaña
                 item.addEventListener('click', (ev) => {
                     ev.preventDefault();
                     inputBuscar.value = clave;
                     listaSugerencias.classList.remove('show');
-                    
-                    // Ejecutamos tu misma lógica de navegación
-                    navegarPestanaExamenPorVoz(normalizar(clave), clave);
+                    navegarPestanaExamenPorVoz(normalizarTexto(clave), clave);
                 });
 
                 listaSugerencias.appendChild(item);
@@ -6158,13 +6478,13 @@ function removerIndicador(input) {
         }
     });
 
-    // Ocultar sugerencias si se hace clic fuera
     document.addEventListener('click', (e) => {
         if (!contenedorBuscador.contains(e.target) && e.target !== btnToggleBuscador) {
             listaSugerencias.classList.remove('show');
         }
     });
 });
+		
 									
     </script>
 	<!-- Modal para Gestión e Impresión de Sobres (Tu modal original) -->
