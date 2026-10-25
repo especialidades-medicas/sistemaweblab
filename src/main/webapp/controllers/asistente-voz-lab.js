@@ -1,22 +1,23 @@
 /**
  * ASISTENTE DE VOZ INTELIGENTE - LABORATORIO CLÍNICO
+ * Versión optimizada con navegación, datos de paciente, subopciones numeradas e interacción por voz.
  */
 
 const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 
-// Estados de la conversación interactiva
+// Variables de Estado Conversacional
 let estadoConversacion = 'IDLE'; // 'IDLE', 'ESPERANDO_CONFIRMACION', 'ESPERANDO_SUB_OPCION'
 let temporizadorInactividad = null;
 let tabActivaNombre = '';
 let tabActivaId = '';
 let ultimoTextoHablado = ''; // Almacena lo último que dijo el asistente para la opción "repite"
 
-// Subopciones numeradas asociadas a cada pestaña principal
+// Subopciones numeradas asociadas a cada pestaña principal (Basado en tus sub-pestañas reales)
 const subOpcionesTabs = {
     'hematologia': [
-        { numero: '1', nombre: 'Hematología Automatizada Dirui', idTab: 'auto-tab' },
-        { numero: '2', nombre: 'Hematología Pediátrica Dirui', idTab: 'pediatrico-tab' },
-        { numero: '3', nombre: 'Hematología Manual', idTab: 'manual-tab' },
+        { numero: '1', nombre: 'Automatizada Dirui', idTab: 'auto-tab' },
+        { numero: '2', nombre: 'Pediátrica Dirui', idTab: 'pediatrico-tab' },
+        { numero: '3', nombre: 'Manual', idTab: 'manual-tab' },
         { numero: '4', nombre: 'VES', idTab: 'ves-tab' }
     ],
     'qs': [
@@ -72,16 +73,17 @@ const subOpcionesTabs = {
 const btnVoz = document.getElementById('btnVozGlobal');
 const estadoVoz = document.getElementById('estadoVoz');
 
-// Función de Síntesis de Voz (Voz Femenina)
-function hablarTextoYEscuchar(texto, callbackCuandoTermine) {
-    ultimoTextoHablado = texto; // Guardar para el comando "repite"
+// Función para hablar con voz femenina e interrumpir locuciones anteriores
+function hablarTexto(texto, callbackCuandoTermine) {
+    ultimoTextoHablado = texto; // Guardar texto para el comando "repite"
     if ('speechSynthesis' in window) {
-        window.speechSynthesis.cancel();
+        window.speechSynthesis.cancel(); // Interrumpe cualquier locución anterior de inmediato
 
         const utterance = new SpeechSynthesisUtterance(texto);
         utterance.lang = 'es-ES';
-        utterance.rate = 1.0;
+        utterance.rate = 1.0; // Velocidad normal
 
+        // Intentar buscar una voz femenina en español disponible en el navegador
         const voces = window.speechSynthesis.getVoices();
         const vozFemenina = voces.find(v => 
             v.lang.toLowerCase().startsWith('es') && 
@@ -108,32 +110,55 @@ function hablarTextoYEscuchar(texto, callbackCuandoTermine) {
     }
 }
 
+// Cargar voces al inicio para asegurar que estén listas
 if ('speechSynthesis' in window) {
-    window.speechSynthesis.onvoiceschanged = () => { window.speechSynthesis.getVoices(); };
+    window.speechSynthesis.onvoiceschanged = () => {
+        window.speechSynthesis.getVoices();
+    };
 }
 
+// Función para limpiar tildes y comparar sin errores
 function normalizarTexto(str) {
     return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
 }
 
+// Función inteligente para convertir dictados de fecha a formato YYYY-MM-DD
 function convertirTextoAFecha(texto) {
     let numeros = texto.match(/\d+/g);
     if (!numeros || numeros.length < 3) return null;
+
     let n1 = parseInt(numeros[0], 10);
     let n2 = parseInt(numeros[1], 10);
     let n3 = parseInt(numeros[2], 10);
+
     let anio, mes, dia;
-    if (n1 > 1000) { anio = n1; mes = n2; dia = n3; } 
-    else { dia = n1; mes = n2; anio = n3; if (anio < 100) anio += 2000; }
-    return `${anio}-${String(mes).padStart(2, '0')}-${String(dia).padStart(2, '0')}`;
+
+    // Si el primer número es mayor a 1000, asumimos formato YYYY-MM-DD
+    if (n1 > 1000) {
+        anio = n1;
+        mes = n2;
+        dia = n3;
+    } else {
+        // Si el tercer número es mayor a 1000, asumimos formato DD-MM-YYYY
+        dia = n1;
+        mes = n2;
+        anio = n3;
+        if (anio < 100) anio += 2000; // Por si dicen años cortos
+    }
+
+    // Asegurar formato de 2 dígitos para mes y día
+    let mesStr = String(mes).padStart(2, '0');
+    let diaStr = String(dia).padStart(2, '0');
+
+    return `${anio}-${mesStr}-${diaStr}`;
 }
 
-// Temporizador estricto de 10 segundos de inactividad
+// Temporizador estricto de 10 segundos para respuestas interactivas
 function iniciarTemporizador10Seg() {
     clearTimeout(temporizadorInactividad);
     temporizadorInactividad = setTimeout(() => {
         if (estadoConversacion !== 'IDLE') {
-            hablarTextoYEscuchar("Tiempo agotado sin respuesta. Cerrando micrófono.", () => {
+            hablarTexto("Tiempo agotado sin respuesta. Cerrando micrófono.", () => {
                 estadoConversacion = 'IDLE';
                 restaurarBotonVozVisual();
                 if (recognition) {
@@ -141,7 +166,7 @@ function iniciarTemporizador10Seg() {
                 }
             });
         }
-    }, 10000); // 10 segundos
+    }, 10000); // 10 segundos exactos
 }
 
 function restaurarBotonVozVisual() {
@@ -163,7 +188,7 @@ if (SpeechRecognition) {
 
     btnVoz.addEventListener('click', () => {
         try {
-            window.speechSynthesis.cancel();
+            window.speechSynthesis.cancel(); // Interrumpir voz si habla al presionar
             clearTimeout(temporizadorInactividad);
             estadoConversacion = 'IDLE';
             iniciarEscuchaManual();
@@ -176,7 +201,7 @@ if (SpeechRecognition) {
         clearTimeout(temporizadorInactividad);
         const fraseCruda = event.results[0][0].transcript;
         const frase = normalizarTexto(fraseCruda);
-        if (estadoVoz) estadoVoz.textContent = `Ok ✔️`;
+        if (estadoVoz) estadoVoz.textContent = `Escuchado: "${fraseCruda}"`;
         
         procesarFlujoConversacional(frase, fraseCruda);
     };
@@ -184,15 +209,18 @@ if (SpeechRecognition) {
     recognition.onspeechend = () => {
         recognition.stop();
         restaurarBotonVozVisual();
+        if (estadoVoz) estadoVoz.textContent = "Procesado ✔️";
     };
 
-    recognition.onerror = () => {
-        if (estadoVoz) estadoVoz.textContent = "Error";
+    recognition.onerror = (event) => {
+        if (estadoVoz) estadoVoz.textContent = "Error: " + event.error;
         restaurarBotonVozVisual();
         estadoConversacion = 'IDLE';
     };
 } else {
-    if (btnVoz) btnVoz.style.display = 'none';
+    if (document.getElementById('btnVozGlobal')) {
+        document.getElementById('btnVozGlobal').style.display = 'none';
+    }
 }
 
 function iniciarEscuchaManual() {
@@ -202,27 +230,27 @@ function iniciarEscuchaManual() {
             estadoVoz.style.display = 'block';
             estadoVoz.textContent = "Escuchando... 🎙️";
         }
-        btnVoz.classList.remove('btn-primary', 'btn-success');
+        btnVoz.classList.remove('btn-primary');
         btnVoz.classList.add('btn-danger');
-        iniciarTemporizador10Seg(); // Activa cuenta regresiva al escuchar
+        iniciarTemporizador10Seg();
     } catch (err) {
         console.log(err);
     }
 }
 
-// Procesador Inteligente de Comandos y Flujo
+// Procesador Central de Comandos, Datos de Pacientes y Diálogo Interactivo
 function procesarFlujoConversacional(frase, fraseCruda) {
     
     // Comando para repetir lo último dicho
     if (frase.includes('repite') || frase.includes('repetir')) {
         iniciarTemporizador10Seg();
-        hablarTextoYEscuchar(ultimoTextoHablado, () => {
+        hablarTexto(ultimoTextoHablado, () => {
             iniciarEscuchaManual();
         });
         return;
     }
 
-    // 1. Esperando Confirmación (Sí / No)
+    // 1. Esperando Confirmación (Sí / No) para ingresar resultados
     if (estadoConversacion === 'ESPERANDO_CONFIRMACION') {
         if (frase.includes('si') || frase.includes('ingresar') || frase.includes('claro')) {
             let subOps = subOpcionesTabs[tabActivaId] || [{ numero: '1', nombre: 'General' }];
@@ -231,17 +259,17 @@ function procesarFlujoConversacional(frase, fraseCruda) {
             estadoConversacion = 'ESPERANDO_SUB_OPCION';
             iniciarTemporizador10Seg();
             
-            hablarTextoYEscuchar(`¿Qué subopción deseas? Las opciones son: ${textoOpcionesLista}. Di el número o el nombre.`, () => {
+            hablarTexto(`¿Qué subopción deseas? Las opciones son: ${textoOpcionesLista}. Di el número o el nombre.`, () => {
                 iniciarEscuchaManual();
                 iniciarTemporizador10Seg();
             });
         } else if (frase.includes('no')) {
             estadoConversacion = 'IDLE';
-            hablarTextoYEscuchar("Operación cancelada.");
+            hablarTexto("Operación cancelada.");
             restaurarBotonVozVisual();
         } else {
             iniciarTemporizador10Seg();
-            hablarTextoYEscuchar("Por favor responde sí o no.", () => {
+            hablarTexto("Por favor responde sí o no.", () => {
                 iniciarEscuchaManual();
                 iniciarTemporizador10Seg();
             });
@@ -258,15 +286,14 @@ function procesarFlujoConversacional(frase, fraseCruda) {
         restaurarBotonVozVisual();
 
         if (encontrada) {
-            // Activar la sub-pestaña correspondiente en Bootstrap de manera visual si existe
             let elSubTab = document.getElementById(encontrada.idTab);
             if (elSubTab) {
                 let bsTab = new bootstrap.Tab(elSubTab);
                 bsTab.show();
             }
-            hablarTextoYEscuchar(`Perfecto, ingresando en ${encontrada.nombre}. Dicta el valor.`);
+            hablarTexto(`Perfecto, ingresando en ${encontrada.nombre}. Dicta el valor correspondiente.`);
         } else {
-            hablarTextoYEscuchar("No reconocí esa opción.");
+            hablarTexto("No reconocí esa opción.");
         }
         return;
     }
@@ -286,81 +313,91 @@ function procesarFlujoConversacional(frase, fraseCruda) {
         estadoConversacion = 'ESPERANDO_CONFIRMACION';
         iniciarTemporizador10Seg();
         
-        hablarTextoYEscuchar(`Estás en ${tabActivaNombre}. ¿Quieres ingresar resultado? Di sí o no.`, () => {
+        hablarTexto(`Estás en ${tabActivaNombre}. ¿Quieres ingresar resultado? Di sí o no.`, () => {
             iniciarEscuchaManual();
             iniciarTemporizador10Seg();
         });
         return;
     }
 
-    // 4. Datos del Paciente y Navegación Normal de Pestañas
+    // 4. Cédula / Cod/Doc
     if (frase.includes('cedula') || frase.includes('documento')) {
         let valor = extraerTextoDespues(fraseCruda, ['cédula', 'cedula', 'documento']);
         if (valor) {
             document.getElementById('codDoc').value = valor;
             document.getElementById('txtCodDocVisual').textContent = valor;
-            hablarTextoYEscuchar(`Cédula ingresada: ${valor}`);
+            hablarTexto(`Cédula ingresada: ${valor}`);
         }
     } 
+    // 5. Orden / Código
     else if (frase.includes('orden')) {
-        let valor = extraerTextoDespues(fraseCruda, ['orden número', 'orden numero', 'orden']);
+        let valor = extraerTextoDespues(fraseCruda, ['orden número', 'orden numero', 'orden', 'codigo', 'código']);
         if (valor) {
             let valorNumerico = valor.replace(/\D/g, '');
             document.getElementById('idOrden').value = valorNumerico;
             document.getElementById('txtIdOrdenVisual').textContent = valorNumerico;
-            if (typeof buscarOrden === 'function') buscarOrden(valorNumerico);
-            hablarTextoYEscuchar(`Orden número ${valorNumerico}`);
+            if (typeof buscarOrden === 'function') {
+                buscarOrden(valorNumerico);
+            }
+            hablarTexto(`Orden número ${valorNumerico}`);
         }
     } 
+    // 6. Nombres
     else if (frase.includes('nombre')) {
         let valor = extraerTextoDespues(fraseCruda, ['nombres y apellidos', 'nombres', 'nombre']);
         if (valor) {
             let nombreMayus = valor.toUpperCase();
             document.getElementById('nombrePaciente').value = nombreMayus;
             document.getElementById('txtNombreVisual').textContent = nombreMayus;
-            hablarTextoYEscuchar(`Nombres: ${nombreMayus}`);
+            hablarTexto(`Nombres: ${nombreMayus}`);
         }
     } 
+    // 7. Edad
     else if (frase.includes('edad')) {
         let valor = extraerTextoDespues(fraseCruda, ['edad']);
         if (valor) {
             let numEdad = valor.replace(/\D/g, '');
             document.getElementById('edadPaciente').value = numEdad + ' años';
             document.getElementById('txtEdadVisual').textContent = numEdad + ' años';
-            hablarTextoYEscuchar(`Edad: ${numEdad} años`);
+            hablarTexto(`Edad: ${numEdad} años`);
         }
     } 
+    // 8. Fecha de Nacimiento
     else if (frase.includes('nacimiento')) {
         let textoFecha = extraerTextoDespues(fraseCruda, ['fecha de nacimiento', 'nacimiento']);
         let fechaFormateada = convertirTextoAFecha(textoFecha);
+        
         if (fechaFormateada) {
             document.getElementById('fechaNacimiento').value = fechaFormateada;
             document.getElementById('txtFechaNacVisual').textContent = fechaFormateada;
-            hablarTextoYEscuchar(`Fecha de nacimiento registrada`);
+            hablarTexto(`Fecha de nacimiento registrada`);
         } else {
-            hablarTextoYEscuchar(`No pude entender la fecha. Intente decir por ejemplo: nacimiento 15 05 1990`);
+            hablarTexto(`No pude entender la fecha. Intenta como: nacimiento 15 05 1990`);
         }
-    } 
+    }
+    // 9. Sexo / Género
     else if (frase.includes('sexo') || frase.includes('genero')) {
         let selectSexo = document.getElementById('sexoPaciente');
         if (frase.includes('femenino')) {
             selectSexo.value = 'Femenino';
             document.getElementById('txtSexoVisual').textContent = 'Femenino';
-            hablarTextoYEscuchar("Sexo Femenino seleccionado");
+            hablarTexto("Sexo Femenino seleccionado");
         } else if (frase.includes('masculino')) {
             selectSexo.value = 'Masculino';
             document.getElementById('txtSexoVisual').textContent = 'Masculino';
-            hablarTextoYEscuchar("Sexo Masculino seleccionado");
+            hablarTexto("Sexo Masculino seleccionado");
         }
     } 
+    // 10. Teléfono
     else if (frase.includes('telefono')) {
         let valor = extraerTextoDespues(fraseCruda, ['teléfono', 'telefono']);
         if (valor) {
             document.getElementById('telefonoPaciente').value = valor;
             document.getElementById('txtTelVisual').textContent = valor;
-            hablarTextoYEscuchar(`Teléfono guardado`);
+            hablarTexto(`Teléfono guardado`);
         }
     }
+    // 11. Búsqueda y Navegación de Exámenes (Pestañas con coincidencia flexible)
     else {
         navegarPestanaExamenPorVoz(frase, fraseCruda);
     }
@@ -388,11 +425,15 @@ function navegarPestanaExamenPorVoz(fraseNormalizada, fraseCruda) {
         'inmunologicos': 'inmunologicos-tab',
         'coagulacion': 'coagulacion-tab',
         'oncologicos': 'oncologicos-tab',
+        'oncológicos': 'oncologicos-tab',
         'reumatologico': 'reumatologico-tab',
         'reuma': 'reumatologico-tab',
         'otros': 'otros-tab',
         'bhcg': 'otros-tab',
-        'gyf': 'otros-tab',
+        'embarazo': 'otros-tab',
+        'grupo y factor': 'otros-tab',
+        'koh': 'otros-tab',
+        'drogas': 'otros-tab',
         'vitaminas': 'vitaminas-tab',
         'orina': 'orina-tab',
         'heces': 'heces-tab',
@@ -404,6 +445,7 @@ function navegarPestanaExamenPorVoz(fraseNormalizada, fraseCruda) {
 
     let tabEncontradoId = null;
 
+    // Buscar por coincidencia en el diccionario normalizado
     for (let [clave, id] of Object.entries(mapaTabs)) {
         if (fraseNormalizada.includes(clave)) {
             tabEncontradoId = id;
@@ -411,6 +453,7 @@ function navegarPestanaExamenPorVoz(fraseNormalizada, fraseCruda) {
         }
     }
 
+    // Si no está en el diccionario, buscar directamente en el texto de los botones de las pestañas
     if (!tabEncontradoId) {
         const botonesTabs = document.querySelectorAll('#mainTabs .nav-link');
         botonesTabs.forEach(btn => {
@@ -427,9 +470,9 @@ function navegarPestanaExamenPorVoz(fraseNormalizada, fraseCruda) {
             let bsTab = new bootstrap.Tab(elTab);
             bsTab.show();
             elTab.scrollIntoView({ behavior: 'smooth', inline: 'center' });
-            hablarTextoYEscuchar(`Navegando a ${elTab.textContent}`);
+            hablarTexto(`Navegando a ${elTab.textContent}`);
         }
     } else {
-        hablarTextoYEscuchar("No se encontró el examen solicitado.");
+        hablarTexto("No se encontró el examen o sección solicitada.");
     }
 }
