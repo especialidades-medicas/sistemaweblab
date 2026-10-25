@@ -59,21 +59,17 @@
     
     <div class="container-fluid p-2">
 		
-		<!-- Barra de Control por Voz (No interfiere con tus impresiones gracias a no-print) -->
-        <div class="card p-2 mb-3 bg-white border shadow-sm no-print">
-            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
-                <div>
-                    <span class="badge bg-success" style="font-size: 11px;">Asistente de Voz Activo</span>
-                    <small class="text-muted ms-2" style="font-size: 11px;">Ej: "Cédula 1723456789", "Nombres Juan Pérez", "Química sanguínea"</small>
-                </div>
-                <div>
-                    <button type="button" id="btnVozGlobal" class="btn btn-primary btn-sm fw-bold">
-                        <i class="bi bi-mic-fill"></i> 🎤 Activar Voz
-                    </button>
-                    <span id="estadoVoz" class="ms-2 small text-primary fw-bold" style="font-size: 11px;">Esperando comando...</span>
-                </div>
-            </div>
+		
+        <!-- Botón Flotante Circular de Micrófono (Fijo en la esquina superior derecha, oculto al imprimir) -->
+    <div class="no-print" style="position: fixed; top: 20px; right: 20px; z-index: 9999;">
+        <button type="button" id="btnVozGlobal" class="btn btn-primary rounded-circle shadow-lg d-flex align-items-center justify-content-center" style="width: 55px; height: 55px; transition: all 0.3s ease;" title="Activar Comando de Voz">
+            <i class="bi bi-mic-fill" style="font-size: 24px;"></i>
+        </button>
+        <!-- Texto de estado flotante y discreto debajo del botón -->
+        <div id="estadoVoz" class="bg-white px-2 py-1 rounded shadow-sm text-end mt-1 text-primary fw-bold" style="font-size: 10px; display: none; max-width: 150px; float: right;">
+            Esperando...
         </div>
+    </div>
 
 				
         <!-- Contenedor principal que se imprimirá y exportará a PDF -->
@@ -6121,7 +6117,7 @@ function removerIndicador(input) {
                 'reuma': 'reumatologico-tab',
                 'otros': 'otros-tab',
                 'bhcg': 'otros-tab',
-                'gyf': 'otros-tab',
+                'grupo y factor': 'otros-tab',
                 'vitaminas': 'vitaminas-tab',
                 'orina': 'orina-tab',
                 'heces': 'heces-tab',
