@@ -75,8 +75,7 @@
             </div>
         </div>
 
-
-		
+				
         <!-- Contenedor principal que se imprimirá y exportará a PDF -->
         <div class="pedido-box border p-3 bg-white" id="pedidoContainer">
             
@@ -5926,6 +5925,49 @@ function removerIndicador(input) {
 //comando voz
 		const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 
+        // Función para hablar con voz femenina e interrumpir si hay otro comando en curso
+        function hablarTexto(texto) {
+            if ('speechSynthesis' in window) {
+                // Interrumpe cualquier locución anterior de inmediato
+                window.speechSynthesis.cancel();
+
+                const utterance = new SpeechSynthesisUtterance(texto);
+                utterance.lang = 'es-ES';
+                utterance.rate = 1.0; // Velocidad normal
+
+                // Intentar buscar una voz femenina en español disponible en el navegador
+                const voces = window.speechSynthesis.getVoices();
+                const vozFemenina = voces.find(v => 
+                    v.lang.toLowerCase().startsWith('es') && 
+                    (v.name.toLowerCase().includes('female') || 
+                     v.name.toLowerCase().includes('elena') || 
+                     v.name.toLowerCase().includes('monica') || 
+                     v.name.toLowerCase().includes('paulina') || 
+                     v.name.toLowerCase().includes('lucia') || 
+                     v.name.toLowerCase().includes('google español') ||
+                     v.name.toLowerCase().includes('sabrina'))
+                );
+
+                if (vozFemenina) {
+                    utterance.voice = vozFemenina;
+                }
+
+                window.speechSynthesis.speak(utterance);
+            }
+        }
+
+        // Cargar voces al inicio para asegurar que estén listas
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.onvoiceschanged = () => {
+                window.speechSynthesis.getVoices();
+            };
+        }
+
+        // Función para limpiar tildes y comparar sin errores
+        function normalizarTexto(str) {
+            return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+        }
+
         if (SpeechRecognition) {
             const recognition = new SpeechRecognition();
             recognition.lang = 'es-ES';
@@ -5937,6 +5979,7 @@ function removerIndicador(input) {
 
             btnVoz.addEventListener('click', () => {
                 try {
+                    window.speechSynthesis.cancel(); // Interrumpir voz si habla al presionar
                     recognition.start();
                     estadoVoz.textContent = "Escuchando... 🎙️";
                     btnVoz.classList.remove('btn-primary');
@@ -5947,9 +5990,10 @@ function removerIndicador(input) {
             });
 
             recognition.onresult = (event) => {
-                const frase = event.results[0][0].transcript.toLowerCase();
-                estadoVoz.textContent = `Escuchado: "${frase}"`;
-                procesarComandoVozLab(frase);
+                const fraseCruda = event.results[0][0].transcript;
+                const frase = normalizarTexto(fraseCruda);
+                estadoVoz.textContent = `Escuchado: "${fraseCruda}"`;
+                procesarComandoVozLab(frase, fraseCruda);
             };
 
             recognition.onspeechend = () => {
@@ -5970,81 +6014,89 @@ function removerIndicador(input) {
             }
         }
 
-        function procesarComandoVozLab(frase) {
+        function procesarComandoVozLab(frase, fraseCruda) {
             // 1. Cédula / Cod/Doc
-            if (frase.includes('cédula') || frase.includes('cedula') || frase.includes('documento')) {
-                let valor = extraerTextoDespues(frase, ['cédula', 'cedula', 'documento']);
+            if (frase.includes('cedula') || frase.includes('documento')) {
+                let valor = extraerTextoDespues(fraseCruda, ['cédula', 'cedula', 'documento']);
                 if (valor) {
                     document.getElementById('codDoc').value = valor;
                     document.getElementById('txtCodDocVisual').textContent = valor;
+                    hablarTexto(`Cédula ingresada: ${valor}`);
                 }
             } 
             // 2. Orden
             else if (frase.includes('orden')) {
-                let valor = extraerTextoDespues(frase, ['orden número', 'orden numero', 'orden']);
+                let valor = extraerTextoDespues(fraseCruda, ['orden número', 'orden numero', 'orden']);
                 if (valor) {
-                    valor = valor.replace(/\D/g, ''); // Solo números si se desea, o dejar texto
-                    document.getElementById('idOrden').value = valor;
-                    document.getElementById('txtIdOrdenVisual').textContent = valor;
+                    let valorNumerico = valor.replace(/\D/g, '');
+                    document.getElementById('idOrden').value = valorNumerico;
+                    document.getElementById('txtIdOrdenVisual').textContent = valorNumerico;
                     if (typeof buscarOrden === 'function') {
-                        buscarOrden(valor);
+                        buscarOrden(valorNumerico);
                     }
+                    hablarTexto(`Orden número ${valorNumerico}`);
                 }
             } 
             // 3. Nombres
-            else if (frase.includes('nombre') || frase.includes('nombres')) {
-                let valor = extraerTextoDespues(frase, ['nombres y apellidos', 'nombres', 'nombre']);
+            else if (frase.includes('nombre')) {
+                let valor = extraerTextoDespues(fraseCruda, ['nombres y apellidos', 'nombres', 'nombre']);
                 if (valor) {
                     let nombreMayus = valor.toUpperCase();
                     document.getElementById('nombrePaciente').value = nombreMayus;
                     document.getElementById('txtNombreVisual').textContent = nombreMayus;
+                    hablarTexto(`Nombres: ${nombreMayus}`);
                 }
             } 
             // 4. Edad
             else if (frase.includes('edad')) {
-                let valor = extraerTextoDespues(frase, ['edad']);
+                let valor = extraerTextoDespues(fraseCruda, ['edad']);
                 if (valor) {
                     let numEdad = valor.replace(/\D/g, '');
                     document.getElementById('edadPaciente').value = numEdad + ' años';
                     document.getElementById('txtEdadVisual').textContent = numEdad + ' años';
+                    hablarTexto(`Edad: ${numEdad} años`);
                 }
             } 
             // 5. Fecha de Nacimiento
             else if (frase.includes('nacimiento')) {
-                let valor = extraerTextoDespues(frase, ['fecha de nacimiento', 'nacimiento']);
+                let valor = extraerTextoDespues(fraseCruda, ['fecha de nacimiento', 'nacimiento']);
                 if (valor) {
                     document.getElementById('fechaNacimiento').value = valor;
                     document.getElementById('txtFechaNacVisual').textContent = valor;
+                    hablarTexto(`Fecha de nacimiento registrada`);
                 }
             } 
             // 6. Sexo
-            else if (frase.includes('sexo') || frase.includes('género')) {
+            else if (frase.includes('sexo') || frase.includes('genero')) {
                 let selectSexo = document.getElementById('sexoPaciente');
                 if (frase.includes('femenino')) {
                     selectSexo.value = 'Femenino';
                     document.getElementById('txtSexoVisual').textContent = 'Femenino';
+                    hablarTexto("Sexo Femenino seleccionado");
                 } else if (frase.includes('masculino')) {
                     selectSexo.value = 'Masculino';
                     document.getElementById('txtSexoVisual').textContent = 'Masculino';
+                    hablarTexto("Sexo Masculino seleccionado");
                 }
             } 
             // 7. Teléfono
-            else if (frase.includes('teléfono') || frase.includes('telefono')) {
-                let valor = extraerTextoDespues(frase, ['teléfono', 'telefono']);
+            else if (frase.includes('telefono')) {
+                let valor = extraerTextoDespues(fraseCruda, ['teléfono', 'telefono']);
                 if (valor) {
                     document.getElementById('telefonoPaciente').value = valor;
                     document.getElementById('txtTelVisual').textContent = valor;
+                    hablarTexto(`Teléfono guardado`);
                 }
             }
-            // 8. Búsqueda y Navegación de Exámenes (Pestañas con coincidencia aproximada)
+            // 8. Búsqueda y Navegación de Exámenes (Pestañas con coincidencia flexible)
             else {
-                navegarPestanaExamenPorVoz(frase);
+                navegarPestanaExamenPorVoz(frase, fraseCruda);
             }
         }
 
         function extraerTextoDespues(texto, palabrasClave) {
             for (let kw of palabrasClave) {
-                let idx = texto.indexOf(kw);
+                let idx = texto.toLowerCase().indexOf(kw.toLowerCase());
                 if (idx !== -1) {
                     return texto.substring(idx + kw.length).trim();
                 }
@@ -6052,35 +6104,65 @@ function removerIndicador(input) {
             return texto;
         }
 
-        function navegarPestanaExamenPorVoz(query) {
-            const botonesTabs = document.querySelectorAll('#mainTabs .nav-link');
-            let tabEncontrado = null;
+        function navegarPestanaExamenPorVoz(fraseNormalizada, fraseCruda) {
+            // Mapeo seguro y completo de todas las pestañas (incluyendo reumatológico y otros con sinónimos)
+            const mapaTabs = {
+                'hematologia': 'hematologia-tab',
+                'quimica': 'qs-tab',
+                'sanguinea': 'qs-tab',
+                'hepatica': 'hepaticas-tab',
+                'higado': 'hepaticas-tab',
+                'electrolitos': 'electrolitos-tab',
+                'endocrinologia': 'endocrinologia-tab',
+                'inmunologicos': 'inmunologicos-tab',
+                'coagulacion': 'coagulacion-tab',
+                'oncologicos': 'oncologicos-tab',
+                'reumatologico': 'reumatologico-tab',
+                'reuma': 'reumatologico-tab',
+                'otros': 'otros-tab',
+                'bhcg': 'otros-tab',
+                'gyf': 'otros-tab',
+                'vitaminas': 'vitaminas-tab',
+                'orina': 'orina-tab',
+                'heces': 'heces-tab',
+                'cultivos': 'cultivos-tab',
+                'secreciones': 'secreciones-tab',
+                'covid': 'covid-tab',
+                'comentario': 'comentario-tab'
+            };
 
-            // Coincidencia exacta o parcial con el texto visible de la pestaña
-            botonesTabs.forEach(btn => {
-                let textoBtn = btn.textContent.toLowerCase();
-                if (textoBtn.includes(query) || query.includes(textoBtn)) {
-                    tabEncontrado = btn;
-                }
-            });
+            let tabEncontradoId = null;
 
-            // Diccionario rápido por si dicen términos comunes (ej: "química" para "Química Sanguínea")
-            if (!tabEncontrado) {
-                if (query.includes('quimica') || query.includes('química') || query.includes('sanguinea')) {
-                    tabEncontrado = document.getElementById('qs-tab');
-                } else if (query.includes('hepati') || query.includes('hígado')) {
-                    tabEncontrado = document.getElementById('hepaticas-tab');
-                } else if (query.includes('hemo') || query.includes('sangre')) {
-                    tabEncontrado = document.getElementById('hematologia-tab');
+            // Buscar por coincidencia en el diccionario normalizado
+            for (let [clave, id] of Object.entries(mapaTabs)) {
+                if (fraseNormalizada.includes(clave)) {
+                    tabEncontradoId = id;
+                    break;
                 }
             }
 
-            if (tabEncontrado) {
-                let bsTab = new bootstrap.Tab(tabEncontrado);
-                bsTab.show();
-                tabEncontrado.scrollIntoView({ behavior: 'smooth', inline: 'center' });
+            // Si no está en el diccionario, buscar directamente en el texto de los botones de las pestañas
+            if (!tabEncontradoId) {
+                const botonesTabs = document.querySelectorAll('#mainTabs .nav-link');
+                botonesTabs.forEach(btn => {
+                    let textoBtnNorm = normalizarTexto(btn.textContent);
+                    if (textoBtnNorm.includes(fraseNormalizada) || fraseNormalizada.includes(textoBtnNorm)) {
+                        tabEncontradoId = btn.id;
+                    }
+                });
+            }
+
+            if (tabEncontradoId) {
+                const elTab = document.getElementById(tabEncontradoId);
+                if (elTab) {
+                    let bsTab = new bootstrap.Tab(elTab);
+                    bsTab.show();
+                    elTab.scrollIntoView({ behavior: 'smooth', inline: 'center' });
+                    hablarTexto(`Navegando a ${elTab.textContent}`);
+                }
             } else {
-                alert(`No se encontró un examen o sección exactamente igual a "${query}". Intenta nombrar la categoría.`);
+                hablarTexto("No se encontró el examen o sección solicitada.");
+                alert(`No se encontró una sección exacta para: "${fraseCruda}".`);
             }
         }
 
