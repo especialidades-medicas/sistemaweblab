@@ -4370,6 +4370,7 @@ function imprimirResultados() {
 // Función de Descarga en PDF optimizada y limpia para múltiples páginas
 // Función de Descarga en PDF con inserción automática del encabezado en cada página secundaria
 // Función de Descarga en PDF optimizada para múltiples páginas con inserción limpia de encabezados
+// Función de Descarga en PDF con paginación inteligente (sin espacios innecesarios y con membrete automático)
 async function descargarPDFResultados() {
     if (typeof actualizarTablaDinamica === "function") {
         actualizarTablaDinamica();
@@ -4406,20 +4407,29 @@ async function descargarPDFResultados() {
     // Activamos el modo PDF en el clon
     elementoClonado.classList.add('pdf-mode');
 
-    // 🟢 SOLUCIÓN DINÁMICA: Insertar el encabezado institucional en cada bloque/tabla secundaria sin dejar espacios largos
+    // 🟢 PAGINACIÓN INTELIGENTE: Controla el espacio para insertar el membrete solo cuando la página se llena
     const tablaEncabezadoOriginal = elementoOriginal.querySelector('table');
     if (tablaEncabezadoOriginal) {
-        // Seleccionamos las secciones o bloques principales de exámenes que contienen tablas
         const bloquesExamenes = elementoClonado.querySelectorAll('.tab-pane .border, .mb-3');
+        let alturaAcumulada = 0;
+        const alturaMaximaPagina = 850; // Altura estimada en píxeles equivalente a una hoja A4 antes de saturarse
+
         bloquesExamenes.forEach((bloque, index) => {
-            if (index > 0) { // A partir del segundo bloque de exámenes que pueda requerir nueva página
+            let alturaBloque = bloque.offsetHeight || 150;
+            if (alturaBloque < 50) alturaBloque = 150;
+
+            alturaAcumulada += alturaBloque;
+
+            // Solo si se excede el espacio de la página actual y no es el primer bloque, creamos la nueva hoja con membrete
+            if (index > 0 && alturaAcumulada > alturaMaximaPagina) {
                 const clonHeader = tablaEncabezadoOriginal.cloneNode(true);
-                // Ajustamos estilos limpios para evitar espacios muertos excessivos
-                clonHeader.style.marginTop = "5px";
-                clonHeader.style.marginBottom = "8px";
+                clonHeader.style.marginTop = "0px";
+                clonHeader.style.marginBottom = "5px";
                 clonHeader.style.pageBreakBefore = "always";
                 clonHeader.style.breakBefore = "page";
+                
                 bloque.parentNode.insertBefore(clonHeader, bloque);
+                alturaAcumulada = alturaBloque; // Reiniciamos el contador para la nueva página
             }
         });
     }
@@ -4431,7 +4441,7 @@ async function descargarPDFResultados() {
     if (bloqueImpresion) bloqueImpresion.classList.add("d-none");
 
     const opciones = {
-        margin:       [5, 10, 5, 10], // 🟢 Márgenes superiores e inferiores reducidos para eliminar espacios vacíos
+        margin:       [5, 10, 5, 10], // Márgenes compactos superiores e inferiores
         filename:     nombreArchivoFinal,
         image:        { type: 'jpeg', quality: 0.98 },
         html2canvas:  { scale: 2, useCORS: true, scrollY: 0, letterRendering: true },
