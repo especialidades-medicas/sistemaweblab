@@ -4368,8 +4368,6 @@ function imprimirResultados() {
 
 // Función de Descarga en PDF optimizada con soporte garantizado para el encabezado repetible
 // Función de Descarga en PDF optimizada y limpia para múltiples páginas
-// Función de Descarga en PDF con inserción automática del encabezado en cada página secundaria
-// Función de Descarga en PDF optimizada para múltiples páginas con inserción limpia de encabezados
 async function descargarPDFResultados() {
     if (typeof actualizarTablaDinamica === "function") {
         actualizarTablaDinamica();
@@ -4404,21 +4402,17 @@ async function descargarPDFResultados() {
     const elementoClonado = elementoOriginal.cloneNode(true);
     elementoClonado.classList.add('pdf-mode');
 
-    // 🟢 SOLUCIÓN 2: Inserción por intervalos fijos de bloques (ej. cada 3 bloques de exámenes se repite el membrete)
+    // 🟢 SOLUCIÓN 3: Inserción limpia basada en clases de salto explícitas en tus bloques HTML (.forzar-salto-pdf)
     const tablaEncabezadoOriginal = elementoOriginal.querySelector('table');
     if (tablaEncabezadoOriginal) {
-        const bloquesExamenes = elementoClonado.querySelectorAll('.tab-pane .border, .mb-3');
-        const bloquesPorPagina = 3; 
-
-        bloquesExamenes.forEach((bloque, index) => {
-            if (index > 0 && index % bloquesPorPagina === 0) {
-                const clonHeader = tablaEncabezadoOriginal.cloneNode(true);
-                clonHeader.style.marginTop = "5px";
-                clonHeader.style.marginBottom = "5px";
-                clonHeader.style.pageBreakBefore = "always";
-                clonHeader.style.breakBefore = "page";
-                bloque.parentNode.insertBefore(clonHeader, bloque);
-            }
+        const elementosSalto = elementoClonado.querySelectorAll('.forzar-salto-pdf');
+        elementosSalto.forEach(el => {
+            const clonHeader = tablaEncabezadoOriginal.cloneNode(true);
+            clonHeader.style.marginTop = "5px";
+            clonHeader.style.marginBottom = "5px";
+            clonHeader.style.pageBreakBefore = "always";
+            clonHeader.style.breakBefore = "page";
+            el.parentNode.insertBefore(clonHeader, el);
         });
     }
 
@@ -4429,7 +4423,7 @@ async function descargarPDFResultados() {
     if (bloqueImpresion) bloqueImpresion.classList.add("d-none");
 
     const opciones = {
-        margin:       [10, 10, 10, 10], // Márgenes seguros
+        margin:       [10, 10, 10, 10], // Márgenes seguros de 10mm para que no choque arriba
         filename:     nombreArchivoFinal,
         image:        { type: 'jpeg', quality: 0.98 },
         html2canvas:  { scale: 2, useCORS: true, scrollY: 0, letterRendering: true },
