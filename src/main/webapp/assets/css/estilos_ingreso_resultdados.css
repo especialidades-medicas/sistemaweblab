@@ -629,16 +629,15 @@ body {
     }
 
     /* 🟢 NUEVO: Repetir el encabezado institucional automáticamente en cada hoja al imprimir */
-    
-      thead {
-          display: table-header-group !important;
-      }
-      
-
+    thead {
+        display: table-header-group !important;
+    }
 }
 
+/* ==========================================================================
+   AJUSTES FINALES DE CONTENEDOR Y DISEÑO GENERAL
    ========================================================================== */
- #pedidoContainer {
+#pedidoContainer {
     width: 97% !important;
     max-width: 98% !important;
     margin: 0 auto !important;
@@ -646,19 +645,16 @@ body {
     border: none !important;
     box-shadow: none !important;
 }
-    
-/* Contenedor Principal: Marco de Acero y Márgenes Externe/Internos */
-
 
 /* Tarjeta / Marco del Reporte sin línea exterior */
 .pedido-box, 
 #pedidoContainer .card {
     background: #ffffff !important;
-    border: none !important;            /* Elimina el borde gris/azul del contorno */
-    border-radius: 0 !important;        /* Quita las esquinas redondeadas externas */
+    border: none !important;            
+    border-radius: 0 !important;        
     padding: 16px !important;
     margin-bottom: 0 !important;
-    box-shadow: none !important;         /* Elimina la sombra que rodea el documento */
+    box-shadow: none !important;         
 }
 
 /* Encabezados de Sección con Destello Metálico */
@@ -708,15 +704,8 @@ body {
 }
 
 /* ==========================================================================
-   ELIMINAR MARCO DEL BLOQUE DE DATOS DEL PACIENTE Y CONTENEDORES
-   ========================================================================== */
-
-/* 1. Elimina el borde redondeado del recuadro del paciente */
-/* ==========================================================================
    ELIMINACIÓN FORZADA DE MARCOS Y CONTENEDORES
    ========================================================================== */
-
-/* Anula bordes de fieldsets, tarjetas y clases de Bootstrap dentro del contenedor */
 #pedidoContainer fieldset,
 #pedidoContainer .border,
 #pedidoContainer .rounded,
