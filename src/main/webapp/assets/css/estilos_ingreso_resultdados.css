@@ -64,15 +64,6 @@ body {
     font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
 }
 
-/* ==========================================================================
-   #pedidoContainer {
-    width: 100% !important;
-    max-width: 100% !important;
-    margin: 0 auto !important;
-    background-color: #ffffff !important;
-}
-   ========================================================================== */
-
 
 #pedidoContainer .card .row > div {
     margin-bottom: 4px;
@@ -559,7 +550,6 @@ body {
     display: block !important; 
 }
 
-/* Muestra todas las pestañas simultáneamente para renderizado en PDF */
 .pdf-mode .tab-pane {
     display: block !important;
     height: auto !important;
@@ -569,14 +559,12 @@ body {
     margin-bottom: 20px;
 }
 
-/* Oculta los controles de navegación UI en el archivo PDF */
 .pdf-mode .nav-tabs,
 .pdf-mode #mainTabs,
 .pdf-mode .lab-main-tabs {
     display: none !important;
 }
 
-/* Previene cortes de página imprevistos en tablas, tarjetas y títulos */
 .pdf-mode tr, 
 .pdf-mode .card, 
 .pdf-mode .border, 
@@ -589,11 +577,6 @@ body {
     page-break-after: avoid !important;
     break-after: avoid !important;
 }
-
-/* 🟢 NUEVO: Repetir el encabezado de la tabla en cada página para html2pdf */
-.pdf-mode thead {
-          display: table-header-group !important;
-      }
 
 /* --------------------------------------------------------------------------
    8. REGLAS DE IMPRESIÓN DIRECTA DEL NAVEGADOR (@media print)
@@ -628,9 +611,14 @@ body {
         display: none !important;
     }
 
-    /* 🟢 NUEVO: Repetir el encabezado institucional automáticamente en cada hoja al imprimir */
-    thead {
-        display: table-header-group !important;
+    /* Regla para repetir el encabezado institucional en cada página al imprimir */
+    .header-institucional-impresion {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        background: #ffffff;
+        z-index: 9999;
     }
 }
 
