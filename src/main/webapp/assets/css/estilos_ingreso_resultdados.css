@@ -541,15 +541,12 @@ body {
 .print-only {  
     display: none; 
 }
-
 .pdf-mode .no-print {  
     display: none !important; 
 }
-
 .pdf-mode .print-only {  
     display: block !important; 
 }
-
 .pdf-mode .tab-pane {
     display: block !important;
     height: auto !important;
@@ -558,13 +555,11 @@ body {
     visibility: visible !important;
     margin-bottom: 20px;
 }
-
 .pdf-mode .nav-tabs,
 .pdf-mode #mainTabs,
 .pdf-mode .lab-main-tabs {
     display: none !important;
 }
-
 .pdf-mode tr, 
 .pdf-mode .card, 
 .pdf-mode .border, 
@@ -572,25 +567,17 @@ body {
     page-break-inside: avoid !important;
     break-inside: avoid !important;
 }
-
 .pdf-mode .section-title {
     page-break-after: avoid !important;
     break-after: avoid !important;
 }
 
-/* Regla para repetir el encabezado institucional en cada página del PDF generadas por html2pdf */
-.pdf-mode .header-institucional-impresion {
-    display: block !important;
-    page-break-before: always;
-    break-before: page;
-}
-
 /* --------------------------------------------------------------------------
-   8. REGLAS DE IMPRESIÓN DIRECTA DEL NAVEGADOR (@media print)
+   8. REGLAS DE IMPRESIÓN DIRECTA DEL NAVEGADOR Y PDF (@media print)
    -------------------------------------------------------------------------- */
 @page {
     size: A4 portrait;
-    margin: 25mm 10mm 15mm 10mm; /* Margen superior adecuado para que el membrete luzca limpio sin encimarse */
+    margin: 25mm 10mm 15mm 10mm; /* 🟢 Margen superior adecuado para alojar el encabezado repetido sin superponerse */
 }
 
 @media print {
@@ -618,18 +605,25 @@ body {
         display: none !important;
     }
 
-    /* Solución definitiva para repetir el encabezado en cada hoja al imprimir sin solapar */
+    /* 🟢 Solución corregida: Se usa un salto de página limpio en lugar de position: fixed para que no se encime sobre los datos */
     .header-institucional-impresion {
         display: block !important;
         page-break-before: always;
         break-before: page;
     }
-    
-    /* El primer encabezado de la hoja 1 no necesita salto forzado antes */
+
+    /* El primer encabezado de la primera hoja no lleva salto forzado antes */
     #pedidoContainer > .header-institucional-impresion:first-of-type {
         page-break-before: avoid !important;
         break-before: avoid !important;
     }
+}
+
+/* Soporte para exportación PDF (html2pdf) */
+.pdf-mode .header-institucional-impresion {
+    display: block !important;
+    page-break-before: always;
+    break-before: page;
 }
 
 /* ==========================================================================
@@ -723,7 +717,6 @@ body {
 #pedidoContainer select.form-select {
     border: 1px solid #94a3b8 !important;
 }
-
 
 /* ==========================================================================
    ESTILOS PARA IMPRESIÓN DE SOBRES (210mm x 110mm) - TAMAÑO DE LETRA 12pt
