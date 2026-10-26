@@ -4324,8 +4324,7 @@ function guardarPacienteInterno(paciente) {
     localStorage.setItem('bd_pacientes_biosalud', JSON.stringify(pacientesGuardados));
 }
 
-// 3. Función de impresión (Guarda internamente sin descargar nada automáticamente)
-// 3. Función de impresión optimizada y corregida
+// 3. Función de impresión optimizada y conectada correctamente
 function imprimirResultados() {
     // Capturar los datos actuales del formulario
     const paciente = {
@@ -4340,12 +4339,14 @@ function imprimirResultados() {
     };
 
     // ALMACENAMIENTO INTERNO AUTOMÁTICO AL IMPRIMIR
-    if (paciente.cedula) {
+    if (paciente.cedula && typeof guardarPacienteInterno === "function") {
         guardarPacienteInterno(paciente);
     }
 
     // Actualizar la tabla dinámica antes de imprimir
-    actualizarTablaDinamica();
+    if (typeof actualizarTablaDinamica === "function") {
+        actualizarTablaDinamica();
+    }
 
     // Gestionar visibilidad de bloques para la impresión
     const bloqueImpresion = document.getElementById("bloquePacienteImpresion");
@@ -4364,55 +4365,12 @@ function imprimirResultados() {
     }, 1000);
 }
 
-// 4. (Opcional) Si en algún momento quieres descargar el Excel con todos los acumulados
-function exportarExcelInternoGeneral() {
-    let pacientesGuardados = JSON.parse(localStorage.getItem('bd_pacientes_biosalud')) || {};
-    
-    let datosExcel = [
-        ["ORDEN", "CÉDULA/DOC", "NOMBRES COMPLETOS", "F. NACIMIENTO", "EDAD", "FECHA", "SEXO", "TELÉFONO"]
-    ];
 
-    for (let cedula in pacientesGuardados) {
-        let p = pacientesGuardados[cedula];
-        datosExcel.push([p.orden, p.cedula, p.nombre, p.fechaNacimiento, p.edad, p.fecha, p.sexo, p.telefono]);
-    }
-
-    if (datosExcel.length === 1) {
-        alert("No hay registros internos de pacientes todavía.");
-        return;
-    }
-
-    const ws = XLSX.utils.aoa_to_sheet(datosExcel);
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "Pacientes_Registrados");
-    XLSX.writeFile(wb, "Base_Datos_Pacientes_Biosalud.xlsx");
-}
-
-// 4. Lógica para generar el Excel usando la librería SheetJS (XLSX)
-    function generarExcel(paciente) {
-        // Estructurar los datos en formato de tabla (Array de Arrays)
-        const datosExcel = [
-            ["ORDEN", "CÉDULA/DOC", "NOMBRES COMPLETOS", "F. NACIMIENTO", "EDAD", "FECHA", "SEXO", "TELÉFONO"],
-            [paciente.orden, paciente.cedula, paciente.nombre, paciente.fechaNacimiento, paciente.edad, paciente.fecha, paciente.sexo, paciente.telefono]
-        ];
-
-        // Crear la hoja y el libro de trabajo
-        const hoja = XLSX.utils.aoa_to_sheet(datosExcel);
-        const libro = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(libro, hoja, "Datos_Paciente");
-
-        // Nombre dinámico del archivo (ej: Paciente_1712345678.xlsx)
-        const nombreArchivo = `Paciente_${paciente.cedula || paciente.orden}.xlsx`;
-        
-        // Ejecutar la descarga
-        XLSX.writeFile(libro, nombreArchivo);
-    }
-
-// Función de Descarga en PDF directa a Descargas con apertura automática para revisión
-// Función de Descarga en PDF organizada automáticamente en la carpeta "Reportes" / "Fecha"
-// Función de Descarga en PDF con validación si el archivo ya existe o está abierto
+// Función de Descarga en PDF optimizada con soporte para el encabezado repetible
 async function descargarPDFResultados() {
-    actualizarTablaDinamica();
+    if (typeof actualizarTablaDinamica === "function") {
+        actualizarTablaDinamica();
+    }
     
     let orden = document.getElementById('idOrden')?.value.trim() || "1000";
     let nombrePaciente = document.getElementById('nombrePaciente')?.value.trim() || "PACIENTE";
@@ -4441,6 +4399,9 @@ async function descargarPDFResultados() {
     const elementoOriginal = document.getElementById("pedidoContainer");
     if (!elementoOriginal) return;
     const elementoClonado = elementoOriginal.cloneNode(true);
+
+    // Activamos el modo PDF en el clon para que el CSS renderice y repita el encabezado correctamente
+    elementoClonado.classList.add('pdf-mode');
 
     if (typeof procesarSelectsParaImpresion === "function") {
         procesarSelectsParaImpresion(elementoClonado, true);
@@ -4513,6 +4474,11 @@ async function descargarPDFResultados() {
             if (bloqueImpresion) bloqueImpresion.classList.add("d-none");
         }
     });
+}
+
+// Función auxiliar de descarga del PDF del paciente
+function descargarPDFSoloPaciente() {
+    alert("Función de descarga de PDF para datos del paciente en proceso.");
 }
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -4749,31 +4715,6 @@ window.addEventListener('DOMContentLoaded', () => {
 
 
 
-// 2. Función para exportar los datos organizados hacia Excel (.xlsx)
-function descargarExcel() {
-    let paciente = document.getElementById('nombrePaciente').value;
-    let fecha = document.getElementById('fechaActual').value;
-    let telefono = document.getElementById('telefonoPaciente').value;
-
-    const data = [
-        ["LABORATORIO CLÍNICO BIOSALUD"],
-        ["Dirección: Duchicela y Caranqui (Frente al Centro de Salud No 5 La Magdalena) - Quito"],
-        ["RESULTADOS DE LABORATORIO CLÍNICO"],
-        ["\n"],
-        ["Paciente:", paciente, "", "Fecha:", fecha],
-        ["Teléfono:", telefono, "", "", ""],
-        ["\n"],
-        ["EXAMEN", "RESULTADO", "UNIDAD", "VALORES DE REFERENCIA"]
-    ];
-
-    const ws = XLSX.utils.aoa_to_sheet(data);
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "Resultados Examenes");
-
-    let nombreArchivo = paciente.replace(/[^a-zA-Z0-9]/g, '_') || 'Resultados_Examenes';
-    XLSX.writeFile(wb, `Resultados_${nombreArchivo}.xlsx`);
-}
-
 // 3. Cálculos de Química Sanguínea (BUN y LDL)
 document.addEventListener("DOMContentLoaded", function() {
     const btnBUN = document.getElementById("btnCalcularBUN");
@@ -4972,58 +4913,9 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 });
 
-function imprimirResultadosFiltrados() {
-    const elementosTab = document.querySelectorAll('.tab-pane');
-    elementosTab.forEach(el => {
-        el.classList.add('show', 'active');
-        el.style.display = 'block';
-    });
 
-    const bloquesExamenes = document.querySelectorAll('#pedidoContainer .border');
-    bloquesExamenes.forEach(bloque => {
-        bloque.classList.remove('d-none-print');
-        const inputsEnBloque = bloque.querySelectorAll('input[type="text"]');
-        
-        if (inputsEnBloque.length === 0) {
-            bloque.classList.add('d-none-print');
-        } else {
-            let tieneValoresEnBloque = false;
-            const filas = bloque.querySelectorAll('tbody tr');
-            
-            if (filas.length > 0) {
-                filas.forEach(fila => {
-                    const inputFila = fila.querySelector('input[type="text"]');
-                    if (inputFila) {
-                        if (inputFila.value.trim() === '') {
-                            fila.style.display = 'none';
-                        } else {
-                            fila.style.display = '';
-                            tieneValoresEnBloque = true;
-                        }
-                    }
-                });
-            } else {
-                inputsEnBloque.forEach(inp => {
-                    if (inp.value.trim() !== '') {
-                        tieneValoresEnBloque = true;
-                    }
-                });
-            }
 
-            if (!tieneValoresEnBloque) {
-                bloque.classList.add('d-none-print');
-            }
-        }
-    });
 
-    window.print();
-}
-
-// Función auxiliar en caso de que requieras programar la descarga del PDF del paciente
-function descargarPDFSoloPaciente() {
-    // Espacio reservado para lógica de generación PDF con jsPDF o html2pdf si se requiere
-    alert("Función de descarga de PDF para datos del paciente en proceso.");
-}
 
 
 // Función para guardar o actualizar los datos del paciente según la cédula (Cod/Doc)
@@ -5201,55 +5093,6 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
         
-
-// Función auxiliar para exportar automáticamente y evitar el sufijo (1).xlsx
-async function autoExportarPacientesExcel(listaPacientes) {
-    if (!listaPacientes || listaPacientes.length === 0) return;
-
-    const dataToExport = listaPacientes.map(p => ({
-        "Cédula": p.cedula,
-        "Apellidos y Nombres": p.nombre,
-        "Fecha de Nacimiento": p.fechaNacimiento,
-        "Género": p.sexo,
-        "Teléfono": p.telefono,
-        "Orden": p.orden,
-        "Fecha Registro": p.fecha
-    }));
-
-    const worksheet = XLSX.utils.json_to_sheet(dataToExport);
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Pacientes");
-    
-    const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
-    const blob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-
-    // Intenta usar la API moderna para sobrescribir directamente "pacientes_lab.xlsx"
-    if ('showSaveFilePicker' in window) {
-        try {
-            const options = {
-                suggestedName: 'pacientes_lab.xlsx',
-                types: [{
-                    description: 'Archivos Excel',
-                    accept: { 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': ['.xlsx'] }
-                }]
-            };
-            
-            if (!window.fileHandlePacientes) {
-                window.fileHandlePacientes = await window.showSaveFilePicker(options);
-            }
-            
-            const writableStream = await window.fileHandlePacientes.createWritable();
-            await writableStream.write(blob);
-            await writableStream.close();
-            return;
-        } catch (err) {
-            console.log("Selector omitido o cancelado. Usando descarga estándar...", err);
-        }
-    }
-
-    // Respaldo tradicional si el navegador no soporta el selector avanzado
-    XLSX.writeFile(workbook, "pacientes_lab.xlsx");
-}
 
 // Función para limpiar el formulario y reiniciar para un nuevo paciente
 function nuevoPaciente() {
