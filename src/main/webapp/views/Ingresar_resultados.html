@@ -4367,6 +4367,7 @@ function imprimirResultados() {
 
 
 // Función de Descarga en PDF optimizada con soporte garantizado para el encabezado repetible
+// Función de Descarga en PDF optimizada y limpia para múltiples páginas
 async function descargarPDFResultados() {
     if (typeof actualizarTablaDinamica === "function") {
         actualizarTablaDinamica();
@@ -4400,23 +4401,8 @@ async function descargarPDFResultados() {
     if (!elementoOriginal) return;
     const elementoClonado = elementoOriginal.cloneNode(true);
 
-    // Activamos el modo PDF en el clon para que el CSS renderice correctamente
+    // Activamos el modo PDF en el clon para aplicar las reglas de diseño exclusivo
     elementoClonado.classList.add('pdf-mode');
-
-    // 🟢 CLONAR EL ENCABEZADO INSTITUCIONAL ANTES DE CADA SECCIÓN PRINCIPAL EN EL PDF
-    // Esto resuelve de forma infalible que html2pdf pinte el membrete en la página 2 y siguientes.
-    const encabezadoOriginal = elementoOriginal.querySelector('table'); 
-    if (encabezadoOriginal) {
-        const tablasSecciones = elementoClonado.querySelectorAll('.tab-pane table, .mb-3 table');
-        tablasSecciones.forEach((tbl, index) => {
-            if (index > 0) { // A partir de la segunda tabla o sección importante, anteponemos el membrete
-                const clonHeader = encabezadoOriginal.cloneNode(true);
-                clonHeader.style.marginBottom = "15px";
-                clonHeader.style.pageBreakBefore = "always"; // Fuerza un salto limpio con membrete arriba
-                tbl.parentNode.insertBefore(clonHeader, tbl);
-            }
-        });
-    }
 
     if (typeof procesarSelectsParaImpresion === "function") {
         procesarSelectsParaImpresion(elementoClonado, true);
