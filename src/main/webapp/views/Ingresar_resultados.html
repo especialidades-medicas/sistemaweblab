@@ -4370,8 +4370,6 @@ function imprimirResultados() {
 // Función de Descarga en PDF optimizada y limpia para múltiples páginas
 // Función de Descarga en PDF con inserción automática del encabezado en cada página secundaria
 // Función de Descarga en PDF optimizada para múltiples páginas con inserción limpia de encabezados
-// Función de Descarga en PDF con paginación inteligente (sin espacios innecesarios y con membrete automático)
-// Función de Descarga en PDF con inserción exacta de encabezado al crearse una nueva página (sin espacios exagerados)
 async function descargarPDFResultados() {
     if (typeof actualizarTablaDinamica === "function") {
         actualizarTablaDinamica();
@@ -4387,7 +4385,7 @@ async function descargarPDFResultados() {
     if (fechaVal) {
         let partes = fechaVal.split('-');
         if (partes.length === 3) {
-            fechaFormateada = `${partes[2]}-${partes[1]}-${partes[0]}`; // DD-MM-YYYY
+            fechaFormateada = `${partes[2]}-${partes[1]}-${partes[0]}`;
         } else {
             fechaFormateada = fechaVal.replace(/\//g, '-');
         }
@@ -4404,34 +4402,22 @@ async function descargarPDFResultados() {
     const elementoOriginal = document.getElementById("pedidoContainer");
     if (!elementoOriginal) return;
     const elementoClonado = elementoOriginal.cloneNode(true);
-
-    // Activamos el modo PDF en el clon
     elementoClonado.classList.add('pdf-mode');
 
-    // 🟢 CONDICIÓN EXACTA: Inserción dinámica del encabezado al formarse una nueva hoja (sin espacios largos)
+    // 🟢 Inserción por intervalos de bloques (ej. cada 3 bloques de exámenes se fuerza una nueva página limpia)
     const tablaEncabezadoOriginal = elementoOriginal.querySelector('table');
     if (tablaEncabezadoOriginal) {
         const bloquesExamenes = elementoClonado.querySelectorAll('.tab-pane .border, .mb-3');
-        let alturaAcumulada = 0;
-        const alturaMaximaPagina = 700; // Altura equilibrada para forzar el salto justo antes de saturar la hoja A4
+        const bloquesPorPagina = 3; // Ajusta este número según el tamaño promedio de tus exámenes
 
         bloquesExamenes.forEach((bloque, index) => {
-            let alturaBloque = bloque.offsetHeight || 120;
-            alturaAcumulada += alturaBloque;
-
-            // Cuando la altura supera el límite de una hoja, creamos la nueva página con su respectivo encabezado
-            if (index > 0 && alturaAcumulada > alturaMaximaPagina) {
+            if (index > 0 && index % bloquesPorPagina === 0) {
                 const clonHeader = tablaEncabezadoOriginal.cloneNode(true);
-                
-                // Estilos limpios y compactos para evitar espacios exagerados
                 clonHeader.style.marginTop = "0px";
                 clonHeader.style.marginBottom = "5px";
-                clonHeader.style.paddingTop = "0px";
                 clonHeader.style.pageBreakBefore = "always";
                 clonHeader.style.breakBefore = "page";
-                
                 bloque.parentNode.insertBefore(clonHeader, bloque);
-                alturaAcumulada = alturaBloque; // Reiniciamos el acumulador para la nueva página
             }
         });
     }
@@ -4443,7 +4429,7 @@ async function descargarPDFResultados() {
     if (bloqueImpresion) bloqueImpresion.classList.add("d-none");
 
     const opciones = {
-        margin:       [5, 10, 5, 10], // Márgenes compactos para aprovechar toda la hoja
+        margin:       [5, 10, 5, 10],
         filename:     nombreArchivoFinal,
         image:        { type: 'jpeg', quality: 0.98 },
         html2canvas:  { scale: 2, useCORS: true, scrollY: 0, letterRendering: true },
@@ -4464,41 +4450,23 @@ async function descargarPDFResultados() {
             if ('showSaveFilePicker' in window) {
                 const opcionesArchivo = {
                     suggestedName: nombreArchivoFinal,
-                    types: [{
-                        description: 'Documento PDF',
-                        accept: { 'application/pdf': ['.pdf'] }
-                    }]
+                    types: [{ description: 'Documento PDF', accept: { 'application/pdf': ['.pdf'] } }]
                 };
-
                 let archivoHandle;
                 try {
                     archivoHandle = await window.showSaveFilePicker(opcionesArchivo);
                 } catch (err) {
-                    if (err.name !== 'AbortError') {
-                        console.error(err);
-                    }
+                    if (err.name !== 'AbortError') console.error(err);
                     return;
                 }
-
-                try {
-                    const writableStream = await archivoHandle.createWritable();
-                    await writableStream.write(pdfBlob);
-                    await writableStream.close();
-                    
-                    alert(`¡PDF guardado exitosamente como "${nombreArchivoFinal}"!`);
-
-                    const blobUrl = URL.createObjectURL(pdfBlob);
-                    window.open(blobUrl, '_blank');
-
-                } catch (err) {
-                    alert(`⚠️ No se pudo guardar ni reemplazar el archivo porque actualmente está abierto en un visor de PDF. Cierre el documento e intente nuevamente.`);
-                }
-
+                const writableStream = await archivoHandle.createWritable();
+                await writableStream.write(pdfBlob);
+                await writableStream.close();
+                alert(`¡PDF guardado exitosamente como "${nombreArchivoFinal}"!`);
+                window.open(URL.createObjectURL(pdfBlob), '_blank');
             } else {
                 html2pdf().from(elementoClonado).set(opciones).save();
-                
-                const blobUrl = URL.createObjectURL(pdfBlob);
-                window.open(blobUrl, '_blank');
+                window.open(URL.createObjectURL(pdfBlob), '_blank');
             }
         } catch (error) {
             console.error("Error al generar el PDF:", error);
