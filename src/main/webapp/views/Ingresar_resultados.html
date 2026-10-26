@@ -4366,7 +4366,7 @@ function imprimirResultados() {
 }
 
 
-// Función de Descarga en PDF optimizada con soporte para el encabezado repetible
+// Función de Descarga en PDF optimizada con soporte para el encabezado repetible y márgenes seguros
 async function descargarPDFResultados() {
     if (typeof actualizarTablaDinamica === "function") {
         actualizarTablaDinamica();
@@ -4410,10 +4410,10 @@ async function descargarPDFResultados() {
     if (bloqueImpresion) bloqueImpresion.classList.add("d-none");
 
     const opciones = {
-        margin:       5,
+        margin:       [10, 10, 10, 10], // 🟢 Márgenes seguros [superior, izquierdo, inferior, derecho] para evitar que choque arriba
         filename:     nombreArchivoFinal,
         image:        { type: 'jpeg', quality: 0.98 },
-        html2canvas:  { scale: 2, useCORS: true, scrollY: 0 },
+        html2canvas:  { scale: 2, useCORS: true, scrollY: 0, letterRendering: true },
         jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
         pagebreak:    { 
             mode: ['css', 'legacy'], 
