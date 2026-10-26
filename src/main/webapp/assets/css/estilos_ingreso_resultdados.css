@@ -587,7 +587,10 @@ body {
    -------------------------------------------------------------------------- */
 @page {
     size: A4 portrait;
-    margin: 25mm 10mm 15mm 10mm; /* Margen superior adecuado para alojar el encabezado sin superponerse */
+    margin: 30mm 10mm 15mm 10mm; /* 🟢 Margen superior reservado para el encabezado repetido */
+    @top-center {
+        content: element(headerRepetido); /* 🟢 Extrae el encabezado y lo clona nativamente arriba en cada página */
+    }
 }
 
 @media print {
@@ -615,16 +618,13 @@ body {
         display: none !important;
     }
 
-    /* 🟢 Encabezado institucional visible y ordenado en el flujo de impresión de cada página */
+    /* 🟢 Convierte el bloque institucional en un elemento flotante repetible para el @page */
     .header-institucional-impresion {
         display: block !important;
         visibility: visible !important;
-        position: relative !important;
+        position: running(headerRepetido); /* 🟢 Esto hace que el navegador lo dibuje en cada nueva página automáticamente */
         width: 100% !important;
         background: #ffffff !important;
-        margin-bottom: 10px !important;
-        page-break-after: avoid !important;
-        break-after: avoid !important;
     }
 
     #pedidoContainer > .header-institucional-impresion:first-of-type {
