@@ -4369,6 +4369,7 @@ function imprimirResultados() {
 // Función de Descarga en PDF optimizada con soporte garantizado para el encabezado repetible
 // Función de Descarga en PDF optimizada y limpia para múltiples páginas
 // Función de Descarga en PDF con inserción automática del encabezado en cada página secundaria
+// Función de Descarga en PDF optimizada para múltiples páginas con inserción limpia de encabezados
 async function descargarPDFResultados() {
     if (typeof actualizarTablaDinamica === "function") {
         actualizarTablaDinamica();
@@ -4405,19 +4406,20 @@ async function descargarPDFResultados() {
     // Activamos el modo PDF en el clon
     elementoClonado.classList.add('pdf-mode');
 
-    // 🟢 SOLUCIÓN DEFINITIVA PARA HTML2PDF:
-    // Capturamos el encabezado original y lo clonamos de forma limpia antes de las tablas/secciones principales 
-    // para asegurar que salga en la segunda, tercera y sucesivas páginas del PDF.
+    // 🟢 SOLUCIÓN DINÁMICA: Insertar el encabezado institucional en cada bloque/tabla secundaria sin dejar espacios largos
     const tablaEncabezadoOriginal = elementoOriginal.querySelector('table');
     if (tablaEncabezadoOriginal) {
-        const panelesOSecciones = elementoClonado.querySelectorAll('.tab-pane .border, .mb-3 > .table-responsive, .mb-3 > table');
-        panelesOSecciones.forEach((seccion, index) => {
-            if (index > 0) { // A partir de la segunda sección importante del reporte
+        // Seleccionamos las secciones o bloques principales de exámenes que contienen tablas
+        const bloquesExamenes = elementoClonado.querySelectorAll('.tab-pane .border, .mb-3');
+        bloquesExamenes.forEach((bloque, index) => {
+            if (index > 0) { // A partir del segundo bloque de exámenes que pueda requerir nueva página
                 const clonHeader = tablaEncabezadoOriginal.cloneNode(true);
-                clonHeader.style.marginTop = "10px";
-                clonHeader.style.marginBottom = "10px";
-                clonHeader.style.pageBreakBefore = "always"; // Fuerza el salto limpio con membrete arriba
-                seccion.parentNode.insertBefore(clonHeader, seccion);
+                // Ajustamos estilos limpios para evitar espacios muertos excessivos
+                clonHeader.style.marginTop = "5px";
+                clonHeader.style.marginBottom = "8px";
+                clonHeader.style.pageBreakBefore = "always";
+                clonHeader.style.breakBefore = "page";
+                bloque.parentNode.insertBefore(clonHeader, bloque);
             }
         });
     }
@@ -4429,7 +4431,7 @@ async function descargarPDFResultados() {
     if (bloqueImpresion) bloqueImpresion.classList.add("d-none");
 
     const opciones = {
-        margin:       [10, 10, 10, 10], // Márgenes seguros [superior, izquierdo, inferior, derecho]
+        margin:       [5, 10, 5, 10], // 🟢 Márgenes superiores e inferiores reducidos para eliminar espacios vacíos
         filename:     nombreArchivoFinal,
         image:        { type: 'jpeg', quality: 0.98 },
         html2canvas:  { scale: 2, useCORS: true, scrollY: 0, letterRendering: true },
