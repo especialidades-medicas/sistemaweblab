@@ -626,6 +626,23 @@ body {
     break-before: page;
 }
 
+/* 🟢 Encabezado institucional visible y ordenado en el flujo de impresión de cada página */
+    .header-institucional-impresion {
+        display: block !important;
+        visibility: visible !important;
+        position: relative !important;
+        width: 100% !important;
+        background: #ffffff !important;
+        margin-bottom: 10px !important;
+        page-break-after: avoid !important;
+        break-after: avoid !important;
+    }
+
+    #pedidoContainer > .header-institucional-impresion:first-of-type {
+        display: block !important;
+        visibility: visible !important;
+    }
+}
 /* ==========================================================================
    AJUSTES FINALES DE CONTENEDOR Y DISEÑO GENERAL
    ========================================================================== */
