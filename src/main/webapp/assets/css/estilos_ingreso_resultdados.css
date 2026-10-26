@@ -572,10 +572,14 @@ body {
     break-after: avoid !important;
 }
 
-/* 🟢 Soporte de visualización garantizada para el encabezado en html2pdf */
+/* 🟢 Soporte de visualización garantizada y espaciado para el encabezado en html2pdf */
 .pdf-mode thead {
     display: table-header-group !important;
     visibility: visible !important;
+}
+
+.pdf-mode #pedidoContainer {
+    padding-top: 5px !important;
 }
 
 /* --------------------------------------------------------------------------
@@ -583,7 +587,7 @@ body {
    -------------------------------------------------------------------------- */
 @page {
     size: A4 portrait;
-    margin: 20mm 10mm 15mm 10mm; /* Margen superior equilibrado */
+    margin: 15mm 10mm 15mm 10mm; /* 🟢 Márgenes limpios y equilibrados para evitar superposiciones */
 }
 
 @media print {
@@ -602,7 +606,7 @@ body {
         top: 0;
         width: 99% !important;
         margin: 0 !important;
-        padding: 0 !important;
+        padding: 5px 0 0 0 !important;
         background: #ffffff !important;
     }
 
