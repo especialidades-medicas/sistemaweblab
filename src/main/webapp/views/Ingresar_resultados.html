@@ -4368,6 +4368,7 @@ function imprimirResultados() {
 
 // Función de Descarga en PDF optimizada con soporte garantizado para el encabezado repetible
 // Función de Descarga en PDF optimizada y limpia para múltiples páginas
+// Función de Descarga en PDF con inserción automática del encabezado en cada página secundaria
 async function descargarPDFResultados() {
     if (typeof actualizarTablaDinamica === "function") {
         actualizarTablaDinamica();
@@ -4401,8 +4402,25 @@ async function descargarPDFResultados() {
     if (!elementoOriginal) return;
     const elementoClonado = elementoOriginal.cloneNode(true);
 
-    // Activamos el modo PDF en el clon para aplicar las reglas de diseño exclusivo
+    // Activamos el modo PDF en el clon
     elementoClonado.classList.add('pdf-mode');
+
+    // 🟢 SOLUCIÓN DEFINITIVA PARA HTML2PDF:
+    // Capturamos el encabezado original y lo clonamos de forma limpia antes de las tablas/secciones principales 
+    // para asegurar que salga en la segunda, tercera y sucesivas páginas del PDF.
+    const tablaEncabezadoOriginal = elementoOriginal.querySelector('table');
+    if (tablaEncabezadoOriginal) {
+        const panelesOSecciones = elementoClonado.querySelectorAll('.tab-pane .border, .mb-3 > .table-responsive, .mb-3 > table');
+        panelesOSecciones.forEach((seccion, index) => {
+            if (index > 0) { // A partir de la segunda sección importante del reporte
+                const clonHeader = tablaEncabezadoOriginal.cloneNode(true);
+                clonHeader.style.marginTop = "10px";
+                clonHeader.style.marginBottom = "10px";
+                clonHeader.style.pageBreakBefore = "always"; // Fuerza el salto limpio con membrete arriba
+                seccion.parentNode.insertBefore(clonHeader, seccion);
+            }
+        });
+    }
 
     if (typeof procesarSelectsParaImpresion === "function") {
         procesarSelectsParaImpresion(elementoClonado, true);
