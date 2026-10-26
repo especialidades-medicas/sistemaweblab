@@ -560,19 +560,27 @@ body {
 .pdf-mode .lab-main-tabs {
     display: none !important;
 }
+
+/* 🟢 CORRECCIÓN CLAVE: Permitir que las tablas y contenedores fluyan y se dividan de manera natural en el PDF */
+.pdf-mode table {
+    page-break-inside: auto !important;
+    break-inside: auto !important;
+}
+
+/* Evitamos que se rompan solo las filas individuales para mantener la prolijidad */
 .pdf-mode tr, 
 .pdf-mode .card, 
-.pdf-mode .border, 
-.pdf-mode table {
+.pdf-mode .border {
     page-break-inside: avoid !important;
     break-inside: avoid !important;
 }
+
 .pdf-mode .section-title {
     page-break-after: avoid !important;
     break-after: avoid !important;
 }
 
-/* 🟢 Soporte de visualización garantizada y espaciado para el encabezado en html2pdf */
+/* 🟢 Soporte de visualización garantizada para repetir el thead en cada página del PDF */
 .pdf-mode thead {
     display: table-header-group !important;
     visibility: visible !important;
@@ -587,7 +595,7 @@ body {
    -------------------------------------------------------------------------- */
 @page {
     size: A4 portrait;
-    margin: 15mm 10mm 15mm 10mm; /* 🟢 Márgenes limpios y equilibrados para evitar superposiciones */
+    margin: 15mm 10mm 15mm 10mm; /* Márgenes limpios y equilibrados */
 }
 
 @media print {
@@ -615,7 +623,7 @@ body {
         display: none !important;
     }
 
-    /* 🟢 Obliga al navegador a repetir el thead de la tabla institucional en cada hoja impresa */
+    /* 🟢 Obliga al navegador a repetir el thead institucional en cada hoja impresa */
     thead {
         display: table-header-group !important;
     }
@@ -694,6 +702,8 @@ body {
     color: #334155 !important;
     font-weight: 600 !important;
 }
+
+
 
 /* ==========================================================================
    ELIMINACIÓN FORZADA DE MARCOS Y CONTENEDORES
