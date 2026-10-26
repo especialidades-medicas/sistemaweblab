@@ -578,12 +578,19 @@ body {
     break-after: avoid !important;
 }
 
+/* Regla para repetir el encabezado institucional en cada página del PDF generadas por html2pdf */
+.pdf-mode .header-institucional-impresion {
+    display: block !important;
+    page-break-before: always;
+    break-before: page;
+}
+
 /* --------------------------------------------------------------------------
    8. REGLAS DE IMPRESIÓN DIRECTA DEL NAVEGADOR (@media print)
    -------------------------------------------------------------------------- */
 @page {
     size: A4 portrait;
-    margin: 12mm 10mm 12mm 10mm;
+    margin: 25mm 10mm 15mm 10mm; /* Margen superior adecuado para que el membrete luzca limpio sin encimarse */
 }
 
 @media print {
@@ -602,7 +609,7 @@ body {
         top: 0;
         width: 99% !important;
         margin: 0 !important;
-        padding: 10px !important;
+        padding: 0 !important;
         background: #ffffff !important;
     }
 
@@ -611,14 +618,17 @@ body {
         display: none !important;
     }
 
-    /* Regla para repetir el encabezado institucional en cada página al imprimir */
+    /* Solución definitiva para repetir el encabezado en cada hoja al imprimir sin solapar */
     .header-institucional-impresion {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        background: #ffffff;
-        z-index: 9999;
+        display: block !important;
+        page-break-before: always;
+        break-before: page;
+    }
+    
+    /* El primer encabezado de la hoja 1 no necesita salto forzado antes */
+    #pedidoContainer > .header-institucional-impresion:first-of-type {
+        page-break-before: avoid !important;
+        break-before: avoid !important;
     }
 }
 
@@ -713,8 +723,6 @@ body {
 #pedidoContainer select.form-select {
     border: 1px solid #94a3b8 !important;
 }
-
-
 
 
 /* ==========================================================================
