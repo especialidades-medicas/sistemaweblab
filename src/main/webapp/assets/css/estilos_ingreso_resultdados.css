@@ -572,12 +572,22 @@ body {
     break-after: avoid !important;
 }
 
+/* Soporte de visualización para exportación PDF (html2pdf) */
+.pdf-mode .header-institucional-impresion {
+    display: block !important;
+    visibility: visible !important;
+    position: relative !important;
+    width: 100% !important;
+    background: #ffffff !important;
+    margin-bottom: 10px !important;
+}
+
 /* --------------------------------------------------------------------------
    8. REGLAS DE IMPRESIÓN DIRECTA DEL NAVEGADOR Y PDF (@media print)
    -------------------------------------------------------------------------- */
 @page {
     size: A4 portrait;
-    margin: 25mm 10mm 15mm 10mm; /* 🟢 Margen superior adecuado para alojar el encabezado repetido sin superponerse */
+    margin: 25mm 10mm 15mm 10mm; /* Margen superior adecuado para alojar el encabezado sin superponerse */
 }
 
 @media print {
@@ -605,28 +615,7 @@ body {
         display: none !important;
     }
 
-    /* 🟢 Solución corregida: Se usa un salto de página limpio en lugar de position: fixed para que no se encime sobre los datos */
-    .header-institucional-impresion {
-        display: block !important;
-        page-break-before: always;
-        break-before: page;
-    }
-
-    /* El primer encabezado de la primera hoja no lleva salto forzado antes */
-    #pedidoContainer > .header-institucional-impresion:first-of-type {
-        page-break-before: avoid !important;
-        break-before: avoid !important;
-    }
-}
-
-/* Soporte para exportación PDF (html2pdf) */
-.pdf-mode .header-institucional-impresion {
-    display: block !important;
-    page-break-before: always;
-    break-before: page;
-}
-
-/* 🟢 Encabezado institucional visible y ordenado en el flujo de impresión de cada página */
+    /* 🟢 Encabezado institucional visible y ordenado en el flujo de impresión de cada página */
     .header-institucional-impresion {
         display: block !important;
         visibility: visible !important;
@@ -643,6 +632,7 @@ body {
         visibility: visible !important;
     }
 }
+
 /* ==========================================================================
    AJUSTES FINALES DE CONTENEDOR Y DISEÑO GENERAL
    ========================================================================== */
