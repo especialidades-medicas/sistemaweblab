@@ -729,7 +729,7 @@ body {
 }
 
 /* ==========================================================================
-   ESTILOS PARA IMPRESIÓN DE SOBRES (210mm x 110mm) - TAMAÑO DE LETRA 12pt
+   ESTILOS PARA IMPRESIÓN DE SOBRES (24.2cm x 11.5cm) - TAMAÑO DE LETRA 12pt
    ========================================================================== */
 
 #plantilla-sobre-print { 
@@ -737,6 +737,22 @@ body {
 }
 
 @media print {
+    /* ==========================================
+       Configuración de página global y por modo
+       (Las reglas @page deben ir a este nivel, no anidadas)
+       ========================================== */
+    @page {
+        margin: 0;
+    }
+
+    body.modo-sobre-vertical @page {
+        size: 11.5cm 24.2cm; /* Ancho x Alto para sobre vertical */
+    }
+
+    body.modo-sobre-horizontal @page {
+        size: 24.2cm 11.5cm; /* Ancho x Alto para sobre horizontal */
+    }
+
     /* Ocultar el resto del sitio durante la impresión del sobre */
     body.imprimiendo-sobre * { 
         visibility: hidden !important; 
@@ -776,13 +792,6 @@ body {
     /* ==========================================
        1. IMPRESIÓN VERTICAL (Rotación de 90°)
        ========================================== */
-    body.modo-sobre-vertical {
-        @page {
-            size: portrait;
-            margin: 0;
-        }
-    }
-
     body.modo-sobre-vertical #plantilla-sobre-print {
         display: flex !important;
         justify-content: center;
@@ -803,23 +812,16 @@ body {
     /* ==========================================
        2. IMPRESIÓN HORIZONTAL (Parte superior/centrada)
        ========================================== */
-    body.modo-sobre-horizontal {
-        @page {
-            size: landscape;
-            margin: 0;
-        }
-    }
-
     body.modo-sobre-horizontal #plantilla-sobre-print {
         display: flex !important;
         justify-content: center;
         align-items: flex-start;
-        padding-top: 35mm;
+        padding-top: 15mm; /* Corregido para evitar el exceso de espacio superior */
     }
 
     body.modo-sobre-horizontal .contenido-sobre-print { 
         width: 100%;
-        max-width: 180mm;
+        max-width: 220mm;
         text-align: center;
         font-family: Arial, sans-serif;
     }
