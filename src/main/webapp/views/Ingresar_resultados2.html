@@ -1441,60 +1441,221 @@
                 </div>
                 
 
-                <!-- 8. Oncológicos -->
+                <!-- 8. Oncológicos e Inmunológicos -->
 <div class="tab-pane fade" id="oncologicosContent" role="tabpanel">
     <div class="border p-2 rounded bg-white">
-        <div class="section-title text-primary fw-bold border-bottom pb-1 mb-2 small" data-section-name="MARCADORES ONCOLÓGICOS">MARCADORES ONCOLÓGICOS</div>
+        <div class="section-title text-primary fw-bold border-bottom pb-1 mb-2 small" data-section-name="MARCADORES ONCOLÓGICOS E INMUNOLÓGICOS">MARCADORES ONCOLÓGICOS E INMUNOLÓGICOS</div>
         <table class="table table-sm table-bordered align-middle mb-0 small">
             <thead class="table-light text-muted"><tr><th>EXAMEN</th><th>RESULTADO</th><th>UNIDAD</th><th>V. REFERENCIA</th></tr></thead>
             <tbody>
-				<!-- ANTIGENO PROSTATICO ESPECIFICO -->
-                                <tr>
-                                    <td colspan="4" class="table-active fw-bold text-secondary" style="font-size: 9.5px;">
-                                        <div class="d-flex justify-content-between align-items-center">
-                                            <span class="subcat-titulo">ANTIGENO PROSTATICO ESPECIFICO</span>                                            
-                                        </div>
-                                    </td>
-                                </tr>
+                <!-- ANTIGENO PROSTATICO ESPECIFICO -->
+                <tr>
+                    <td colspan="4" class="table-active fw-bold text-secondary" style="font-size: 9.5px;">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="subcat-titulo">ANTIGENO PROSTATICO ESPECIFICO</span>                                       
+                        </div>
+                    </td>
+                </tr>
                 <tr>
                     <td class="fw-bold">PSA Total
                         <select class="form-select form-select-sm mt-1" id="metodoPsaT" style="font-size: 10px;">
                             <option value="" selected disabled>Método Analítico...</option>
-                            <option value="Metódo: ELFA (Ensayo de fluorescencia ligado a enzimas)">Metódo: ELFA (Ensayo de fluorescencia ligado a enzimas)</option>							
-							<option value="Cinético UV">Cinético UV</option>
-                            <option value="Espectrofotometría">Espectrofotometría</option>
-							<option value=" ">-</option>
-							
+                            <option value="ELFA (Ensayo de fluorescencia ligado a enzimas)">ELFA (Ensayo de fluorescencia ligado a enzimas)</option>                            
+                            <option value="Quimioluminiscencia (CLIA)">Quimioluminiscencia (CLIA)</option>
+                            <option value="Inmunoensayo enzimático (EIA)">Inmunoensayo enzimático (EIA)</option>
+                            <option value=" ">-</option>
                         </select>
                     </td>
                     <td><input type="text" class="form-control form-control-sm form-control-editable" id="resPsatotal"></td>
                     <td><input type="text" class="form-control form-control-sm text-muted" value="ng/mL"></td>
                     <td><input type="text" class="form-control form-control-sm text-muted" value="20 - 40 años: 0,16 - 1,5 | 40 - 50 años: 0,16 - 1,7 | 50 - 60 años: 0,24 - 3,0 | 60 - 70 años: 0,27 - 4,0 | Mayor a 70: Menor a 4.5"></td>
                 </tr>
-				
                 <tr>
                     <td class="fw-bold">PSA Libre
                         <select class="form-select form-select-sm mt-1" id="metodoPsaL" style="font-size: 10px;">
                             <option value="" selected disabled>Método Analítico...</option>
-                             <option value="Metódo: ELFA (Ensayo de fluorescencia ligado a enzimas)">Metódo: ELFA (Ensayo de fluorescencia ligado a enzimas)</option>							
-							<option value="Cinético UV">Cinético UV</option>
-                            <option value="Espectrofotometría">Espectrofotometría</option>
-							<option value=" ">-</option>
+                            <option value="ELFA (Ensayo de fluorescencia ligado a enzimas)">ELFA (Ensayo de fluorescencia ligado a enzimas)</option>                            
+                            <option value="Quimioluminiscencia (CLIA)">Quimioluminiscencia (CLIA)</option>
+                            <option value="Inmunoensayo enzimático (EIA)">Inmunoensayo enzimático (EIA)</option>
+                            <option value=" ">-</option>
                         </select>
                     </td>
                     <td><input type="text" class="form-control form-control-sm form-control-editable" id="resPsalibre"></td>
-                    <td><input type="text" class="form-control form-control-sm text-muted" value="ng/ml"></td>
-                    <td><input type="text" class="form-control form-control-sm text-muted" value="Menor a: 1.30"></td>				
+                    <td><input type="text" class="form-control form-control-sm text-muted" value="ng/mL"></td>
+                    <td><input type="text" class="form-control form-control-sm text-muted" value="Menor a: 1.30"></td>                
                 </tr>
-				<tr>
+
+                <!-- ANTIGENO CARCINOEMBRIONARIO (CEA) -->
+                <tr>
+                    <td colspan="4" class="table-active fw-bold text-secondary" style="font-size: 9.5px;">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="subcat-titulo">ANTIGENO CARCINOEMBRIONARIO (CEA)</span>                                       
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="fw-bold">CEA
+                        <select class="form-select form-select-sm mt-1" id="metodoCea" style="font-size: 10px;">
+                            <option value="" selected disabled>Método Analítico...</option>
+                            <option value="ELFA (Ensayo de fluorescencia ligado a enzimas)">ELFA (Ensayo de fluorescencia ligado a enzimas)</option>                            
+                            <option value="Quimioluminiscencia (CLIA)">Quimioluminiscencia (CLIA)</option>
+                            <option value="Inmunoensayo enzimático (EIA)">Inmunoensayo enzimático (EIA)</option>
+                            <option value=" ">-</option>
+                        </select>
+                    </td>
+                    <td><input type="text" class="form-control form-control-sm form-control-editable" id="resCea"></td>
+                    <td><input type="text" class="form-control form-control-sm text-muted" value="ng/mL"></td>
+                    <td><input type="text" class="form-control form-control-sm text-muted" value="No fumadores: Menor a 3.0 | Fumadores: Menor a 5.0"></td>
+                </tr>
+
+                <!-- CA 125 -->
+                <tr>
+                    <td colspan="4" class="table-active fw-bold text-secondary" style="font-size: 9.5px;">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="subcat-titulo">ANTIGENO CA 125</span>                                       
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="fw-bold">CA 125
+                        <select class="form-select form-select-sm mt-1" id="metodoCa125" style="font-size: 10px;">
+                            <option value="" selected disabled>Método Analítico...</option>
+                            <option value="ELFA (Ensayo de fluorescencia ligado a enzimas)">ELFA (Ensayo de fluorescencia ligado a enzimas)</option>                            
+                            <option value="Quimioluminiscencia (CLIA)">Quimioluminiscencia (CLIA)</option>
+                            <option value="Inmunoensayo enzimático (EIA)">Inmunoensayo enzimático (EIA)</option>
+                            <option value=" ">-</option>
+                        </select>
+                    </td>
+                    <td><input type="text" class="form-control form-control-sm form-control-editable" id="resCa125"></td>
+                    <td><input type="text" class="form-control form-control-sm text-muted" value="U/mL"></td>
+                    <td><input type="text" class="form-control form-control-sm text-muted" value="Menor a 35.0"></td>
+                </tr>
+
+                <!-- CA 19-9 -->
+                <tr>
+                    <td colspan="4" class="table-active fw-bold text-secondary" style="font-size: 9.5px;">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="subcat-titulo">ANTIGENO CA 19-9</span>                                       
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="fw-bold">CA 19-9
+                        <select class="form-select form-select-sm mt-1" id="metodoCa199" style="font-size: 10px;">
+                            <option value="" selected disabled>Método Analítico...</option>
+                            <option value="ELFA (Ensayo de fluorescencia ligado a enzimas)">ELFA (Ensayo de fluorescencia ligado a enzimas)</option>                            
+                            <option value="Quimioluminiscencia (CLIA)">Quimioluminiscencia (CLIA)</option>
+                            <option value="Inmunoensayo enzimático (EIA)">Inmunoensayo enzimático (EIA)</option>
+                            <option value=" ">-</option>
+                        </select>
+                    </td>
+                    <td><input type="text" class="form-control form-control-sm form-control-editable" id="resCa199"></td>
+                    <td><input type="text" class="form-control form-control-sm text-muted" value="U/mL"></td>
+                    <td><input type="text" class="form-control form-control-sm text-muted" value="Menor a 37.0"></td>
+                </tr>
+
+                <!-- CA 15-3 -->
+                <tr>
+                    <td colspan="4" class="table-active fw-bold text-secondary" style="font-size: 9.5px;">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="subcat-titulo">ANTIGENO CA 15-3</span>                                       
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="fw-bold">CA 15-3
+                        <select class="form-select form-select-sm mt-1" id="metodoCa153" style="font-size: 10px;">
+                            <option value="" selected disabled>Método Analítico...</option>
+                            <option value="ELFA (Ensayo de fluorescencia ligado a enzimas)">ELFA (Ensayo de fluorescencia ligado a enzimas)</option>                            
+                            <option value="Quimioluminiscencia (CLIA)">Quimioluminiscencia (CLIA)</option>
+                            <option value="Inmunoensayo enzimático (EIA)">Inmunoensayo enzimático (EIA)</option>
+                            <option value=" ">-</option>
+                        </select>
+                    </td>
+                    <td><input type="text" class="form-control form-control-sm form-control-editable" id="resCa153"></td>
+                    <td><input type="text" class="form-control form-control-sm text-muted" value="U/mL"></td>
+                    <td><input type="text" class="form-control form-control-sm text-muted" value="Menor a 31.3"></td>
+                </tr>
+
+                <!-- ANTI-CCP -->
+                <tr>
+                    <td colspan="4" class="table-active fw-bold text-secondary" style="font-size: 9.5px;">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="subcat-titulo">ANTICUERPOS ANTI-CCP</span>                                       
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="fw-bold">Anti-CCP
+                        <select class="form-select form-select-sm mt-1" id="metodoAntiCcp" style="font-size: 10px;">
+                            <option value="" selected disabled>Método Analítico...</option>
+                            <option value="Quimioluminiscencia (CLIA)">Quimioluminiscencia (CLIA)</option>
+                            <option value="ELISA">ELISA</option>
+                            <option value="Inmunoensayo enzimático (EIA)">Inmunoensayo enzimático (EIA)</option>
+                            <option value=" ">-</option>
+                        </select>
+                    </td>
+                    <td><input type="text" class="form-control form-control-sm form-control-editable" id="resAntiCcp"></td>
+                    <td><input type="text" class="form-control form-control-sm text-muted" value="U/mL"></td>
+                    <td><input type="text" class="form-control form-control-sm text-muted" value="Negativo: menor a 5.0 | Positivo: mayor o igual a 5.0"></td>
+                </tr>
+
+                <!-- ANTITIROPEROXIDASA (TPO) -->
+                <tr>
+                    <td colspan="4" class="table-active fw-bold text-secondary" style="font-size: 9.5px;">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="subcat-titulo">ANTICUERPOS ANTITIROPEROXIDASA (TPO)</span>                                       
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="fw-bold">TPO
+                        <select class="form-select form-select-sm mt-1" id="metodoTpo" style="font-size: 10px;">
+                            <option value="" selected disabled>Método Analítico...</option>
+                            <option value="Quimioluminiscencia (CLIA)">Quimioluminiscencia (CLIA)</option>
+                            <option value="ELFA (Ensayo de fluorescencia ligado a enzimas)">ELFA (Ensayo de fluorescencia ligado a enzimas)</option>
+                            <option value="Inmunoensayo enzimático (EIA)">Inmunoensayo enzimático (EIA)</option>
+                            <option value=" ">-</option>
+                        </select>
+                    </td>
+                    <td><input type="text" class="form-control form-control-sm form-control-editable" id="resTpo"></td>
+                    <td><input type="text" class="form-control form-control-sm text-muted" value="UI/mL"></td>
+                    <td><input type="text" class="form-control form-control-sm text-muted" value="Menor a 34.0"></td>
+                </tr>
+
+                <!-- ANTICUERPOS ANTINUCLEARES (ANAS) -->
+                <tr>
+                    <td colspan="4" class="table-active fw-bold text-secondary" style="font-size: 9.5px;">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="subcat-titulo">ANTICUERPOS ANTINUCLEARES (ANAS)</span>                                       
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="fw-bold">ANAS
+                        <select class="form-select form-select-sm mt-1" id="metodoAnas" style="font-size: 10px;">
+                            <option value="" selected disabled>Método Analítico...</option>
+                            <option value="Inmunofluorescencia Indirecta (IFI)">Inmunofluorescencia Indirecta (IFI)</option>
+                            <option value="ELISA">ELISA</option>
+                            <option value="Quimioluminiscencia (CLIA)">Quimioluminiscencia (CLIA)</option>
+                            <option value=" ">-</option>
+                        </select>
+                    </td>
+                    <td><input type="text" class="form-control form-control-sm form-control-editable" id="resAnas"></td>
+                    <td><input type="text" class="form-control form-control-sm text-muted" value="---"></td>
+                    <td><input type="text" class="form-control form-control-sm text-muted" value="Negativo (Titulación menor a 1:80)"></td>
+                </tr>
+
+                <!-- Examen Libre / Adicional -->
+                <tr>
                     <td class="fw-bold">
-                    <input type="text" class="form-control form-control-sm fw-bold mb-1" id="cuaguOnco1" placeholder="Ingrese nombre del examen ...">
-                    <input type="text" class="form-control form-control-sm text-secondary" id="metodoOnco1" placeholder="Método manual..." style="font-size: 10px;">
+                        <input type="text" class="form-control form-control-sm fw-bold mb-1" id="cuaguOnco1" placeholder="Ingrese nombre del examen ...">
+                        <input type="text" class="form-control form-control-sm text-secondary" id="metodoOnco1" placeholder="Método manual..." style="font-size: 10px;">
                     </td>
                     <td><input type="text" class="form-control form-control-sm form-control-editable" id="resOnco"></td>
                     <td><input type="text" class="form-control form-control-sm text-muted" id="unidadOnco1" placeholder="Unidad"></td>
                     <td><input type="text" class="form-control form-control-sm text-muted" id="refOnco1" placeholder="Valores de referencia"></td>
-                 </tr>
+                </tr>
             </tbody>
         </table>
     </div>
@@ -1565,7 +1726,7 @@
 
         <!-- Subtítulo 3: Grupo Sanguíneo -->
         <div class="section-title text-primary fw-bold border-bottom pb-1 mb-2 small" data-section-name="GRUPO SANGUÍNEO">
-            INMUNOHEMATOLOGÍA
+            INMUNOHEMATOLOGÍA GRUPO Y FACTOR
         </div>
         <table class="table table-sm table-bordered align-middle mb-0 small">
             <thead class="table-light text-muted">
