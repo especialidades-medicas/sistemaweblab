@@ -480,6 +480,36 @@ body {
     <body>    
 
         <div class="container-fluid p-0">
+
+            <!-- Botón buscar y voz-->
+		    <!-- Contenedor Flotante Superior Derecho (Fijo, oculto al imprimir) -->
+				<div class="no-print" style="position: fixed; top: 20px; right: 20px; z-index: 9999;">
+				    <div class="d-flex align-items-center gap-2">
+				        
+				        <!-- Input de búsqueda con sugerencias (Lista desplegable flotante) -->
+				        <div class="position-relative" id="contenedorBuscadorTabs" style="display: none;">
+				            <input type="text" id="inputBuscarTab" class="form-control form-control-sm shadow-sm" placeholder="Seleccionar examen..." style="width: 200px;">
+				            <!-- Contenedor de sugerencias -->
+				            <div id="sugerenciasBuscador" class="dropdown-menu w-100 shadow border-0 mt-1" style="max-height: 200px; overflow-y: auto;"></div>
+				        </div>
+				
+				        <!-- Botón para alternar / mostrar el buscador (Lupa) -->
+				        <button type="button" id="btnToggleBuscador" class="btn btn-light text-primary rounded-circle shadow-sm d-flex align-items-center justify-content-center border" style="width: 40px; height: 40px;" title="Buscar examen por texto">
+				            <i class="bi bi-search" style="font-size: 16px;"></i>
+				        </button>
+				
+				        <!-- Botón Flotante Circular de Micrófono -->
+				        <button type="button" id="btnVozGlobal" class="btn btn-primary rounded-circle shadow-lg d-flex align-items-center justify-content-center" style="width: 55px; height: 55px; transition: all 0.3s ease;" title="Activar Comando de Voz">
+				            <i class="bi bi-mic-fill" style="font-size: 24px;"></i>
+				        </button>
+				    </div>
+				
+				    <!-- Texto de estado flotante y discreto debajo del botón -->
+				    <div id="estadoVoz" class="bg-white px-2 py-1 rounded shadow-sm text-end mt-1 text-primary fw-bold" style="font-size: 10px; display: none; max-width: 150px; float: right;">
+				        Esperando...
+				    </div>
+				</div>
+            
             <!-- Contenedor principal -->
             <div class="pedido-box" id="pedidoContainer">
                 
