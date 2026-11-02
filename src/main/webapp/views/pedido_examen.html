@@ -602,10 +602,10 @@ body {
                             <div class="form-check"><input class="form-check-input examen-chk" type="checkbox" data-id="HEM05" data-nombre="Coombs Indirecto" data-precio="15.00"><label class="form-check-label">Coombs Indirecto</label></div>
 
                             <div class="section-title">HEMOSTASIA</div>
-                            <div class="form-check"><input class="form-check-input examen-chk" type="checkbox" data-id="HEM05" data-nombre="Tiempo de Protrombina (TP) / TTP / INR" data-precio="6.00"><label class="form-check-label">Tiempo de Protrombina (TP) / TTP</label></div>
-                            <div class="form-check"><input class="form-check-input examen-chk" type="checkbox" data-id="HEM06" data-nombre="Tiempo de Hemorragia" data-precio="5.00"><label class="form-check-label">Tiempo de Hemorragia</label></div>
-                            <div class="form-check"><input class="form-check-input examen-chk" type="checkbox" data-id="HEM07" data-nombre="Dimero D" data-precio="25.00"><label class="form-check-label">Dimero D</label></div>
-                            <div class="form-check"><input class="form-check-input examen-chk" type="checkbox" data-id="HEM08" data-nombre="Fibrinogeno" data-precio="12.00"><label class="form-check-label">Fibrinogeno</label></div>
+                            <div class="form-check"><input class="form-check-input examen-chk" type="checkbox" data-id="HEM06" data-nombre="Tiempo de Protrombina (TP) / TTP / INR" data-precio="6.00"><label class="form-check-label">Tiempo de Protrombina (TP) / TTP</label></div>
+                            <div class="form-check"><input class="form-check-input examen-chk" type="checkbox" data-id="HEM07" data-nombre="Tiempo de Hemorragia" data-precio="5.00"><label class="form-check-label">Tiempo de Hemorragia</label></div>
+                            <div class="form-check"><input class="form-check-input examen-chk" type="checkbox" data-id="HEM08" data-nombre="Dimero D" data-precio="25.00"><label class="form-check-label">Dimero D</label></div>
+                            <div class="form-check"><input class="form-check-input examen-chk" type="checkbox" data-id="HEM09" data-nombre="Fibrinogeno" data-precio="12.00"><label class="form-check-label">Fibrinogeno</label></div>
 
                             <div class="section-title">BIOQUÍMICA SANGUÍNEA</div>
                             <div class="form-check"><input class="form-check-input examen-chk" type="checkbox" data-id="BIO01" data-nombre="Glucosa" data-precio="3.00"><label class="form-check-label">Glucosa</label></div>
@@ -642,7 +642,6 @@ body {
                             <div class="form-check"><input class="form-check-input examen-chk" type="checkbox" data-id="SER01" data-nombre="ASTO" data-precio="5.00"><label class="form-check-label">ASTO</label></div>
                             <div class="form-check"><input class="form-check-input examen-chk" type="checkbox" data-id="SER02" data-nombre="PCR" data-precio="5.00"><label class="form-check-label">PCR</label></div>
                             <div class="form-check"><input class="form-check-input examen-chk" type="checkbox" data-id="SER03" data-nombre="LÁTEX FR" data-precio="5.00"><label class="form-check-label">LÁTEX FR</label></div>
-                            <div class="form-check"><input class="form-check-input examen-chk" type="checkbox" data-id="SER04" data-nombre="VDRL" data-precio="5.00"><label class="form-check-label">VDRL</label></div>
                             <div class="form-check"><input class="form-check-input examen-chk" type="checkbox" data-id="SER05" data-nombre="Aglutinaciones febriles" data-precio="8.00"><label class="form-check-label">Aglutinaciones febriles</label></div>
                             <div class="form-check"><input class="form-check-input examen-chk" type="checkbox" data-id="SER06" data-nombre="Hierro Serico" data-precio="5.00"><label class="form-check-label">Hierro Serico</label></div>
                             <div class="form-check"><input class="form-check-input examen-chk" type="checkbox" data-id="SER07" data-nombre="Procalcitonina" data-precio="30.00"><label class="form-check-label">Procalcitonina</label></div>
@@ -652,7 +651,7 @@ body {
                             <div class="section-title">VITAMINAS</div>
                             <div class="form-check"><input class="form-check-input examen-chk" type="checkbox" data-id="VITA01" data-nombre="Vitamina D" data-precio="27.00"><label class="form-check-label">Vitamina D</label></div>
                             <div class="form-check"><input class="form-check-input examen-chk" type="checkbox" data-id="VITA02" data-nombre="Vitamina B12" data-precio="25.00"><label class="form-check-label">Vitamina B12</label></div>
-                            <div class="form-check"><input class="form-check-input examen-chk" type="checkbox" data-id="VITA05" data-nombre="Vitamina Zing" data-precio="45.00"><label class="form-check-label">Vitamina Zing</label></div>
+                            <div class="form-check"><input class="form-check-input examen-chk" type="checkbox" data-id="VITA05" data-nombre="Vitamina Zinc" data-precio="45.00"><label class="form-check-label">Vitamina Zinc</label></div>
                             
                             
                         </td>
@@ -1366,6 +1365,369 @@ function calcularEdadPrecisa(fechaNacStr) {
     }
     return edad >= 0 ? edad : 0;
 }
+			
+// ==========================================
+// 1. MAPEO DE EXÁMENES Y SECCIONES PARA BÚSQUEDA Y VOZ
+// ==========================================
+    const mapaTabs = {
+        // Hematología y Hemostasia
+        "biometria hematica": "HEM01",
+        "eritrosedimentacion": "HEM02",
+        "frotis sanguineo": "HEM03",
+        "coombs directo": "HEM04",
+        "coombs indirecto": "HEM05",
+        "tiempo de protrombina": "HEM06",
+        "tiempo de hemorragia": "HEM07",
+        "dimero d": "HEM08",
+        "fibrinogeno": "HEM09",
+
+        // Bioquímica Sanguínea
+        "glucosa": "BIO01",
+        "glucosa postprandial": "BIO02",
+        "curva de glucosa": "BIO03",
+        "sullivan": "BIO04",
+        "creatinina": "BIO05",
+        "urea": "BIO06",
+        "bun": "BIO07",
+        "acido urico": "BIO08",
+        "bilirrubinas": "BIO09",
+        "colesterol": "BIO10",
+        "trigliceridos": "BIO11",
+        "hdl": "BIO12",
+        "ldl": "BIO13",
+        "vldl": "BIO14",
+        "albumina": "BIO15",
+        "proteinas totales": "BIO16",
+
+        // Pruebas Enzimáticas y Especiales
+        "tgo": "ENZ01",
+        "tgp": "ENZ02",
+        "fosfatasa alcalina": "ENZ03",
+        "ggt": "ENZ04",
+        "amilasa": "ENZ05",
+        "lipasa": "ENZ06",
+        "lipidos totales": "ENZ07",
+        "ferritina": "ENZ08",
+        "transferritina": "ENZ09",
+        "cpk": "ENZ10",
+
+        // Serología y Hormonas
+        "asto": "SER01",
+        "pcr": "SER02",
+        "latex": "SER03",
+        "vdrl": "SER04",
+        "aglutinaciones": "SER05",
+        "hierro serico": "SER06",
+        "procalcitonina": "SER07",
+        "insulina": "SER08",
+        "curva de insulina": "SER09",
+        "hemoglobina glicosilada": "SER10",
+
+        // Vitaminas
+        "vitamina d": "VITA01",
+        "vitamina b12": "VITA02",
+        "vitamina zinc": "VITA03",
+
+        // Infecciosas
+        "vih": "INF01",
+        "hepatitis a": "INF02",
+        "hepatitis b": "INF03",
+        "hepatitis c": "INF04",
+        "torch igm": "INF05",
+        "torch igg": "INF06"
+    };
+
+    // ==========================================
+    // 2. FUNCIONES DE SÍNTESIS DE VOZ Y UTILIDADES
+    // ==========================================
+    function hablarTexto(texto) {
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.cancel();
+
+            const utterance = new SpeechSynthesisUtterance(texto);
+            utterance.lang = 'es-ES';
+            utterance.rate = 1.0;
+
+            const voces = window.speechSynthesis.getVoices();
+            const vozFemenina = voces.find(v => 
+                v.lang.toLowerCase().startsWith('es') && 
+                (v.name.toLowerCase().includes('female') || 
+                 v.name.toLowerCase().includes('elena') || 
+                 v.name.toLowerCase().includes('monica') || 
+                 v.name.toLowerCase().includes('paulina') || 
+                 v.name.toLowerCase().includes('lucia') || 
+                 v.name.toLowerCase().includes('google español') ||
+                 v.name.toLowerCase().includes('sabrina'))
+            );
+
+            if (vozFemenina) {
+                utterance.voice = vozFemenina;
+            }
+
+            window.speechSynthesis.speak(utterance);
+        }
+    }
+
+    if ('speechSynthesis' in window) {
+        window.speechSynthesis.onvoiceschanged = () => {
+            window.speechSynthesis.getVoices();
+        };
+    }
+
+    function normalizarTexto(str) {
+        return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+    }
+
+    function extraerTextoDespues(texto, palabrasClave) {
+        for (let kw of palabrasClave) {
+            let idx = texto.toLowerCase().indexOf(kw.toLowerCase());
+            if (idx !== -1) {
+                return texto.substring(idx + kw.length).trim();
+            }
+        }
+        return texto;
+    }
+
+    // ==========================================
+    // 3. CONFIGURACIÓN DE RECONOCIMIENTO DE VOZ
+    // ==========================================
+    document.addEventListener("DOMContentLoaded", () => {
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        const btnVoz = document.getElementById('btnVozGlobal');
+        const estadoVoz = document.getElementById('estadoVoz');
+
+        if (SpeechRecognition && btnVoz) {
+            const recognition = new SpeechRecognition();
+            recognition.lang = 'es-ES';
+            recognition.interimResults = false;
+            recognition.maxAlternatives = 1;
+
+            btnVoz.addEventListener('click', () => {
+                try {
+                    window.speechSynthesis.cancel();
+                    recognition.start();
+                    if (estadoVoz) {
+                        estadoVoz.style.display = 'block';
+                        estadoVoz.textContent = "Escuchando... 🎙️";
+                    }
+                    btnVoz.classList.remove('btn-primary');
+                    btnVoz.classList.add('btn-danger');
+                } catch (e) {
+                    console.error(e);
+                }
+            });
+
+            recognition.onresult = (event) => {
+                const fraseCruda = event.results[0][0].transcript;
+                const frase = normalizarTexto(fraseCruda);
+                if (estadoVoz) estadoVoz.textContent = `Escuchado: "${fraseCruda}"`;
+                procesarComandoVozLab(frase, fraseCruda);
+            };
+
+            recognition.onspeechend = () => {
+                recognition.stop();
+                if (estadoVoz) {
+                    estadoVoz.textContent = "Procesado ✔️";
+                    setTimeout(() => { estadoVoz.style.display = 'none'; }, 2500);
+                }
+                btnVoz.classList.remove('btn-danger');
+                btnVoz.classList.add('btn-primary');
+            };
+
+            recognition.onerror = (event) => {
+                if (estadoVoz) estadoVoz.textContent = "Error: " + event.error;
+                btnVoz.classList.remove('btn-danger');
+                btnVoz.classList.add('btn-primary');
+            };
+        } else if (btnVoz) {
+            btnVoz.style.display = 'none';
+        }
+
+        // ==========================================
+        // 4. PROCESAMIENTO INTELIGENTE DE COMANDOS DE VOZ
+        // ==========================================
+        function procesarComandoVozLab(frase, fraseCruda) {
+            // 1. Cédula
+            if (frase.includes('cedula') || frase.includes('documento')) {
+                let valor = extraerTextoDespues(fraseCruda, ['cédula', 'cedula', 'documento']);
+                let inputCedula = document.getElementById('cedulaPaciente');
+                if (valor && inputCedula) {
+                    inputCedula.value = valor.replace(/\D/g, '');
+                    if (estadoVoz) estadoVoz.textContent = `Cédula detectada: [${inputCedula.value}]`;
+                    hablarTexto(`Cédula ingresada`);
+                    buscarPacientePorCedulaDB(inputCedula.value);
+                }
+            } 
+            // 2. Nombre del Paciente
+            else if (frase.includes('nombre') || frase.includes('paciente')) {
+                let valor = extraerTextoDespues(fraseCruda, ['nombre del paciente', 'paciente', 'nombre']);
+                let inputNombre = document.getElementById('nombrePaciente');
+                if (valor && inputNombre) {
+                    let nombreMayus = valor.toUpperCase();
+                    inputNombre.value = nombreMayus;
+                    if (estadoVoz) estadoVoz.textContent = `Paciente: [${nombreMayus}]`;
+                    hablarTexto(`Paciente registrado`);
+                }
+            } 
+            // 3. Edad
+            else if (frase.includes('edad')) {
+                let valor = extraerTextoDespues(fraseCruda, ['edad']);
+                let inputEdad = document.getElementById('edadPaciente');
+                if (valor && inputEdad) {
+                    let numEdad = valor.replace(/\D/g, '');
+                    inputEdad.value = numEdad + ' años';
+                    if (estadoVoz) estadoVoz.textContent = `Edad: [${numEdad} años]`;
+                    hablarTexto(`Edad registrada`);
+                }
+            } 
+            // 4. Teléfono
+            else if (frase.includes('telefono') || frase.includes('celular')) {
+                let valor = extraerTextoDespues(fraseCruda, ['teléfono', 'telefono', 'celular']);
+                let inputTel = document.getElementById('telefonoPaciente');
+                if (valor && inputTel) {
+                    inputTel.value = valor.replace(/\D/g, '');
+                    if (estadoVoz) estadoVoz.textContent = `Teléfono: [${inputTel.value}]`;
+                    hablarTexto(`Teléfono guardado`);
+                }
+            } 
+            // 5. Médico
+            else if (frase.includes('medico') || frase.includes('doctor')) {
+                let valor = extraerTextoDespues(fraseCruda, ['médico', 'medico', 'doctor']);
+                let inputMed = document.getElementById('medicoPaciente');
+                if (valor && inputMed) {
+                    inputMed.value = valor.toUpperCase();
+                    if (estadoVoz) estadoVoz.textContent = `Médico: [${inputMed.value}]`;
+                    hablarTexto(`Médico registrado`);
+                }
+            } 
+            // 6. Acciones del Sistema (WhatsApp, PDF, Guardar)
+            else if (frase.includes('whatsapp') || frase.includes('guasap')) {
+                hablarTexto("Enviando por WhatsApp");
+                if (typeof enviarWhatsAppResultado === 'function') enviarWhatsAppResultado();
+            } 
+            else if (frase.includes('pdf') || frase.includes('descargar')) {
+                hablarTexto("Generando PDF");
+                if (typeof descargarPDF === 'function') descargarPDF();
+            } 
+            else if (frase.includes('guardar')) {
+                hablarTexto("Guardando paciente");
+                if (typeof guardarPacienteBD === 'function') guardarPacienteBD();
+            } 
+            // 7. SELECCIÓN DE EXÁMENES POR VOZ (Busca el checkbox por data-id)
+            else {
+                seleccionarExamenPorVoz(frase);
+            }
+        }
+
+        function seleccionarExamenPorVoz(fraseNormalizada) {
+            let idExamenEncontrado = null;
+
+            // Buscar coincidencia en el mapa de exámenes
+            for (let [clave, id] of Object.entries(mapaTabs)) {
+                if (fraseNormalizada.includes(clave)) {
+                    idExamenEncontrado = id;
+                    break;
+                }
+            }
+
+            // Si no está en el mapa, buscar por texto dentro de las etiquetas de los checkboxes
+            if (!idExamenEncontrado) {
+                const checkboxes = document.querySelectorAll('.examen-chk');
+                checkboxes.forEach(chk => {
+                    let nombreChk = normalizarTexto(chk.getAttribute('data-nombre') || '');
+                    if (nombreChk.includes(fraseNormalizada) || fraseNormalizada.includes(nombreChk)) {
+                        idExamenEncontrado = chk.getAttribute('data-id');
+                    }
+                });
+            }
+
+            if (idExamenEncontrado) {
+                const checkboxTarget = document.querySelector(`.examen-chk[data-id="${idExamenEncontrado}"]`);
+                if (checkboxTarget) {
+                    checkboxTarget.checked = true;
+                    checkboxTarget.dispatchEvent(new Event('change', { bubbles: true }));
+                    if (estadoVoz) estadoVoz.textContent = `Examen seleccionado: [${idExamenEncontrado}]`;
+                    hablarTexto("Examen agregado");
+                }
+            } else {
+                if (estadoVoz) estadoVoz.textContent = `No encontrado: "${fraseNormalizada}"`;
+                hablarTexto("No encontré ese examen.");
+            }
+        }
+
+        // ==========================================
+        // 5. LÓGICA DEL BUSCADOR VISUAL (LUPA) Y SUGERENCIAS
+        // ==========================================
+        const btnToggleBuscador = document.getElementById('btnToggleBuscador');
+        const contenedorBuscador = document.getElementById('contenedorBuscadorTabs');
+        const inputBuscar = document.getElementById('inputBuscarTab');
+        const listaSugerencias = document.getElementById('sugerenciasBuscador');
+
+        if (btnToggleBuscador && contenedorBuscador && inputBuscar && listaSugerencias) {
+            btnToggleBuscador.addEventListener('click', () => {
+                if (contenedorBuscador.style.display === 'none' || contenedorBuscador.style.display === '') {
+                    contenedorBuscador.style.display = 'block';
+                    inputBuscar.focus();
+                } else {
+                    contenedorBuscador.style.display = 'none';
+                    listaSugerencias.classList.remove('show');
+                }
+            });
+
+            inputBuscar.addEventListener('input', (e) => {
+                const query = normalizarTexto(e.target.value.trim());
+                listaSugerencias.innerHTML = '';
+
+                if (query.length === 0) {
+                    listaSugerencias.classList.remove('show');
+                    return;
+                }
+
+                // Filtrar exámenes desde los checkboxes de la página
+                const checkboxes = document.querySelectorAll('.examen-chk');
+                let coincidencias = [];
+
+                checkboxes.forEach(chk => {
+                    let id = chk.getAttribute('data-id');
+                    let nombre = chk.getAttribute('data-nombre');
+                    if (normalizarTexto(nombre).includes(query) || normalizarTexto(id).includes(query)) {
+                        coincidencias.push({ id, nombre, checkbox: chk });
+                    }
+                });
+
+                if (coincidencias.length > 0) {
+                    coincidencias.forEach(itemMatch => {
+                        const item = document.createElement('a');
+                        item.href = '#';
+                        item.className = 'dropdown-item';
+                        item.style.fontSize = '11px';
+                        item.innerHTML = `<strong>[${itemMatch.id}]</strong> ${itemMatch.nombre}`;
+
+                        item.addEventListener('click', (ev) => {
+                            ev.preventDefault();
+                            itemMatch.checkbox.checked = true;
+                            itemMatch.checkbox.dispatchEvent(new Event('change', { bubbles: true }));
+                            inputBuscar.value = '';
+                            listaSugerencias.classList.remove('show');
+                        });
+
+                        listaSugerencias.appendChild(item);
+                    });
+                    listaSugerencias.classList.add('show');
+                } else {
+                    listaSugerencias.classList.remove('show');
+                }
+            });
+
+            document.addEventListener('click', (e) => {
+                if (!contenedorBuscador.contains(e.target) && e.target !== btnToggleBuscador) {
+                    listaSugerencias.classList.remove('show');
+                }
+            });
+        }
+    });
+
+			
         </script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     </body>
