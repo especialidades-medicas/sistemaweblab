@@ -2404,7 +2404,8 @@
                     <td class="text-muted">Negativo / Positivo</td>                    
                 </tr>
 				<tr>
-                    <td class="fw-bold ps-3">Otros</td>                    
+                    <td class="fw-bold ps-3">Otros</td>    
+					<td>
 					<select class="form-select form-select-sm form-control-editable" id="orinacontamina">
                         <option value="" selected disabled>Seleccione...</option>    
 						<option value="Trofozoítos de Trichomonas hominis">Trofozoítos de Trichomonas vaginalis</option>                    
@@ -2413,6 +2414,7 @@
 						<option value=" ">Contaminación de muestra </option>
 						<option value="">-</option>
                     </select>
+					</td>
                     <td class="text-muted">-</td>
                     <td><input type="text" class="form-control form-control-sm text-muted" value="Contaminación"></td>
                 </tr>
@@ -2435,8 +2437,7 @@
 			
         </div>
 
-        <!-- Contenedor colapsable 2 (Nueva tabla separada) -->
-        <div class="collapse show" id="collapseOrinaEspeciales">
+        <!-- Contenedor colapsable 2 (Nueva tabla separada) -->        
             <table class="table table-sm table-bordered align-middle mb-0 small bg-white">
                 <thead class="table-light text-muted">
                     <tr><th>EXÁMEN / ELEMENTO</th><th style="width: 25%;">RESULTADO</th><th style="width: 15%;">UNIDAD</th><th>V. REFERENCIA</th></tr>
@@ -2496,7 +2497,7 @@
 					</select>
                     </td>
                     <td>
-                    <select class="form-control form-control-sm form-control-editable">
+                    <select class="form-control form-control-sm form-control-editable" id="resGramOrina2R">
                         <option value="" selected disabled>Seleccione...</option>                        
                         <option value=" ">-</option>
                         <option value="(Escasos)">(Escasos) </option>
@@ -2554,7 +2555,7 @@
 					</tr>
             </tbody>
         </table>
-		</div>
+		
     </div>
 
 
@@ -5483,24 +5484,28 @@ function nuevoPaciente() {
 		    document.getElementById('orinaLeucocitos').value = "0 - 2";
 		    document.getElementById('orinaHematies').value = "0 - 1";
 		    document.getElementById('orinaBacterias').value = "Escasas";
-		    document.getElementById('orinaCristales').value = "Negativo";  
-			document.getElementById('orinaCristales2').value = ""; 
-		    document.getElementById('orinaCilindros').value = "Negativo";
-			document.getElementById('orinaMoco').value = "";
+		    document.getElementById('orinaCristales').value = "Negativo"; 
 			document.getElementById('orinaCristalesR').value = "";
+			document.getElementById('orinaCristales2').value = ""; 
 			document.getElementById('orinaCristales2R').value = "";
+		    document.getElementById('orinaCilindros').value = "Negativo";
+			document.getElementById('orinaCilindrosR').value = "Negativo";
+			document.getElementById('orinaMoco').value = "";			
+			
 			// EXAMEN CONTAMINACION
 			document.getElementById('orinacontamina').value = "";
 		
 			// EXAMEN ESPECIAL
 			document.getElementById('resGramOrina').value = "";
+			document.getElementById('resGramOrinaR').value = "";
+			document.getElementById('resGramOrina2').value = "";
 			document.getElementById('resGramOrina2R').value = "";
 			document.getElementById('resMicroalbuminuria').value = "";
 			document.getElementById('resAlbuminuria').value = "";
 			document.getElementById('resCreatinina').value = "";
 			document.getElementById('resVolumenOrina24').value = "";
 			document.getElementById('resProteinuria24').value = "";
-		 notificarCambiosOrina();
+			 notificarCambiosOrina();
 		    if (typeof actualizarTablaDinamica === 'function') actualizarTablaDinamica();
 		}
 
@@ -5526,12 +5531,20 @@ function nuevoPaciente() {
 	    document.getElementById('orinaHematies').value = "0 - 1";
 	    document.getElementById('orinaBacterias').value = "(+++)";
 	    document.getElementById('orinaCristales').value = "Negativo";    
+		document.getElementById('orinaCristalesR').value = "";
 		document.getElementById('orinaCristales2').value = ""; 
-	    document.getElementById('orinaCilindros').value = "Negativo";
-	    document.getElementById('orinaMoco').value = "Positivo (+)";
-	
-	// EXAMEN ESPECIAL
+		document.getElementById('orinaCristales2R').value = "";
+		document.getElementById('orinaCilindros').value = "Negativo";
+		document.getElementById('orinaCilindrosR').value = "Negativo";
+		document.getElementById('orinaMoco').value = "";			
+			
+			// EXAMEN CONTAMINACION
+		document.getElementById('orinacontamina').value = "";
+		
+		// EXAMEN ESPECIAL
 		document.getElementById('resGramOrina').value = "";
+		document.getElementById('resGramOrinaR').value = "";
+		document.getElementById('resGramOrina2').value = "";
 		document.getElementById('resGramOrina2R').value = "";
 		document.getElementById('resMicroalbuminuria').value = "";
 		document.getElementById('resAlbuminuria').value = "";
@@ -5549,8 +5562,8 @@ function limpiarOrina() {
         'orinaProteinas', 'orinaGlucosa', 'orinaCetonas', 'orinaBilirrubina',
         'orinaUrobilinogeno', 'orinaSangre', 'orinaNitritos', 'orinaLeucocitesterasa',
         'orinaEpiteliales', 'orinaLeucocitos', 'orinaHematies', 'orinaBacterias',
-        'orinaCristales', 'orinaCristales2', 'orinaCristalesR', 'orinaCristales2R', 'orinaCilindros', 'orinaMoco', 
-		'resGramOrina', 'resGramOrina2', 'orinacontamina',
+        'orinaCristales', 'orinaCristalesR', 'orinaCristales2',  'orinaCristales2R', 'orinaCilindros', 'orinaCilindrosR','orinaMoco', 'orinacontamina', 
+		'resGramOrina', 'resGramOrinaR', 'resGramOrina2','resGramOrina2R',
 		'resMicroalbuminuria' , 'resAlbuminuria', 'resCreatinina', 'resVolumenOrina24', 'resProteinuria24' 
     ];
 
@@ -5576,8 +5589,9 @@ function notificarCambiosOrina() {
         'orinaProteinas', 'orinaGlucosa', 'orinaCetonas', 'orinaBilirrubina',
         'orinaUrobilinogeno', 'orinaSangre', 'orinaNitritos', 'orinaLeucocitesterasa',
         'orinaEpiteliales', 'orinaLeucocitos', 'orinaHematies', 'orinaBacterias',
-        'orinaCristales', 'orinaCristales2', 'orinaCilindros', 'orinaMoco', 'resGramOrina', 'resGramOrina2', 'orinacontamina',
-		'resMicroalbuminuria' , 'resAlbuminuria', 'resCreatinina', 'resVolumenOrina24', 'resProteinuria24' 
+        'orinaCristales', 'orinaCristalesR', 'orinaCristales2',  'orinaCristales2R', 'orinaCilindros', 'orinaCilindrosR','orinaMoco', 'orinacontamina', 
+		'resGramOrina', 'resGramOrinaR', 'resGramOrina2','resGramOrina2R',
+		'resMicroalbuminuria' , 'resAlbuminuria', 'resCreatinina', 'resVolumenOrina24', 'resProteinuria24'  
     ];
     idsOrina.forEach(id => {
         const el = document.getElementById(id);
