@@ -2316,7 +2316,7 @@
                     </select>
                     </td>
                     <td>
-                        <select class="form-select form-select-sm form-control-editable">
+                        <select class="form-select form-select-sm form-control-editable" id="orinaCristalesR">
                             <option value="" selected disabled>Seleccione...</option>                                                   
                             <option value="(+)">(+)</option>
 	                        <option value="(++)">(++)</option>
@@ -2352,7 +2352,7 @@
                     </select>
                     </td>
                     <td>
-                        <select class="form-select form-select-sm form-control-editable">
+                        <select class="form-select form-select-sm form-control-editable" id="orinaCristales2R">
                             <option value="" selected disabled>Seleccione...</option>                                                 
                             <option value="(+)">(+)</option>
 	                        <option value="(++)">(++)</option>
@@ -2379,7 +2379,7 @@
                     </select>
                     </td>                    
                     <td>
-                        <select class="form-select form-select-sm form-control-editable">
+                        <select class="form-select form-select-sm form-control-editable" id="orinaCilindrosR">
                             <option value="" selected disabled>Seleccione...</option>                                                      
                             <option value="(+)">(+)</option>
 	                        <option value="(++)">(++)</option>
@@ -2403,6 +2403,20 @@
                     <td class="text-muted">-</td>
                     <td class="text-muted">Negativo / Positivo</td>                    
                 </tr>
+				<tr>
+                    <td class="fw-bold ps-3">Otros</td>                    
+					<select class="form-select form-select-sm form-control-editable" id="orinacontamina">
+                        <option value="" selected disabled>Seleccione...</option>    
+						<option value="Trofozoítos de Trichomonas hominis">Trofozoítos de Trichomonas vaginalis</option>                    
+                        <option value=" ">Heces fecales</option>
+						<option value=" ">Secrecion Vaginal</option>
+						<option value=" ">Contaminación de muestra </option>
+						<option value="">-</option>
+                    </select>
+                    <td class="text-muted">-</td>
+                    <td><input type="text" class="form-control form-control-sm text-muted" value="Contaminación"></td>
+                </tr>
+				
 				</tbody>
             </table>
         </div>
@@ -2449,7 +2463,7 @@
 					</select>
                     </td>
                     <td>
-                    <select class="form-control form-control-sm form-control-editable">
+                    <select class="form-control form-control-sm form-control-editable" id="resGramOrinaR">
                         <option value="" selected disabled>Seleccione...</option>                        
                         <option value=" ">-</option>
                         <option value="(Escasos)">(Escasos) </option>
@@ -5449,62 +5463,84 @@ function nuevoPaciente() {
 // SECCIÓN: ORINA
 // ==========================================
 		function llenarOrinaNormal() {
-    // EXÁMEN FÍSICO
-    document.getElementById('orinaColor').value = "Amarillo";
-    document.getElementById('orinaAspecto').value = "Límpido"; // Transparente
-    document.getElementById('orinaDensidad').value = "1020";
-    document.getElementById('orinaPh').value = "6";
+		    // EXÁMEN FÍSICO
+		    document.getElementById('orinaColor').value = "Amarillo";
+		    document.getElementById('orinaAspecto').value = "Límpido"; // Transparente
+		    document.getElementById('orinaDensidad').value = "1020";
+		    document.getElementById('orinaPh').value = "6";
+		
+		    // EXÁMEN QUÍMICO
+		    document.getElementById('orinaProteinas').value = "Negativo";
+		    document.getElementById('orinaGlucosa').value = "Negativo";
+		    document.getElementById('orinaCetonas').value = "";    
+			document.getElementById('orinaBilirrubina').value = "";     
+		    document.getElementById('orinaSangre').value = "Negativo";
+		    document.getElementById('orinaNitritos').value = "Negativo";
+		    document.getElementById('orinaLeucocitesterasa').value = "Negativo";
+		
+		    // EXAMEN MICROSCÓPICO
+		    document.getElementById('orinaEpiteliales').value = "0 - 2";
+		    document.getElementById('orinaLeucocitos').value = "0 - 2";
+		    document.getElementById('orinaHematies').value = "0 - 1";
+		    document.getElementById('orinaBacterias').value = "Escasas";
+		    document.getElementById('orinaCristales').value = "Negativo";  
+			document.getElementById('orinaCristales2').value = ""; 
+		    document.getElementById('orinaCilindros').value = "Negativo";
+			document.getElementById('orinaMoco').value = "";
+			document.getElementById('orinaCristalesR').value = "";
+			document.getElementById('orinaCristales2R').value = "";
+			// EXAMEN CONTAMINACION
+			document.getElementById('orinacontamina').value = "";
+		
+			// EXAMEN ESPECIAL
+			document.getElementById('resGramOrina').value = "";
+			document.getElementById('resGramOrina2R').value = "";
+			document.getElementById('resMicroalbuminuria').value = "";
+			document.getElementById('resAlbuminuria').value = "";
+			document.getElementById('resCreatinina').value = "";
+			document.getElementById('resVolumenOrina24').value = "";
+			document.getElementById('resProteinuria24').value = "";
+		 notificarCambiosOrina();
+		    if (typeof actualizarTablaDinamica === 'function') actualizarTablaDinamica();
+		}
 
-    // EXÁMEN QUÍMICO
-    document.getElementById('orinaProteinas').value = "Negativo";
-    document.getElementById('orinaGlucosa').value = "Negativo";
-    document.getElementById('orinaCetonas').value = "";    
-	document.getElementById('orinaBilirrubina').value = "";     
-    document.getElementById('orinaSangre').value = "Negativo";
-    document.getElementById('orinaNitritos').value = "Negativo";
-    document.getElementById('orinaLeucocitesterasa').value = "Negativo";
-
-    // EXAMEN MICROSCÓPICO
-    document.getElementById('orinaEpiteliales').value = "0 - 2";
-    document.getElementById('orinaLeucocitos').value = "0 - 2";
-    document.getElementById('orinaHematies').value = "0 - 1";
-    document.getElementById('orinaBacterias').value = "Escasas";
-    document.getElementById('orinaCristales').value = "Negativo";  
-	document.getElementById('orinaCristales2').value = ""; 
-    document.getElementById('orinaCilindros').value = "Negativo";
-	document.getElementById('orinaMoco').value = "";
- notificarCambiosOrina();
-    if (typeof actualizarTablaDinamica === 'function') actualizarTablaDinamica();
-}
-
-function llenarInfeccion() {
-    // EXÁMEN FÍSICO
-    document.getElementById('orinaColor').value = "Amarillo";
-    document.getElementById('orinaAspecto').value = "Turbio";
-    document.getElementById('orinaDensidad').value = "1020";
-    document.getElementById('orinaPh').value = "6";
-
-    // EXÁMEN QUÍMICO
-    document.getElementById('orinaProteinas').value = "Negativo";
-    document.getElementById('orinaGlucosa').value = "Negativo";
-    document.getElementById('orinaCetonas').value = "";    
-	document.getElementById('orinaBilirrubina').value = "";
-    document.getElementById('orinaSangre').value = "Negativo";
-    document.getElementById('orinaNitritos').value = "Positivo";
-    document.getElementById('orinaLeucocitesterasa').value = "Positivo (+)";
-
-    // EXAMEN MICROSCÓPICO
-    document.getElementById('orinaEpiteliales').value = "0 - 2";
-    document.getElementById('orinaLeucocitos').value = "0 - 2";
-    document.getElementById('orinaHematies').value = "0 - 1";
-    document.getElementById('orinaBacterias').value = "(+++)";
-    document.getElementById('orinaCristales').value = "Negativo";    
-	document.getElementById('orinaCristales2').value = ""; 
-    document.getElementById('orinaCilindros').value = "Negativo";
-    document.getElementById('orinaMoco').value = "Positivo (+)";
-notificarCambiosOrina();
-    if (typeof actualizarTablaDinamica === 'function') actualizarTablaDinamica();
-}
+	function llenarInfeccion() {
+	    // EXÁMEN FÍSICO
+	    document.getElementById('orinaColor').value = "Amarillo";
+	    document.getElementById('orinaAspecto').value = "Turbio";
+	    document.getElementById('orinaDensidad').value = "1020";
+	    document.getElementById('orinaPh').value = "6";
+	
+	    // EXÁMEN QUÍMICO
+	    document.getElementById('orinaProteinas').value = "Negativo";
+	    document.getElementById('orinaGlucosa').value = "Negativo";
+	    document.getElementById('orinaCetonas').value = "";    
+		document.getElementById('orinaBilirrubina').value = "";
+	    document.getElementById('orinaSangre').value = "Negativo";
+	    document.getElementById('orinaNitritos').value = "Positivo";
+	    document.getElementById('orinaLeucocitesterasa').value = "Positivo (+)";
+	
+	    // EXAMEN MICROSCÓPICO
+	    document.getElementById('orinaEpiteliales').value = "0 - 2";
+	    document.getElementById('orinaLeucocitos').value = "0 - 2";
+	    document.getElementById('orinaHematies').value = "0 - 1";
+	    document.getElementById('orinaBacterias').value = "(+++)";
+	    document.getElementById('orinaCristales').value = "Negativo";    
+		document.getElementById('orinaCristales2').value = ""; 
+	    document.getElementById('orinaCilindros').value = "Negativo";
+	    document.getElementById('orinaMoco').value = "Positivo (+)";
+	
+	// EXAMEN ESPECIAL
+		document.getElementById('resGramOrina').value = "";
+		document.getElementById('resGramOrina2R').value = "";
+		document.getElementById('resMicroalbuminuria').value = "";
+		document.getElementById('resAlbuminuria').value = "";
+		document.getElementById('resCreatinina').value = "";
+		document.getElementById('resVolumenOrina24').value = "";
+		document.getElementById('resProteinuria24').value = "";
+	notificarCambiosOrina();
+	    if (typeof actualizarTablaDinamica === 'function') actualizarTablaDinamica();
+	}
 		
 function limpiarOrina() {
     // Lista de todos los select e input de la sección de Orina
@@ -5513,7 +5549,9 @@ function limpiarOrina() {
         'orinaProteinas', 'orinaGlucosa', 'orinaCetonas', 'orinaBilirrubina',
         'orinaUrobilinogeno', 'orinaSangre', 'orinaNitritos', 'orinaLeucocitesterasa',
         'orinaEpiteliales', 'orinaLeucocitos', 'orinaHematies', 'orinaBacterias',
-        'orinaCristales', 'orinaCristales2', 'orinaCilindros', 'orinaMoco'
+        'orinaCristales', 'orinaCristales2', 'orinaCristalesR', 'orinaCristales2R', 'orinaCilindros', 'orinaMoco', 
+		'resGramOrina', 'resGramOrina2', 'orinacontamina',
+		'resMicroalbuminuria' , 'resAlbuminuria', 'resCreatinina', 'resVolumenOrina24', 'resProteinuria24' 
     ];
 
     idsOrina.forEach(id => {
@@ -5538,7 +5576,8 @@ function notificarCambiosOrina() {
         'orinaProteinas', 'orinaGlucosa', 'orinaCetonas', 'orinaBilirrubina',
         'orinaUrobilinogeno', 'orinaSangre', 'orinaNitritos', 'orinaLeucocitesterasa',
         'orinaEpiteliales', 'orinaLeucocitos', 'orinaHematies', 'orinaBacterias',
-        'orinaCristales', 'orinaCristales2', 'orinaCilindros', 'orinaMoco'
+        'orinaCristales', 'orinaCristales2', 'orinaCilindros', 'orinaMoco', 'resGramOrina', 'resGramOrina2', 'orinacontamina',
+		'resMicroalbuminuria' , 'resAlbuminuria', 'resCreatinina', 'resVolumenOrina24', 'resProteinuria24' 
     ];
     idsOrina.forEach(id => {
         const el = document.getElementById(id);
@@ -5578,6 +5617,12 @@ function llenarHecesNormal() {
     document.getElementById('hecesHematies').value = "-";
     document.getElementById('hecesOtros').value = "";
     document.getElementById('hecesFlora').value = "Normal";
+	
+	document.getElementById('hecespolimorfonucleares').value = "";
+	document.getElementById('hecesRotavirus').value = "";
+	document.getElementById('hecesHpylori').value = "";
+	document.getElementById('hecesSOculta').value = "";
+	
 notificarCambiosHeces();
     if (typeof actualizarTablaDinamica === 'function') actualizarTablaDinamica();
 }
@@ -5608,6 +5653,12 @@ function llenarHecesParasito() {
     document.getElementById('hecesHematies').value = "-";
     document.getElementById('hecesOtros').value = "";
     document.getElementById('hecesFlora').value = "Lig. Aumentada";
+	
+	
+	document.getElementById('hecespolimorfonucleares').value = "";
+	document.getElementById('hecesRotavirus').value = "";
+	document.getElementById('hecesHpylori').value = "";
+	document.getElementById('hecesSOculta').value = "";
 notificarCambiosHeces();
     if (typeof actualizarTablaDinamica === 'function') actualizarTablaDinamica();
 }
@@ -5619,7 +5670,8 @@ function limpiarHeces() {
         'hecesParasitos', 'hecesParasitosCant1', 'hecesParasitos2', 'hecesParasitosCant2',
         'hecesParasitos3', 'hecesParasitosCant3', 'hecesRestos', 'hecesGrasas',
         'hecesRestosVegetales', 'hecesAlmidones', 'hecesLevaduras', 'hecesLeucocitos',
-        'hecesHematies', 'hecesOtros', 'hecesFlora'
+        'hecesHematies', 'hecesOtros', 'hecesFlora', 
+		'hecespolimorfonucleares','hecesRotavirus', 'hecesHpylori', 'hecesSOculta', 
     ];
 
     idsHeces.forEach(id => {
@@ -5641,7 +5693,8 @@ notificarCambiosHeces();
         'hecesParasitos', 'hecesParasitosCant1', 'hecesParasitos2', 'hecesParasitosCant2',
         'hecesParasitos3', 'hecesParasitosCant3', 'hecesRestos', 'hecesGrasas',
         'hecesRestosVegetales', 'hecesAlmidones', 'hecesLevaduras', 'hecesLeucocitos',
-        'hecesHematies', 'hecesOtros', 'hecesFlora'
+        'hecesHematies', 'hecesOtros', 'hecesFlora', 
+		'hecespolimorfonucleares','hecesRotavirus', 'hecesHpylori', 'hecesSOculta', 
     ];
     idsHeces.forEach(id => {
         const el = document.getElementById(id);
