@@ -402,25 +402,41 @@
                         </div>
                     </div>
 
-                    <!-- Sección de Firmas (Firmas más grandes y optimizadas) -->
-                    <div class="row mt-1 align-items-end g-3" id="seccionFirmas">
-                        <div class="col-6 text-center">
-                            <div style="min-height: 105px; display: flex; align-items: flex-end; justify-content: center;">
-                                <img src="" alt="Firma Médico" class="firma-img mb-1" id="imgFirma2">
-                            </div>
-                            <div class="border-top pt-1 mx-auto" style="width: 85%; max-width: 180px;">
-                                <small class="text-muted" style="font-size: 0.68rem;"></small>
-                            </div>
-                        </div>
-                        <div class="col-6 text-center">
-                            <div style="min-height: 105px; display: flex; align-items: flex-end; justify-content: center;">
-                                <img src="../img/firma_activa2.png" alt="Firma Laboratorio" class="firma-img mb-1" id="imgFirma1">
-                            </div>
-                            <div class="border-top pt-1 mx-auto" style="width: 85%; max-width: 180px;">
-                                <small class="text-muted" style="font-size: 0.68rem;">Centro Médico</small>
-                            </div>
-                        </div>
-                    </div>
+                    <!-- Sección de Firmas (3 columnas: Dra. Liliana Salazar, Dr. Celi Bryan y Campo en Blanco) -->
+<div class="row mt-1 align-items-end g-2" id="seccionFirmas">
+    <!-- Firma 1: Dra. Liliana Salazar -->
+    <div class="col-4 text-center" id="contenedorFirmaSalazar">
+        <div style="min-height: 95px; display: flex; align-items: flex-end; justify-content: center;">
+            <img src="../img/firma_liliana.png" alt="Firma Dra. Liliana Salazar" class="firma-img mb-1" style="max-height: 110px;">
+        </div>
+        <div class="border-top pt-1 mx-auto" style="width: 90%;">
+            <small class="fw-bold d-block" style="font-size: 0.65rem;">Dra. Liliana Salazar L.</small>
+            <small class="text-muted" style="font-size: 0.60rem;">C.I.: 1724443948</small>
+        </div>
+    </div>
+
+    <!-- Firma 2: Dr. Celi Bryan -->
+    <div class="col-4 text-center" id="contenedorFirmaCeli">
+        <div style="min-height: 95px; display: flex; align-items: flex-end; justify-content: center;">
+            <img src="../img/firma_celi.png" alt="Firma Dr. Celi Bryan" class="firma-img mb-1" style="max-height: 110px;">
+        </div>
+        <div class="border-top pt-1 mx-auto" style="width: 90%;">
+            <small class="fw-bold d-block" style="font-size: 0.65rem;">Dr. Celi Bryan</small>
+            <small class="text-muted" style="font-size: 0.60rem;">Médico General</small>
+        </div>
+    </div>
+
+    <!-- Firma 3: Campo en Blanco -->
+    <div class="col-4 text-center" id="contenedorFirmaBlanco">
+        <div style="min-height: 95px; display: flex; align-items: flex-end; justify-content: center;">
+            <!-- Espacio libre para firma manual o sello -->
+        </div>
+        <div class="border-top pt-1 mx-auto" style="width: 90%;">
+            <small class="fw-bold d-block" style="font-size: 0.65rem;">Firma Dr/a.:________________</small>
+            <small class="text-muted" style="font-size: 0.60rem;">C.I.: ___________________</small>
+        </div>
+    </div>
+</div>
                 </div>
 
                 <!-- Parte Inferior: Código de Barras y Dirección -->
@@ -433,22 +449,31 @@
                         <p class="mb-0"><strong>E-Mail:</strong> especialidades.prolab@gmail.com &nbsp;|&nbsp; <strong>Telf.:</strong> 0995225612</p>
                     </div>
                 </div>
+                
             </div>
         </div>
 
         <!-- PANEL DE CONTROL FLOTANTE -->
         <div class="container mt-2 no-print" style="max-width: 500px;">
-            <div class="alert alert-secondary py-2 mb-2 shadow-sm">
-                <div class="form-check form-switch mb-1">
-                    <input class="form-check-input" type="checkbox" id="checkFirmas" checked onchange="toggleFirmas()">
-                    <label class="form-check-label fw-bold" for="checkFirmas">Incluir Firmas Digitales</label>
-                </div>
-                <div class="form-check form-switch">
-                    <input class="form-check-input" type="checkbox" id="checkBarcode" checked onchange="toggleBarcode()">
-                    <label class="form-check-label fw-bold" for="checkBarcode">Mostrar Código de Barras</label>
-                </div>
-            </div>
+    <div class="alert alert-secondary py-2 mb-2 shadow-sm">
+        <div class="form-check form-switch mb-1">
+            <input class="form-check-input" type="checkbox" id="checkFirmaSalazar" checked onchange="toggleFirmaSalazar()">
+            <label class="form-check-label fw-bold" for="checkFirmaSalazar">Firma Dra. Liliana Salazar</label>
         </div>
+        <div class="form-check form-switch mb-1">
+            <input class="form-check-input" type="checkbox" id="checkFirmaCeli" checked onchange="toggleFirmaCeli()">
+            <label class="form-check-label fw-bold" for="checkFirmaCeli">Firma Dr. Celi Bryan</label>
+        </div>
+        <div class="form-check form-switch mb-1">
+            <input class="form-check-input" type="checkbox" id="checkFirmaBlanco" checked onchange="toggleFirmaBlanco()">
+            <label class="form-check-label fw-bold" for="checkFirmaBlanco">Mostrar Campo en Blanco</label>
+        </div>
+        <div class="form-check form-switch">
+            <input class="form-check-input" type="checkbox" id="checkBarcode" checked onchange="toggleBarcode()">
+            <label class="form-check-label fw-bold" for="checkBarcode">Mostrar Código de Barras</label>
+        </div>
+    </div>
+</div>
 
         <!-- BARRA LIQUID GLASS -->
         <nav class="liquid-nav no-print" id="nav">
@@ -556,11 +581,27 @@
                 }
             });
 
-            function toggleFirmas() {
-                const activo = document.getElementById('checkFirmas').checked;
-                const seccion = document.getElementById('seccionFirmas');
-                if (seccion) {
-                    seccion.style.display = activo ? 'flex' : 'none';
+            function toggleFirmaSalazar() {
+                const activo = document.getElementById('checkFirmaSalazar').checked;
+                const contenedor = document.getElementById('contenedorFirmaSalazar');
+                if (contenedor) {
+                    contenedor.style.display = activo ? 'block' : 'none';
+                }
+            }
+
+            function toggleFirmaCeli() {
+                const activo = document.getElementById('checkFirmaCeli').checked;
+                const contenedor = document.getElementById('contenedorFirmaCeli');
+                if (contenedor) {
+                    contenedor.style.display = activo ? 'block' : 'none';
+                }
+            }
+
+            function toggleFirmaBlanco() {
+                const activo = document.getElementById('checkFirmaBlanco').checked;
+                const contenedor = document.getElementById('contenedorFirmaBlanco');
+                if (contenedor) {
+                    contenedor.style.display = activo ? 'block' : 'none';
                 }
             }
 
